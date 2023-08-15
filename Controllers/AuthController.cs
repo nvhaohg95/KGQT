@@ -6,8 +6,8 @@ namespace KGQT.Controllers
     {
         public IActionResult Login()
         {
-
-            //asaaa
+             
+            //asaaa hao test ne
             return View();
         }
     }
