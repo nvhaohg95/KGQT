@@ -83,6 +83,34 @@ html {
 .form-control:focus{
     box-shadow:none;
 }
+
+/*login*/
+.btn-login {
+    background-color: #1da1f2 !important;
+}
+    .btn-login:hover {
+        background-color: #2196dd !important;
+    }
+
+.fw-bold{
+    font-weight:bold;
+}
+
+.bg-login-image {
+    background: url(../img/shipper-guy.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat:no-repeat;
+}
+
+
+
+
+
+
+
+
+
 @media (min-width: 768px) {
     .sidebar {
         width: 20rem !important;

@@ -1,0 +1,133 @@
+﻿@model KGQT.Models.temp.SignUpModel
+
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = "~/Views/Shared/_PartialView.cshtml";
+}
+@if (ViewBag.Alert != null)
+{
+    <script>
+
+        $(document).ready(function () {
+
+            alert('@ViewBag.Alert');
+
+        });
+
+    </script>
+
+}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-12 col-md-9">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-9">
+                            <div class="p-5">
+                                <div class="text-center">
+                                    <h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng ký tài khoản</h1>
+                                </div>
+                                @using (Html.BeginForm(FormMethod.Post, new { @class = "user row" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Họ</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+
+                                        @Html.TextBoxFor(model => model.FirstName,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Họ" })
+                                        @Html.ValidationMessageFor(model => model.FirstName,"",new { @class="text-danger" })
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Tên</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.LastName,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Tên" })
+                                        @Html.ValidationMessageFor(model => model.LastName,"",new { @class="text-danger" })
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Giới tính</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        <div class="form-check-inline">
+                                            @Html.RadioButtonFor(model => model.Gender,"1",new { @class="form-check-input"})
+                                            @Html.LabelFor(model => model.Gender,"Nam",new {@class="form-check-label"})
+                                        </div>
+                                        <div class="form-check-inline">
+                                            @Html.RadioButtonFor(model => model.Gender,"2",new { @class="form-check-input"})
+                                            @Html.LabelFor(model => model.Gender,"Nữ",new { @class="form-check-label" })
+                                        </div>
+                                        <div>
+                                            @Html.ValidationMessageFor(model => model.Gender,"",new { @class="text-danger" })
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Ngày sinh</span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.BirthDay,"",new { @class="form-control form-control-user border-none rounded", @type="date"})
+                                    </div>
+                                    
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Số điện thoại</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.Phone,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Số điện thoại"})
+                                        @Html.ValidationMessageFor(model => model.Phone,"",new { @class="text-danger" })
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Email</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.Email,"",new { @class="form-control form-control-user border-none rounded", @type="email", @placeholder="Email"})
+                                        @Html.ValidationMessageFor(model => model.Email,"",new { @class="text-danger" })
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div>
+                                            <span class="fw-bold">Địa chỉ</span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.Address,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Địa chỉ"})
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Tài khoản</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.UserName,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Tài khoản"})
+                                        @Html.ValidationMessageFor(model => model.UserName,"",new{ @class="text-danger"})
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Mật khẩu</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.PassWord,"",new { @class="form-control form-control-user border-none rounded", @type="password", @placeholder="Mật khẩu" })
+                                        @Html.ValidationMessageFor(model => model.PassWord,"",new { @class="text-danger" })
+                                    </div>
+
+                                    @Html.ValidationMessage("error",new { @class="text-danger" })
+                                    <div class="form-group col-12">
+                                        <button type="submit" class="btn btn-warning btn-user btn-block">Đăng ký</button>
+                                    </div>
+                                }
+                                <hr />
+                                <div class="text-center">
+                                    <a class="small" href="login">Quay lại trang đăng nhập</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
