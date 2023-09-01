@@ -3,6 +3,24 @@
     ViewData["Title"] = "Đăng nhập";
     Layout = "~/Views/Shared/_PartialView.cshtml";    
 }
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#show_password').hover(function show() {
+            //Change the attribute to text
+            $('#txtPassword').attr('type', 'text');
+            $('.icon').removeClass('fa fa-eye-slash').addClass('fa fa-eye');
+        },
+            function () {
+                //Change the attribute back to password
+                $('#txtPassword').attr('type', 'password');
+                $('.icon').removeClass('fa fa-eye').addClass('fa fa-eye-slash');
+            });
+        //CheckBox Show Password
+        $('#ShowPassword').click(function () {
+            $('#Password').attr('type', $(this).is(':checked') ? 'text' : 'password');
+        });
+    });
+</script>
 <div class="vh-100">
     <div class="container">
         <div class="row justify-content-center">
@@ -19,7 +37,6 @@
                                     @using (Html.BeginForm(FormMethod.Post, new { @class = "user" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        ;
                                         <div class="form-group">
                                             @Html.LabelFor(model => model.UserName,"Tài khoản")
                                             @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus" })
@@ -27,7 +44,6 @@
                                         </div>
                                         <div class="form-group">
                                             @Html.LabelFor(model => model.Password,"Mật khẩu")
-
                                             @Html.TextBoxFor(model => model.Password, new { @class="form-control form-control-user", @placeholder="Mật khẩu", @type="password" })
                                             @Html.ValidationMessageFor(model => model.Password,"",new { @class="text-danger" })
                                         </div>

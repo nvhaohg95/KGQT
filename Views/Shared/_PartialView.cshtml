@@ -28,7 +28,10 @@
 
     <!-- Custom scripts for all pages-->
     <script src="~/js/sb-admin-2.js"></script>
-
+   
+    <!-- NToastNotify  -->
+    @await RenderSectionAsync("Scripts", required: false)
+    @await Component.InvokeAsync("NToastNotify")
 </head>
 <body>
     @RenderBody()

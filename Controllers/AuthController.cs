@@ -1,28 +1,42 @@
 ﻿using KGQT.Business;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using NToastNotify;
+using System.Buffers.Text;
+using System.Drawing;
+using System.Reflection.Metadata.Ecma335;
+using static System.Net.Mime.MediaTypeNames;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace KGQT.Controllers
 {
  
     public class AuthController : Controller
     {
-        IConfiguration _configuration;
-        KGNewContext _db;   
-        public AuthController(IConfiguration configuration)
+        private IConfiguration _configuration;
+        private KGNewContext _db;
+        private IToastNotification _toastNotification;
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+        public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _db = new KGNewContext();
+            _toastNotification = toastNotification;
+            _hostingEnvironment = hostingEnvironment;
         }
+
+
+        #region Login
         [HttpGet]
         public ActionResult Login()
         {
             return View();
         }
 
-        #region Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(UserModel model)
@@ -45,7 +59,7 @@ namespace KGQT.Controllers
         public ActionResult Logout()
         {
             HttpContext.Session.Remove("user");
-            return RedirectToAction("login","auth");
+            return Redirect("login");
         }
         #endregion
 
@@ -55,28 +69,28 @@ namespace KGQT.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(SignUpModel data)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                data.CraetedDate = DateTime.Now;
-                data.CraetedBy = data.UserName;
+                if(data.File != null)
+                {
+                    data.Path = Path.Combine(_hostingEnvironment.WebRootPath, "uploads","avatars");
+                }
                 var result = Accounts.RegisterAccount(data);
                 if (result.IsError)
                 {
-                    ModelState.AddModelError("error", result.Message);
+                    this._toastNotification.AddWarningToastMessage(result.Message);
                     return View();
                 }
-                ViewBag.Alert = "Tạo tài khoảng thành công!";
-                return RedirectToAction("Login");
+                this._toastNotification.AddSuccessToastMessage(result.Message);
+                return Redirect("login");
+
             }
-            if (data.Gender != 1 && data.Gender != 2)
-            {
-                ModelState.AddModelError("Gender", "Vui lòng chọn giới tính");
-            }
-            return View();
+            return View(data);
         }
         #endregion
     }

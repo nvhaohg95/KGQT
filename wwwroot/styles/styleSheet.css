@@ -103,20 +103,35 @@ html {
     background-repeat:no-repeat;
 }
 
-
-
-
-
-
-
-
-
-@media (min-width: 768px) {
-    .sidebar {
-        width: 20rem !important;
-    }
-        .sidebar .nav-item .nav-link {
-            width: 18rem;
-        }
+w-100px {
+    width: 100px !important;
 }
+.h-100px{
+    height:100px !important;
+}
+
+
+.upload-avatar {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+.upload-avatar:hover {
+    cursor:pointer;
+}
+    .upload-avatar input {
+    width: 100px;
+}
+
+
+
+    @media (min-width: 768px) {
+        .sidebar {
+            width: 20rem !important;
+        }
+
+            .sidebar .nav-item .nav-link {
+                width: 18rem;
+            }
+    }
 

@@ -2,6 +2,7 @@
 using KGQT.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using NToastNotify;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,12 @@ builder.Services.AddDbContext<KGNewContext>(o =>
 {
     o.UseSqlServer(builder.Configuration.GetConnectionString("KGQT"));
 });
-
+// NToastNotify
+builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
+{
+    ProgressBar = true,
+    Timeout = 3000
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,6 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseSession();
@@ -36,6 +43,8 @@ app.UseStaticFiles();
 app.MapControllers();
 app.UseRouting();
 app.UseAuthorization();
+app.UseNToastNotify();
+app.MapRazorPages();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(

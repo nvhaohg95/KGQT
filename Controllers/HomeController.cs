@@ -9,13 +9,6 @@ namespace KGQT
 {
     public class HomeController : Controller
     {
-
-        // GET: HomeController
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         //Dashboard
         [HttpGet]
         public ActionResult Dashboard()
@@ -26,7 +19,7 @@ namespace KGQT
                 var user = Accounts.GetUserLogin(sUserName);
                 return View(user);
             }
-            return RedirectToAction("Login","Auth");
+            return RedirectToAction("login","auth");
         }
 
         

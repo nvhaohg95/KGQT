@@ -2,6 +2,7 @@
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.EntityFrameworkCore;
 
 namespace KGQT.Business
 {
@@ -216,40 +217,49 @@ namespace KGQT.Business
         public static DataReturnModel RegisterAccount(SignUpModel data)
         {
             var result = new DataReturnModel() { IsError = false, Message = "" };
-            var exist = _db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
-            if (exist != null)
+            try
             {
-                result.IsError = true;
-                result.Message = "Tên đăng nhập đã được sử dụng";
-                return result;
-            }
-            var pass = PJUtils.Encrypt("userpass", data.PassWord);
-            var user = new tbl_Account()
-            {
-                Username = data.UserName,
-                Password = pass,
-                Email = data.Email,
-                RoleID = data.RoleID,
-                UserLevel = data.UserLevel,
-                Status = data.Status,
-                Wallet = 0,
-                CreatedDate = data.CraetedDate,
-                CreatedBy = data.CraetedBy,
-            };
-            _db.Add(user);
-            int kq = _db.SaveChanges();
-            if (kq > 0)
-            {
-                var acc = _db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
-                if (acc != null)
+                var exist = _db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
+                if (exist != null)
                 {
+                    result.IsError = true;
+                    result.Message = "Tên tài khoản đã được sử dụng";
+                    return result;
+                }
+                var pass = PJUtils.Encrypt("userpass", data.PassWord);
+                var acc = new tbl_Account()
+                {
+                    Username = data.UserName,
+                    Password = pass,
+                    Email = data.Email,
+                    RoleID = data.RoleID,
+                    UserLevel = data.UserLevel,
+                    Status = data.Status,
+                    Wallet = 0,
+                    CreatedDate = DateTime.Now,
+                    CreatedBy = data.UserName,
+                };
+                _db.Add(acc);
+                int kq = _db.SaveChanges();
+                if (kq > 0)
+                {
+                    if (data.File != null)
+                    {
+                        var helper = new Helper();
+                        var bytes = helper.ResizeImage(data.File);
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
+                        string path = Path.Combine(data.Path, fileName);
+                        File.WriteAllBytes(path, bytes);
+                        data.IMG = "/uploads/avatars/" + fileName;
+                    }
                     var accInfor = new tbl_AccountInfo()
                     {
-                        UID = user.ID,
+                        UID = acc.ID,
                         FirstName = data.FirstName,
                         LastName = data.LastName,
                         Gender = data.Gender,
                         BirthDay = data.BirthDay,
+                        IMG = data.IMG,
                         Email = data.Email,
                         Phone = data.Phone,
                         Address = data.Address,
@@ -262,21 +272,23 @@ namespace KGQT.Business
                     {
                         result.IsError = false;
                         result.Message = "Tạo tài khoản thành công";
-                        result.Data = user;
+                        result.Data = acc;
+                        return result;
                     }
-                    else
-                    {
-                        result.IsError = true;
-                        result.Message = Messages.AddError;
-                    }
+                    _db.tbl_Accounts.Remove(acc);
+                    _db.SaveChanges();
                 }
+                result.IsError = true;
+                result.Message = "Tạo tài khoản không thành công!";
+                return result;
             }
-            else
+            catch (Exception ex)
             {
                 result.IsError = true;
-                result.Message = Messages.AddError;
+                result.Message = "Tạo tài khoản không thành công!";
+                return result;
             }
-            return result;
+            
         }
 
     }
