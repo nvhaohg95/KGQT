@@ -13,6 +13,10 @@ html {
     --text-hover:#444;
 }
 
+.cursor-pointer:hover{
+    cursor:pointer !important;
+}
+
 
 /*logo*/
 .logo {
@@ -102,29 +106,32 @@ html {
     background-position: center;
     background-repeat:no-repeat;
 }
-
+.pass_icon {
+    position: absolute;
+    right: 15px;
+    bottom: 12px;
+}
+/*register*/
 w-100px {
     width: 100px !important;
 }
-.h-100px{
-    height:100px !important;
+
+.h-100px {
+    height: 100px !important;
 }
 
 
 .upload-avatar {
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-}
-.upload-avatar:hover {
-    cursor:pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
     .upload-avatar input {
-    width: 100px;
-}
+        width: 100px;
+    }
 
 
-
+/*--------------------------------------------------------*/
     @media (min-width: 768px) {
         .sidebar {
             width: 20rem !important;

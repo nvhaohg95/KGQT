@@ -4,6 +4,7 @@ using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NToastNotify;
 using System.Buffers.Text;
 using System.Drawing;
@@ -41,15 +42,16 @@ namespace KGQT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(UserModel model)
         {
-            if (!string.IsNullOrEmpty(model.UserName) && !string.IsNullOrEmpty(model.Password) && ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var result = Accounts.Login(model.UserName, model.Password);
-                if (!result.IsError && result.Data != null)
+                if (result.IsError)
                 {
-                    HttpContext.Session.SetString("user", model.UserName);
-                    return RedirectToAction("dashboard","home");
+                    ModelState.AddModelError(result.Key, result.Message);
+                    return View();
                 }
-                ModelState.AddModelError("error", result.Message);
+                HttpContext.Session.SetString("user", model.UserName);
+                return RedirectToAction("dashboard", "home");
             }
             return View();
         }
@@ -76,21 +78,42 @@ namespace KGQT.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(data.File != null)
+                if (data.File != null)
                 {
-                    data.Path = Path.Combine(_hostingEnvironment.WebRootPath, "uploads","avatars");
+                    data.Path = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", "avatars");
                 }
                 var result = Accounts.RegisterAccount(data);
                 if (result.IsError)
                 {
-                    this._toastNotification.AddWarningToastMessage(result.Message);
+                    if(result.Type == 1)
+                        ModelState.AddModelError(result.Key, result.Message);
+                    else
+                        _toastNotification.AddWarningToastMessage(result.Message);
                     return View();
                 }
-                this._toastNotification.AddSuccessToastMessage(result.Message);
+                _toastNotification.AddSuccessToastMessage(result.Message);
                 return Redirect("login");
 
             }
-            return View(data);
+            return View();
+        }
+        #endregion
+
+        #region Forgot Pasword
+        [HttpGet]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ForgotPassword(ForgotPasswordModel data)
+        {
+            if (ModelState.IsValid)
+            {
+                return Redirect("login");
+            }
+            return View();
         }
         #endregion
     }

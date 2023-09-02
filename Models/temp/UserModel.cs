@@ -12,6 +12,17 @@ namespace KGQT.Models.temp
         public string Password { get; set; }
 
     }
+    public class ForgotPasswordModel : UserModel
+    {
+        [Required(ErrorMessage = "Vui lòng xác nhận lại mật khẩu")]
+        public string ConfirmPassword { get; set; }
+        
+        [Required(ErrorMessage = "Vui lòng nhập địa chỉ email")]
+        [EmailAddress]
+        public string Email { get; set; }
+
+    }
+
 
     public class Jwt
     {

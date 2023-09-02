@@ -40,7 +40,7 @@
                                     @Html.AntiForgeryToken()
                                     <div class="form-group col-12 d-flex flex-column align-items-center justify-content-center">
                                         <div class="upload-avatar w-100px h-100px">
-                                            <img class="avatar-img rounded-circle" id="avatar_upload" width="100" height="100" src="@(!string.IsNullOrWhiteSpace(Model?.IMG) ? Model.IMG : "/img/undraw_profile.svg")" onclick="clickUploadAvatar()">
+                                            <img class="avatar-img rounded-circle cursor-pointer" id="avatar_upload" width="100" height="100" src="@(!string.IsNullOrWhiteSpace(Model?.IMG) ? Model.IMG : "/img/undraw_profile.svg")" onclick="clickUploadAvatar()">
                                             @Html.TextBoxFor(model => model.File, "" , new { @class="d-none" , @type="file" ,@id="input_uploader", @onchange="onChange(event)" })
                                         </div>
                                         <div class="text-center mt-2">
@@ -131,7 +131,7 @@
                                 }
                                 <hr />
                                 <div class="text-center">
-                                    <a class="small" href="login">Quay lại trang đăng nhập</a>
+                                    <a class="small cursor-pointer" href="login">Quay lại trang đăng nhập</a>
                                 </div>
                             </div>
                         </div>

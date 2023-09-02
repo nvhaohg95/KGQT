@@ -3,6 +3,7 @@ using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace KGQT.Business
 {
@@ -12,14 +13,14 @@ namespace KGQT.Business
         protected static KGNewContext _db = new KGNewContext();
 
         #region Select
-        public static DataReturnModel Login(string Username, string Password)
+        public static DataReturnModel Login(string userName, string password)
         {
-            Password = PJUtils.Encrypt("userpass", Password);
             var dtReturn = new DataReturnModel();
-            var acc = _db.tbl_Accounts.FirstOrDefault(a => a.Username == Username);
+            var acc = _db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
             if (acc != null)
             {
-                if (acc.Password == Password)
+                password = PJUtils.Encrypt("userpass", password);
+                if (acc.Password == password)
                 {
                     dtReturn.IsError = false;
                     dtReturn.Data = GetFullInfo(acc, 0, "");
@@ -28,14 +29,17 @@ namespace KGQT.Business
                 else
                 {
                     dtReturn.IsError = true;
+                    dtReturn.Key = "Password";
+                    dtReturn.Type = 1;
                     dtReturn.Message = Messages.PasswordNotCorrect;
                     return dtReturn;
                 }
-
             }
             else
             {
                 dtReturn.IsError = true;
+                dtReturn.Key = "Username";
+                dtReturn.Type = 1;
                 dtReturn.Message = Messages.CannotFindUser;
                 return dtReturn;
             }
@@ -177,6 +181,7 @@ namespace KGQT.Business
         }
         #endregion
 
+        #region Get User Login
         public static UserLogin GetUserLogin(string userName)
         {
             var acc = _db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
@@ -214,39 +219,102 @@ namespace KGQT.Business
             return null;
         }
 
+        #endregion
+
+        #region Register Account
         public static DataReturnModel RegisterAccount(SignUpModel data)
         {
             var result = new DataReturnModel() { IsError = false, Message = "" };
             try
             {
-                var exist = _db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
-                if (exist != null)
+                var regexUserName = new Regex("^[a-zA-Z0-9 ]*$");
+                var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+                var regexPhone = new Regex(@"^[0-9]{8,20}$");
+
+                if (!regexUserName.IsMatch(data.UserName) || PJUtils.CheckUnicode(data.UserName))
                 {
                     result.IsError = true;
-                    result.Message = "Tên tài khoản đã được sử dụng";
+                    result.Key = "UserName";
+                    result.Type = 1;
+                    result.Message = "Tài khoản không chứa ký tự đặc biệt.";
                     return result;
                 }
-                var pass = PJUtils.Encrypt("userpass", data.PassWord);
+                if (!regexUserName.IsMatch(data.PassWord) || PJUtils.CheckUnicode(data.PassWord))
+                {
+                    result.IsError = true;
+                    result.Key = "PassWord";
+                    result.Type = 1;
+                    result.Message = "Mật khẩu không chứa ký tự đặc biệt.";
+                    return result;
+                }
+                if (data.UserName.Contains(" "))
+                {
+                    result.IsError = true;
+                    result.Key = "UserName";
+                    result.Type = 1;
+                    result.Message = "Tài khoản không chứa khoảng trắng.";
+                    return result;
+                }
+                if (data.PassWord.Contains(" "))
+                {
+                    result.IsError = true;
+                    result.Key = "PassWord";
+                    result.Type = 1;
+                    result.Message = "Mật khẩu không chứa khoảng trắng.";
+                    return result;
+                }
+                if (!regexEmail.IsMatch(data.Email))
+                {
+                    result.IsError = true;
+                    result.Key = "Email";
+                    result.Type = 1;
+                    result.Message = "Địa chỉ email không hợp lệ.";
+                    return result;
+                }
+                if(!regexPhone.IsMatch(data.Phone))
+                {
+                    result.IsError = true;
+                    result.Key = "Phone";
+                    result.Type = 1;
+                    result.Message = "Số điện thoại không hợp lệ.";
+                    return result;
+                }
+
+                var isUserName = _db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
+                var isEmail = _db.tbl_Accounts.FirstOrDefault(x => x.Email == data.Email);
+                if (isUserName != null)
+                {
+                    result.IsError = true;
+                    result.Key = "UserName";
+                    result.Type = 1;
+                    result.Message = "Tên tài khoản đã được sử dụng.";
+                    return result;
+                }
+                if (isEmail != null)
+                {
+                    result.IsError = true;
+                    result.Key = "Email";
+                    result.Type = 1;
+                    result.Message = "Địa chỉ email đã được sử dụng.";
+                    return result;
+                }
+
                 var acc = new tbl_Account()
                 {
                     Username = data.UserName,
-                    Password = pass,
+                    Password = PJUtils.Encrypt("userpass", data.PassWord),
                     Email = data.Email,
-                    RoleID = data.RoleID,
-                    UserLevel = data.UserLevel,
-                    Status = data.Status,
                     Wallet = 0,
                     CreatedDate = DateTime.Now,
-                    CreatedBy = data.UserName,
+                    CreatedBy = data.UserName
                 };
                 _db.Add(acc);
-                int kq = _db.SaveChanges();
-                if (kq > 0)
+                int kq1 = _db.SaveChanges();
+                if (kq1 > 0)
                 {
                     if (data.File != null)
                     {
-                        var helper = new Helper();
-                        var bytes = helper.ResizeImage(data.File);
+                        var bytes = PJUtils.ResizeImage(data.File);
                         string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
                         string path = Path.Combine(data.Path, fileName);
                         File.WriteAllBytes(path, bytes);
@@ -271,25 +339,40 @@ namespace KGQT.Business
                     if (kq2 > 0)
                     {
                         result.IsError = false;
-                        result.Message = "Tạo tài khoản thành công";
+                        result.Type = 2;
+                        result.Message = "Tạo tài khoản thành công!";
                         result.Data = acc;
                         return result;
                     }
                     _db.tbl_Accounts.Remove(acc);
                     _db.SaveChanges();
                 }
+
                 result.IsError = true;
-                result.Message = "Tạo tài khoản không thành công!";
+                result.Type = 2;
+                result.Message = "Tạo tài khoản không thành công.";
                 return result;
             }
             catch (Exception ex)
             {
                 result.IsError = true;
-                result.Message = "Tạo tài khoản không thành công!";
+                result.Type = 2;
+                result.Message = "Tạo tài khoản không thành công.";
                 return result;
             }
-            
+
         }
+
+        #endregion
+
+        #region Forgot Password
+        public static DataReturnModel ForgotPassword(ForgotPasswordModel data)
+        {
+            DataReturnModel result = new DataReturnModel();
+
+            return result;
+        }
+        #endregion
 
     }
 }

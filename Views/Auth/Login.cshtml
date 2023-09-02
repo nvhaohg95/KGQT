@@ -5,19 +5,22 @@
 }
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#show_password').hover(function show() {
-            //Change the attribute to text
-            $('#txtPassword').attr('type', 'text');
-            $('.icon').removeClass('fa fa-eye-slash').addClass('fa fa-eye');
-        },
-            function () {
-                //Change the attribute back to password
-                $('#txtPassword').attr('type', 'password');
-                $('.icon').removeClass('fa fa-eye').addClass('fa fa-eye-slash');
-            });
         //CheckBox Show Password
-        $('#ShowPassword').click(function () {
-            $('#Password').attr('type', $(this).is(':checked') ? 'text' : 'password');
+        $('#show_password').click(function () {
+            debugger
+            let _input = $('#txtPassword');
+            let _icon = $('#icon');
+            if (_icon.hasClass('fa fa-eye-slash')) {
+                _icon.removeClass('fa fa-eye-slash');
+                _icon.addClass('fa fa-eye');
+                _input.attr('type','text');
+            }
+            else
+            {
+                _icon.removeClass('fa fa-eye');
+                _icon.addClass('fa fa-eye-slash');
+                _input.attr('type', 'password');
+            }
         });
     });
 </script>
@@ -39,23 +42,29 @@
                                         @Html.AntiForgeryToken()
                                         <div class="form-group">
                                             @Html.LabelFor(model => model.UserName,"Tài khoản")
-                                            @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus" })
+                                            @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus", @id="txtUserName"})
                                             @Html.ValidationMessageFor(model => model.UserName,"",new { @class="text-danger" })
                                         </div>
                                         <div class="form-group">
                                             @Html.LabelFor(model => model.Password,"Mật khẩu")
-                                            @Html.TextBoxFor(model => model.Password, new { @class="form-control form-control-user", @placeholder="Mật khẩu", @type="password" })
+                                            <div class="position-relative">
+                                                @Html.TextBoxFor(model => model.Password, new { @class="form-control form-control-user", @placeholder="Mật khẩu", @type="password", @id="txtPassword"})
+                                                <span class="pass_icon cursor-pointer" id="show_password">
+                                                    <i class="fa fa-eye-slash" id="icon"></i>
+                                                </span>
+                                            </div>
                                             @Html.ValidationMessageFor(model => model.Password,"",new { @class="text-danger" })
+                                           
                                         </div>
                                         @Html.ValidationMessage("error",new{ @class="text-danger" })
-                                        <button type="submit" class="btn btn-primary btn-user btn-block btn-login">Login</button>
+                                        <button type="submit" class="btn btn-primary btn-user btn-block btn-login cursor-pointer">Đăng nhập</button>
                                     }
                                     <hr />
                                     <div class="text-center">
-                                        <a class="small" href="forgot-password">Quên mật khẩu</a>
+                                        <a class="small cursor-pointer" href="forgotpassword">Quên mật khẩu</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register">Đăng ký tài khoản</a>
+                                        <a class="small cursor-pointer" href="register">Đăng ký tài khoản</a>
                                     </div>
                                 </div>
                             </div>
