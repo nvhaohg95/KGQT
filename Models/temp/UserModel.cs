@@ -9,21 +9,33 @@ namespace KGQT.Models.temp
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
-        public string Password { get; set; }
-
+        public string PassWord { get; set; }
     }
-    public class ForgotPasswordModel : UserModel
+
+    public class ForgotPassWord : UserModel
     {
-        [Required(ErrorMessage = "Vui lòng xác nhận lại mật khẩu")]
-        public string ConfirmPassword { get; set; }
-        
-        [Required(ErrorMessage = "Vui lòng nhập địa chỉ email")]
-        [EmailAddress]
+        [Required(ErrorMessage = "Địa chỉ email không được bỏ trống")]
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
+        public string ConfirmPassword { get; set; }
+
     }
 
+    public class ChangePassword
+    {
+        [Required(ErrorMessage = "Tên đăng nhập không được bỏ trống")]
+        public string UserName { get; set; }
 
+        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
+        public string OldPassword { get; set; }
+
+        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
+        public string NewPassword { get; set; }
+
+        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
+        public string ConfirmPassword { get; set; }
+    }
     public class Jwt
     {
         public string key { get; set; }
@@ -46,7 +58,7 @@ namespace KGQT.Models.temp
         public string? Longitude { get; set; }
         public int? Gender { get; set; }
         public DateTime? BirthDay { get; set; }
-        public string? Username { get; set; }
+        public string Username { get; set; }
         public string? Email { get; set; }
         public int? RoleID { get; set; }
         public int? UserLevel { get; set; }
@@ -76,30 +88,32 @@ namespace KGQT.Models.temp
 
     public class SignUpModel
     {
-        [Required(ErrorMessage = "Vui lòng nhập tài khoản")]
+        [Required(ErrorMessage = "Tài khoản không được bỏ trống")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
+        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
         public string PassWord { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập họ")]
+        [Required(ErrorMessage = "Họ không được bỏ trống")]
         public string FirstName { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập tên")]
+        [Required(ErrorMessage = "Tên không được bỏ trống")]
         public string LastName { get; set; }
 
         public DateTime? BirthDay { get; set; }
 
-        [Range(1, 2, ErrorMessage = "Vui lòng nhập giới tính")]
+        [Range(1, 2, ErrorMessage = "Vui lòng chọn giới tính")]
         public int Gender { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [Required(ErrorMessage = "Số điện thoại không được bỏ trống")]
         [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
         public string Phone { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập địa chỉ Email")]
-        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [Required(ErrorMessage = "Địa chỉ Email không được bỏ trống")]
+        [EmailAddress(ErrorMessage = "Địa chỉ Email không hợp lệ")]
         public string Email { get; set; }
+
+        [Required(ErrorMessage = "Địa chỉ không được bỏ trống")]
         public string Address { get; set; }
         public string? MobilePhonePrefix { get; set; }
         public string? MobilePhone { get; set; }

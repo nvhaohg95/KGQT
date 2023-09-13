@@ -5,7 +5,6 @@
     Layout = "~/Views/Shared/_PartialView.cshtml";
 }
 <script>
-
     function clickUploadAvatar() {
         document.getElementById("input_uploader")?.click();
     }
@@ -26,11 +25,11 @@
 </script>
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="col-xl-9 col-lg-11 col-md-8">
             <div class="card o-hidden border-0 shadow-lg my-5">
                 <div class="card-body p-0">
                     <div class="row justify-content-center">
-                        <div class="col-lg-9">
+                        <div class="col-lg-10">
                             <div class="p-5">
                                 <div class="text-center">
                                     <h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng ký tài khoản</h1>
@@ -45,7 +44,7 @@
                                         </div>
                                         <div class="text-center mt-2">
                                             <div class="form-check-inline">
-                                                <span class="fw-bold">Giới tính</span>
+                                                <span class="fw-bold mr-2">Giới tính</span>
                                                 <span class="text-danger">(*)</span>
                                             </div>
                                             <div class="form-check-inline">
@@ -104,8 +103,10 @@
                                     <div class="form-group col-12">
                                         <div>
                                             <span class="fw-bold">Địa chỉ</span>
+                                            <span class="text-danger">(*)</span>
                                         </div>
                                         @Html.TextBoxFor(model => model.Address,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Địa chỉ"})
+                                        @Html.ValidationMessageFor(model => model.Address,"",new { @class="text-danger" })
                                     </div>
                                     <div class="form-group col-6">
                                         <div>
@@ -125,8 +126,10 @@
                                     </div>
 
                                     @Html.ValidationMessage("error",new { @class="text-danger" })
-                                    <div class="form-group col-12">
-                                        <button type="submit" class="btn btn-warning btn-user btn-block">Đăng ký</button>
+                                    <div class="form-group col-12 mb-0">
+                                        <div class="row justify-content-center">
+                                            <button type="submit" class="btn btn-warning btn-user btn-block col-6">Đăng ký</button>
+                                        </div>
                                     </div>
                                 }
                                 <hr />

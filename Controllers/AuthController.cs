@@ -2,15 +2,11 @@
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NToastNotify;
-using System.Buffers.Text;
-using System.Drawing;
-using System.Reflection.Metadata.Ecma335;
-using static System.Net.Mime.MediaTypeNames;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace KGQT.Controllers
@@ -18,17 +14,15 @@ namespace KGQT.Controllers
  
     public class AuthController : Controller
     {
-        private IConfiguration _configuration;
-        private nhanshiphangContext _db;
         private IToastNotification _toastNotification;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private MailSettings _mailSettings;
 
-        public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment)
+        public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment, IOptions<MailSettings> mailSettings)
         {
-            _configuration = configuration;
-            _db = new nhanshiphangContext();
             _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
+            _mailSettings = mailSettings.Value;
         }
 
 
@@ -41,21 +35,17 @@ namespace KGQT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(UserModel model)
+        public ActionResult Login(UserModel data)
         {
-            if (ModelState.IsValid)
+            var result = Accounts.Login(data.UserName, data.PassWord);
+            if (result.IsError)
             {
-                var result = Accounts.Login(model.UserName, model.Password);
-                if (result.IsError)
-                {
-                    ModelState.AddModelError(result.Key, result.Message);
-                    return View();
-                }
-                HttpContext.Session.SetString("user", model.UserName);
-                HttpContext.Session.SetString("US_LOGIN",JsonConvert.SerializeObject(result.Data));
-                return RedirectToAction("dashboard", "home");
+                ModelState.AddModelError(result.Key, result.Message);
+                return View(data);
             }
-            return View();
+            HttpContext.Session.SetString("user", data.UserName);
+            HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
+            return RedirectToAction("dashboard", "home");
         }
         #endregion
 
@@ -103,19 +93,80 @@ namespace KGQT.Controllers
 
         #region Forgot Pasword
         [HttpGet]
-        public ActionResult ForgotPassword()
+        public ActionResult ForgotPassword(string id,string tk)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                string userName = Helper.Base64Decode(id);
+                string token = Helper.Base64Decode(tk);
+                var acc = Accounts.GetByUsernameAndToken(userName, token);
+                if(acc != null)
+                {
+                    var data = new ForgotPassWord();
+                    data.UserName = acc.Username;
+                    data.Email = acc.Email;
+                    return View(data);
+                }
+            } 
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ForgotPassword(ForgotPassWord data)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = Accounts.ForgotPassword(data);
+                if (result.IsError)
+                {
+                    if (result.Type == 1)
+                        ModelState.AddModelError(result.Key, result.Message);
+                    else
+                        _toastNotification.AddWarningToastMessage(result.Message);
+                    return View();
+                }
+                _toastNotification.AddSuccessToastMessage(result.Message);
+                return Redirect("login");
+            }
+            return View();
+        }
+        #endregion
+
+        #region Send Mail Forget Password
+        [HttpGet]
+        public ActionResult SendMailForgetPassword()
         {
             return View();
         }
 
         [HttpPost]
-        public ActionResult ForgotPassword(ForgotPasswordModel data)
+        public async Task<ActionResult> SendMailForgetPassword(string email)
         {
-            if (ModelState.IsValid)
+            var result = await Accounts.SendMailForgetPassword(_mailSettings, email);
+            if (result.IsError)
             {
-                return Redirect("login");
+                if (result.Type == 1)
+                {
+                    ModelState.AddModelError("error", result.Message);
+                }
+                else
+                {
+                    _toastNotification.AddInfoToastMessage(result.Message);
+                }
+                return View();
             }
-            return View();
+            else
+            {
+                _toastNotification.AddSuccessToastMessage(result.Message);
+                return Redirect("sendMailForgetPassword");
+            }
+        }
+        #endregion
+
+        #region Unites
+        public async Task<ActionResult> Test()
+        {
+            return Ok("TEST");
         }
         #endregion
     }

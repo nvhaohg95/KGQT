@@ -16,39 +16,62 @@ namespace KGQT.Business
         public static DataReturnModel Login(string userName, string password)
         {
             var dtReturn = new DataReturnModel();
-            var acc = _db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
-            if (acc != null)
+            if (string.IsNullOrEmpty(userName))
             {
-                password = PJUtils.Encrypt("userpass", password);
-                if (acc.Password == password)
+                dtReturn.IsError = true;
+                dtReturn.Type = 1;
+                dtReturn.Key = "UserName";
+                dtReturn.Message = "Vui lòng nhập tên tài khoản";
+                return dtReturn;
+            }
+            if (string.IsNullOrEmpty(password))
+            {
+                dtReturn.IsError = true;
+                dtReturn.Type = 1;
+                dtReturn.Key = "PassWord";
+                dtReturn.Message = "Vui lòng nhập mật khẩu";
+                return dtReturn;
+            }
+            using (var db = new nhanshiphangContext())
+            {
+
+                var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
+                if (acc != null)
                 {
-                    dtReturn.IsError = false;
-                    dtReturn.Data = GetFullInfo(acc, 0, "");
-                    return dtReturn;
+                    password = PJUtils.Encrypt("userpass", password);
+                    if (acc.Password == password)
+                    {
+                        dtReturn.IsError = false;
+                        dtReturn.Data = GetFullInfo(acc, 0, "");
+                        return dtReturn;
+                    }
+                    else
+                    {
+                        dtReturn.IsError = true;
+                        dtReturn.Type = 1;
+                        dtReturn.Key = "PassWord";
+                        dtReturn.Message = Messages.PasswordNotCorrect;
+                        return dtReturn;
+                    }
+
                 }
                 else
                 {
                     dtReturn.IsError = true;
-                    dtReturn.Key = "Password";
                     dtReturn.Type = 1;
-                    dtReturn.Message = Messages.PasswordNotCorrect;
+                    dtReturn.Key = "UserName";
+                    dtReturn.Message = Messages.CannotFindUser;
                     return dtReturn;
                 }
-            }
-            else
-            {
-                dtReturn.IsError = true;
-                dtReturn.Key = "Username";
-                dtReturn.Type = 1;
-                dtReturn.Message = Messages.CannotFindUser;
-                return dtReturn;
             }
         }
 
         public static tbl_Account GetByUserName(string Username)
         {
-            tbl_Account acc = _db.tbl_Accounts.Where(a => a.Username == Username).FirstOrDefault();
-            return acc;
+            using (var db = new nhanshiphangContext())
+            {
+                return db.tbl_Accounts.Where(a => a.Username == Username).FirstOrDefault();
+            }
         }
 
         public static tbl_Account GetByID(int ID)
@@ -121,20 +144,6 @@ namespace KGQT.Business
         #endregion
 
         #region CRUD
-
-        public static string ChangePassword(int ID, string password)
-        {
-            var a = _db.tbl_Accounts.FirstOrDefault(ac => ac.ID == ID);
-            if (a != null)
-            {
-                a.Password = PJUtils.Encrypt("userpass", password);
-                _db.Update(a);
-                int kq = _db.SaveChanges();
-                return kq.ToString();
-            }
-            return null;
-        }
-
         public static string UpdateIsActive(int ID, bool IsActive, string Email)
         {
             var a = _db.tbl_Accounts.FirstOrDefault(ac => ac.ID == ID);
@@ -227,11 +236,11 @@ namespace KGQT.Business
             var result = new DataReturnModel() { IsError = false, Message = "" };
             try
             {
-                var regexUserName = new Regex("^[a-zA-Z0-9 ]*$");
+                var regex = new Regex("^[a-zA-Z0-9 ]*$");
                 var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 var regexPhone = new Regex(@"^[0-9]{8,20}$");
 
-                if (!regexUserName.IsMatch(data.UserName) || PJUtils.CheckUnicode(data.UserName))
+                if (!regex.IsMatch(data.UserName) || PJUtils.CheckUnicode(data.UserName))
                 {
                     result.IsError = true;
                     result.Key = "UserName";
@@ -239,7 +248,7 @@ namespace KGQT.Business
                     result.Message = "Tài khoản không chứa ký tự đặc biệt.";
                     return result;
                 }
-                if (!regexUserName.IsMatch(data.PassWord) || PJUtils.CheckUnicode(data.PassWord))
+                if (!regex.IsMatch(data.PassWord) || PJUtils.CheckUnicode(data.PassWord))
                 {
                     result.IsError = true;
                     result.Key = "PassWord";
@@ -271,7 +280,7 @@ namespace KGQT.Business
                     result.Message = "Địa chỉ email không hợp lệ.";
                     return result;
                 }
-                if(!regexPhone.IsMatch(data.Phone))
+                if (!regexPhone.IsMatch(data.Phone))
                 {
                     result.IsError = true;
                     result.Key = "Phone";
@@ -314,7 +323,7 @@ namespace KGQT.Business
                 {
                     if (data.File != null)
                     {
-                        var bytes = PJUtils.ResizeImage(data.File);
+                        var bytes = FileService.ResizeImage(data.File);
                         string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
                         string path = Path.Combine(data.Path, fileName);
                         File.WriteAllBytes(path, bytes);
@@ -344,7 +353,7 @@ namespace KGQT.Business
                         result.Data = acc;
                         return result;
                     }
-                    _db.tbl_Accounts.Remove(acc);
+                    _db.Remove(acc);
                     _db.SaveChanges();
                 }
 
@@ -365,11 +374,208 @@ namespace KGQT.Business
 
         #endregion
 
-        #region Forgot Password
-        public static DataReturnModel ForgotPassword(ForgotPasswordModel data)
+        #region Send Mail Forget Password
+        public static async Task<DataReturnModel> SendMailForgetPassword(MailSettings mailSetting, string email)
         {
             DataReturnModel result = new DataReturnModel();
+            try
+            {
+                if (string.IsNullOrEmpty(email))
+                {
+                    result.IsError = true;
+                    result.Type = 1;
+                    result.Message = "Vui lòng nhập địa chỉ email.";
+                    return result;
+                }
+                var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+                if (!regexEmail.IsMatch(email))
+                {
+                    result.IsError = true;
+                    result.Type = 1;
+                    result.Message = "Địa chỉ email không hợp lệ.";
+                    return result;
+                }
+                var acc = _db.tbl_Accounts.FirstOrDefault(x => x.Email == email);
+                if (acc != null)
+                {
+                    acc.Token = Guid.NewGuid().ToString();
+                    _db.Update(acc);
+                    var accInfo = _db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                    var name = "";
+                    string link = "https://localhost:44330/auth/forgotpassword?id=&tk=";
+                    if (accInfo != null)
+                    {
+                        name = accInfo.FirstName + " " + accInfo.LastName;
+                    }
+                    string id = Helper.Base64Encode(acc.Username);
+                    string token = Helper.Base64Encode(acc.Token);
+                    link = $"https://localhost:44330/auth/forgotpassword?id={id}&tk={token}";
+                    string subject = "YÊU CẦU CẤP PHÁT LẠI MẬT KHẨU";
+                    string body = "<div>Xin chào <b>{0}</b>.</div><br><div>Yêu cầu cấp phát lại mật khẩu của bạn đã được xác nhận, vui lòng truy cập đường link bên dưới để tiếp tục thay đổi mật khẩu của bạn. <span><a href='{1}'>link</a></span></div><div></div><br><div>Cám ơn.</div>";
 
+                    body = string.Format(body, name, link);
+                    //send mail
+                    var status = await MailService.SendMailAsync(mailSetting, email, subject, body);
+                    if (status)
+                    {
+                        result.IsError = false;
+                        result.Type = 2;
+                        result.Message = "Yêu cầu của bạn đã được gửi đi.Vui lòng kiểm tra email!";
+                        _db.SaveChanges();
+                        return result;
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Type = 2;
+                        result.Message = "Hệ thống gửi mail đang cập nhật, vui lòng thử lại sau.";
+                        return result;
+                    }
+                }
+                else
+                {
+                    result.IsError = true;
+                    result.Type = 2;
+                    result.Message = "Email này chưa đăng ký. Vui lòng kiểm tra lại!";
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsError = true;
+                result.Type = 2;
+                result.Message = "Hệ thống gửi mail đang cập nhật, vui lòng thử lại sau.";
+                return result;
+            }
+
+        }
+        #endregion
+
+        #region Get Account by Username & Token
+        public static tbl_Account GetByUsernameAndToken(string userName, string token)
+        {
+            return _db.tbl_Accounts.FirstOrDefault(x => x.Username == userName && x.Token == token);
+        }
+        #endregion
+
+        #region Forgot Password
+        public static DataReturnModel ForgotPassword(ForgotPassWord data)
+        {
+            DataReturnModel result = new DataReturnModel();
+            var regex = new Regex("^[a-zA-Z0-9 ]*$");
+
+            if (string.IsNullOrEmpty(data.PassWord))
+            {
+                result.IsError = true;
+                result.Type = 1;
+                result.Key = "PassWord";
+                result.Message = "Vui lòng nhập mật khẩu";
+                return result;
+            }
+            if (string.IsNullOrEmpty(data.ConfirmPassword))
+            {
+                result.IsError = true;
+                result.Type = 1;
+                result.Key = "ConfirmPassword";
+                result.Message = "Vui lòng nhập mật khẩu";
+                return result;
+            }
+            if (!regex.IsMatch(data.PassWord) || PJUtils.CheckUnicode(data.PassWord))
+            {
+                result.IsError = true;
+                result.Key = "PassWord";
+                result.Type = 1;
+                result.Message = "Mật khẩu không chứa ký tự đặc biệt";
+                return result;
+            }
+            if (!regex.IsMatch(data.ConfirmPassword) || PJUtils.CheckUnicode(data.ConfirmPassword))
+            {
+                result.IsError = true;
+                result.Key = "PassWord";
+                result.Type = 1;
+                result.Message = "Mật khẩu không chứa ký tự đặc biệt";
+                return result;
+            }
+            if (data.ConfirmPassword != data.PassWord)
+            {
+                result.IsError = true;
+                result.Type = 1;
+                result.Key = "ConfirmPassword";
+                result.Message = "Mật khẩu không chính xác";
+                return result;
+            }
+            var acc = _db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
+            if (acc != null)
+            {
+                acc.Password = PJUtils.Encrypt("userpass", data.PassWord);
+                acc.Token = null;
+                acc.ModifiedBy = acc.Username;
+                acc.ModifiedDate = DateTime.Now;
+                _db.Update(acc);
+                _db.SaveChanges();
+
+                result.IsError = false;
+                result.Type = 2;
+                result.Message = "Cập nhật mật khẩu thành công!";
+                return result;
+            }
+            result.IsError = true;
+            result.Type = 2;
+            result.Message = "Không tìm thấy thông tin tài khoản.";
+            return result;
+        }
+        #endregion
+
+        #region Change Password
+        public static DataReturnModel ChangePassword(ChangePassword data)
+        {
+            var result = new DataReturnModel();
+
+            if (data.ConfirmPassword != data.NewPassword)
+            {
+                result.IsError = true;
+                result.Type = 1;
+                result.Key = "ConfirmPassword";
+                result.Message = "Mật khẩu không trùng khớp";
+                return result;
+            }
+            var acc = _db.tbl_Accounts.FirstOrDefault(ac => ac.Username == data.UserName);
+            if (acc != null)
+            {
+                string oldPassword = PJUtils.Encrypt("userpass", data.OldPassword);
+                if (acc.Password == oldPassword)
+                {
+                    acc.Password = PJUtils.Encrypt("userpass", data.NewPassword);
+                    _db.Update(acc);
+                    int kq = _db.SaveChanges();
+                    if (kq > 0)
+                    {
+                        result.IsError = false;
+                        result.Type = 2;
+                        result.Message = "Cập nhật thành công!";
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Type = 2;
+                        result.Message = "Cập nhật không thành công";
+                    }
+                }
+                else
+                {
+                    result.IsError = true;
+                    result.Type = 1;
+                    result.Key = "OldPassword";
+                    result.Message = "Mật khẩu không chính xác";
+                    return result;
+                }
+            }
+            else
+            {
+                result.IsError = true;
+                result.Type = 2;
+                result.Message = "Cập nhật không thành công";
+            }
             return result;
         }
         #endregion

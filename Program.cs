@@ -1,8 +1,10 @@
 
 using KGQT.Models;
+using KGQT.Models.temp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using NToastNotify;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,7 @@ builder.Services.AddDbContext<nhanshiphangContext>(o =>
 {
     o.UseSqlServer(builder.Configuration.GetConnectionString("KGQT"));
 });
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 // NToastNotify
 builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
 {
