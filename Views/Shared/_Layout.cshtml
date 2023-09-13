@@ -1,7 +1,8 @@
 ﻿@using KGQT.Models.temp;
-@model UserLogin
+@{
+    UserLogin user = ViewData["User"] as UserLogin;
+}
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta charset="utf-8">
@@ -19,7 +20,7 @@
           rel="stylesheet">
 </head>
 
-<body id="page-top">
+<body id="page-top" class="sb-nav-fixed">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -364,9 +365,23 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">@(Model != null ? Model.Username:"")</span>
-                                <img class="img-profile rounded-circle"
-                                     src="@(!string.IsNullOrEmpty(Model.IMG) ? Model.IMG : "/img/undraw_profile.svg" )">
+                                @{
+                                    if (user != null)
+                                    {
+                                        <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">
+                                            @string.Concat(user.FirstName," ",user.LastName)
+                                        </span>
+                                        <img class="img-profile rounded-circle"
+                                             src="@user.IMG">
+                                    }
+                                    else
+                                    {
+                                        <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold"></span>
+                                        <img class="img-profile rounded-circle"
+                                             src="/img/undraw_profile.svg">
+                                    }
+                                }
+                                
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -374,6 +389,11 @@
                                 <a class="dropdown-item">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Thông tin tài khoản
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="changepassword">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Đổi mật khẩu
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="@Url.ActionLink("logout","auth")">
@@ -389,13 +409,8 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <div>
-                        @RenderBody()
-                    </div>
-
-                </div>
+                
+                @RenderBody()
                 <!-- /.container-fluid -->
 
             </div>
@@ -431,6 +446,9 @@
     @*<script src="/js/demo/chart-area-demo.js"></script>
     <script src="/js/demo/chart-pie-demo.js"></script>*@
 
+    <!-- NToastNotify  -->
+    @await RenderSectionAsync("Scripts", required: false)
+    @await Component.InvokeAsync("NToastNotify")
 </body>
 
 </html>

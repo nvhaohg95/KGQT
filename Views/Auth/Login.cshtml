@@ -5,9 +5,8 @@
 }
 <script type="text/javascript">
     $(document).ready(function () {
-        //CheckBox Show Password
+        //Check Show/Hide Password
         $('#show_password').click(function () {
-            debugger
             let _input = $('#txtPassword');
             let _icon = $('#icon');
             if (_icon.hasClass('fa fa-eye-slash')) {
@@ -24,57 +23,54 @@
         });
     });
 </script>
-<div class="vh-100">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-xl-10 col-lg-12 col-md-9">
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-4 d-none d-lg-block bg-login-image"></div>
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng nhập</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10 col-md-8">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <div class="row justify-content-center px-4">
+                        <div class="col-lg-5 d-none d-lg-block bg-login-image"></div>
+                        <div class="col-lg-7">
+                            <div class="p-5">
+                                <div class="text-center">
+                                    <h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng nhập</h1>
+                                </div>
+                                @using (Html.BeginForm(FormMethod.Post, new { @class = "user" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.UserName,"Tài khoản")
+                                        @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus" })
+                                        @Html.ValidationMessageFor(model => model.UserName,"",new { @class="text-danger" })
                                     </div>
-                                    @using (Html.BeginForm(FormMethod.Post, new { @class = "user" }))
-                                    {
-                                        @Html.AntiForgeryToken()
-                                        <div class="form-group">
-                                            @Html.LabelFor(model => model.UserName,"Tài khoản")
-                                            @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus", @id="txtUserName"})
-                                            @Html.ValidationMessageFor(model => model.UserName,"",new { @class="text-danger" })
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PassWord,"Mật khẩu")
+                                        <div class="position-relative">
+                                            @Html.TextBoxFor(model => model.PassWord, new { @class="form-control form-control-user", @placeholder="Mật khẩu", @type="password", @id="txtPassword"})
+                                            <span class="pass_icon cursor-pointer" id="show_password">
+                                                <i class="fa fa-eye-slash" id="icon"></i>
+                                            </span>
                                         </div>
-                                        <div class="form-group">
-                                            @Html.LabelFor(model => model.Password,"Mật khẩu")
-                                            <div class="position-relative">
-                                                @Html.TextBoxFor(model => model.Password, new { @class="form-control form-control-user", @placeholder="Mật khẩu", @type="password", @id="txtPassword"})
-                                                <span class="pass_icon cursor-pointer" id="show_password">
-                                                    <i class="fa fa-eye-slash" id="icon"></i>
-                                                </span>
-                                            </div>
-                                            @Html.ValidationMessageFor(model => model.Password,"",new { @class="text-danger" })
-                                           
-                                        </div>
-                                        @Html.ValidationMessage("error",new{ @class="text-danger" })
-                                        <button type="submit" class="btn btn-primary btn-user btn-block btn-login cursor-pointer">Đăng nhập</button>
-                                    }
-                                    <hr />
-                                    <div class="text-center">
-                                        <a class="small cursor-pointer" href="forgotpassword">Quên mật khẩu</a>
+                                        @Html.ValidationMessageFor(model => model.PassWord,"",new { @class="text-danger" })
                                     </div>
-                                    <div class="text-center">
-                                        <a class="small cursor-pointer" href="register">Đăng ký tài khoản</a>
-                                    </div>
+                                    @Html.ValidationMessage("error",new{ @class="text-danger" })
+                                    <button type="submit" class="btn btn-primary btn-user btn-block btn-login">Login</button>
+                                }
+                                <hr />
+                                <div class="text-center">
+                                    <a class="small cursor-pointer" href="sendMailForgetPassword">Quên mật khẩu</a>
+                                </div>
+                                <div class="text-center">
+                                    <a class="small cursor-pointer" href="register">Đăng ký tài khoản</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </div>
+
     </div>
 </div>
 
