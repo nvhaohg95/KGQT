@@ -8,8 +8,7 @@ namespace KGQT.Models
         public int ID { get; set; }
         public string? PackageCode { get; set; }
         public string? PackageOrderHangCode { get; set; }
-        public int? OrderShopID { get; set; }
-        public string? OrderShopCode { get; set; }
+        public int? ShippingOrderID { get; set; }
         public string? ShippingCode { get; set; }
         public string? Barcode { get; set; }
         public string? BarCodeIMG { get; set; }
@@ -55,5 +54,10 @@ namespace KGQT.Models
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
+        public int? SearchBaiduTimes { get; set; }
+        public int? SearchBaiduTimesEdit { get; set; }
+        public DateTime? DateExpectation { get; set; }
+        public DateTime? DateExpectationEdit { get; set; }
+        public int? BigPackageID { get; set; }
     }
 }

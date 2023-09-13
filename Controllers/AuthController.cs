@@ -5,6 +5,7 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 using NToastNotify;
 using System.Buffers.Text;
 using System.Drawing;
@@ -18,14 +19,14 @@ namespace KGQT.Controllers
     public class AuthController : Controller
     {
         private IConfiguration _configuration;
-        private KGNewContext _db;
+        private nhanshiphangContext _db;
         private IToastNotification _toastNotification;
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
-            _db = new KGNewContext();
+            _db = new nhanshiphangContext();
             _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
         }
@@ -51,6 +52,7 @@ namespace KGQT.Controllers
                     return View();
                 }
                 HttpContext.Session.SetString("user", model.UserName);
+                HttpContext.Session.SetString("US_LOGIN",JsonConvert.SerializeObject(result.Data));
                 return RedirectToAction("dashboard", "home");
             }
             return View();

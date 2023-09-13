@@ -10,7 +10,7 @@ namespace KGQT.Business
     public class Accounts : BusinessBase
     {
 
-        protected static KGNewContext _db = new KGNewContext();
+        protected static nhanshiphangContext _db = new nhanshiphangContext();
 
         #region Select
         public static DataReturnModel Login(string userName, string password)

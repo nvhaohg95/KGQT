@@ -16,7 +16,7 @@ builder.Services.AddSession();
 builder.Services.AddMvc().AddSessionStateTempDataProvider();
 builder.Services.AddCors(o=>o.AddDefaultPolicy(policy=>policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<KGNewContext>(o =>
+builder.Services.AddDbContext<nhanshiphangContext>(o =>
 {
     o.UseSqlServer(builder.Configuration.GetConnectionString("KGQT"));
 });
