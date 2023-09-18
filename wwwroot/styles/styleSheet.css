@@ -140,8 +140,8 @@ w-100px {
 }
 
 /*--------------------------------------------------------*/
-    @media (min-width: 768px) {
-        .sidebar {
+@media (min-width: 768px) {
+    .sidebar {
             width: 20rem !important;
         }
 

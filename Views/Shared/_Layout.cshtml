@@ -11,7 +11,7 @@
             Context.Response.Redirect("/auth/login");
     }
     else
-      Context.Response.Redirect("/auth/login");
+        Context.Response.Redirect("/auth/login");
 }
 <!DOCTYPE html>
 <html>
@@ -25,6 +25,7 @@
     <!-- Custom fonts for this template-->
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
+    <link href="~/styles/custom.css" rel="stylesheet" type="text/css">
     <link href="~/vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
 
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -382,7 +383,7 @@
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @{
                                     if (acc != null)
                                     {
@@ -390,7 +391,7 @@
                                             @string.Concat(acc.FirstName," ",acc.LastName)
                                         </span>
                                         <img class="img-profile rounded-circle"
-                                        src="@(!string.IsNullOrEmpty( acc.IMG) ? acc.IMG : "/img/undraw_profile.svg")">
+                                             src="@(!string.IsNullOrEmpty( acc.IMG) ? acc.IMG : "/img/undraw_profile.svg")">
                                     }
                                     else
                                     {
@@ -399,7 +400,7 @@
                                              src="/img/undraw_profile.svg">
                                     }
                                 }
-                                
+
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -426,10 +427,10 @@
                 </nav>
                 <!-- End of Topbar -->
                 <!-- Begin Page Content -->
-                
-                @RenderBody()
-                <!-- /.container-fluid -->
-
+                <div class="container-fluid">
+                    @RenderBody()
+                    <!-- /.container-fluid -->
+                </div>
             </div>
             <!-- End of Main Content -->
 

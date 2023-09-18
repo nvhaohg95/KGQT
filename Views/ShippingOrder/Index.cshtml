@@ -1,82 +1,92 @@
 ﻿@model List<KGQT.Models.tbl_ShippingOrder>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using KGQT.Models
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="/">Trang chủ</a></li>
+    <li><a>danh sách ký gửi</a></li>
+</ul>
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="text-danger">Danh sách ký gửi</h1>
+    </div>
+  <div class="col-md-12 table-responsive">
+        <p>
+            <a class="btn btn-sm btn-success" asp-action="Create">Thêm mới</a>
+        </p>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        ShippingOrderCode
+                    </th>
+                    <th>
+                        ShippingMethodName
+                    </th>
+                    <th>
+                        Services
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        PaymentMethodName
+                    </th>
+                    <th>
+                        TotalPrice
+                    </th>
+                    <th>
+                        Details
+                    </th>
+                    <th>
+                        Username
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ShippingMethodName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsInsurancePrice)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PaymentMethodName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TotalPrice)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Username)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                ShippingOrderCode
-            </th>
-            <th>
-                ShippingMethodName
-            </th>
-            <th>
-                Services
-            </th>
-            <th>
-                Status
-            </th>
-            <th>
-                PaymentMethodName
-            </th>
-            <th>
-                TotalPrice
-            </th>
-            <th>
-                Details
-            </th>
-            <th>
-                Username
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ShippingOrderCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ShippingMethodName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsInsurancePrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PaymentMethodName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TotalPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreatedDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreatedBy)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Username)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+  </div>
+</div>
