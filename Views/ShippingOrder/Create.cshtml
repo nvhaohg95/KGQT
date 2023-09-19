@@ -14,25 +14,25 @@
             <h1 class="text-danger">Thêm mới</h1>
         </div>
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <form>
+            <form method="post">
                 <div class="form-group mb-4">
                     <label class="required" for="txtShipID">Mã vận đơn</label>
-                    <input type="text" class="form-control" id="txtShipID" placeholder="Nhập mã vận đơn">
+                    <input type="text" class="form-control" id="txtShipID" name="ShipID" placeholder="Nhập mã vận đơn">
                 </div>
                 <div class="form-group mb-2">
                     <label class="required mb-0">Phương thức vận chuyển</label>
                 </div>
                 <div class="form-group mb-4">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="movingfast" name="rdMoving" value="1">
+                        <input class="form-check-input" type="radio" id="movingfast" name="MovingMethod" value="1">
                         <label class="form-check-label" for="movingfast">Nhanh</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="movingslow" name="rdMoving" value="2">
+                        <input class="form-check-input" type="radio" id="movingslow" name="MovingMethod" value="2">
                         <label class="form-check-label" for="movingslow">Chậm</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="movingofficial" name="rdMoving" value="3">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="3">
                         <label class="form-check-label" for="movingofficial">Chính ngạch</label>
                     </div>
                 </div>
@@ -41,15 +41,15 @@
                 </div>
                 <div class="form-group mb-4">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="cbPack">
+                        <input class="form-check-input" type="checkbox" name="IsPackage" id="cbPack">
                         <label class="form-check-label" for="cbPack">Đóng gỗ</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="cbAirbag">
+                        <input class="form-check-input" type="checkbox" name="IsVolume" id="cbAirbag">
                         <label class="form-check-label" for="cbAirbag">Túi khí</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="cbInsurance">
+                        <input class="form-check-input" type="checkbox" name="IsInsurrance" id="cbInsurance">
                         <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
                     </div>
                 </div>
@@ -58,10 +58,12 @@
                 </div>
                 <div class="input-group mb-4">
                     <input class="form-control" id="txtPackage" placeholder="Nhập mã kiện" />
+                    <input class="form-control" id="hdPackage" name="packages" placeholder="Nhập mã kiện" hidden />
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-success" id="addpackage">+</button>
+                        <button type="button" class="btn btn-success" id="addpackage" onclick="addPackage()">+</button>
                     </div>
                 </div>
+                <div class="form-group mb-4" id="renderPackages"></div>
                 <div class="row justify-content-center">
                     <button type="reset" class="btn btn-danger mr-2">Nhập lại</button>
                     <button type="button" class="btn btn-success">Lưu</button>
@@ -70,3 +72,53 @@
         </div>
     </div>
 </div>
+<script>
+    function addPackage() {
+        const ip = $('#txtPackage').val();
+        if (ip) {
+            $.ajax({
+                url: '@Url.Action("CheckPackage", "ShippingOrder")',
+                type: 'GET',
+                data: { package: ip },
+                // other AJAX options here
+                success: function (result) {
+                    if (!result) {
+                        const html = `<div class="form-check form-check-inline package-item">
+                                                          <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
+                                                          <span class="form-check-label">${ip}</span>
+                                                  </div>`;
+                        $('#renderPackages').append(html);
+                        $('#txtPackage').val('');
+
+                        //Set gia tri cho package field
+                        let hdField = $('#hdPackage');
+                        let hdValue = hdField.val();
+                        hdValue += ip + ';';
+                        hdField.val(hdValue);
+                    }
+                    else{
+                        Swal.fire(
+                            'Lỗi!',
+                            'Kiện đã tồn tại!',
+                            'error'
+                        )
+                    }
+                    },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+        }
+    }
+
+    function delPackage(o) {
+        const data = $(o).data('id');
+        let hdField = $('#hdPackage');
+        let hdValue = hdField.val();
+        let r = data + ';';
+        hdValue = hdValue.replace(r, '');
+        hdField.val(hdValue);
+        const e = $(o).closest('.package-item');
+        e.remove();
+    }
+</script>
