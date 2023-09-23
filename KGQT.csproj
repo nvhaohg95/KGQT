@@ -24,6 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\Auth\ForgotPassword.cshtml" />
+    <None Include="Views\Auth\Login.cshtml" />
+    <None Include="Views\Auth\Register.cshtml" />
+    <None Include="Views\Home\Create.cshtml" />
+    <None Include="Views\Home\Dashboard.cshtml" />
+    <None Include="Views\Home\Details.cshtml" />
+    <None Include="Views\Home\Index.cshtml" />
+    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_PartialView.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
     <None Include="wwwroot\css\sb-admin-2.css" />
     <None Include="wwwroot\css\sb-admin-2.min.css" />
     <None Include="wwwroot\img\undraw_posting_photo.svg" />

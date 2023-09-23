@@ -8,7 +8,7 @@ namespace KGQT.Base
     public class BaseController : ControllerBase
     {
         protected UserModel user = new UserModel();
-        protected static KGNewContext _db = new KGNewContext();
+        protected static nhanshiphangContext _db = new nhanshiphangContext();
         public BaseController()
         {}
 

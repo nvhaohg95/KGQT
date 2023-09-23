@@ -11,7 +11,7 @@ namespace KGQT.Business
     public class Accounts : BusinessBase
     {
 
-        protected static KGNewContext _db = new KGNewContext();
+        protected static nhanshiphangContext _db = new nhanshiphangContext();
 
         #region Select
         public static DataReturnModel Login(string userName, string password)
@@ -33,39 +33,46 @@ namespace KGQT.Business
                 dtReturn.Message = "Vui lòng nhập mật khẩu";
                 return dtReturn;
             }
-            var acc = _db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
-            if (acc != null)
+            using (var db = new nhanshiphangContext())
             {
-                password = PJUtils.Encrypt("userpass", password);
-                if (acc.Password == password)
+
+                var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
+                if (acc != null)
                 {
-                    dtReturn.IsError = false;
-                    dtReturn.Data = GetFullInfo(acc, 0, "");
-                    return dtReturn;
+                    password = PJUtils.Encrypt("userpass", password);
+                    if (acc.Password == password)
+                    {
+                        dtReturn.IsError = false;
+                        dtReturn.Data = GetFullInfo(acc, 0, "");
+                        return dtReturn;
+                    }
+                    else
+                    {
+                        dtReturn.IsError = true;
+                        dtReturn.Type = 1;
+                        dtReturn.Key = "PassWord";
+                        dtReturn.Message = Messages.PasswordNotCorrect;
+                        return dtReturn;
+                    }
+
                 }
                 else
                 {
                     dtReturn.IsError = true;
                     dtReturn.Type = 1;
-                    dtReturn.Key = "PassWord";
-                    dtReturn.Message = Messages.PasswordNotCorrect;
+                    dtReturn.Key = "UserName";
+                    dtReturn.Message = Messages.CannotFindUser;
                     return dtReturn;
                 }
-            }
-            else
-            {
-                dtReturn.IsError = true;
-                dtReturn.Type = 1;
-                dtReturn.Key = "UserName";
-                dtReturn.Message = Messages.CannotFindUser;
-                return dtReturn;
             }
         }
 
         public static tbl_Account GetByUserName(string Username)
         {
-            tbl_Account acc = _db.tbl_Accounts.Where(a => a.Username == Username).FirstOrDefault();
-            return acc;
+            using (var db = new nhanshiphangContext())
+            {
+                return db.tbl_Accounts.Where(a => a.Username == Username).FirstOrDefault();
+            }
         }
 
         public static tbl_Account GetByID(int ID)

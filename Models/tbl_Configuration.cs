@@ -29,5 +29,6 @@ namespace KGQT.Models
         public double? QuanLyCurrencyND { get; set; }
         public bool? IsShowNoti { get; set; }
         public string? BankInfor { get; set; }
+        public int? SearchBaiDuTimes { get; set; }
     }
 }

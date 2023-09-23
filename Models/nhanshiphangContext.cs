@@ -5,19 +5,20 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace KGQT.Models
 {
-    public partial class KGNewContext : DbContext
+    public partial class nhanshiphangContext : DbContext
     {
-        public KGNewContext()
+        public nhanshiphangContext()
         {
         }
 
-        public KGNewContext(DbContextOptions<KGNewContext> options)
+        public nhanshiphangContext(DbContextOptions<nhanshiphangContext> options)
             : base(options)
         {
         }
 
         public virtual DbSet<tbl_Account> tbl_Accounts { get; set; } = null!;
         public virtual DbSet<tbl_AccountInfo> tbl_AccountInfos { get; set; } = null!;
+        public virtual DbSet<tbl_BigPackage> tbl_BigPackages { get; set; } = null!;
         public virtual DbSet<tbl_CheckSmallPackage> tbl_CheckSmallPackages { get; set; } = null!;
         public virtual DbSet<tbl_Comment> tbl_Comments { get; set; } = null!;
         public virtual DbSet<tbl_Complain> tbl_Complains { get; set; } = null!;
@@ -29,6 +30,10 @@ namespace KGQT.Models
         public virtual DbSet<tbl_HistoryPayWallet> tbl_HistoryPayWallets { get; set; } = null!;
         public virtual DbSet<tbl_Notification> tbl_Notifications { get; set; } = null!;
         public virtual DbSet<tbl_Package> tbl_Packages { get; set; } = null!;
+        public virtual DbSet<tbl_ShippingMethodAddDate> tbl_ShippingMethodAddDates { get; set; } = null!;
+        public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
+        public virtual DbSet<tbl_ShippingOrderDeclaration> tbl_ShippingOrderDeclarations { get; set; } = null!;
+        public virtual DbSet<tbl_ShippingOrderStatusHistory> tbl_ShippingOrderStatusHistories { get; set; } = null!;
         public virtual DbSet<tbl_TradeHistory> tbl_TradeHistories { get; set; } = null!;
         public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
         public virtual DbSet<tbl_UserLevel> tbl_UserLevels { get; set; } = null!;
@@ -39,7 +44,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-1TA69L2B;Initial Catalog=KGQT;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Server=LAPTOP-1TA69L2B;Database=nhanshiphang;Integrated Security=True;Trusted_Connection=True;");
             }
         }
 
@@ -65,6 +70,19 @@ namespace KGQT.Models
                 entity.ToTable("tbl_AccountInfo");
 
                 entity.Property(e => e.BirthDay).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_BigPackage>(entity =>
+            {
+                entity.ToTable("tbl_BigPackage");
+
+                entity.Property(e => e.BigPackageDateExpectation).HasColumnType("datetime");
+
+                entity.Property(e => e.BigPackageDateExport).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -187,6 +205,10 @@ namespace KGQT.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.DateExpectation).HasColumnType("datetime");
+
+                entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
+
                 entity.Property(e => e.DateExport).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
@@ -202,6 +224,48 @@ namespace KGQT.Models
                 entity.Property(e => e.Status).HasComment("1. Chưa về\r\n2. Đã về\r\n3. Đã giao");
 
                 entity.Property(e => e.YCGWarehouseDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_ShippingMethodAddDate>(entity =>
+            {
+                entity.ToTable("tbl_ShippingMethodAddDate");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_ShippingOrder>(entity =>
+            {
+                entity.ToTable("tbl_ShippingOrder");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.DateExpectation).HasColumnType("datetime");
+
+                entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_ShippingOrderDeclaration>(entity =>
+            {
+                entity.ToTable("tbl_ShippingOrderDeclaration");
+
+                entity.Property(e => e.ID).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_ShippingOrderStatusHistory>(entity =>
+            {
+                entity.ToTable("tbl_ShippingOrderStatusHistory");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<tbl_TradeHistory>(entity =>

@@ -3,7 +3,9 @@ using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using NToastNotify;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -12,8 +14,6 @@ namespace KGQT.Controllers
 
     public class AuthController : Controller
     {
-        private IConfiguration _configuration;
-        private KGNewContext _db;
         private IToastNotification _toastNotification;
         private readonly IHostingEnvironment _hostingEnvironment;
         private MailSettings _mailSettings;
@@ -25,8 +25,6 @@ namespace KGQT.Controllers
         }
         public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment, IOptions<MailSettings> mailSettings)
         {
-            _configuration = configuration;
-            _db = new KGNewContext();
             _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
             _mailSettings = mailSettings.Value;
@@ -56,6 +54,7 @@ namespace KGQT.Controllers
                 return View(data);
             }
             HttpContext.Session.SetString("user", data.UserName);
+            HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
             return RedirectToAction("dashboard", "home");
         }
         #endregion

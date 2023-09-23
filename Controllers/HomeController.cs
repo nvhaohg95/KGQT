@@ -13,7 +13,6 @@ namespace KGQT
     public class HomeController : Controller
     {
         private IConfiguration _configuration;
-        private KGNewContext _db;
         private IToastNotification _toastNotification;
 
         public IToastNotification NotificationService
@@ -28,7 +27,6 @@ namespace KGQT
         public HomeController(IConfiguration configuration, IToastNotification toastNotification)
         {
             _configuration = configuration;
-            _db = new KGNewContext();
             _toastNotification = toastNotification;
         }
         #endregion
