@@ -4,24 +4,7 @@
     Layout = "~/Views/Shared/_PartialView.cshtml";    
 }
 <script type="text/javascript">
-    $(document).ready(function () {
-        //Check Show/Hide Password
-        $('#show_password').click(function () {
-            let _input = $('#txtPassword');
-            let _icon = $('#icon');
-            if (_icon.hasClass('fa fa-eye-slash')) {
-                _icon.removeClass('fa fa-eye-slash');
-                _icon.addClass('fa fa-eye');
-                _input.attr('type','text');
-            }
-            else
-            {
-                _icon.removeClass('fa fa-eye');
-                _icon.addClass('fa fa-eye-slash');
-                _input.attr('type', 'password');
-            }
-        });
-    });
+    
 </script>
 <div class="container">
     <div class="row justify-content-center">
@@ -58,7 +41,7 @@
                                 }
                                 <hr />
                                 <div class="text-center">
-                                    <a class="small cursor-pointer" href="sendMailForgetPassword">Quên mật khẩu</a>
+                                    <a class="small cursor-pointer"  data-toggle="modal" data-target="#sendMailModal">Quên mật khẩu</a>
                                 </div>
                                 <div class="text-center">
                                     <a class="small cursor-pointer" href="register">Đăng ký tài khoản</a>
@@ -74,6 +57,71 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="sendMailModal" tabindex="-1" role="dialog" aria-labelledby="sendMailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="sendMailModalLabel">Quên mật khẩu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="form-group col-12">
+                            <div>
+                                <span class="fw-bold">Email</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="email" name="email" class="form-control form-control-user border-none rounded" type="email" placeholder="Nhập địa chỉ email" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary w-100px" onclick="sendMailFogetPassword()">Gửi</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //Check Show/Hide Password
+    $(document).ready(function () {
+        $('#show_password').click(function () {
+            let _input = $('#txtPassword');
+            let _icon = $('#icon');
+            if (_icon.hasClass('fa fa-eye-slash')) {
+                _icon.removeClass('fa fa-eye-slash');
+                _icon.addClass('fa fa-eye');
+                _input.attr('type', 'text');
+            }
+            else {
+                _icon.removeClass('fa fa-eye');
+                _icon.addClass('fa fa-eye-slash');
+                _input.attr('type', 'password');
+            }
+        });
+    });
+
+    // sendmail foget password
+    function sendMailFogetPassword() {
+        var email = $("#email").val();
+        $.ajax({
+            url: '/auth/SendMailForgetPassword',
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: { email: email },
+            success: function (respone) {
+                if (!respone.isError) {
+                    $(".close").click();
+                }
+            }
+        });
+    }
+</script>
 
 
 

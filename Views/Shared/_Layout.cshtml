@@ -1,6 +1,9 @@
-﻿@using KGQT.Models.temp;
+﻿@using KGQT.Business;
+@using KGQT.Models.temp;
+@using NToastNotify;
 @{
-    UserLogin user = ViewData["User"] as UserLogin;
+    var user = Accounts.GetUserLogin(Context.Session.GetString("user"));
+    var password = new ChangePassword() { UserName = user.Username };
 }
 <!DOCTYPE html>
 <html>
@@ -15,9 +18,25 @@
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
     <link href="~/vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
-
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
+    <!-- Bootstrap core JavaScript-->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+
+    <script src="~/_framework/aspnetcore-browser-refresh.js"></script>
+
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="~/vendor/jquery-easing/jquery.easing.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="~/js/sb-admin-2.min.js"></script>
+
+    <script src="~/js/base.js" type="text/javascript"></script>
+    <!-- NToastNotify  -->
+    @await RenderSectionAsync("Scripts", required: false)
+    @await Component.InvokeAsync("NToastNotify")
 </head>
 
 <body id="page-top" class="sb-nav-fixed">
@@ -36,7 +55,7 @@
             <!-- Nav Item - TRANG CHỦ -->
             <hr class="sidebar-divider my-0">
             <li class="nav-item">
-                <a class="nav-link" href="index">
+                <a class="nav-link" href="dashboard">
                     <span class="asside-item">TRANG CHỦ</span>
                 </a>
             </li>
@@ -248,7 +267,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                @*<span class="badge badge-danger badge-counter">3+</span>*@
+                                <span class="badge badge-danger badge-counter">3+</span>
                             </a>
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -299,7 +318,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
                                 <!-- Counter - Messages -->
-                                @*<span class="badge badge-danger badge-counter">7</span>*@
+                                <span class="badge badge-danger badge-counter">7</span>
                             </a>
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -371,14 +390,22 @@
                                         <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">
                                             @string.Concat(user.FirstName," ",user.LastName)
                                         </span>
-                                        <img class="img-profile rounded-circle"
-                                             src="@user.IMG">
+                                        if (!string.IsNullOrEmpty(user.IMG))
+                                        {
+                                            <img class="img-profile rounded-circle"
+                                            src="@user.IMG">
+                                        }
+                                        else
+                                        {
+                                            <img class="img-profile rounded-circle"
+                                                 src="~/img/undraw_profile.svg">
+                                        }
                                     }
                                     else
                                     {
                                         <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold"></span>
                                         <img class="img-profile rounded-circle"
-                                             src="/img/undraw_profile.svg">
+                                             src="~/img/undraw_profile.svg">
                                     }
                                 }
                                 
@@ -391,10 +418,11 @@
                                     Thông tin tài khoản
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="changepassword">
+                                <a class="dropdown-item" data-toggle="modal" data-target="#changePassWordModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Đổi mật khẩu
                                 </a>
+
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="@Url.ActionLink("logout","auth")">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -411,6 +439,7 @@
                 <!-- Begin Page Content -->
                 
                 @RenderBody()
+                
                 <!-- /.container-fluid -->
 
             </div>
@@ -426,29 +455,73 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-    <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/jquery/jquery.min.js"></script>
-
-    <script src="/_framework/aspnetcore-browser-refresh.js"></script>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    @*<script src="/vendor/chart.js/Chart.min.js"></script>*@
-
-    <!-- Page level custom scripts -->
-    @*<script src="/js/demo/chart-area-demo.js"></script>
-    <script src="/js/demo/chart-pie-demo.js"></script>*@
-
-    <!-- NToastNotify  -->
-    @await RenderSectionAsync("Scripts", required: false)
-    @await Component.InvokeAsync("NToastNotify")
+   
+    <!-- form change password -->
+    <div class="modal fade" id="changePassWordModal" tabindex="-1" role="dialog" aria-labelledby="changePassWordModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="changePassWordModal">Đổi mật khẩu</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formChangePass">
+                    <div class="modal-body">
+                        <div class="row align-items-center my-2 h-50px">
+                            <div class="col-3">
+                                <span class="fw-bold">Tài khoản</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" name="UserName" value="@password.UserName" placeholder="Tài khoản" class="form-control form-control-user border-none rounded" readonly="true" />
+                            </div>
+                        </div>
+                        <div class="row align-items-center my-2 h-50px">
+                            <div class="col-3">
+                                <span class="fw-bold">Mật khẩu</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <div class="col-9 d-flex align-items-center position-relative">
+                                <input id="txtPassword1" type="password" name="OldPassword" value="@password.OldPassword" placeholder="Mật khẩu" class="form-control form-control-user border-none rounded" />
+                                <span class="position-absolute r-20px cursor-pointer" id="show_pass1">
+                                    <i class="fa fa-eye-slash" id="iconShow1" onclick="showHidePass('#iconShow1','#txtPassword1')"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row align-items-center my-2 h-50px">
+                            <div class="col-3">
+                                <span class="fw-bold">Mật khẩu mới</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <div class="col-9 d-flex align-items-center position-relative">
+                                <input id="txtPassword2" type="password" name="NewPassword" value="@password.NewPassword" placeholder="Mật khẩu mới" class="form-control form-control-user border-none rounded" />
+                                <span class="position-absolute r-20px cursor-pointer" id="show_pass2">
+                                    <i class="fa fa-eye-slash" id="iconShow2" onclick="showHidePass('#iconShow2','#txtPassword2')"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row align-items-center my-2 h-50px">
+                            <div class="col-3">
+                                <span class="fw-bold">Nhập lại mật khẩu</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <div class="col-9 d-flex align-items-center position-relative">
+                                <input id="txtPassword3" type="password" name="ConfirmPassword" value="@password.ConfirmPassword" placeholder="Nhập lại mật khẩu" class="form-control form-control-user border-none rounded" />
+                                <span class="position-absolute r-20px cursor-pointer" id="show_pass3">
+                                    <i class="fa fa-eye-slash" id="iconShow3" onclick="showHidePass('#iconShow3','#txtPassword3')"></i>
+                                </span>
+                            </div>
+                        </div>
+                </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary w-100px"  onclick="clickChangePass()">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
