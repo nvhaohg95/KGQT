@@ -16,6 +16,24 @@ html {
 .cursor-pointer:hover{
     cursor:pointer !important;
 }
+.w-50px {
+    width: 50px!important;
+}
+
+.h-50px {
+    height: 50px!important;
+}
+
+.w-100px {
+    width: 100px !important;
+}
+
+.h-100px {
+    height: 100px !important;
+}
+
+
+
 
 
 /*logo*/
@@ -34,15 +52,9 @@ html {
 
 /*asside*/
 .asside {
-    /*background: -webkit-linear-gradient(top, #efefef 0%,#ddd 100%) !important;*/
     background: #FFFFFF !important;
 }
-/*.asside li:last-child {
-    display: flex;
-    align-items: end;
-    justify-content: center;
-    height: 100%;
-}*/
+
 .asside-item {
     white-space: normal !important;
     text-transform: uppercase;
@@ -113,16 +125,8 @@ html {
     right: 15px;
     bottom: 12px;
 }
+
 /*register*/
-w-100px {
-    width: 100px !important;
-}
-
-.h-100px {
-    height: 100px !important;
-}
-
-
 .upload-avatar {
     display: flex;
     flex-direction: column;
@@ -131,6 +135,7 @@ w-100px {
     .upload-avatar input {
         width: 100px;
     }
+
 /*partial_layout*/
 .bg-partial {
     background-color: #0093E9;
@@ -138,7 +143,19 @@ w-100px {
     height: 100vh;
     overflow:auto;
 }
+/*change password*/
+.r-20px {
+    right: 20px;
+}
 
+
+
+/*custom*/
+
+.modal-header {
+    /*background-color: #279EFF!important;*/
+    color: #f8f9fc!important;
+}
 /*--------------------------------------------------------*/
 @media (min-width: 768px) {
     .sidebar {

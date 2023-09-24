@@ -3,6 +3,7 @@ using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using System.Text.RegularExpressions;
 
 namespace KGQT.Business
@@ -383,7 +384,6 @@ namespace KGQT.Business
                 if (string.IsNullOrEmpty(email))
                 {
                     result.IsError = true;
-                    result.Type = 1;
                     result.Message = "Vui lòng nhập địa chỉ email.";
                     return result;
                 }
@@ -391,7 +391,6 @@ namespace KGQT.Business
                 if (!regexEmail.IsMatch(email))
                 {
                     result.IsError = true;
-                    result.Type = 1;
                     result.Message = "Địa chỉ email không hợp lệ.";
                     return result;
                 }
@@ -399,35 +398,32 @@ namespace KGQT.Business
                 if (acc != null)
                 {
                     acc.Token = Guid.NewGuid().ToString();
-                    _db.Update(acc);
                     var accInfo = _db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                    var name = "";
+                    var name = acc.Username;
+                    string sToken = acc.Token + "|" + DateTime.Now.ToString();
                     string link = "https://localhost:44330/auth/forgotpassword?id=&tk=";
-                    if (accInfo != null)
-                    {
-                        name = accInfo.FirstName + " " + accInfo.LastName;
-                    }
                     string id = Helper.Base64Encode(acc.Username);
-                    string token = Helper.Base64Encode(acc.Token);
-                    link = $"https://localhost:44330/auth/forgotpassword?id={id}&tk={token}";
+                    string token = Helper.Base64Encode(sToken);
                     string subject = "YÊU CẦU CẤP PHÁT LẠI MẬT KHẨU";
                     string body = "<div>Xin chào <b>{0}</b>.</div><br><div>Yêu cầu cấp phát lại mật khẩu của bạn đã được xác nhận, vui lòng truy cập đường link bên dưới để tiếp tục thay đổi mật khẩu của bạn. <span><a href='{1}'>link</a></span></div><div></div><br><div>Cám ơn.</div>";
-
+                    if (accInfo != null)
+                        name = accInfo.FirstName + " " + accInfo.LastName;
+                    link = $"https://localhost:44330/auth/forgotpassword?id={id}&tk={token}";
                     body = string.Format(body, name, link);
+
                     //send mail
                     var status = await MailService.SendMailAsync(mailSetting, email, subject, body);
                     if (status)
                     {
                         result.IsError = false;
-                        result.Type = 2;
                         result.Message = "Yêu cầu của bạn đã được gửi đi.Vui lòng kiểm tra email!";
+                        _db.Update(acc);
                         _db.SaveChanges();
                         return result;
                     }
                     else
                     {
                         result.IsError = true;
-                        result.Type = 2;
                         result.Message = "Hệ thống gửi mail đang cập nhật, vui lòng thử lại sau.";
                         return result;
                     }
@@ -435,7 +431,6 @@ namespace KGQT.Business
                 else
                 {
                     result.IsError = true;
-                    result.Type = 2;
                     result.Message = "Email này chưa đăng ký. Vui lòng kiểm tra lại!";
                     return result;
                 }
@@ -443,12 +438,12 @@ namespace KGQT.Business
             catch (Exception ex)
             {
                 result.IsError = true;
-                result.Type = 2;
                 result.Message = "Hệ thống gửi mail đang cập nhật, vui lòng thử lại sau.";
                 return result;
             }
 
         }
+
         #endregion
 
         #region Get Account by Username & Token
@@ -530,12 +525,33 @@ namespace KGQT.Business
         public static DataReturnModel ChangePassword(ChangePassword data)
         {
             var result = new DataReturnModel();
-
+            if (string.IsNullOrEmpty(data.UserName))
+            {
+                result.IsError = true;
+                result.Message = "Tài khoảng không được bỏ trống";
+                return result;
+            }
+            if (string.IsNullOrEmpty(data.OldPassword))
+            {
+                result.IsError = true;
+                result.Message = "Mật khẩu không được bỏ trống";
+                return result;
+            }
+            if (string.IsNullOrEmpty(data.NewPassword))
+            {
+                result.IsError = true;
+                result.Message = "Mật khẩu mới không được bỏ trống";
+                return result;
+            }
+            if (string.IsNullOrEmpty(data.ConfirmPassword))
+            {
+                result.IsError = true;
+                result.Message = "Mật khẩu không được bỏ trống";
+                return result;
+            }
             if (data.ConfirmPassword != data.NewPassword)
             {
                 result.IsError = true;
-                result.Type = 1;
-                result.Key = "ConfirmPassword";
                 result.Message = "Mật khẩu không trùng khớp";
                 return result;
             }
@@ -551,21 +567,17 @@ namespace KGQT.Business
                     if (kq > 0)
                     {
                         result.IsError = false;
-                        result.Type = 2;
                         result.Message = "Cập nhật thành công!";
                     }
                     else
                     {
                         result.IsError = true;
-                        result.Type = 2;
                         result.Message = "Cập nhật không thành công";
                     }
                 }
                 else
                 {
                     result.IsError = true;
-                    result.Type = 1;
-                    result.Key = "OldPassword";
                     result.Message = "Mật khẩu không chính xác";
                     return result;
                 }
@@ -573,7 +585,6 @@ namespace KGQT.Business
             else
             {
                 result.IsError = true;
-                result.Type = 2;
                 result.Message = "Cập nhật không thành công";
             }
             return result;

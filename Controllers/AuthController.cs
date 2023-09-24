@@ -11,13 +11,18 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace KGQT.Controllers
 {
- 
+
     public class AuthController : Controller
     {
         private IToastNotification _toastNotification;
         private readonly IHostingEnvironment _hostingEnvironment;
         private MailSettings _mailSettings;
 
+        public IToastNotification NotificationService
+        {
+            get { return _toastNotification; }
+            set { _toastNotification = value; }
+        }
         public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment, IOptions<MailSettings> mailSettings)
         {
             _toastNotification = toastNotification;
@@ -30,6 +35,11 @@ namespace KGQT.Controllers
         [HttpGet]
         public ActionResult Login()
         {
+            var sUserName = HttpContext.Session.GetString("user");
+            if (!string.IsNullOrEmpty(sUserName))
+            {
+                return RedirectToAction("dashboard", "home");
+            }
             return View();
         }
 
@@ -77,7 +87,7 @@ namespace KGQT.Controllers
                 var result = Accounts.RegisterAccount(data);
                 if (result.IsError)
                 {
-                    if(result.Type == 1)
+                    if (result.Type == 1)
                         ModelState.AddModelError(result.Key, result.Message);
                     else
                         _toastNotification.AddWarningToastMessage(result.Message);
@@ -93,22 +103,27 @@ namespace KGQT.Controllers
 
         #region Forgot Pasword
         [HttpGet]
-        public ActionResult ForgotPassword(string id,string tk)
+        public ActionResult ForgotPassword(string id, string tk)
         {
-            if (!string.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(tk))
             {
                 string userName = Helper.Base64Decode(id);
-                string token = Helper.Base64Decode(tk);
-                var acc = Accounts.GetByUsernameAndToken(userName, token);
-                if(acc != null)
+                string strToken = Helper.Base64Decode(tk);
+                var token = strToken.Split("|")[0];
+                var time = DateTime.Parse(strToken.Split("|")[1]);
+                if (DateTime.Now.Subtract(time).TotalMinutes <= 30)
                 {
-                    var data = new ForgotPassWord();
-                    data.UserName = acc.Username;
-                    data.Email = acc.Email;
-                    return View(data);
+                    var acc = Accounts.GetByUsernameAndToken(userName, token);
+                    if (acc != null)
+                    {
+                        var data = new ForgotPassWord();
+                        data.UserName = acc.Username;
+                        data.Email = acc.Email;
+                        return View(data);
+                    }
                 }
-            } 
-            return View();
+            }
+            return RedirectToAction("index", "error");
         }
 
         [HttpPost]
@@ -130,44 +145,22 @@ namespace KGQT.Controllers
             }
             return View();
         }
+
         #endregion
 
         #region Send Mail Forget Password
-        [HttpGet]
-        public ActionResult SendMailForgetPassword()
-        {
-            return View();
-        }
-
         [HttpPost]
-        public async Task<ActionResult> SendMailForgetPassword(string email)
+        public async Task<JsonResult> SendMailForgetPassword(string email)
         {
             var result = await Accounts.SendMailForgetPassword(_mailSettings, email);
             if (result.IsError)
-            {
-                if (result.Type == 1)
-                {
-                    ModelState.AddModelError("error", result.Message);
-                }
-                else
-                {
-                    _toastNotification.AddInfoToastMessage(result.Message);
-                }
-                return View();
-            }
+                NotificationService.AddWarningToastMessage(result.Message);
             else
-            {
-                _toastNotification.AddSuccessToastMessage(result.Message);
-                return Redirect("sendMailForgetPassword");
-            }
+                NotificationService.AddSuccessToastMessage(result.Message);
+            return Json(result);
         }
+
         #endregion
 
-        #region Unites
-        public async Task<ActionResult> Test()
-        {
-            return Ok("TEST");
-        }
-        #endregion
     }
 }
