@@ -3,10 +3,11 @@ using System.Drawing;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KGQT.Commons
 {
-    public class Helper
+    public static class Helper
     {
         #region Encode string to base64
         public static string Base64Encode(string text)
@@ -24,5 +25,12 @@ namespace KGQT.Commons
         }
         #endregion
 
+
+        public static T AsObject<T>(this IFormCollection pairs) where T : class
+        {
+            string jsonString = $"{{{string.Join(",", pairs.Select(x => $"\"{x.Key}\" : \"{x.Value}\""))}}}";
+
+            return JsonConvert.DeserializeObject<T>(jsonString);
+        }
     }
 }
