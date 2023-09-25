@@ -84,9 +84,9 @@
                 success: function (result) {
                     if (!result) {
                         const html = `<div class="form-check form-check-inline package-item">
-                                                              <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
-                                                              <span class="form-check-label">${ip}</span>
-                                                      </div>`;
+                                                                  <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
+                                                                  <span class="form-check-label">${ip}</span>
+                                                          </div>`;
                         $('#renderPackages').append(html);
                         $('#txtPackage').val('');
                         //Set gia tri cho package field
@@ -122,6 +122,28 @@
     }
 
     function insert() {
-        console.log(helper.form2Object($('#frmShip').serializeArray()));
+        var data = helper.form2Object($('#frmShip').serializeArray());
+        if (!data.ShippingOrderCode) {
+            helper.showErr('Lỗi', 'Hãy nhập mã vận đơn');
+            return
+        }
+
+        $.ajax({
+            url: '@Url.Action("Create", "ShippingOrder")',
+            type: 'GET',
+            data: { form: data },
+            // other AJAX options here
+            success: function (result) {
+                if (!result) {
+                  
+                }
+                else {
+                    
+                }
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
     }
 </script>

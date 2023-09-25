@@ -89,7 +89,6 @@ namespace KGQT.Controllers
         #region Functions
         // POST: ShippingOrderController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Create(tbl_ShippingOrder form)
         {
             try

@@ -34,15 +34,35 @@ function showHidePass(idIcon, idInput) {
     }
 };
 
-var helper = function () {
-    var form2Object = function (form) {
+window.helper = {
+    form2Object: function (form) {
         const data = JSON.parse(JSON.stringify(form));
         let obj = {};
         for (var i in data) {
-            obj[data[i].name] = data[i].value
+            let value = data[i].value;
+            if (value === 'on')
+                value = true;
+            if (value === 'off')
+                value = false;
+            obj[data[i].name] = value;
         }
         return obj;
-    }
-}(helper);
+    },
 
-window["helper"] = helper;
+    showErr: function (title,message) {
+       return Swal.fire(
+            title,
+            message,
+            'error'
+        );
+    },
+
+    showSuc: function (title, message) {
+        return Swal.fire(
+            title,
+            message,
+            'success'
+        );
+    }
+};
+
