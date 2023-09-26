@@ -54,18 +54,18 @@ html {
 }
 
 .asside_admin {
-    background: #FFFFFF !important;
+    background: #6499E9 !important;
 }
 
 .asside-item {
     white-space: normal !important;
     text-transform: uppercase;
     background-color: transparent !important;
-    color: #444 !important;
+    color: #FFF !important;
 }
 
 .sidebar-dark .nav-item .nav-link[data-toggle="collapse"]::after {
-    color: #DDDDDD;
+    color: #FFF;
 }
 
 .asside-item[data-toggle="collapse"]::after {
@@ -97,7 +97,7 @@ html {
 }
 
 .nav-item:hover .asside-item:hover {
-    color: #444 !important;
+    color: #FFF !important;
 }
 
 .form-control:focus {
