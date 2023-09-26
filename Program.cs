@@ -1,6 +1,7 @@
 
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using NToastNotify;
@@ -16,7 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSession();
 builder.Services.AddMvc().AddSessionStateTempDataProvider();
-builder.Services.AddCors(o=>o.AddDefaultPolicy(policy=>policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(o => o.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<nhanshiphangContext>(o =>
 {
@@ -53,6 +54,11 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllerRoute(
         name: "default",
         pattern: "{controller=Auth}/{action=Login}/{id?}");
-});
 
+    endpoints.MapAreaControllerRoute(
+      name: "admin",
+      areaName: "admin",
+      pattern: "admin/{controller=Home}/{action=Index}/{id?}"
+    );
+});
 app.Run();

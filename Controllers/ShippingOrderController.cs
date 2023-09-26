@@ -1,7 +1,11 @@
 ﻿using KGQT.Business;
+using KGQT.Commons;
+using KGQT.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NToastNotify;
+using System.Reflection;
 
 namespace KGQT.Controllers
 {
@@ -86,10 +90,11 @@ namespace KGQT.Controllers
         // POST: ShippingOrderController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(tbl_ShippingOrder form)
         {
             try
             {
+               var model = new tbl_ShippingOrder();
                 return View();// RedirectToAction(nameof(Index));
             }
             catch
