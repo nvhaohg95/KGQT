@@ -81,10 +81,26 @@
 
 /*End:: Breadsrumb */
 
-
 /*Start:: Form*/
-.form-group .required:after{
+.form-group .required:after {
     content: "*";
     color: red;
 }
 /*End:: Form*/
+
+/*Start:Modal*/
+.modal-header {
+    color: #f8f9fc !important;
+}
+/*End:Modal*/
+
+/*Start:Menu Asside*/
+@media (min-width: 768px) {
+    .sidebar {
+        width: 20rem !important;
+    }
+
+        .sidebar .nav-item .nav-link {
+            width: 18rem;
+        }
+/*End:Menu Asside*/

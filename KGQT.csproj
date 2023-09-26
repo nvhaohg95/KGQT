@@ -31,7 +31,7 @@
     <None Include="Views\Home\Dashboard.cshtml" />
     <None Include="Views\Home\Details.cshtml" />
     <None Include="Views\Home\Index.cshtml" />
-    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_UserLayout.cshtml" />
     <None Include="Views\Shared\_PartialView.cshtml" />
     <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
     <None Include="wwwroot\css\sb-admin-2.css" />
