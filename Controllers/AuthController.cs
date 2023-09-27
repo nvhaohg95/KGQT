@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NToastNotify;
+using Org.BouncyCastle.Tls;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace KGQT.Controllers
@@ -35,10 +36,14 @@ namespace KGQT.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            var sUserName = HttpContext.Session.GetString("user");
-            if (!string.IsNullOrEmpty(sUserName))
+            var sUser = HttpContext.Session.GetString("US_LOGIN");
+            if (!string.IsNullOrEmpty(sUser))
             {
-                return RedirectToAction("dashboard", "home");
+                var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+                if (user != null)
+                {
+                    return RedirectToAction("dashboard", "home");
+                }
             }
             return View();
         }
@@ -53,7 +58,6 @@ namespace KGQT.Controllers
                 ModelState.AddModelError(result.Key, result.Message);
                 return View(data);
             }
-            HttpContext.Session.SetString("user", data.UserName);
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
             return RedirectToAction("dashboard", "home");
         }
@@ -62,7 +66,7 @@ namespace KGQT.Controllers
         #region Logout
         public ActionResult Logout()
         {
-            HttpContext.Session.Remove("user");
+            HttpContext.Session.Remove("US_LOGIN");
             return Redirect("login");
         }
         #endregion

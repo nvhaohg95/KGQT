@@ -37,12 +37,16 @@ namespace KGQT
         [HttpGet]
         public ActionResult Dashboard()
         {
-            var sUserName = HttpContext.Session.GetString("user");
-            if (!string.IsNullOrEmpty(sUserName))
+            var sUser = HttpContext.Session.GetString("US_LOGIN");
+            UserLogin user = null;
+            if (!string.IsNullOrEmpty(sUser))
             {
-                return View();
+                user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+                if (user != null)
+                    return View();
             }
             return RedirectToAction("login", "auth");
+
         }
 
         #endregion
@@ -59,7 +63,7 @@ namespace KGQT
             else
             {
                 NotificationService.AddSuccessToastMessage(result.Message);
-                HttpContext.Session.Remove("user");
+                HttpContext.Session.Remove("US_LOGIN");
             }
             return Json(result);
         }
