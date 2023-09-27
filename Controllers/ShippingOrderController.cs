@@ -1,4 +1,6 @@
-﻿using KGQT.Business;
+﻿using KGQT.Base;
+using KGQT.Business;
+using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using Microsoft.AspNetCore.Http;
@@ -13,13 +15,9 @@ namespace KGQT.Controllers
     {
         #region constructor
         private IToastNotification _toastNotification;
-        private static ShippingOrder _shippingBus;
-        private static Packages _packages;
         public ShippingOrderController(IToastNotification toastNotification)
         {
             _toastNotification = toastNotification;
-            _shippingBus = new ShippingOrder();
-            _packages = new Packages();
         }
         #endregion
 
@@ -27,7 +25,7 @@ namespace KGQT.Controllers
         // GET: ShippingOrderController
         public ActionResult Index()
         {
-            var lst = _shippingBus.GetList("", "", 0, 0);
+            var lst = ShippingOrder.GetList("", "", 0, 0);
             return View(lst);
         }
 
@@ -89,16 +87,46 @@ namespace KGQT.Controllers
         #region Functions
         // POST: ShippingOrderController/Create
         [HttpPost]
-        public ActionResult Create(tbl_ShippingOrder form)
+        public JsonResult Create(tbl_ShippingOrder form, string package)
         {
             try
             {
-               var model = new tbl_ShippingOrder();
-                return View();// RedirectToAction(nameof(Index));
+                var exist = BusinessBase.Exist<tbl_ShippingOrder>(x => x.ShippingOrderCode == form.ShippingOrderCode);
+                if(exist) return Json(-1);
+                var userLogin = HttpContext.Session.GetString("user");
+                var user = Accounts.GetInfo(-1, userLogin);
+                form.Status = 1;
+                form.CreatedDate = DateTime.Now;
+                form.CreatedBy = user.Username;
+                form.Email = user.Email;
+                form.LastName = user.LastName;
+                form.FirstName = user.FirstName;
+                form.Phone = user.Phone;
+                form.Address = user.Address;
+                form.ShippingMethodName = PJUtils.ShippingMethodName(form.ShippingMethod.Value);
+                var save = BusinessBase.Add(form);
+                if (save > -1 && !string.IsNullOrEmpty(package))
+                {
+                    var packs = package.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    List<tbl_Package> obj = new List<tbl_Package>();
+                    foreach (var item in packs)
+                    {
+
+                        var p = new tbl_Package();
+                        p.PackageOrderHangCode = item;
+                        p.Status = 1;
+                        p.ShippingOrderID = save;
+                        p.CreatedBy = user.Username;
+                        p.CreatedDate = DateTime.Now;
+                        BusinessBase.Add(p);
+                    }
+
+                }
+                return Json(1);// RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return Json(0);
             }
         }
 
@@ -106,7 +134,7 @@ namespace KGQT.Controllers
         [HttpGet]
         public bool CheckPackage(string package)
         {
-            return _packages.CheckExist(package);
+            return Packages.CheckExist(package);
         }
         #endregion
     }

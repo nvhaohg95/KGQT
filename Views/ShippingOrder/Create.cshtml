@@ -84,9 +84,9 @@
                 success: function (result) {
                     if (!result) {
                         const html = `<div class="form-check form-check-inline package-item">
-                                                                  <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
-                                                                  <span class="form-check-label">${ip}</span>
-                                                          </div>`;
+                                                                          <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
+                                                                          <span class="form-check-label">${ip}</span>
+                                                                  </div>`;
                         $('#renderPackages').append(html);
                         $('#txtPackage').val('');
                         //Set gia tri cho package field
@@ -124,22 +124,24 @@
     function insert() {
         var data = helper.form2Object($('#frmShip').serializeArray());
         if (!data.ShippingOrderCode) {
-            helper.showErr('Lỗi', 'Hãy nhập mã vận đơn');
+            helper.showErr('Hãy nhập mã vận đơn');
             return
         }
-
+        const pack = $('#hdPackage').val();
         $.ajax({
             url: '@Url.Action("Create", "ShippingOrder")',
-            type: 'GET',
-            data: { form: data },
+            type: 'POST',
+            data: { form: data, package: pack },
             // other AJAX options here
             success: function (result) {
-                if (!result) {
-                  
-                }
-                else {
-                    
-                }
+                if (result == -1)
+                    helper.showErr('Đơn đã tồn tại!')
+
+                if (result == 0)
+                    helper.showErr('Tạo đơn lỗi!')
+
+                if (result == 1)
+                    helper.showSuc('Tạo đơn thành công!')
             },
             error: function (xhr, status, err) {
                 // error handling

@@ -49,15 +49,15 @@ window.helper = {
         return obj;
     },
 
-    showErr: function (title,message) {
-       return Swal.fire(
+    showErr: function (message, title = "Lỗi") {
+        return Swal.fire(
             title,
             message,
             'error'
         );
     },
 
-    showSuc: function (title, message) {
+    showSuc: function (message, title = "Thành công") {
         return Swal.fire(
             title,
             message,

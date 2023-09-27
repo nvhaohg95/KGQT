@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace KGQT.Business
 {
-    public class Accounts : BusinessBase
+    public class Accounts
     {
 
         protected static nhanshiphangContext _db = new nhanshiphangContext();
@@ -81,7 +81,19 @@ namespace KGQT.Business
             return acc;
         }
 
-        public static UserLogin GetFullInfo(tbl_Account? acc, int? id, string userName)
+        public static UserLogin GetInfo(int? id, string? userName)
+        {
+
+            UserLogin us = null;
+            tbl_Account acc = _db.tbl_Accounts.FirstOrDefault(x => x.ID == id || x.Username == userName);
+            if (acc != null)
+            {
+                return GetFullInfo(acc, -1, "");
+            }
+            return null;
+        }
+
+        public static UserLogin GetFullInfo(tbl_Account? acc, int? id, string? userName)
         {
             var us = new UserLogin();
 
