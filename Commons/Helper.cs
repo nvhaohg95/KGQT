@@ -32,5 +32,22 @@ namespace KGQT.Commons
 
             return JsonConvert.DeserializeObject<T>(jsonString);
         }
+
+public static string[] GetKeys(Type type, bool hasIDnKey = false)
+		{
+			if (type == null) return null;
+			var lstInfos = type.GetProperties();
+			var arrKeys = new List<string>();
+			var arrIDs = new List<string>();
+			foreach (var info in lstInfos)
+			{
+				if (info.GetCustomAttribute<KeyAttribute>() != null)
+				{
+					arrKeys.Add(info.Name);
+				}
+			};
+
+			return arrIDs.Count > 0 ? arrIDs.ToArray() : arrKeys.ToArray()
+		}
     }
 }
