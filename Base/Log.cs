@@ -7,7 +7,7 @@ namespace KGQT.Base
     {
         private static void Instance(string type, string title, string message)
         {
-            string path = ConfigHelper.GetCurrentSettings("LogPath").appSettingValue.ToString();
+            string path = Config.Settings.LogPath;
             string fileName = DateTime.Now.ToString("ddMMyyyy");
             path = Path.Combine(path, fileName);
 

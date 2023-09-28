@@ -57,12 +57,15 @@ window.helper = {
         );
     },
 
-    showSuc: function (message, title = "Thành công") {
+    showSuc: function (message, refresh = true, title = "Thành công",) {
         return Swal.fire(
             title,
             message,
-            'success'
-        );
+            'success',
+        ).then((result) => {
+            if (result.isConfirmed && refresh)
+                window.location.reload();
+        });
     }
 };
 
