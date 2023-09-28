@@ -1,4 +1,5 @@
-﻿using KGQT.Base;
+using KGQT.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using Newtonsoft.Json;
 using System.Linq.Expressions;
@@ -13,7 +14,34 @@ namespace KGQT.Business.Base
             {
                 try
                 {
-                    db.Add(entity);
+                    Type type = typeof(T);
+					var keys = Helper.GetKeys(type);
+
+					string predicate = "";
+					var datavalues = new List<object>();
+					for (var i = 0; i < keys.Length; i++)
+					{
+						var key = keys[i];
+						var propertyKey = type.GetProperty(key);
+						var proType = propertyKey.PropertyType;
+						if (proType != null && proType.IsGenericType)
+							proType = proType.GetGenericArguments()[0];
+						var val = Helper.GetValue(key, entity);
+
+						var opt = "=";
+						if (proType == typeof(Guid))
+							opt = ".Equals";
+
+						predicate = predicate + (predicate == "" ? "" : "&&")
+									+ $"{key}{opt}(@{i})";
+
+						datavalues.Add(val);
+					}
+                   // "userName = '1234124' && userName == '2'";
+                    string criteria = String.Format(predicate, datavalues.ToArray());
+
+                    var exist = db.Set<T>().AsQueryable().Any(x => x.GetType().GetProperty(keys[0].ToString()) == entity.GetType().GetProperty(keys[0].ToString()));
+					db.Add(entity);
                     if (db.SaveChanges() > 0)
                     {
                         Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
