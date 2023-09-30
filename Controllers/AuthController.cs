@@ -58,6 +58,7 @@ namespace KGQT.Controllers
                 ModelState.AddModelError(result.Key, result.Message);
                 return View(data);
             }
+            HttpContext.Session.SetString("user", data.UserName);
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
             return RedirectToAction("dashboard", "home");
         }

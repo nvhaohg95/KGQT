@@ -93,5 +93,91 @@ namespace KGQT.Commons
             if (status == 3) return "Chính ngạch";
             return "";
         }
+
+        public static string ShippingStatusHtml(int status)
+        {
+            string sReturn = "";
+            switch (status)
+            {
+                case 1:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-gray text-white\">Đã cập nhật MVĐ</div>";
+                    break;
+                case 2:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-yellow-l1 text-white\">Hàng về kho TQ</div>";
+                    break;
+                case 3:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-yellow-l2 text-white\">Đang trên đường về HCM</div>";
+                    break;
+                case 4:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-warning text-white\">Hàng về tới HCM</div>";
+                    break;
+                case 5:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-success text-white\">Đã nhận hàng</div>";
+                    break;
+                case 6:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-danger text-white\">Đã hủy</div>";
+                    break;
+                case 7:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-light text-white\">Thất lạc</div>";
+                    break;
+                case 8:
+                    sReturn = "<div class=\"text-center p-1 mb-2 bg-light text-white\">Không nhận được hàng</div>";
+                    break;
+            }
+            return sReturn;
+        }
+        public static string ShippingStatus(int status)
+        {
+            string sReturn = "";
+            switch (status)
+            {
+                case 1:
+                    sReturn = "Đã cập nhật MVĐ";
+                    break;
+                case 2:
+                    sReturn = "Hàng về kho TQ";
+                    break;
+                case 3:
+                    sReturn = "Đang trên đường về HCM";
+                    break;
+                case 4:
+                    sReturn = "Hàng về tới HCM";
+                    break;
+                case 5:
+                    sReturn = "Đã nhận hàng";
+                    break;
+                case 6:
+                    sReturn = ">Đã hủy";
+                    break;
+                case 7:
+                    sReturn = "Thất lạc";
+                    break;
+                case 8:
+                    sReturn = "Không nhận được hàng";
+                    break;
+            }
+            return sReturn;
+        }
+
+        public static string PackageStatus(int status)
+        {
+            string sReturn = "";
+            switch (status)
+            {
+                case 1:
+                    sReturn = "Vận chuyển quốc tế";
+                    break;
+                case 2:
+                    sReturn = "Chờ giao";
+                    break;
+                case 3:
+                    sReturn = "Đang giao";
+                    break;
+                case 4:
+                    sReturn = "Đã nhận hàng";
+                    break;
+            }
+            return sReturn;
+        }
     }
 }

@@ -1,13 +1,9 @@
-﻿using KGQT.Base;
-using KGQT.Business;
+﻿using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using NToastNotify;
-using System.Reflection;
 
 namespace KGQT.Controllers
 {
@@ -30,57 +26,18 @@ namespace KGQT.Controllers
         }
 
         // GET: ShippingOrderController/Details/5
+        public IEnumerable<tbl_Package> packages { get; set; }
         public ActionResult Details(int id)
         {
-            return View();
+            var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            packages = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
+            return View(ship);
         }
 
         // GET: ShippingOrderController/Create
         public ActionResult Create()
         {
             return View();
-        }
-
-        // GET: ShippingOrderController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: ShippingOrderController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ShippingOrderController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ShippingOrderController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
         #endregion
 
@@ -91,20 +48,19 @@ namespace KGQT.Controllers
         {
             try
             {
-                var exist = BusinessBase.Exist<tbl_ShippingOrder>(x => x.ShippingOrderCode == form.ShippingOrderCode);
-                if(exist) return Json(-1);
                 var userLogin = HttpContext.Session.GetString("user");
                 var user = Accounts.GetInfo(-1, userLogin);
                 form.Status = 1;
                 form.CreatedDate = DateTime.Now;
                 form.CreatedBy = user.Username;
+                form.Username = user.Username;
                 form.Email = user.Email;
                 form.LastName = user.LastName;
                 form.FirstName = user.FirstName;
                 form.Phone = user.Phone;
                 form.Address = user.Address;
                 form.ShippingMethodName = PJUtils.ShippingMethodName(form.ShippingMethod.Value);
-                var save = BusinessBase.Add(form);
+                var save = BusinessBase.Add(form, "ShippingOrderCode");
                 if (save > -1 && !string.IsNullOrEmpty(package))
                 {
                     var packs = package.Split(';', StringSplitOptions.RemoveEmptyEntries);
@@ -118,11 +74,11 @@ namespace KGQT.Controllers
                         p.ShippingOrderID = save;
                         p.CreatedBy = user.Username;
                         p.CreatedDate = DateTime.Now;
-                        BusinessBase.Add(p);
+                      save =  BusinessBase.Add(p);
                     }
-
+                    return Json(save);
                 }
-                return Json(1);// RedirectToAction(nameof(Index));
+                return Json(save);
             }
             catch (Exception ex)
             {
