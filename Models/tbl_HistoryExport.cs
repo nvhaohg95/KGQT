@@ -24,6 +24,6 @@ namespace KGQT.Models
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
-        public string? PackageOrderHangCode { get; set; }
+        public string? PackageCode { get; set; }
     }
 }

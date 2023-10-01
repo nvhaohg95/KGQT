@@ -16,10 +16,10 @@ namespace KGQT.Base
         [Route("ahihi")]
         public tbl_Account GetLogin()
         {
-            string username = User.FindFirstValue("UserName");
-            if (string.IsNullOrEmpty(username)) return null;
-            var u = _db.tbl_Accounts.FirstOrDefault(x => x.Username == username);
-            return u;
+            //string username = User.FindFirstValue("UserName");
+            //if (string.IsNullOrEmpty(username)) return null;
+            //var u = _db.tbl_Accounts.FirstOrDefault(x => x.Username == username);
+            return null;
         }
 
     }

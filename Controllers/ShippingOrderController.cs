@@ -2,8 +2,10 @@
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
+using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
+using System.Dynamic;
 
 namespace KGQT.Controllers
 {
@@ -26,12 +28,13 @@ namespace KGQT.Controllers
         }
 
         // GET: ShippingOrderController/Details/5
-        public IEnumerable<tbl_Package> packages { get; set; }
         public ActionResult Details(int id)
         {
-            var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
-            packages = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
-            return View(ship);
+            var model = new OrderDetails();
+
+            model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
+            return View(model);
         }
 
         // GET: ShippingOrderController/Create
@@ -69,7 +72,7 @@ namespace KGQT.Controllers
                     {
 
                         var p = new tbl_Package();
-                        p.PackageOrderHangCode = item;
+                        p.PackageCode = item;
                         p.Status = 1;
                         p.ShippingOrderID = save;
                         p.CreatedBy = user.Username;

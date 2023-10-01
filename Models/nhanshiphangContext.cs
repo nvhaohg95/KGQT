@@ -209,21 +209,13 @@ namespace KGQT.Models
 
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
-                entity.Property(e => e.DateExport).HasColumnType("datetime");
+           
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.NgayGiaoHang).HasColumnType("datetime");
 
-                entity.Property(e => e.Price).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.ReceiveDate).HasColumnType("datetime");
-
-                entity.Property(e => e.SGWarehouseDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Status).HasComment("1. Chưa về\r\n2. Đã về\r\n3. Đã giao");
-
-                entity.Property(e => e.YCGWarehouseDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<tbl_ShippingMethodAddDate>(entity =>
