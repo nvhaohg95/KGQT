@@ -11,6 +11,7 @@ namespace KGQT.Models
         public string? ProducName { get; set; }
         public string? ProductLink { get; set; }
         public double? ProductPrice { get; set; }
+        public double? PriceVND { get; set; }
         public int? ProductQuantity { get; set; }
         public int? ProductType { get; set; }
         public DateTime? CreatedDate { get; set; }

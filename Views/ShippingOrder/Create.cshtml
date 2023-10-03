@@ -49,7 +49,7 @@
                         <label class="form-check-label" for="cbAirbag">Túi khí</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance">
+                        <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance" onchange="showhideDeclare(this)">
                         <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
                     </div>
                 </div>
@@ -64,6 +64,53 @@
                     </div>
                 </div>
                 <div class="form-group mb-4" id="renderPackages"></div>
+                <div id="frmDeclare" style="display:none">
+                    <input class="form-control" id="hdDeclares" name="packages" placeholder="Nhập mã kiện" hidden />
+                    <div class="form-group mb-2">
+                        <label class="mb-0" for="txtPackage">Kê khai</label>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="txtLink">Link sản phẩm</label>
+                            <input type="text" class="form-control" id="txtLink">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="txtQty">Số lượng</label>
+                            <input type="text" class="form-control" id="txtQty">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="txtAmount">Giá</label>
+                            <input type="text" class="form-control" id="txtAmount">
+                        </div>
+                        <div class="form-group col-md-1 align-self-end">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" onclick="addDeclare()" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="renderDeclare"></div>
+                    <!--Start:: Declare item-->
+                    <div class="d-none" id="hdDeclareHTML">
+                        <div class="form-row declare-item">
+                            <div class="form-group col-md-6">
+                                <input type="text" class="form-control txtLink" readonly>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <input type="text" class="form-control txtQty" readonly>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <input type="text" class="form-control txtAmount" readonly>
+                            </div>
+                            <div class="form-group col-md-1 align-self-end">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" onclick="subDeclare(this)" class="btn btn-danger btn-add-declare"><i class="fa fa-times" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End:: Declare item-->
+                </div>
                 <div class="row justify-content-center">
                     <button type="reset" class="btn btn-danger mr-2">Nhập lại</button>
                     <button type="button" class="btn btn-success" onclick="insert()">Lưu</button>
@@ -79,14 +126,13 @@
                 addPackage();
         });
     });
-
+    var lstDeclare = [];
     function addPackage() {
         const ip = $('#txtPackage').val();
         if (ip) {
             let hdField = $('#hdPackage');
             let hdValue = hdField.val();
-            if (hdValue.includes(ip))
-            {
+            if (hdValue.includes(ip)) {
                 helper.showErr('Bạn đã nhập kiện này!');
                 return;
             }
@@ -98,9 +144,9 @@
                 success: function (result) {
                     if (!result) {
                         const html = `<div class="form-check form-check-inline package-item">
-                                                                                          <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
-                                                                                          <span class="form-check-label">${ip}</span>
-                                                                                  </div>`;
+                                                    <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
+                                                    <span class="form-check-label">${ip}</span>
+                                                </div>`;
                         $('#renderPackages').append(html);
                         $('#txtPackage').val('');
                         //Set gia tri cho package field
@@ -129,6 +175,50 @@
         e.remove();
     }
 
+    function showhideDeclare(o) {
+        if (!$(o).is(':checked'))
+            $('#frmDeclare').css('display', 'none');
+        else
+            $('#frmDeclare').css('display', 'block');
+    }
+
+    function addDeclare() {
+        let $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
+        let link = $link.val(), qty = $Qty.val(), amount = $amount.val();
+
+        if (lstDeclare.length) {
+            let i = lstDeclare.findIndex(x => x.ProductLink == link && x.ProductPrice == amount && x.ProductQuantity == qty);
+            if (i > -1) {
+                helper.showErr('Bạn đã khai báo sản phẩm này!')
+                return;
+            }
+        }
+        let render = $('#renderDeclare');
+        let temp = $('.declare-item', '#hdDeclareHTML');
+        if (temp.length) {
+            let clone = temp.clone();
+            $('.txtLink', clone).val(link);
+            $('.txtQty', clone).val(qty);
+            $('.txtAmount', clone).val(amount);
+            $('.btn-add-declare', clone).attr('data-id', lstDeclare.length);
+            render.append(clone);
+            lstDeclare.push({ stt: lstDeclare.length, ProductLink: link, ProductPrice: amount, ProductQuantity: qty });
+            $link.val('');
+            $Qty.val('');
+            $amount.val('');
+        }
+    }
+    function subDeclare(o) {
+        let parent = $(o).closest('.declare-item');
+        if (parent.length) {
+            let id = $(o).attr('data-id');
+            let i = lstDeclare.findIndex(x => x.stt = id);
+            if (i > -1)
+                lstDeclare.splice(i, 1);
+            parent.remove();
+        }
+    }
+
     function insert() {
         var data = helper.form2Object($('#frmShip').serializeArray());
         if (!data.ShippingOrderCode) {
@@ -141,11 +231,18 @@
             return
         }
 
+        if (data.IsInsurance) {
+            if (lstDeclare.length == 0) {
+                helper.showErr('Vui lòng kê khai thông tin để tính phí bảo hiểm!');
+                return;
+            }
+        }
+
         const pack = $('#hdPackage').val();
         $.ajax({
             url: '@Url.Action("Create", "ShippingOrder")',
             type: 'POST',
-            data: { form: data, package: pack },
+            data: { form: data, package: pack, declares: JSON.stringify(lstDeclare) },
             // other AJAX options here
             success: function (result) {
                 if (result == -1)

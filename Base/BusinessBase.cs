@@ -15,7 +15,7 @@ namespace KGQT.Business.Base
             {
                 try
                 {
-                    
+
                     if (!string.IsNullOrEmpty(key))
                     {
                         var type = typeof(T);
@@ -45,6 +45,28 @@ namespace KGQT.Business.Base
             return -1;
         }
 
+        public static bool Update<T>(T entity) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    db.Set<T>().Update(entity);
+                    if( db.SaveChanges() > 0)
+                    {
+                        Log.Info("Cập nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Cập nhật không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return false;
+                }
+            }
+            return true;
+        }
+
 
         public static T GetOne<T>(Expression<Func<T, bool>> predicate) where T : class
         {
@@ -53,6 +75,23 @@ namespace KGQT.Business.Base
                 try
                 {
                     return db.Set<T>().AsQueryable().FirstOrDefault(predicate);
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return null;
+                }
+            }
+        }
+
+        public static T GetFirst<T>() where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    return db.Set<T>().AsQueryable().FirstOrDefault();
 
                 }
                 catch (Exception ex)
