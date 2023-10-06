@@ -1,4 +1,50 @@
-﻿
+﻿/*Start::Hover dropdown*/
+.dropdown-hover > .dropdown-menu {
+   min-width:240px;
+   right: 1em;
+   left:unset;
+   top:75%;
+}
+.dropdown-hover:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown-hover > .dropdown-toggle:active {
+    /*Without this, clicking will make it sticky*/
+    pointer-events: none;
+}
+/*End::Hover dropdown*/
+
+/*Start::Timeline*/
+.timeline {
+    border-left: 1px solid hsl(0deg 0% 70.87%);
+    position: relative;
+    list-style: none;
+    margin-left:10px;
+}
+
+    .timeline .timeline-item {
+        position: relative;
+    }
+
+        .timeline .timeline-item:after {
+            position: absolute;
+            display: block;
+            top: 0;
+        }
+
+        .timeline .timeline-item:after {
+            background-color: hsl(107.31deg 58.5% 41.23%);
+            left: -46px;
+            border-radius: 50%;
+            height: 11px;
+            width: 11px;
+            content: "";
+        }
+
+
+/*End::Timeline*/
+
 /*Start:: Breadsrumb */
 #breadcrumbs {
     background: #f1f1f1;

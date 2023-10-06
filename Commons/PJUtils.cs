@@ -100,32 +100,33 @@ namespace KGQT.Commons
             switch (status)
             {
                 case 1:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-gray text-white\">Đã cập nhật MVĐ</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-gray text-white\">Đã cập nhật MVĐ</span>";
                     break;
                 case 2:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-yellow-l1 text-white\">Hàng về kho TQ</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-yellow-l1 text-white\">Hàng về kho TQ</span>";
                     break;
                 case 3:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-yellow-l2 text-white\">Đang trên đường về HCM</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-yellow-l2 text-white\">Đang trên đường về HCM</span>";
                     break;
                 case 4:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-warning text-white\">Hàng về tới HCM</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-warning text-white\">Hàng về tới HCM</span>";
                     break;
                 case 5:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-success text-white\">Đã nhận hàng</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-success text-white\">Đã nhận hàng</span>";
                     break;
                 case 6:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-danger text-white\">Đã hủy</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-danger text-white\">Đã hủy</span>";
                     break;
                 case 7:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-light text-white\">Thất lạc</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-light text-white\">Thất lạc</span>";
                     break;
                 case 8:
-                    sReturn = "<div class=\"text-center p-1 mb-2 bg-light text-white\">Không nhận được hàng</div>";
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-light text-white\">Không nhận được hàng</span>";
                     break;
             }
             return sReturn;
         }
+
         public static string ShippingStatus(int status)
         {
             string sReturn = "";

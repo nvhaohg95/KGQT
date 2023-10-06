@@ -31,7 +31,6 @@ namespace KGQT.Controllers
         public ActionResult Details(int id)
         {
             var model = new OrderDetails();
-
             model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             model.Packs = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
             model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
