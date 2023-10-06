@@ -9,84 +9,93 @@
     <li><a href="/">Trang chủ</a></li>
     <li><a>danh sách ký gửi</a></li>
 </ul>
-<div class="row">
-    <div class="col-md-12">
-        <h1 class="text-danger">Danh sách ký gửi</h1>
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <h2 class="text-danger">Danh sách ký gửi user</h1>
+        </div>
+        <div class="col-12">
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link active btn btn-sm btn-success" asp-action="Create" asp-method="post">Thêm mới</a>
+                </li>
+            </ul>
+        </div>
     </div>
-  <div class="col-md-12 table-responsive">
-        <p>
-            <a class="btn btn-sm btn-success" asp-action="Create">Thêm mới</a>
-        </p>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>
-                        ShippingOrderCode
-                    </th>
-                    <th>
-                        ShippingMethodName
-                    </th>
-                    <th>
-                        Services
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                    <th>
-                        PaymentMethodName
-                    </th>
-                    <th>
-                        TotalPrice
-                    </th>
-                    <th>
-                        Details
-                    </th>
-                    <th>
-                        Username
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ShippingOrderCode)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ShippingMethodName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.IsInsurancePrice)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Status)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.PaymentMethodName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.TotalPrice)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CreatedDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CreatedBy)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Username)
-                        </td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-                        </td>
+                        <th>
+                            ShippingOrderCode
+                        </th>
+                        <th>
+                            ShippingMethodName
+                        </th>
+                        <th>
+                            Services
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            PaymentMethodName
+                        </th>
+                        <th>
+                            TotalPrice
+                        </th>
+                        <th>
+                            Details
+                        </th>
+                        <th>
+                            Username
+                        </th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ShippingMethodName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IsInsurancePrice)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Status)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PaymentMethodName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TotalPrice)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreatedDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreatedBy)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Username)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-  </div>
+        </div>
+    </div>
 </div>

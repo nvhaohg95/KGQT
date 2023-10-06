@@ -2,6 +2,7 @@
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using NToastNotify;
@@ -58,7 +59,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapAreaControllerRoute(
       name: "admin",
       areaName: "admin",
-      pattern: "admin/{controller=Home}/{action=Index}/{id?}"
+      pattern: "admin/{controller}/{action}/{id?}",new { controller = "home", action = "index" }
     );
 });
 app.Run();

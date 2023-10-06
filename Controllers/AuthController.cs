@@ -60,6 +60,10 @@ namespace KGQT.Controllers
             }
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
             return RedirectToAction("dashboard", "home");
+            //var result = new DataReturnModel() { };
+            //result.Data = new UserLogin() { Username = "loc", FirstName = "Lộc", LastName = "Trần", IMG = "" };
+            //HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
+            //return RedirectToAction("home", "admin");
         }
         #endregion
 

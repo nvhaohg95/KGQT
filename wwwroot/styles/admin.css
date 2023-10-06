@@ -33,6 +33,15 @@ html {
 .h-100px {
     height: 100px !important;
 }
+.w-200px{
+   width:200px! important;
+}
+.w-300px{
+   width:300px! important;
+}
+.w-400px{
+   width:400px! important;
+}
 .fw-bold {
     font-weight: bold;
 }
@@ -115,4 +124,10 @@ html {
     right: 20px;
 }
 
+#pageShippingOrder {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+}
 
