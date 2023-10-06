@@ -4,6 +4,7 @@ using NToastNotify;
 
 namespace KGQT.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class HomeController : Controller
     {
         #region constructor
