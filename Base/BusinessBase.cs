@@ -52,7 +52,7 @@ namespace KGQT.Business.Base
                 try
                 {
                     db.Set<T>().Update(entity);
-                    if( db.SaveChanges() > 0)
+                    if (db.SaveChanges() > 0)
                     {
                         Log.Info("Cập nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
                         return true;
@@ -173,6 +173,25 @@ namespace KGQT.Business.Base
 
             Func<T, bool> expression = Expression.Lambda<Func<T, bool>>(comparison, parameter).Compile();
             return expression;
+        }
+        #endregion
+
+        #region tracklogship
+        public static void TrackLogShippingOrder(int userId, int shipId, string content, int type, string userName)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var t = new tbl_TrackShippingOrder();
+                t.UID = userId;
+                t.ShipID = shipId;
+                t.Context = content;
+                t.Type = type;
+                t.CreatedBy = userName;
+                t.CreatedOn = DateTime.Now;
+                db.tbl_TrackShippingOrders.Add(t);
+                db.SaveChanges();
+            }
+
         }
         #endregion
     }

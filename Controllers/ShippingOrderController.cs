@@ -48,6 +48,14 @@ namespace KGQT.Controllers
 
         #region Functions
         // POST: ShippingOrderController/Create
+        /// <summary>
+        /// Status: 0: chưa xác nhận, 1: Đã cập nhật mã vận đơn, 2:Hàng về kho TQ, 3:Đang trên đường về HCM,
+        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,6:Đã hủy, 7: Thất lạc, 8: không nhận dc hàng
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="package"></param>
+        /// <param name="declares"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Create(tbl_ShippingOrder form, string package, string declares)
         {
@@ -55,7 +63,7 @@ namespace KGQT.Controllers
             {
                 var userLogin = HttpContext.Session.GetString("user");
                 var user = Accounts.GetInfo(-1, userLogin);
-                form.Status = 1;
+                form.Status = 0;
                 form.CreatedDate = DateTime.Now;
                 form.CreatedBy = user.Username;
                 form.Username = user.Username;

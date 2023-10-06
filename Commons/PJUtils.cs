@@ -99,6 +99,9 @@ namespace KGQT.Commons
             string sReturn = "";
             switch (status)
             {
+                case 0: 
+                    sReturn = "<span class=\"text-center p-1 mb-2 bg-danger text-white\">Chưa xác nhận</span>";
+                    break;
                 case 1:
                     sReturn = "<span class=\"text-center p-1 mb-2 bg-gray text-white\">Đã cập nhật MVĐ</span>";
                     break;
@@ -132,6 +135,9 @@ namespace KGQT.Commons
             string sReturn = "";
             switch (status)
             {
+                case 0:
+                    sReturn = "Chưa xác nhận";
+                    break;
                 case 1:
                     sReturn = "Đã cập nhật MVĐ";
                     break;

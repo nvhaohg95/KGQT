@@ -38,6 +38,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
         public virtual DbSet<tbl_UserLevel> tbl_UserLevels { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
+        public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -209,7 +210,25 @@ namespace KGQT.Models
 
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
-           
+                entity.Property(e => e.ExportedCNWH)
+                         .HasColumnType("datetime")
+                         .HasComment("Chờ giao");
+
+                entity.Property(e => e.ImportedSGWH)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày bắt đầu vận chuyển");
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ReceivedDate)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày nhận hàng");
+
+                entity.Property(e => e.Status).HasComment("1. Chưa về\r\n2. Đã về\r\n3. Đã giao");
+
+                entity.Property(e => e.TransportingToSGWH)
+                    .HasColumnType("datetime")
+                    .HasComment("Đang giao");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
@@ -316,7 +335,18 @@ namespace KGQT.Models
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
+            modelBuilder.Entity<tbl_TrackShippingOrder>(entity =>
+            {
+                entity.ToTable("tbl_TrackShippingOrder");
 
+                entity.Property(e => e.CreatedBy).HasMaxLength(250);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifieldBy).HasMaxLength(250);
+
+                entity.Property(e => e.ModifieldOn).HasColumnType("datetime");
+            });
             OnModelCreatingPartial(modelBuilder);
         }
 

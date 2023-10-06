@@ -1,8 +1,10 @@
 ﻿using KGQT.Business;
+using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
 using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NToastNotify;
 using Org.BouncyCastle.Asn1.Cms;
 using System.Xml;
@@ -27,7 +29,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            var lst = ShippingOrder.GetList(0, null, null,"");
+            var lst = ShippingOrder.GetList(0, null, null, "");
             return View(lst);
         }
 
@@ -64,12 +66,12 @@ namespace KGQT.Areas.Admin.Controllers
                         lstData.Add(data);
                     }
                 }
-                return View("Index",lstData);
+                return View("Index", lstData);
             }
         }
 
         [HttpPost]
-        public ActionResult Filter(int? status,string? timeSets, DateTime? fromDate, DateTime? toDate)
+        public ActionResult Filter(int? status, string? timeSets, DateTime? fromDate, DateTime? toDate)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -85,7 +87,7 @@ namespace KGQT.Areas.Admin.Controllers
 
                 if (fromDate != null && toDate != null)
                 {
-                    query = query.Where(x => x.CreatedDate >= fromDate  && x.CreatedDate <= toDate);
+                    query = query.Where(x => x.CreatedDate >= fromDate && x.CreatedDate <= toDate);
                     if (ViewData["Predicate"] != null)
                     {
                         ViewData["Predicate"] += ", ";
@@ -120,13 +122,11 @@ namespace KGQT.Areas.Admin.Controllers
         // GET: ShippingOrderController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
-        }
-
-        // GET: ShippingOrderController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
+            var model = new OrderDetails();
+            model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
+            model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
+            return View(model);
         }
 
         // POST: ShippingOrderController/Edit/5
@@ -144,11 +144,6 @@ namespace KGQT.Areas.Admin.Controllers
             }
         }
 
-        // GET: ShippingOrderController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
         // POST: ShippingOrderController/Delete/5
         [HttpPost]
@@ -174,7 +169,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             try
             {
-               var model = new tbl_ShippingOrder();
+                var model = new tbl_ShippingOrder();
                 return View();// RedirectToAction(nameof(Index));
             }
             catch
@@ -188,6 +183,29 @@ namespace KGQT.Areas.Admin.Controllers
         public bool CheckPackage(string package)
         {
             return Packages.CheckExist(package);
+        }
+
+        [HttpPost]
+        public bool Confirm(int id)
+        {
+            var order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            if (order == null)
+                return false;
+            order.Status = 1;
+            order.ModifiedBy = HttpContext.Session.GetString("user");
+            order.ModifiedDate = DateTime.Now;
+            if (BusinessBase.Update(order))
+            {
+                var sUser = HttpContext.Session.GetString("US_LOGIN");
+                if (!string.IsNullOrEmpty(sUser))
+                {
+                    var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+                    BusinessBase.TrackLogShippingOrder(user.ID, order.ID, "{0} đã xác nhận đơn", 0, user.Username);
+                    return true;
+                }
+
+            }
+            return false;
         }
         #endregion
     }

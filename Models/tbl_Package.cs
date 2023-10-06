@@ -38,15 +38,15 @@ namespace KGQT.Models
         /// <summary>
         /// Chờ giao
         /// </summary>
-        public DateTime? WaitingForDelivery { get; set; }
+        public DateTime? ExportedCNWH { get; set; }
         /// <summary>
         /// Đang giao
         /// </summary>
-        public DateTime? Delivering { get; set; }
+        public DateTime? TransportingToSGWH { get; set; }
         /// <summary>
         /// Ngày bắt đầu vận chuyển
         /// </summary>
-        public DateTime? BeingTransported { get; set; }
+        public DateTime? ImportedSGWH { get; set; }
         /// <summary>
         /// Ngày nhận hàng
         /// </summary>

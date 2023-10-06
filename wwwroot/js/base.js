@@ -59,10 +59,10 @@ function selectedTime() {
     }
     $("#inputFromTime").val(fromDate);
     $("#inputToTime").val(toDate);
-}
+};
 
-var helper = function () {
-    var form2Object = function (form) {
+window.helper = {
+    form2Object: function (form) {
         const data = JSON.parse(JSON.stringify(form));
         let obj = {};
         for (var i in data) {
@@ -95,4 +95,3 @@ var helper = function () {
         });
     }
 };
-
