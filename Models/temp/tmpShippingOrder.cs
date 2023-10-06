@@ -1,4 +1,4 @@
-﻿namespace KGQT.Areas.Admin.Models.temp
+﻿namespace KGQT.Models.temp
 {
     public class tmpShippingOrder
     {

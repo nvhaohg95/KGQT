@@ -1,7 +1,6 @@
-﻿@model List<KGQT.Areas.Admin.Models.temp.tmpShippingOrder>
+﻿@model List<KGQT.Models.tbl_ShippingOrder>
+@using KGQT.Models.temp
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using KGQT.Areas.Admin.Models.temp;
-@using KGQT.Models
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -161,7 +160,7 @@
                                         @Html.DisplayFor(modelItem => item.TotalPrice)
                                     </td>
                                     <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.StatusName)
+                                        @Html.DisplayFor(modelItem => item.Status)
                                     </td>
                                     <td class="text-center">
                                         <a class="text-primary" asp-action="Details" asp-route-id="@item.ID">

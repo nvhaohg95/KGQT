@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace KGQT.Areas.Admin.Models.temp
+namespace KGQT.Models.temp
 {
-    
+
     public class FilterShippingOrder
     {
         public DateTime? FromDate { get; set; }
@@ -32,11 +32,11 @@ namespace KGQT.Areas.Admin.Models.temp
         }
     }
 
-    
+
     public class EStatus
     {
         public int ID { get; set; }
-        
+
         public string Name { get; set; }
     }
     public class ETimeSet

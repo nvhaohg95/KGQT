@@ -8,13 +8,9 @@ namespace KGQT.Areas.Admin.Controllers
     {
         #region constructor
         private IToastNotification _toastNotification;
-        private static ShippingOrder _shippingBus;
-        private static Packages _packages;
         public HomeController(IToastNotification toastNotification)
         {
             _toastNotification = toastNotification;
-            _shippingBus = new ShippingOrder();
-            _packages = new Packages();
         }
         #endregion
 

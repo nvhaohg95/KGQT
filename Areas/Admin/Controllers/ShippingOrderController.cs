@@ -1,6 +1,6 @@
-﻿using KGQT.Areas.Admin.Models.temp;
-using KGQT.Business;
+﻿using KGQT.Business;
 using KGQT.Models;
+using KGQT.Models.temp;
 using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
@@ -9,18 +9,15 @@ using System.Xml;
 
 namespace KGQT.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class ShippingOrderController : Controller
     {
         #region constructor
         private IToastNotification _toastNotification;
-        private static ShippingOrder _shippingBus;
-        private static Packages _packages;
         private static NamespaceHandling _db;
         public ShippingOrderController(IToastNotification toastNotification)
         {
             _toastNotification = toastNotification;
-            _shippingBus = new ShippingOrder();
-            _packages = new Packages();
         }
 
         #endregion
@@ -30,7 +27,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            var lst = _shippingBus.GetList("", "", 0, 0);
+            var lst = ShippingOrder.GetList(0, null, null,"");
             return View(lst);
         }
 
@@ -190,7 +187,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public bool CheckPackage(string package)
         {
-            return _packages.CheckExist(package);
+            return Packages.CheckExist(package);
         }
         #endregion
     }
