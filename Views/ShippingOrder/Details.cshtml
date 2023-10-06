@@ -18,12 +18,12 @@
             <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
                 <div class="card" style="border-radius: 10px;">
                     <div class="card-header px-4 py-5">
-                        <h5 class="text-muted mb-0">Thông tin đơn hàng: <span style="color: #a8729a;">@Model.Order.ShippingOrderCode</span></h5>
+                        <h2 class="text-muted mb-0">Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span></h2>
                     </div>
                     <div class="card-body p-4">
                         <!--Start::Thông tin kiện-->
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <strong class="lead fw-normal mb-0" style="color: #a8729a;">Kiện</strong>
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách Kiện</h3>
                         </div>
                         @foreach (var item in Model.Packs)
                         {
@@ -93,7 +93,7 @@
                         @if (Model.Order.IsInsurance != null && Model.Order.IsInsurance == true)
                         {
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <strong class="lead fw-normal mb-0" style="color: #a8729a;">Kê khai</strong>
+                                <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Kê khai</h3>
                             </div>
                             @if (Model.Packs.Count() > 0)
                             {
@@ -123,23 +123,29 @@
 
                             <div class="card table-responsive">
                                 <table class="table table-striped table-bordered table-hover">
+                                    <colgroup>
+                                        <col width="50%" />
+                                        <col width="20%" />
+                                        <col width="15%" />
+                                        <col width="15%" />
+                                    </colgroup>
                                     <thead>
                                         <tr>
-                                            <th scope="col">Link sản phẩm</th>
-                                            <th scope="col">Số lượng</th>
-                                            <th scope="col">Giá</th>
-                                            <th scope="col"></th>
+                                            <th>Link sản phẩm</th>
+                                            <th>Số lượng</th>
+                                            <th>Giá</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var item in Model.Declarations)
                                         {
                                             <tr>
-                                                <td>@item.ProductLink</td>
+                                                <td><a class="text-truncate d-block" style="max-width:500px !important" target="_blank" href="@item.ProductLink">@item.ProductLink</a></td>
                                                 <td>@item.ProductQuantity</td>
                                                 <td>@item.ProductPrice</td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-primary" onclick="editDeclare('@Uri.EscapeUriString(JsonConvert.SerializeObject(item))')">
+                                                    <button class="btn btn-sm btn-primary mr-2" onclick="editDeclare('@Uri.EscapeUriString(JsonConvert.SerializeObject(item))')">
                                                         Sửa
                                                     </button><button class="btn btn-sm btn-danger">Xóa</button>
                                                 </td>
@@ -153,7 +159,7 @@
                         <hr />
                         <!--Start::Thông tin đơn-->
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <strong class="lead fw-normal mb-0" style="color: #a8729a;">Chi tiết đơn</strong>
+                            <h3 class="lead fw-normal mb-0 text-uppercase text-primary">Chi tiết đơn</h3>
                         </div>
 
                         <div class="d-flex justify-content-between pt-2">
