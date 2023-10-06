@@ -445,7 +445,10 @@
             <!-- Main Content -->
             <div id="content">
                 <!-- Begin Page Content -->
+                <div class="container-fluid">
                     @RenderBody()
+                </div>
+
                 <!-- /.container-fluid -->
             </div>
             <!-- End of Main Content -->
@@ -457,7 +460,7 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-   
+
     <!-- form change password -->
     <div class="modal fade" id="changePassWordModal" tabindex="-1" role="dialog" aria-labelledby="changePassWordModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -476,7 +479,7 @@
                                 <span class="text-danger">(*)</span>
                             </div>
                             <div class="col-9">
-                                <input type="text" name="UserName" value="@acc.Username" placeholder="Tài khoản" class="form-control form-control-user border-none rounded" readonly="true" />
+                                <input type="text" name="UserName" value="@acc?.Username" placeholder="Tài khoản" class="form-control form-control-user border-none rounded" readonly="true" />
                             </div>
                         </div>
                         <div class="row align-items-center my-2 h-50px">
@@ -497,7 +500,7 @@
                                 <span class="text-danger">(*)</span>
                             </div>
                             <div class="col-9 d-flex align-items-center position-relative">
-                                <input id="txtPassword2" type="password" name="NewPassword"  placeholder="Mật khẩu mới" class="form-control form-control-user border-none rounded" />
+                                <input id="txtPassword2" type="password" name="NewPassword" placeholder="Mật khẩu mới" class="form-control form-control-user border-none rounded" />
                                 <span class="position-absolute r-20px cursor-pointer" id="show_pass2">
                                     <i class="fa fa-eye-slash" id="iconShow2" onclick="showHidePass('#iconShow2','#txtPassword2')"></i>
                                 </span>
@@ -515,10 +518,10 @@
                                 </span>
                             </div>
                         </div>
-                </div>
+                    </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-primary w-100px"  onclick="clickChangePass()">Lưu</button>
+                        <button type="button" class="btn btn-primary w-100px" onclick="clickChangePass()">Lưu</button>
                     </div>
                 </form>
             </div>

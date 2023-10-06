@@ -1,11 +1,11 @@
 ﻿using KGQT.Business;
+using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
-using Microsoft.AspNetCore.Http;
+using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NToastNotify;
-using System.Reflection;
 
 namespace KGQT.Controllers
 {
@@ -14,13 +14,9 @@ namespace KGQT.Controllers
     {
         #region constructor
         private IToastNotification _toastNotification;
-        private static ShippingOrder _shippingBus;
-        private static Packages _packages;
         public ShippingOrderController(IToastNotification toastNotification)
         {
             _toastNotification = toastNotification;
-            _shippingBus = new ShippingOrder();
-            _packages = new Packages();
         }
         #endregion
 
@@ -28,14 +24,18 @@ namespace KGQT.Controllers
         // GET: ShippingOrderController
         public ActionResult Index()
         {
-            var lst = _shippingBus.GetList("", "", 0, 0);
+            var lst = ShippingOrder.GetList("", "", 0, 0);
             return View(lst);
         }
 
         // GET: ShippingOrderController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var model = new OrderDetails();
+            model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
+            model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
+            return View(model);
         }
 
         // GET: ShippingOrderController/Create
@@ -43,72 +43,146 @@ namespace KGQT.Controllers
         {
             return View();
         }
-
-        // GET: ShippingOrderController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: ShippingOrderController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ShippingOrderController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ShippingOrderController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
         #endregion
 
         #region Functions
         // POST: ShippingOrderController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(tbl_ShippingOrder form)
+        public JsonResult Create(tbl_ShippingOrder form, string package, string declares)
         {
             try
             {
-               var model = new tbl_ShippingOrder();
-                return View();// RedirectToAction(nameof(Index));
+                var userLogin = HttpContext.Session.GetString("user");
+                var user = Accounts.GetInfo(-1, userLogin);
+                form.Status = 1;
+                form.CreatedDate = DateTime.Now;
+                form.CreatedBy = user.Username;
+                form.Username = user.Username;
+                form.Email = user.Email;
+                form.LastName = user.LastName;
+                form.FirstName = user.FirstName;
+                form.Phone = user.Phone;
+                form.Address = user.Address;
+                form.ShippingMethodName = PJUtils.ShippingMethodName(form.ShippingMethod.Value);
+                var id = BusinessBase.Add(form, "ShippingOrderCode");
+                if (id > -1 && !string.IsNullOrEmpty(package))
+                {
+                    var packs = package.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    List<tbl_Package> obj = new List<tbl_Package>();
+                    foreach (var item in packs)
+                    {
+
+                        var p = new tbl_Package();
+                        p.PackageCode = item;
+                        p.Status = 1;
+                        p.ShippingOrderID = id;
+                        p.CreatedBy = user.Username;
+                        p.CreatedDate = DateTime.Now;
+                        BusinessBase.Add(p);
+                    }
+                    if (form.IsInsurance == true && !string.IsNullOrEmpty(declares))
+                    {
+                        var lstDeclare = JsonConvert.DeserializeObject<List<tbl_ShippingOrderDeclaration>>(declares);
+                        var config = BusinessBase.GetFirst<tbl_Configuration>();
+                        double totalPrice = 0;
+                        int save = -1;
+                        foreach (var d in lstDeclare)
+                        {
+                            d.ShippingOrderID = id;
+                            d.ShippingOrderCode = form.ShippingOrderCode;
+                            d.PriceVND = d.ProductQuantity * d.ProductQuantity * Convert.ToDouble(config.Currency);
+                            d.CreatedBy = user.Username;
+                            d.CreatedDate = DateTime.Now;
+                            save = BusinessBase.Add(d);
+                            if (save > -1)
+                                totalPrice += d.PriceVND.Value;
+                        }
+                        if (save > -1)
+                        {
+                            double feeInsur = totalPrice * 0.05;
+                            var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+                            if (ship != null)
+                            {
+                                ship.IsInsurancePrice = feeInsur;
+                                BusinessBase.Update(ship);
+                            }
+                        }
+                    }
+                    return Json(id);
+                }
+                return Json(id);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return Json(0);
             }
         }
-
 
         [HttpGet]
         public bool CheckPackage(string package)
         {
-            return _packages.CheckExist(package);
+            return Packages.CheckExist(package);
+        }
+
+        /// <summary>
+        /// Return -1 : trùng, 0: thất bại, 1: add; 2 update
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="qty"></param>
+        /// <param name="amount"></param>
+        /// <param name="shipId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public int AddDeclare(int id, string link, int qty, float amount, int shipId)
+        {
+            var exist = BusinessBase.Exist<tbl_ShippingOrderDeclaration>(x => x.ProductLink == link && x.ProductQuantity == qty && x.ProductPrice == amount);
+            if (exist) return -1;
+
+            var conf = BusinessBase.GetFirst<tbl_Configuration>();
+            var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == shipId);
+            var userLogin = HttpContext.Session.GetString("user");
+
+            if (ship == null) return 0;
+
+            if (id > 0)
+            {
+                var declare = BusinessBase.GetOne<tbl_ShippingOrderDeclaration>(x => x.ID == id);
+                if (declare != null)
+                {
+                    declare.ProductLink = link;
+                    declare.ProductQuantity = qty;
+                    declare.ProductPrice = amount;
+                    declare.PriceVND = qty * amount * conf.Currency;
+                    declare.ModifiedBy = userLogin;
+                    declare.ModifiedDate = DateTime.Now;
+                    bool save = BusinessBase.Update(declare);
+                    if (save)
+                    {
+                        ShippingOrder.UpdateFeeIsurance(shipId);
+                        return 2;
+                    }
+                }
+            }
+            else
+            {
+                var o = new tbl_ShippingOrderDeclaration();
+                o.ShippingOrderID = shipId;
+                o.ShippingOrderCode = ship.ShippingOrderCode;
+                o.ProductLink = link;
+                o.ProductQuantity = qty;
+                o.ProductPrice = amount;
+                o.PriceVND = qty * amount * conf.Currency;
+                o.CreatedBy = userLogin;
+                o.CreatedDate = DateTime.Now;
+                int s = BusinessBase.Add(o);
+                if (s > -1)
+                {
+                    ShippingOrder.UpdateFeeIsurance(shipId);
+                    return 1;
+                }
+            }
+
+            return 0;
         }
         #endregion
     }

@@ -44,7 +44,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=LAPTOP-1TA69L2B;Database=nhanshiphang;Integrated Security=True;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=LAPTOP-EOMC9SID;Database=nhanshiphang;Integrated Security=True;Trusted_Connection=True;");
             }
         }
 
@@ -209,21 +209,13 @@ namespace KGQT.Models
 
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
-                entity.Property(e => e.DateExport).HasColumnType("datetime");
+           
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.NgayGiaoHang).HasColumnType("datetime");
 
-                entity.Property(e => e.Price).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.ReceiveDate).HasColumnType("datetime");
-
-                entity.Property(e => e.SGWarehouseDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Status).HasComment("1. Chưa về\r\n2. Đã về\r\n3. Đã giao");
-
-                entity.Property(e => e.YCGWarehouseDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<tbl_ShippingMethodAddDate>(entity =>
@@ -251,9 +243,6 @@ namespace KGQT.Models
             modelBuilder.Entity<tbl_ShippingOrderDeclaration>(entity =>
             {
                 entity.ToTable("tbl_ShippingOrderDeclaration");
-
-                entity.Property(e => e.ID).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");

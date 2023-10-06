@@ -16,7 +16,7 @@ namespace KGQT.Models
         public string? Instagram { get; set; }
         public string? Skype { get; set; }
         public string? TimeWork { get; set; }
-        public string? Currency { get; set; }
+        public double? Currency { get; set; }
         public double? WeightRound { get; set; }
         public double? WeightExchange { get; set; }
         public string? InfoContent { get; set; }
