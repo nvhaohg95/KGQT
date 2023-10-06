@@ -18,7 +18,16 @@
             <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
                 <div class="card" style="border-radius: 10px;">
                     <div class="card-header px-4 py-5">
-                        <h2 class="text-muted mb-0">Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span></h2>
+                        <div class="card-header px-4 py-5">
+                            <h2 class="text-muted mb-0">
+                                Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span>
+                                @if (Model.Order.Status < 3)
+                                {
+                                    <button type="button" onclick="cancel(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
+                                }
+                            </h2>
+                            <span class="py-2">Trạng thái đơn: <strong>@PJUtils.ShippingStatus(Model.Order.Status.Value)</strong></span>
+                        </div>
                     </div>
                     <div class="card-body p-4">
                         <!--Start::Thông tin kiện-->
@@ -214,6 +223,25 @@
     </div>
 </section>
 <script>
+    //Hủy đơn
+    function cancel(id) {
+        $.ajax({
+            url: '@Url.Action("Cancel", "ShippingOrder")',
+            type: 'Post',
+            data: { id },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Lỗi!');
+                else
+                    helper.showSuc('Đã hủy nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
     function addDeclare() {
         let $id = $("#txtId"), $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
         let id = $id.val(), link = $link.val(), qty = $Qty.val(), amount = $amount.val();

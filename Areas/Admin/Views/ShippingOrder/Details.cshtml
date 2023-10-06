@@ -20,7 +20,14 @@
                     <div class="card-header px-4 py-5">
                         <h2 class="text-muted mb-0">
                             Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span>
-                            <button type="button" onclick="confirm(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Xác nhận đơn</button>
+                            @if (Model.Order.Status == 0)
+                            {
+                                <button type="button" onclick="confirm(@Model.Order.ID)" class="btn btn-sm btn-primary float-right">Xác nhận đơn</button>
+                            }
+                            @if (Model.Order.Status < 3)
+                            {
+                                <button type="button" onclick="cancel(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
+                            }
                         </h2>
                         <span class="py-2">Trạng thái đơn: <strong>@PJUtils.ShippingStatus(Model.Order.Status.Value)</strong></span>
                     </div>
@@ -41,8 +48,8 @@
                                         </div>
                                         <div class="col-md-10">
                                             <div class="row justify-content-end fa-sm">
-                                                <div class="dropdown p-2"> <button class="btn-sm btn btn-danger">Cập nhật</button></div>
-                                                <div class="dropdown p-2"> <button class="btn-sm btn bg-orange text-white">Kiểm tra hàng kho TQ</button></div>
+                                                <div class="dropdown p-2"> <button type="button" class="btn-sm btn btn-danger">Cập nhật</button></div>
+                                                <div class="dropdown p-2"> <button type="button" class="btn-sm btn bg-orange text-white">Kiểm tra hàng kho TQ</button></div>
                                                 <div class="dropdown dropdown-hover p-2">
                                                     <button class="btn btn-sm btn-success px-0"
                                                             type="button"
@@ -87,7 +94,7 @@
 
                                                             @if (item.ReceivedDate == null && item.ExportedCNWH == null && item.TransportingToSGWH == null && item.ImportedSGWH == null)
                                                             {
-                                                                <li>
+                                                                <li class="p-2">
                                                                     Chưa có lịch sự kiện hàng
                                                                 </li>
                                                             }
@@ -189,9 +196,10 @@
                                                 <td>@item.ProductQuantity</td>
                                                 <td>@item.ProductPrice</td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-primary mr-2" onclick="editDeclare('@Uri.EscapeUriString(JsonConvert.SerializeObject(item))')">
+                                                    <button type="button" class="btn btn-sm btn-primary mr-2" onclick="editDeclare('@Uri.EscapeUriString(JsonConvert.SerializeObject(item))')">
                                                         Sửa
-                                                    </button><button class="btn btn-sm btn-danger">Xóa</button>
+                                                    </button>
+                                                    <button type="button" onclick="deleteDeclare(@item.ID)" class="btn btn-sm btn-danger">Xóa</button>
                                                 </td>
                                             </tr>
                                         }
@@ -246,7 +254,7 @@
 </section>
 <script>
 
-    //Start: Order
+    //Xác nhận
     function confirm(id) {
         $.ajax({
             url: '/admin/ShippingOrder/Confirm',
@@ -264,9 +272,27 @@
             }
         });
     }
-    //End: Order
+    
+    //Hủy đơn
+    function cancel(id) {
+        $.ajax({
+            url: '/admin/ShippingOrder/Cancel',
+            type: 'Post',
+            data: { id },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Lỗi!');
+                else
+                    helper.showSuc('Đã hủy nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
 
-    //Start: Declare
+    //Thêm kê khai
     function addDeclare() {
         let $id = $("#txtId"), $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
         let id = $id.val(), link = $link.val(), qty = $Qty.val(), amount = $amount.val();
@@ -277,7 +303,7 @@
         }
 
         $.ajax({
-            url: '@Url.Action("AddDeclare", "Admin/ShippingOrder")',
+            url: '/admin/ShippingOrder/AddDeclare',
             type: 'Post',
             data: { id, link, qty, amount, shipId: @Model.Order.ID },
             // other AJAX options here
@@ -300,6 +326,7 @@
         });
     }
 
+    //Sửa kê khai
     function editDeclare(o) {
         var obj = JSON.parse(decodeURIComponent(o));
 
@@ -309,7 +336,23 @@
         $('#txtAmount').val(obj.ProductPrice);
     }
 
-                                    //End: Declare
-
+    //Xóa kê khai
+    function deleteDeclare(id) {
+        $.ajax({
+            url: '/admin/ShippingOrder/DeleteDeclare',
+            type: 'Post',
+            data: { id },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Lỗi!');
+                else
+                    helper.showSuc('Đã hủy nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
 
 </script>

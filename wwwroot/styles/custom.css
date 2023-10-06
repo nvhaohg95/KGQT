@@ -3,7 +3,7 @@
    min-width:240px;
    right: 1em;
    left:unset;
-   top:75%;
+   top:85%;
 }
 .dropdown-hover:hover > .dropdown-menu {
     display: block;

@@ -117,13 +117,13 @@ namespace KGQT.Commons
                 case 5:
                     sReturn = "<span class=\"text-center p-1 mb-2 bg-success text-white\">Đã nhận hàng</span>";
                     break;
-                case 6:
+                case 9:
                     sReturn = "<span class=\"text-center p-1 mb-2 bg-danger text-white\">Đã hủy</span>";
                     break;
-                case 7:
+                case 10:
                     sReturn = "<span class=\"text-center p-1 mb-2 bg-light text-white\">Thất lạc</span>";
                     break;
-                case 8:
+                case 11:
                     sReturn = "<span class=\"text-center p-1 mb-2 bg-light text-white\">Không nhận được hàng</span>";
                     break;
             }
@@ -153,13 +153,13 @@ namespace KGQT.Commons
                 case 5:
                     sReturn = "Đã nhận hàng";
                     break;
-                case 6:
-                    sReturn = ">Đã hủy";
+                case 9:
+                    sReturn = "Đã hủy";
                     break;
-                case 7:
+                case 10:
                     sReturn = "Thất lạc";
                     break;
-                case 8:
+                case 11:
                     sReturn = "Không nhận được hàng";
                     break;
             }

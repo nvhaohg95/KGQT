@@ -50,7 +50,7 @@ namespace KGQT.Controllers
         // POST: ShippingOrderController/Create
         /// <summary>
         /// Status: 0: chưa xác nhận, 1: Đã cập nhật mã vận đơn, 2:Hàng về kho TQ, 3:Đang trên đường về HCM,
-        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,6:Đã hủy, 7: Thất lạc, 8: không nhận dc hàng
+        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,9:Đã hủy, 10: Thất lạc, 1: không nhận dc hàng
         /// </summary>
         /// <param name="form"></param>
         /// <param name="package"></param>
@@ -192,6 +192,29 @@ namespace KGQT.Controllers
             }
 
             return 0;
+        }
+
+        [HttpPost]
+        public bool Cancel(int id)
+        {
+            var order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            if (order == null)
+                return false;
+            order.Status = 9;
+            order.ModifiedBy = HttpContext.Session.GetString("user");
+            order.ModifiedDate = DateTime.Now;
+            if (BusinessBase.Update(order))
+            {
+                var sUser = HttpContext.Session.GetString("US_LOGIN");
+                if (!string.IsNullOrEmpty(sUser))
+                {
+                    var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+                    BusinessBase.TrackLogShippingOrder(user.ID, order.ID, "{0} đã hủy đơn", 1, user.Username);
+                    return true;
+                }
+
+            }
+            return false;
         }
         #endregion
     }

@@ -66,6 +66,50 @@ namespace KGQT.Business.Base
             }
             return true;
         }
+        public static bool Remove<T>(Expression<Func<T, bool>> predicate) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    var entity = GetOne(predicate);
+                    db.Set<T>().Remove(entity);
+                    if (db.SaveChanges() > 0)
+                    {
+                        Log.Info("Xóa nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Xóa không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool Remove<T>(T entity) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    db.Set<T>().Remove(entity);
+                    if (db.SaveChanges() > 0)
+                    {
+                        Log.Info("Xóa nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Xóa không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return false;
+                }
+            }
+            return true;
+        }
 
 
         public static T GetOne<T>(Expression<Func<T, bool>> predicate) where T : class
