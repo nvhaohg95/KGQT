@@ -19,7 +19,7 @@ namespace KGQT.Business.Base
                     if (!string.IsNullOrEmpty(key))
                     {
                         var type = typeof(T);
-                        var v = type.GetProperty(key).GetValue(entity, null);
+                        var v = type?.GetProperty(key)?.GetValue(entity, null);
                         var lamdaExp = GenExpressionByString<T>(key, v);
                         var exist = db.Set<T>().Any(lamdaExp);
                         if (exist)
@@ -31,7 +31,7 @@ namespace KGQT.Business.Base
                     {
                         Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
                         var propertyInfo = entity.GetType().GetProperty("ID");
-                        var value = propertyInfo.GetValue(entity, null);
+                        var value = propertyInfo?.GetValue(entity, null);
                         if (value != null)
                             return Int32.Parse(value.ToString());
                     }
@@ -91,7 +91,7 @@ namespace KGQT.Business.Base
             {
                 try
                 {
-                    return db.Set<T>().AsQueryable().FirstOrDefault();
+                    return db.Set<T>().FirstOrDefault();
 
                 }
                 catch (Exception ex)

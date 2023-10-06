@@ -243,9 +243,6 @@ namespace KGQT.Models
             modelBuilder.Entity<tbl_ShippingOrderDeclaration>(entity =>
             {
                 entity.ToTable("tbl_ShippingOrderDeclaration");
-
-                entity.Property(e => e.ID).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");

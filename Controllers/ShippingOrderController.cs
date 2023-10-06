@@ -6,7 +6,6 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NToastNotify;
-using System.Dynamic;
 
 namespace KGQT.Controllers
 {
@@ -35,6 +34,7 @@ namespace KGQT.Controllers
 
             model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             model.Packs = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
+            model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
             return View(model);
         }
 
@@ -118,11 +118,71 @@ namespace KGQT.Controllers
             }
         }
 
-
         [HttpGet]
         public bool CheckPackage(string package)
         {
             return Packages.CheckExist(package);
+        }
+
+        /// <summary>
+        /// Return -1 : trùng, 0: thất bại, 1: add; 2 update
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="qty"></param>
+        /// <param name="amount"></param>
+        /// <param name="shipId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public int AddDeclare(int id, string link, int qty, float amount, int shipId)
+        {
+            var exist = BusinessBase.Exist<tbl_ShippingOrderDeclaration>(x => x.ProductLink == link && x.ProductQuantity == qty && x.ProductPrice == amount);
+            if (exist) return -1;
+
+            var conf = BusinessBase.GetFirst<tbl_Configuration>();
+            var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == shipId);
+            var userLogin = HttpContext.Session.GetString("user");
+
+            if (ship == null) return 0;
+
+            if (id > 0)
+            {
+                var declare = BusinessBase.GetOne<tbl_ShippingOrderDeclaration>(x => x.ID == id);
+                if (declare != null)
+                {
+                    declare.ProductLink = link;
+                    declare.ProductQuantity = qty;
+                    declare.ProductPrice = amount;
+                    declare.PriceVND = qty * amount * conf.Currency;
+                    declare.ModifiedBy = userLogin;
+                    declare.ModifiedDate = DateTime.Now;
+                    bool save = BusinessBase.Update(declare);
+                    if (save)
+                    {
+                        ShippingOrder.UpdateFeeIsurance(shipId);
+                        return 2;
+                    }
+                }
+            }
+            else
+            {
+                var o = new tbl_ShippingOrderDeclaration();
+                o.ShippingOrderID = shipId;
+                o.ShippingOrderCode = ship.ShippingOrderCode;
+                o.ProductLink = link;
+                o.ProductQuantity = qty;
+                o.ProductPrice = amount;
+                o.PriceVND = qty * amount * conf.Currency;
+                o.CreatedBy = userLogin;
+                o.CreatedDate = DateTime.Now;
+                int s = BusinessBase.Add(o);
+                if (s > -1)
+                {
+                    ShippingOrder.UpdateFeeIsurance(shipId);
+                    return 1;
+                }
+            }
+
+            return 0;
         }
         #endregion
     }
