@@ -1,0 +1,44 @@
+﻿@model KGQT.Models.tbl_Package
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="/">Trang chủ</a></li>
+    <li><a href="/Package/Index">Kiện</a></li>
+    <li><a>Chi tiết kiện</a></li>
+</ul>
+<section class="h-100 gradient-custom">
+    <div class="container-fluid py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
+                <div class="card" style="border-radius: 10px;">
+                    <div class="card-header px-4 py-5">
+                        <div class="card-header px-4 py-5">
+                            <h2 class="text-muted mb-0">
+                                Thông tin đơn: <span class="text-uppercase text-danger">@Model.PackageCode</span>
+                            </h2>
+                            <span class="py-2">Mã vận đơn: <strong>@Model.ShippingOrderID)</strong></span>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="txtPackage">Chi tiết kiện</label>
+                                <input type="text" class="form-control" id="txtPackage" placeholder="Quét mã kiện hoặc nhập 3 số cuối" onkeydown="debounce(packageOnChange,1000)">
+                            </div>
+                        </div>
+                        <!--Start::Thông tin kiện-->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách Kiện</h3>
+                        </div>
+                        <div class="row flex-column" id="listOutput"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

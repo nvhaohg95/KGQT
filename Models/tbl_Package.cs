@@ -6,8 +6,9 @@ namespace KGQT.Models
     public partial class tbl_Package
     {
         public int ID { get; set; }
-        public string? PackageCode { get; set; }
-        public int? ShippingOrderID { get; set; }
+        public string PackageCode { get; set; } = null!;
+        public int ShippingOrderID { get; set; }
+        public string ShippingOrderCode { get; set; } = null!;
         public string? Barcode { get; set; }
         /// <summary>
         /// 1. Chưa về

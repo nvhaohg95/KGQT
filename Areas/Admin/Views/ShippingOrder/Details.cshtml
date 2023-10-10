@@ -8,8 +8,8 @@
     //https://mdbootstrap.com/docs/standard/extended/order-details/
 }
 <ul id="breadcrumbs" class="mb-2">
-    <li><a href="/">Trang chủ</a></li>
-    <li><a href="/ShippingOrder/Index">Danh sách ký gửi</a></li>
+    <li><a href="/admin/home">Trang chủ</a></li>
+    <li><a href="/admin/ShippingOrder/Index">Danh sách ký gửi</a></li>
     <li><a>Chi tiết</a></li>
 </ul>
 <section class="h-100 gradient-custom">
@@ -22,19 +22,20 @@
                             Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span>
                             @if (Model.Order.Status == 0)
                             {
-                                <button type="button" onclick="confirm(@Model.Order.ID)" class="btn btn-sm btn-primary float-right">Xác nhận đơn</button>
+                                <button type="button" onclick="confirm(@Model.Order.ID)" class="btn btn-sm btn-primary float-right mx-2">Xác nhận đơn</button>
                             }
                             @if (Model.Order.Status < 3)
                             {
                                 <button type="button" onclick="cancel(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
                             }
                         </h2>
-                        <span class="py-2">Trạng thái đơn: <strong>@PJUtils.ShippingStatus(Model.Order.Status.Value)</strong></span>
+                        <span class="py-2">Trạng thái đơn: <strong>@PJUtils.ShippingStatus(Model.Order.Status)</strong></span>
                     </div>
                     <div class="card-body p-4">
                         <!--Start::Thông tin kiện-->
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách Kiện</h3>
+                            <a class="btn btn-success btn-sm" href="/admin/package/create?id=@Model.Order.ID">Thêm kiện</a>
                         </div>
                         @foreach (var item in Model.Packs)
                         {
@@ -99,7 +100,6 @@
                                                                 </li>
                                                             }
                                                         </ul>
-
                                                     </div>
                                                 </div>
                                             </div>

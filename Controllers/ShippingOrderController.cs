@@ -85,6 +85,7 @@ namespace KGQT.Controllers
                         p.PackageCode = item;
                         p.Status = 1;
                         p.ShippingOrderID = id;
+                        p.ShippingOrderCode = form.ShippingOrderCode;
                         p.CreatedBy = user.Username;
                         p.CreatedDate = DateTime.Now;
                         BusinessBase.Add(p);

@@ -15,13 +15,6 @@
         <div class="col-md-12">
             <h2 class="text-danger">Danh sách ký gửi user</h1>
         </div>
-        <div class="col-12">
-            <ul class="nav justify-content-end">
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-sm btn-success" asp-action="Create" asp-method="post">Thêm mới</a>
-                </li>
-            </ul>
-        </div>
     </div>
     <div class="col-md-12 table-responsive">
         <p>
@@ -90,7 +83,7 @@
                             </div>
                         </td>
                         <td>
-                            @Html.Raw(PJUtils.ShippingStatusHtml(item.Status.Value))
+                            @Html.Raw(PJUtils.ShippingStatusHtml(item.Status))
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.TotalPrice)

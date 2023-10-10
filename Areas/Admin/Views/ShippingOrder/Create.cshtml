@@ -53,6 +53,10 @@
                         <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
                     </div>
                 </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtUser">Khách hàng</label>
+                    <input type="text" class="form-control" id="txtShipID" name="Username" placeholder="Nhập khách đặt đơn">
+                </div>
                 <div class="form-group mb-2">
                     <label class="mb-0" for="txtPackage">Kiện</label>
                 </div>
@@ -136,7 +140,7 @@
                 return;
             }
             $.ajax({
-                url: 'admin/ShippingOrder/CheckPackage',
+                url: '/admin/ShippingOrder/CheckPackage',
                 type: 'GET',
                 data: { package: ip },
                 // other AJAX options here
@@ -237,9 +241,13 @@
             }
         }
 
+        if (!data.Username) {
+            helper.showErr('Hãy nhập khách hàng!');
+            return
+        }
         const pack = $('#hdPackage').val();
         $.ajax({
-            url: 'admin/ShippingOrder/Create',
+            url: '/admin/ShippingOrder/Create',
             type: 'POST',
             data: { form: data, package: pack, declares: JSON.stringify(lstDeclare) },
             // other AJAX options here

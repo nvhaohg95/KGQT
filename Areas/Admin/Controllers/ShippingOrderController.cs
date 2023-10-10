@@ -32,6 +32,12 @@ namespace KGQT.Areas.Admin.Controllers
             return View(lst);
         }
 
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
+
         [HttpPost]
         public ActionResult Search(string searchText)
         {
@@ -161,6 +167,12 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Functions
+        [HttpGet]
+        public bool CheckPackage(string package)
+        {
+            return Packages.CheckExist(package);
+        }
+
         // POST: ShippingOrderController/Create
         /// <summary>
         /// Status: 0: chưa xác nhận, 1: Đã cập nhật mã vận đơn, 2:Hàng về kho TQ, 3:Đang trên đường về HCM,
@@ -171,16 +183,15 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="declares"></param>
         /// <returns></returns>
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public JsonResult Create(tbl_ShippingOrder form, string package, string declares)
         {
             try
             {
                 var userLogin = HttpContext.Session.GetString("user");
-                var user = Accounts.GetInfo(-1, userLogin);
-                form.Status = 0;
+                var user = Accounts.GetInfo(-1, form.Username);
+                form.Status = 1;
                 form.CreatedDate = DateTime.Now;
-                form.CreatedBy = user.Username;
+                form.CreatedBy = userLogin;
                 form.Username = user.Username;
                 form.Email = user.Email;
                 form.LastName = user.LastName;
@@ -240,14 +251,6 @@ namespace KGQT.Areas.Admin.Controllers
             {
                 return Json(0);
             }
-        }
-
-
-
-        [HttpGet]
-        public bool CheckPackage(string package)
-        {
-            return Packages.CheckExist(package);
         }
 
         [HttpPost]

@@ -6,7 +6,7 @@ namespace KGQT.Models
     public partial class tbl_ShippingOrder
     {
         public int ID { get; set; }
-        public string? ShippingOrderCode { get; set; }
+        public string ShippingOrderCode { get; set; } = null!;
         public string? Username { get; set; }
         public string? Email { get; set; }
         public string? FirstName { get; set; }
@@ -21,7 +21,7 @@ namespace KGQT.Models
         public double? IsAirPackagePrice { get; set; }
         public bool? IsInsurance { get; set; }
         public double? IsInsurancePrice { get; set; }
-        public int? Status { get; set; }
+        public int Status { get; set; }
         public int? PaymentMethod { get; set; }
         public string? PaymentMethodName { get; set; }
         public double? ShippingPrice { get; set; }

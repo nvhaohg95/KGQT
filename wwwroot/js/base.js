@@ -61,7 +61,19 @@ function selectedTime() {
     $("#inputToTime").val(toDate);
 };
 
+function debounce(func, within = 300, timerId = null) {
+    window.callOnceTimers = window.callOnceTimers || {};
+    if (timerId == null)
+        timerId = func;
+    var timer = window.callOnceTimers[timerId];
+    clearTimeout(timer);
+    timer = setTimeout(() => func(), within);
+    window.callOnceTimers[timerId] = timer;
+}
 window.helper = {
+
+
+
     form2Object: function (form) {
         const data = JSON.parse(JSON.stringify(form));
         let obj = {};

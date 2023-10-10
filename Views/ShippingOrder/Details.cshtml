@@ -26,7 +26,7 @@
                                     <button type="button" onclick="cancel(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
                                 }
                             </h2>
-                            <span class="py-2">Trạng thái đơn: <strong>@PJUtils.ShippingStatus(Model.Order.Status.Value)</strong></span>
+                            <span class="py-2">Trạng thái đơn: <strong>@PJUtils.ShippingStatus(Model.Order.Status)</strong></span>
                         </div>
                     </div>
                     <div class="card-body p-4">
@@ -57,15 +57,46 @@
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="drStt">
                                                         <ul class="timeline">
-                                                            <li class="timeline-item mb-5">
-                                                                <span class="fw-bold">Our company starts its operations</span>
-                                                                <p class="text-muted mb-2 fw-bold">11 March 2020</p>
-                                                            </li>
-                                                            <li class="timeline-item mb-5">
-                                                                <h5 class="fw-bold">Our company starts its operations</h5>
-                                                                <p class="text-muted mb-2 fw-bold">11 March 2020</p>
-                                                            </li>
+                                                            @if (item.ReceivedDate != null)
+                                                            {
+                                                                <li class="timeline-item mb-5">
+                                                                    <span class="fw-bold">Đã nhận hàng</span>
+                                                                    <p class="text-muted mb-2 fw-bold">@item.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                                                                </li>
+                                                            }
+
+                                                            @if (item.ImportedSGWH != null)
+                                                            {
+                                                                <li class="timeline-item mb-5">
+                                                                    <span class="fw-bold">Đã nhận hàng</span>
+                                                                    <p class="text-muted mb-2 fw-bold">@item.ImportedSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                                                                </li>
+                                                            }
+
+                                                            @if (item.TransportingToSGWH != null)
+                                                            {
+                                                                <li class="timeline-item mb-5">
+                                                                    <span class="fw-bold">Đã nhận hàng</span>
+                                                                    <p class="text-muted mb-2 fw-bold">@item.TransportingToSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                                                                </li>
+                                                            }
+
+                                                            @if (item.ExportedCNWH != null)
+                                                            {
+                                                                <li class="timeline-item mb-5">
+                                                                    <span class="fw-bold">Đã nhận hàng</span>
+                                                                    <p class="text-muted mb-2 fw-bold">@item.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                                                                </li>
+                                                            }
+
+                                                            @if (item.ReceivedDate == null && item.ExportedCNWH == null && item.TransportingToSGWH == null && item.ImportedSGWH == null)
+                                                            {
+                                                                <li class="p-2">
+                                                                    Chưa có lịch sự kiện hàng
+                                                                </li>
+                                                            }
                                                         </ul>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -82,9 +113,9 @@
                                                 </div>
                                                 <div class="col-md-4 text-center d-flex justify-content-center align-items-center flex-column">
                                                     <div class="row">
-                                                        Bọt khí:  &nbsp; <strong class="text-muted mb-0"> @(item.WoodPackageWeight ?? 0)</strong>
+                                                        Bọt khí:  &nbsp; <strong class="text-muted mb-0"> @(item.AirPackageWeight ?? 0)</strong>
                                                     </div>
-                                                    <div class="row"> Qui đổi:  &nbsp; <strong class="text-muted mb-0"> @(item.WoodPackageWeightExchange ?? 0)</strong></div>
+                                                    <div class="row"> Qui đổi:  &nbsp; <strong class="text-muted mb-0"> @(item.AirPackageWeightExchange ?? 0)</strong></div>
                                                 </div>
                                             </div>
                                             <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">

@@ -34,18 +34,18 @@ namespace KGQT.Models
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrderDeclaration> tbl_ShippingOrderDeclarations { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrderStatusHistory> tbl_ShippingOrderStatusHistories { get; set; } = null!;
+        public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_TradeHistory> tbl_TradeHistories { get; set; } = null!;
         public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
         public virtual DbSet<tbl_UserLevel> tbl_UserLevels { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
-        public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=LAPTOP-EOMC9SID;Database=nhanshiphang;Integrated Security=True;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=LAPTOP-EOMC9SID;Database=nhanshiphang;User Id=sa;Password=abc123;Integrated Security=True; Trusted_Connection=True;");
             }
         }
 
@@ -211,8 +211,8 @@ namespace KGQT.Models
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
                 entity.Property(e => e.ExportedCNWH)
-                         .HasColumnType("datetime")
-                         .HasComment("Chờ giao");
+                    .HasColumnType("datetime")
+                    .HasComment("Chờ giao");
 
                 entity.Property(e => e.ImportedSGWH)
                     .HasColumnType("datetime")
@@ -229,12 +229,6 @@ namespace KGQT.Models
                 entity.Property(e => e.TransportingToSGWH)
                     .HasColumnType("datetime")
                     .HasComment("Đang giao");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-
-
-
-                entity.Property(e => e.Status).HasComment("1. Chưa về\r\n2. Đã về\r\n3. Đã giao");
             });
 
             modelBuilder.Entity<tbl_ShippingMethodAddDate>(entity =>
@@ -262,6 +256,7 @@ namespace KGQT.Models
             modelBuilder.Entity<tbl_ShippingOrderDeclaration>(entity =>
             {
                 entity.ToTable("tbl_ShippingOrderDeclaration");
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
@@ -274,6 +269,21 @@ namespace KGQT.Models
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_TrackShippingOrder>(entity =>
+            {
+                entity.ToTable("tbl_TrackShippingOrder");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(100);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifieldBy).HasMaxLength(100);
+
+                entity.Property(e => e.ModifieldOn).HasColumnType("datetime");
+
+                entity.Property(e => e.Type).HasDefaultValueSql("((0))");
             });
 
             modelBuilder.Entity<tbl_TradeHistory>(entity =>
@@ -335,18 +345,7 @@ namespace KGQT.Models
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
-            modelBuilder.Entity<tbl_TrackShippingOrder>(entity =>
-            {
-                entity.ToTable("tbl_TrackShippingOrder");
 
-                entity.Property(e => e.CreatedBy).HasMaxLength(250);
-
-                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifieldBy).HasMaxLength(250);
-
-                entity.Property(e => e.ModifieldOn).HasColumnType("datetime");
-            });
             OnModelCreatingPartial(modelBuilder);
         }
 
