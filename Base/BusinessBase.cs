@@ -9,7 +9,30 @@ namespace KGQT.Business.Base
 {
     public static class BusinessBase
     {
-        public static int Add<T>(T entity, string key = "") where T : class
+
+        public static bool Add<T>(T entity) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    db.Add(entity);
+                    bool s = db.SaveChanges() > 0;
+                    if (s)
+                    {
+                       Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));                     
+                        return s;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Lỗi thêm mới table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return false;
+                }
+            }
+            return false;
+        }
+        public static int Add<T>(T entity, string key) where T : class
         {
             using (var db = new nhanshiphangContext())
             {

@@ -1,0 +1,54 @@
+﻿using KGQT.Business;
+using KGQT.Business.Base;
+using KGQT.Commons;
+using KGQT.Models;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+
+namespace KGQT.Controllers
+{
+    public class PackagesController : Controller
+    {
+        #region View
+        public IActionResult Index()
+        {
+            var username = HttpContext.Session.GetString("user");
+            var model = BusinessBase.GetList<tbl_Package>(x => x.Username == username);
+            return View(model);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+        #endregion
+
+        #region CRUD
+
+        [HttpPost]
+        public JsonResult Create(tbl_Package form)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var user = Accounts.GetInfo(-1, userLogin);
+            form.Status = 0;
+            form.UID = user.ID;
+            form.Username = user.Username;
+            form.FullName = user.FirstName + " " + user.LastName;
+            form.Phone = user.Phone;
+            form.Email = user.Email;
+            form.Address = user.Address;
+            form.CreatedDate = DateTime.Now;
+            form.CreatedBy = user.Username;
+            return Json(BusinessBase.Add(form));
+        }
+        #endregion
+
+        #region Function
+        [HttpGet]
+        public bool CheckPackage(string package)
+        {
+            return Packages.CheckExist(package);
+        }
+        #endregion
+    }
+}

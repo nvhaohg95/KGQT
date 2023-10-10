@@ -129,7 +129,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var model = new OrderDetails();
             model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
-            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
+            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
             model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
             return View(model);
         }
@@ -210,7 +210,7 @@ namespace KGQT.Areas.Admin.Controllers
                         var p = new tbl_Package();
                         p.PackageCode = item;
                         p.Status = 1;
-                        p.ShippingOrderID = id;
+                        p.ShippingMethod = id;
                         p.CreatedBy = user.Username;
                         p.CreatedDate = DateTime.Now;
                         BusinessBase.Add(p);
@@ -220,7 +220,7 @@ namespace KGQT.Areas.Admin.Controllers
                         var lstDeclare = JsonConvert.DeserializeObject<List<tbl_ShippingOrderDeclaration>>(declares);
                         var config = BusinessBase.GetFirst<tbl_Configuration>();
                         double totalPrice = 0;
-                        int save = -1;
+                        bool save = false;
                         foreach (var d in lstDeclare)
                         {
                             d.ShippingOrderID = id;
@@ -229,10 +229,10 @@ namespace KGQT.Areas.Admin.Controllers
                             d.CreatedBy = user.Username;
                             d.CreatedDate = DateTime.Now;
                             save = BusinessBase.Add(d);
-                            if (save > -1)
+                            if (save)
                                 totalPrice += d.PriceVND.Value;
                         }
-                        if (save > -1)
+                        if (save)
                         {
                             double feeInsur = totalPrice * 0.05;
                             var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);

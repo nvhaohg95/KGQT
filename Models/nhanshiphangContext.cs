@@ -210,6 +210,8 @@ namespace KGQT.Models
 
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
+                entity.Property(e => e.Email).HasMaxLength(100);
+
                 entity.Property(e => e.ExportedCNWH)
                     .HasColumnType("datetime")
                     .HasComment("Chờ giao");
@@ -219,6 +221,8 @@ namespace KGQT.Models
                     .HasComment("Ngày bắt đầu vận chuyển");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Phone).HasMaxLength(12);
 
                 entity.Property(e => e.ReceivedDate)
                     .HasColumnType("datetime")
