@@ -26,6 +26,7 @@
     <!-- Custom fonts for this template-->
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
+    <link href="~/styles/user.css" rel="stylesheet" type="text/css">
     <link href="~/styles/custom.css" rel="stylesheet" type="text/css">
     <link href="~/vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
     <link href="~/css/sweetalert2.css" rel="stylesheet" />
@@ -224,20 +225,6 @@
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                     <i class="fa fa-bars"></i>
                 </button>
-
-                <!-- Topbar Search -->
-                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                    <div class="input-group">
-                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                               aria-label="Search" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
 
@@ -450,10 +437,7 @@
             <!-- Main Content -->
             <div id="content">
                 <!-- Begin Page Content -->
-                <div class="container-fluid mt-1">
-                    @RenderBody()
-                </div>
-
+                @RenderBody()
                 <!-- /.container-fluid -->
             </div>
             <!-- End of Main Content -->

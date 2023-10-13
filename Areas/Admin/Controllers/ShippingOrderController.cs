@@ -41,7 +41,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult Index(int status)
         {
-            var lst = ShippingOrder.GetList("", "", 0, 0);
+            var lst = ShippingOrder.GetList(0, null, null, "");
             return View("Index",lst);
         }
 
@@ -251,10 +251,6 @@ namespace KGQT.Areas.Admin.Controllers
 
             }
             return false;
-        [HttpGet]
-        public bool CheckPackage(string package)
-        {
-            return Packages.CheckExist(package);
         }
         #endregion
     }

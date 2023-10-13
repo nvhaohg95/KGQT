@@ -6,7 +6,6 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     int status = 0;
-    string timeSets = "d";
     string searchText = "";
     DateTime? fromDate = null;
     DateTime? toDate = null;
@@ -125,7 +124,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
             </div>
@@ -146,11 +144,9 @@
                             </a>
                             <a class="btn btn-sm btn-primary" asp-action="Create" asp-method="post">Tạo mới</a>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
-            @*table*@
-            <div class="mt-2">
+            <div class="col-12 mt-2">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-sm">
                         <thead class="thead-light">
@@ -196,7 +192,7 @@
                                         @Html.DisplayFor(modelItem => item.TotalPrice)
                                     </td>
                                     <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.StatusName)
+                                        @Html.DisplayFor(modelItem => item.Status)
                                     </td>
                                     <td class="text-center">
                                         <a class="text-primary" asp-action="Details" asp-route-id="@item.ID">
@@ -213,33 +209,32 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="d-flex justify-content-between align-items-center bg-white p-2">
+                    <div class="">
+                        <span>Tổng số:&nbsp<b>@Model.Count</b></span>
+                    </div>
+                    <div>
+                        <nav>
+                            <ul class="pagination m-0">
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
         </div>
-       
     </div>
-    @*page*@
-    <div class="d-flex justify-content-between align-items-center bg-white p-2" id="pageShippingOrder">
-        <div class="">
-            <span>Tổng số:&nbsp<b>@Model.Count</b></span>
-        </div>
-        <div>
-            <nav>
-                <ul class="pagination m-0">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </div>
+   </div>
 </div>
