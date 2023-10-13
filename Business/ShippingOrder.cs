@@ -7,7 +7,7 @@ namespace KGQT.Business
 {
     public static class ShippingOrder
     {
-        public List<tmpShippingOrder> GetList(string search, string uid, int page, int pageSize)
+        public static List<tmpShippingOrder> GetList(string search, string uid, int page, int pageSize)
         {
             
             using (var db = new nhanshiphangContext())
@@ -38,7 +38,7 @@ namespace KGQT.Business
             }
         }
 
-        public List<tmpShippingOrder> GetList(int? status, DateTime? fromDate, DateTime? toDate, string? searchText,int? page, int? pageSize)
+        public static List<tmpShippingOrder> GetList(int? status, DateTime? fromDate, DateTime? toDate, string? searchText,int? page, int? pageSize)
         {
 
             using (var db = new nhanshiphangContext())
@@ -76,7 +76,6 @@ namespace KGQT.Business
                 return lstData;
             }
         }
-        #endregion
 
         #region CRUD
         public static bool UpdateFeeIsurance(int id)

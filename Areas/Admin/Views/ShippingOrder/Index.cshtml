@@ -11,178 +11,210 @@
     DateTime? fromDate = null;
     DateTime? toDate =  null;
 }
-
+<script>
+    function onClick(status) {
+        $.ajax({
+            url: '@Url.Action("Index","ShippingOrder")?status=2',
+            type: 'POST',
+            success: function (result) {
+                debugger
+            },
+            error: function (xhr, status, err) {
+                debugger
+            }
+        });
+    }
+</script>
 <div class="container-fluid h-100 position-relative">
-    @*Bread Crumbs*@
     <div class="row">
         <ul id="breadcrumbs">
             <li><a href="/admin">Trang chủ</a></li>
-            <li><a>Danh sách ký gửi</a></li>
+            <li><a href="#">Danh sách ký gửi</a></li>
         </ul>
     </div>
-    @*Title Page*@
-    <div class="row mt-2">
-        <div class="col">
-            <h2 class="text-danger text-uppercase">Danh sách ký gửi</h2>
-        </div>
-        <div class="col d-flex align-items-center justify-content-end">
-            <a class="nav-link btn btn-sm btn-success" asp-action="Create" asp-method="post">+ Tạo mới</a>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="d-flex flex-column bg-white w-100 p-2">
-            @*Filter*@
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="">
-                    <div class="d-flex align-items-center justify-content-start">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-filter"></i>
-                            </button>
-                            <div class="dropdown-menu p-4 w-400px" aria-labelledby="dropdownMenuButton">
-                                <form method="post" action="filter" class="w-100" id="formSort">
-                                    <div class="row">
-                                        <div class="col-12 form-group">
-                                            <label class="d-block fw-bold" for="dropdowStatus">Trạng thái đơn hàng</label>
-                                            @*<select class="form-control w-100" name="status" id="status">
-                                                <option value=0>Tất cả</option>
-                                                <option value=1>Đang giao</option>
-                                                <option value=2>Đã giao</option>
-                                            </select>*@
-                                            @Html.DropDownList("status", new SelectList(new FilterShippingOrder().Status,"ID","Name"),new {@class="form-control w-100"})
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12 form-group">
-                                            <label class="d-block fw-bold" for="dropdowTime">Khoảng thời gian</label>
-                                            @*<select class="form-control w-100" id="dropdowTime" name="TimeOption" onchange="selectedTime()">
-                                                <option value="d">Hôm nay</option>
-                                                <option value="w">Trong tuần</option>
-                                                <option value="m">Trong tháng</option>
-                                                <option value="y">Trong năm</option>
-                                            </select>*@
-                                            @Html.DropDownList("timeSets", new SelectList(new FilterShippingOrder().TimeSets,"ID","Name"),new {id="dropdowTime",@class="form-control w-100", onchange="selectedTime()"})
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="form-group w-100">
-                                                <label class="d-block fw-bold" for="inputFromTime">Từ ngày</label>
-                                                @Html.TextBoxFor(Model => fromDate,new { @type="date", @class="form-control w-100", @id="inputFromTime", @name="fromDate" })
-                                                @*<input type="date" class="form-control w-100" id="inputFromTime" name="FromDate">*@
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="form-group w-100">
-                                                <label class="d-block fw-bold" for="inputToTime">Đến ngày</label>
-                                                @Html.TextBoxFor(Model => toDate,new { @type="date", @class="form-control w-100", @id="inputToTime", @name="toDate" })
-                                                @*<input type="date" class="form-control w-100" id="inputToTime" name="ToDate">*@
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12 d-flex align-items-center justify-content-end border-top border-secondary pt-2 w-100">
-                                            <button type="submit" class="btn btn-primary w-100px mr-2">Đặt lại</button>
-                                            <button type="submit" class="btn btn-primary w-100px">Lọc</button>
-                                        </div>
-                                    </div>
-                                </form>
+    <div class="row p-2">
+        <div class="d-flex flex-column">
+            <div class="row bg-white px-2 py-2">
+                <div class="col">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <div class="w-150px">
+                                <span class="fw-bold ">
+                                    Trạng thái đơn:
+                                </span>
+                            </div>
+                            <div>
+                                <ul class="nav">
+                                    <li class="nav-item" onclick="onClick(1)">
+                                        <a class="nav-link text-capitalize py-0">Ký gửi</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(2)">
+                                        <a class="nav-link text-capitalize py-0">Chờ duyệt</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(3)">
+                                        <a class="nav-link text-capitalize py-0">Chờ giao</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(4)">
+                                        <a class="nav-link text-capitalize py-0" href="#">Đang giao</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(5)">
+                                        <a class="nav-link text-capitalize py-0" href="#">Người bán giao</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(6)">
+                                        <a class="nav-link text-capitalize py-0" href="#">Hàng về kho TQ</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(7)">
+                                        <a class="nav-link text-capitalize py-0" href="#">Vận chuyển quốc tế</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(8)">
+                                        <a class="nav-link text-capitalize py-0" href="#">Đã nhận hàng</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(9)">
+                                        <a class="nav-link text-capitalize py-0" href="#">Đã hủy</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(10)">
+                                        <a class="nav-link text-capitalize py-0" href="#">Thất lạc</a>
+                                    </li>
+                                    <li class="nav-item" onclick="onClick(11)"> 
+                                        <a class="nav-link text-capitalize py-0" href="#">Không nhận hàng</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                        @*@if (ViewData?["Predicate"] != null)
-                        {
-                            <div>
-                                @ViewData?["Predicate"]
-                            </div>
-                        }*@
                     </div>
-                    
-                </div>
-                <div class="">
-                    <form method="post" action="Search">
-                        <div class="d-flex align-items-center justify-content-end">
-                            <div class="input-group w-300px">
-                                @Html.TextBoxFor(Model => searchText,new{ @type="text", @class="form-control",@id="inputSearch", @placeholder="Tìm kiếm" })
-                                @*<input type="text" class="form-control" id="inputSearch" placeholder="Tìm kiếm"/>*@
-                                <div class="input-group-append">
-                                    <button type="submit" class="input-group-text btn">
-                                        <i class="fas fa-search"></i>
-                                    </button>
+                    <form class="row py-2 border-dashed">
+                        <div class="col-5">
+                            <div>
+                                <span class="fw-bold">Nhập mã đơn:</span>
+                            </div>
+                            <div>
+                                @Html.TextBoxFor(model => searchText,new { @type="text",@class="form-control w-100",@placeholder="Nhập mã đơn hàng"})
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row col">
+                                <span class="fw-bold">Thời gian tạo:</span>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    @Html.TextBoxFor(model => fromDate,new { @type="date",@class="form-control w-100"})
+                                </div>
+                                <div class="col">
+                                    @Html.TextBoxFor(model => toDate,new { @type="date",@class="form-control w-100"})
                                 </div>
                             </div>
                         </div>
                     </form>
+                    <div class="row py-2">
+                        <div class="col">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span class="text-primary cursor-pointer">
+                                        <i class="fas fa-chevron-down fa-xs"></i>
+                                        Mở rộng tìm kiếm
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="cursor-pointer mr-2">
+                                        <i class="fas fa-sync fa-xs"></i>
+                                        Làm mới bộ lọc
+                                    </span>
+                                    <button class="btn btn-sm btn-primary">
+                                        Tìm kiếm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
-            @*table*@
-            <div class="mt-2">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-sm">
-                        <thead class="thead-light">
-                            <tr>
-                                <th class="font-weight-normal text-left" scope="col">
-                                    MĐH
-                                </th>
-                                <th class="font-weight-normal text-center" scope="col">
-                                    Ngày tạo
-                                </th>
-                                <th class="font-weight-normal text-center" scope="col">
-                                    Ngày dự kiến
-                                </th>
-                                <th class="font-weight-normal text-left" scope="col">
-                                    Khách hàng
-                                </th>
-                                <th class="font-weight-normal text-center" scope="col">
-                                    Tổng giá
-                                </th>
-                                <th class="font-weight-normal text-center" scope="col">
-                                    Trạng thái
-                                </th>
-                                <th class="font-weight-normal text-center" scope="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr class="table-light">
-                                    <td class="text-left">
-                                        @Html.DisplayFor(modelItem => item.ShippingOrderCode)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.CreatedDate)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.DateExpectation)
-                                    </td>
-                                    <td class="text-left">
-                                        @Html.DisplayFor(modelItem => item.Username)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.TotalPrice)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.StatusName)
-                                    </td>
-                                    <td class="text-center">
-                                        <a class="text-primary" asp-action="Details" asp-route-id="@item.ID">
-                                            <i class="far fa-edit"></i>
-                                            <span>Xem</span>
-                                        </a> |
-                                        <a class="text-danger" asp-action="Delete" asp-route-id="@item.ID">
-                                            <i class="fas fa-trash-alt"></i>
-                                            <span>Xóa</span>
-                                        </a>
-                                    </td>
+            <div class="row flex-columns bg-white mt-2 ">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between border-bottom">
+                        <div>
+                            <h5 class="text-danger text-uppercase m-0">Danh sách đơn ký gửi</h5>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-end py-2">
+                            <a class="btn btn-sm  btn-primary" asp-action="Create" asp-method="post">
+                                <i class="fas fa-file-excel fa-lg"></i>
+                                Import
+                            </a>
+                            <a class="btn btn-sm btn-light mx-2" asp-action="Create" asp-method="post">
+                                <i class="fas fa-file-upload fa-lg" style="color: #d0d3d8;"></i>
+                                Export
+                            </a>
+                            <a class="btn btn-sm btn-primary" asp-action="Create" asp-method="post">Tạo mới</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="font-weight-normal text-left" scope="col">
+                                        MĐH
+                                    </th>
+                                    <th class="font-weight-normal text-center" scope="col">
+                                        Ngày tạo
+                                    </th>
+                                    <th class="font-weight-normal text-center" scope="col">
+                                        Ngày dự kiến
+                                    </th>
+                                    <th class="font-weight-normal text-left" scope="col">
+                                        Khách hàng
+                                    </th>
+                                    <th class="font-weight-normal text-center" scope="col">
+                                        Tổng giá
+                                    </th>
+                                    <th class="font-weight-normal text-center" scope="col">
+                                        Trạng thái
+                                    </th>
+                                    <th class="font-weight-normal text-center" scope="col"></th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="table-light">
+                                        <td class="text-left">
+                                            @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.CreatedDate)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.DateExpectation)
+                                        </td>
+                                        <td class="text-left">
+                                            @Html.DisplayFor(modelItem => item.Username)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.TotalPrice)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.StatusName)
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="text-primary" asp-action="Details" asp-route-id="@item.ID">
+                                                <i class="far fa-edit"></i>
+                                                <span>Xem</span>
+                                            </a> |
+                                            <a class="text-danger" asp-action="Delete" asp-route-id="@item.ID">
+                                                <i class="fas fa-trash-alt"></i>
+                                                <span>Xóa</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-       
     </div>
-    @*page*@
     <div class="d-flex justify-content-between align-items-center bg-white p-2" id="pageShippingOrder">
         <div class="">
             <span>Tổng số:&nbsp<b>@Model.Count</b></span>
@@ -197,6 +229,7 @@
                         </a>
                     </li>
                     <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
                     <li class="page-item">
                         <a class="page-link" href="#" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>

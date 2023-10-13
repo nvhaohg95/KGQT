@@ -13,14 +13,10 @@ namespace KGQT.Areas.Admin.Controllers
     {
         #region constructor
         private IToastNotification _toastNotification;
-        private static ShippingOrder _shippingBus;
-        private static Packages _packages;
         private static NamespaceHandling _db;
         public ShippingOrderController(IToastNotification toastNotification)
         {
             _toastNotification = toastNotification;
-            _shippingBus = new ShippingOrder();
-            _packages = new Packages();
         }
 
         #endregion
@@ -30,95 +26,19 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            var lst = _shippingBus.GetList("", "", 0, 0);
+            var lst = ShippingOrder.GetList("", "", 0, 0);
             return View(lst);
         }
 
         [HttpPost]
-        public ActionResult Search(string searchText)
+        public ActionResult Index(int status)
         {
-            using (var db = new nhanshiphangContext())
-            {
-                var lstData = new List<tmpShippingOrder>();
-                var shippingOrders = new List<tbl_ShippingOrder>();
-                var query = db.tbl_ShippingOrders.AsQueryable();
-                if (!string.IsNullOrEmpty(searchText))
-                {
-                    ViewData["serchText"] = searchText;
-                    query = query.Where(x => x.Username.ToLower().Contains(searchText.ToLower()));
-                }
-                shippingOrders = query.ToList();
-                if (shippingOrders.Count > 0)
-                {
-                    foreach (var item in shippingOrders)
-                    {
-                        var data = new tmpShippingOrder()
-                        {
-                            ID = item.ID,
-                            ShippingOrderCode = item.ShippingOrderCode,
-                            CreatedDate = item.CreatedDate != null ? item.CreatedDate.Value.ToShortDateString() : "",
-                            DateExpectation = item.DateExpectation != null ? item.DateExpectation.Value.ToShortDateString() : "",
-                            CreatedBy = item.CreatedBy,
-                            Username = item.Username,
-                            TotalPrice = item.TotalPrice,
-                            Status = item.Status,
-                            StatusName = item.Status == 1 ? "Chưa giao" : "Đã giao"
-                        };
-                        lstData.Add(data);
-                    }
-                }
-                return View("Index",lstData);
-            }
+            var lst = ShippingOrder.GetList("", "", 0, 0);
+            return View("Index",lst);
         }
 
-        [HttpPost]
-        public ActionResult Filter(int? status,string? timeSets, DateTime? fromDate, DateTime? toDate)
-        {
-            using (var db = new nhanshiphangContext())
-            {
-                var lstData = new List<tmpShippingOrder>();
-                var shippingOrders = new List<tbl_ShippingOrder>();
-                var query = db.tbl_ShippingOrders.AsQueryable();
-                ViewData["Predicate"] = null;
-                if (status != 0)
-                {
-                    query = query.Where(x => x.Status == status);
-                    ViewData["Predicate"] = "Trạng thái: " + (status == 1 ? "Chưa giao" : "Đã giao");
-                }
 
-                if (fromDate != null && toDate != null)
-                {
-                    query = query.Where(x => x.CreatedDate >= fromDate  && x.CreatedDate <= toDate);
-                    if (ViewData["Predicate"] != null)
-                    {
-                        ViewData["Predicate"] += ", ";
-                    }
-                    ViewData["Predicate"] += "Khoảng thời gian: " + fromDate.Value.ToString("dd/MM/yyyy") + " - " + toDate.Value.ToString("dd/MM/yyyy");
 
-                }
-                shippingOrders = query.ToList();
-                if (shippingOrders.Count > 0)
-                {
-                    foreach (var item in shippingOrders)
-                    {
-                        var data = new tmpShippingOrder()
-                        {
-                            ID = item.ID,
-                            ShippingOrderCode = item.ShippingOrderCode,
-                            CreatedDate = item.CreatedDate != null ? item.CreatedDate.Value.ToShortDateString() : "",
-                            DateExpectation = item.DateExpectation != null ? item.DateExpectation.Value.ToShortDateString() : "",
-                            CreatedBy = item.CreatedBy,
-                            Username = item.Username,
-                            TotalPrice = item.TotalPrice,
-                            Status = item.Status,
-                            StatusName = item.Status == 1 ? "Chưa giao" : "Đã giao"
-                        };
-                        lstData.Add(data);
-                    }
-                }
-                return View("index", lstData);
-            }
-        }
 
         // GET: ShippingOrderController/Details/5
         public ActionResult Details(int id)
@@ -190,7 +110,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public bool CheckPackage(string package)
         {
-            return _packages.CheckExist(package);
+            return Packages.CheckExist(package);
         }
         #endregion
     }

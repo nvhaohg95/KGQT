@@ -57,12 +57,10 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllerRoute(
         name: "default",
         pattern: "{controller=Auth}/{action=Login}/{id?}");
-
     endpoints.MapAreaControllerRoute(
       name: "admin",
       areaName: "admin",
-      pattern: "admin/{controller}/{action}/{id?}",new { controller = "home", action = "index" }
-    );
-});
+      pattern: "admin/{controller}/{action}/{id?}");
+}); 
 app.Run();
 #endregion
