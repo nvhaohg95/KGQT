@@ -24,7 +24,8 @@ namespace KGQT.Controllers
         // GET: ShippingOrderController
         public ActionResult Index()
         {
-            var lst = ShippingOrder.GetList("", "", 0, 0);
+            var userLogin = HttpContext.Session.GetString("user");
+            var lst = ShippingOrder.GetList(0, null, null, "", userLogin);
             return View(lst);
         }
 
@@ -33,7 +34,7 @@ namespace KGQT.Controllers
         {
             var model = new OrderDetails();
             model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
-            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.ShippingOrderID == id);
+            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
             model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
             return View(model);
         }
@@ -47,6 +48,14 @@ namespace KGQT.Controllers
 
         #region Functions
         // POST: ShippingOrderController/Create
+        /// <summary>
+        /// Status: 0: chưa xác nhận, 1: Đã cập nhật mã vận đơn, 2:Hàng về kho TQ, 3:Đang trên đường về HCM,
+        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,9:Đã hủy, 10: Thất lạc, 1: không nhận dc hàng
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="package"></param>
+        /// <param name="declares"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Create(tbl_ShippingOrder form, string package, string declares)
         {
@@ -54,7 +63,7 @@ namespace KGQT.Controllers
             {
                 var userLogin = HttpContext.Session.GetString("user");
                 var user = Accounts.GetInfo(-1, userLogin);
-                form.Status = 1;
+                form.Status = 0;
                 form.CreatedDate = DateTime.Now;
                 form.CreatedBy = user.Username;
                 form.Username = user.Username;
@@ -75,7 +84,7 @@ namespace KGQT.Controllers
                         var p = new tbl_Package();
                         p.PackageCode = item;
                         p.Status = 1;
-                        p.ShippingOrderID = id;
+                        p.TransID = id;
                         p.CreatedBy = user.Username;
                         p.CreatedDate = DateTime.Now;
                         BusinessBase.Add(p);
@@ -85,7 +94,7 @@ namespace KGQT.Controllers
                         var lstDeclare = JsonConvert.DeserializeObject<List<tbl_ShippingOrderDeclaration>>(declares);
                         var config = BusinessBase.GetFirst<tbl_Configuration>();
                         double totalPrice = 0;
-                        int save = -1;
+                        bool save = false;
                         foreach (var d in lstDeclare)
                         {
                             d.ShippingOrderID = id;
@@ -94,10 +103,10 @@ namespace KGQT.Controllers
                             d.CreatedBy = user.Username;
                             d.CreatedDate = DateTime.Now;
                             save = BusinessBase.Add(d);
-                            if (save > -1)
+                            if (save)
                                 totalPrice += d.PriceVND.Value;
                         }
-                        if (save > -1)
+                        if (save)
                         {
                             double feeInsur = totalPrice * 0.05;
                             var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
@@ -174,7 +183,7 @@ namespace KGQT.Controllers
                 o.PriceVND = qty * amount * conf.Currency;
                 o.CreatedBy = userLogin;
                 o.CreatedDate = DateTime.Now;
-                int s = BusinessBase.Add(o);
+                int s = BusinessBase.Add(o, "");
                 if (s > -1)
                 {
                     ShippingOrder.UpdateFeeIsurance(shipId);
@@ -183,6 +192,29 @@ namespace KGQT.Controllers
             }
 
             return 0;
+        }
+
+        [HttpPost]
+        public bool Cancel(int id)
+        {
+            var order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            if (order == null)
+                return false;
+            order.Status = 9;
+            order.ModifiedBy = HttpContext.Session.GetString("user");
+            order.ModifiedDate = DateTime.Now;
+            if (BusinessBase.Update(order))
+            {
+                var sUser = HttpContext.Session.GetString("US_LOGIN");
+                if (!string.IsNullOrEmpty(sUser))
+                {
+                    var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+                    BusinessBase.TrackLogShippingOrder(user.ID, order.ID, "{0} đã hủy đơn", 1, user.Username);
+                    return true;
+                }
+
+            }
+            return false;
         }
         #endregion
     }

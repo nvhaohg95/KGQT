@@ -1,7 +1,7 @@
-﻿@model List<KGQT.Areas.Admin.Models.temp.tmpShippingOrder>
+﻿@model List<KGQT.Models.tbl_ShippingOrder>
+@using KGQT.Models.temp
+@using KGQT.Commons
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using KGQT.Areas.Admin.Models.temp;
-@using KGQT.Models
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -9,7 +9,7 @@
     string timeSets = "d";
     string searchText = "";
     DateTime? fromDate = null;
-    DateTime? toDate =  null;
+    DateTime? toDate = null;
 }
 <script>
     function onClick(status) {
@@ -146,75 +146,78 @@
                             </a>
                             <a class="btn btn-sm btn-primary" asp-action="Create" asp-method="post">Tạo mới</a>
                         </div>
-                    </div>
+                    </form>
                 </div>
-                <div class="col-12">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-sm">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th class="font-weight-normal text-left" scope="col">
-                                        MĐH
-                                    </th>
-                                    <th class="font-weight-normal text-center" scope="col">
-                                        Ngày tạo
-                                    </th>
-                                    <th class="font-weight-normal text-center" scope="col">
-                                        Ngày dự kiến
-                                    </th>
-                                    <th class="font-weight-normal text-left" scope="col">
-                                        Khách hàng
-                                    </th>
-                                    <th class="font-weight-normal text-center" scope="col">
-                                        Tổng giá
-                                    </th>
-                                    <th class="font-weight-normal text-center" scope="col">
-                                        Trạng thái
-                                    </th>
-                                    <th class="font-weight-normal text-center" scope="col"></th>
+            </div>
+            @*table*@
+            <div class="mt-2">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="font-weight-normal text-left" scope="col">
+                                    MĐH
+                                </th>
+                                <th class="font-weight-normal text-center" scope="col">
+                                    Ngày tạo
+                                </th>
+                                <th class="font-weight-normal text-center" scope="col">
+                                    Ngày dự kiến
+                                </th>
+                                <th class="font-weight-normal text-left" scope="col">
+                                    Khách hàng
+                                </th>
+                                <th class="font-weight-normal text-center" scope="col">
+                                    Tổng giá
+                                </th>
+                                <th class="font-weight-normal text-center" scope="col">
+                                    Trạng thái
+                                </th>
+                                <th class="font-weight-normal text-center" scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="table-light">
+                                    <td class="text-left">
+                                        @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.CreatedDate)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.DateExpectation)
+                                    </td>
+                                    <td class="text-left">
+                                        @Html.DisplayFor(modelItem => item.Username)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.TotalPrice)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.StatusName)
+                                    </td>
+                                    <td class="text-center">
+                                        <a class="text-primary" asp-action="Details" asp-route-id="@item.ID">
+                                            <i class="far fa-edit"></i>
+                                            <span>Xem</span>
+                                        </a> |
+                                        <a class="text-danger" asp-action="Delete" asp-route-id="@item.ID">
+                                            <i class="fas fa-trash-alt"></i>
+                                            <span>Xóa</span>
+                                        </a>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    <tr class="table-light">
-                                        <td class="text-left">
-                                            @Html.DisplayFor(modelItem => item.ShippingOrderCode)
-                                        </td>
-                                        <td class="text-center">
-                                            @Html.DisplayFor(modelItem => item.CreatedDate)
-                                        </td>
-                                        <td class="text-center">
-                                            @Html.DisplayFor(modelItem => item.DateExpectation)
-                                        </td>
-                                        <td class="text-left">
-                                            @Html.DisplayFor(modelItem => item.Username)
-                                        </td>
-                                        <td class="text-center">
-                                            @Html.DisplayFor(modelItem => item.TotalPrice)
-                                        </td>
-                                        <td class="text-center">
-                                            @Html.DisplayFor(modelItem => item.StatusName)
-                                        </td>
-                                        <td class="text-center">
-                                            <a class="text-primary" asp-action="Details" asp-route-id="@item.ID">
-                                                <i class="far fa-edit"></i>
-                                                <span>Xem</span>
-                                            </a> |
-                                            <a class="text-danger" asp-action="Delete" asp-route-id="@item.ID">
-                                                <i class="fas fa-trash-alt"></i>
-                                                <span>Xóa</span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+       
     </div>
+    @*page*@
     <div class="d-flex justify-content-between align-items-center bg-white p-2" id="pageShippingOrder">
         <div class="">
             <span>Tổng số:&nbsp<b>@Model.Count</b></span>
@@ -229,7 +232,6 @@
                         </a>
                     </li>
                     <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
                     <li class="page-item">
                         <a class="page-link" href="#" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>

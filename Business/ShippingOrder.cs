@@ -1,78 +1,32 @@
-﻿using KGQT.Areas.Admin.Models.temp;
-using KGQT.Business.Base;
+﻿using KGQT.Business.Base;
 using KGQT.Models;
+using KGQT.Models.temp;
 using Microsoft.EntityFrameworkCore;
 
 namespace KGQT.Business
 {
     public static class ShippingOrder
     {
-        public static List<tmpShippingOrder> GetList(string search, string uid, int page, int pageSize)
-        {
-            
-            using (var db = new nhanshiphangContext())
-            {
-                var lstData = new List<tmpShippingOrder>();
-                var shippingOrders = new List<tbl_ShippingOrder>();
-                shippingOrders = db.tbl_ShippingOrders.ToList();
-                if (shippingOrders.Count > 0)
-                {
-                    foreach (var item in shippingOrders)
-                    {
-                        var data = new tmpShippingOrder()
-                        {
-                            ID = item.ID,
-                            ShippingOrderCode = item.ShippingOrderCode,
-                            CreatedDate = item.CreatedDate != null ? item.CreatedDate.Value.ToShortDateString() : "",
-                            DateExpectation = item.DateExpectation != null ? item.DateExpectation.Value.ToShortDateString() : "",
-                            CreatedBy = item.CreatedBy,
-                            Username = item.Username,
-                            TotalPrice = item.TotalPrice,
-                            Status = item.Status,
-                            StatusName = item.Status == 1 ? "Chưa giao":"Đã giao"
-                        };
-                        lstData.Add(data);
-                    }
-                }
-                return lstData;
-            }
-        }
-
-        public static List<tmpShippingOrder> GetList(int? status, DateTime? fromDate, DateTime? toDate, string? searchText,int? page, int? pageSize)
+        public static List<tbl_ShippingOrder> GetList(int? status, DateTime? fromDate, DateTime? toDate, string? searchText, string userName = "", int page = 0, int pageSize = 20)
         {
 
             using (var db = new nhanshiphangContext())
             {
-                var lstData = new List<tmpShippingOrder>();
-                var shippingOrders = new List<tbl_ShippingOrder>();
-                var query = db.tbl_ShippingOrders.AsQueryable();
-                if (status != 0)
+                IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders;
+                if (status > 0)
                     query = query.Where(x => x.Status == status);
-                if (fromDate != null && toDate != null)
-                    query = query.Where(x => x.CreatedDate >= fromDate && x.CreatedDate <= toDate);
-                if (!string.IsNullOrEmpty(searchText))
-                    query = query.Where(x => x.Username.Contains(searchText));
 
-                shippingOrders = query.ToList();
-                if (shippingOrders.Count > 0)
-                {
-                    foreach (var item in shippingOrders)
-                    {
-                        var data = new tmpShippingOrder()
-                        {
-                            ID = item.ID,
-                            ShippingOrderCode = item.ShippingOrderCode,
-                            CreatedDate = item.CreatedDate != null ? item.CreatedDate.Value.ToShortDateString() : "",
-                            DateExpectation = item.DateExpectation != null ? item.DateExpectation.Value.ToShortDateString() : "",
-                            CreatedBy = item.CreatedBy,
-                            Username = item.Username,
-                            TotalPrice = item.TotalPrice,
-                            Status = item.Status,
-                            StatusName = item.Status == 1 ? "Chưa giao" : "Đã giao"
-                        };
-                        lstData.Add(data);
-                    }
-                }
+                if (fromDate != null)
+                    query = query.Where(x => x.CreatedDate >= fromDate);
+
+                if (toDate != null)
+                    query = query.Where(x => x.CreatedDate <= toDate);
+
+                if (!string.IsNullOrEmpty(searchText))
+                    query = query.Where(x => x.ShippingOrderCode.Contains(searchText));
+
+                query = query.OrderByDescending(x => x.CreatedDate).Skip(page * pageSize).Take(pageSize);
+                var lstData = query.ToList();
                 return lstData;
             }
         }

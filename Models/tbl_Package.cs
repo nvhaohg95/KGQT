@@ -6,8 +6,8 @@ namespace KGQT.Models
     public partial class tbl_Package
     {
         public int ID { get; set; }
-        public string? PackageCode { get; set; }
-        public int? ShippingOrderID { get; set; }
+        public string PackageCode { get; set; } = null!;
+        public int TransID { get; set; }
         public string? Barcode { get; set; }
         /// <summary>
         /// 1. Chưa về
@@ -15,44 +15,41 @@ namespace KGQT.Models
         /// 3. Đã giao
         /// </summary>
         public int? Status { get; set; }
-        public double? AirPackageWeight { get; set; }
-        public double? AirPackageLength { get; set; }
-        public double? AirPackageHeight { get; set; }
-        public double? AirPackageWidth { get; set; }
+        public bool? IsAirPackage { get; set; }
         public double? AirPackagePrice { get; set; }
-        public double? AirPackageWeightExchange { get; set; }
-        public double? WoodPackageWeight { get; set; }
-        public double? WoodPackageLength { get; set; }
-        public double? WoodPackageHeight { get; set; }
-        public double? WoodPackageWidth { get; set; }
+        public bool? IsWoodPackage { get; set; }
         public double? WoodPackagePrice { get; set; }
-        public double? WoodPackageWeightExchange { get; set; }
-        public double? PackageWeight { get; set; }
-        public double? PackageWeightCompare { get; set; }
-        public double? Length { get; set; }
-        public double? Height { get; set; }
-        public double? Width { get; set; }
-        public double? WeightExchange { get; set; }
+        public bool? IsInsurance { get; set; }
+        public double? IsInsurancePrice { get; set; }
         public double? Weight { get; set; }
+        public double? MinWeight { get; set; }
         public double? WeightPrice { get; set; }
+        public int? ShippingMethod { get; set; }
+        public int? PaymentMethod { get; set; }
+        public string? Declaration { get; set; }
+        public double? DeclarePrice { get; set; }
         /// <summary>
         /// Chờ giao
         /// </summary>
-        public DateTime? WaitingForDelivery { get; set; }
+        public DateTime? ExportedCNWH { get; set; }
         /// <summary>
         /// Đang giao
         /// </summary>
-        public DateTime? Delivering { get; set; }
+        public DateTime? TransportingToSGWH { get; set; }
         /// <summary>
         /// Ngày bắt đầu vận chuyển
         /// </summary>
-        public DateTime? BeingTransported { get; set; }
+        public DateTime? ImportedSGWH { get; set; }
         /// <summary>
         /// Ngày nhận hàng
         /// </summary>
         public DateTime? ReceivedDate { get; set; }
         public int? UID { get; set; }
         public string? Username { get; set; }
+        public string? FullName { get; set; }
+        public string? Address { get; set; }
+        public string? Phone { get; set; }
+        public string? Email { get; set; }
         public double? PriceInWareHouse { get; set; }
         public string? Note { get; set; }
         public DateTime? CreatedDate { get; set; }

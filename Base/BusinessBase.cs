@@ -9,7 +9,30 @@ namespace KGQT.Business.Base
 {
     public static class BusinessBase
     {
-        public static int Add<T>(T entity, string key = "") where T : class
+
+        public static bool Add<T>(T entity) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    db.Add(entity);
+                    bool s = db.SaveChanges() > 0;
+                    if (s)
+                    {
+                       Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));                     
+                        return s;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Lỗi thêm mới table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return false;
+                }
+            }
+            return false;
+        }
+        public static int Add<T>(T entity, string key) where T : class
         {
             using (var db = new nhanshiphangContext())
             {
@@ -52,7 +75,7 @@ namespace KGQT.Business.Base
                 try
                 {
                     db.Set<T>().Update(entity);
-                    if( db.SaveChanges() > 0)
+                    if (db.SaveChanges() > 0)
                     {
                         Log.Info("Cập nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
                         return true;
@@ -61,6 +84,50 @@ namespace KGQT.Business.Base
                 catch (Exception ex)
                 {
                     Log.Error("Cập nhật không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static bool Remove<T>(Expression<Func<T, bool>> predicate) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    var entity = GetOne(predicate);
+                    db.Set<T>().Remove(entity);
+                    if (db.SaveChanges() > 0)
+                    {
+                        Log.Info("Xóa nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Xóa không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool Remove<T>(T entity) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    db.Set<T>().Remove(entity);
+                    if (db.SaveChanges() > 0)
+                    {
+                        Log.Info("Xóa nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Xóa không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
                     return false;
                 }
             }
@@ -173,6 +240,25 @@ namespace KGQT.Business.Base
 
             Func<T, bool> expression = Expression.Lambda<Func<T, bool>>(comparison, parameter).Compile();
             return expression;
+        }
+        #endregion
+
+        #region tracklogship
+        public static void TrackLogShippingOrder(int userId, int shipId, string content, int type, string userName)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var t = new tbl_TrackShippingOrder();
+                t.UID = userId;
+                t.ShipID = shipId;
+                t.Context = content;
+                t.Type = type;
+                t.CreatedBy = userName;
+                t.CreatedOn = DateTime.Now;
+                db.tbl_TrackShippingOrders.Add(t);
+                db.SaveChanges();
+            }
+
         }
         #endregion
     }

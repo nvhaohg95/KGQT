@@ -33,9 +33,48 @@ function showHidePass(idIcon, idInput) {
 };
 
 
+function selectedTime() {
+    var fromDate = "";
+    var toDate = "";
+    var sOption = document.getElementById("dropdowTime").value
+    let date = new Date(); // get current date
+    switch (sOption) {
+        case "d":
+            fromDate = date.toISOString().split("T")[0];
+            toDate = date.toISOString().split("T")[0];
+            break;
+        case "w":
+            let first = date.getDate() - date.getDay(), last = first + 6;
+            fromDate = new Date(date.setDate(first)).toISOString().split("T")[0];
+            toDate = new Date(date.setDate(last)).toISOString().split("T")[0];
+            break;
+        case "m":
+            fromDate = new Date(date.getFullYear(), date.getMonth(), 0).toISOString().split("T")[0];
+            toDate = new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString().split("T")[0];
+            break;
+        case "y":
+            fromDate = new Date(date.getFullYear(), 0, 0).toISOString().split("T")[0];
+            toDate = new Date(date.getFullYear(), 11, 31).toISOString().split("T")[0];
+            break;
+    }
+    $("#inputFromTime").val(fromDate);
+    $("#inputToTime").val(toDate);
+};
 
-var helper = function () {
-    var form2Object = function (form) {
+function debounce(func, within = 300, timerId = null) {
+    window.callOnceTimers = window.callOnceTimers || {};
+    if (timerId == null)
+        timerId = func;
+    var timer = window.callOnceTimers[timerId];
+    clearTimeout(timer);
+    timer = setTimeout(() => func(), within);
+    window.callOnceTimers[timerId] = timer;
+}
+window.helper = {
+
+
+
+    form2Object: function (form) {
         const data = JSON.parse(JSON.stringify(form));
         let obj = {};
         for (var i in data) {
@@ -68,4 +107,3 @@ var helper = function () {
         });
     }
 };
-
