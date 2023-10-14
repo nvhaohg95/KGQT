@@ -5,102 +5,242 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    int status = 0;
+    string searchText = "";
+    DateTime? fromDate = null;
+    DateTime? toDate = null;
 }
-<ul id="breadcrumbs" class="mb-2">
-    <li><a href="/">Trang chủ</a></li>
-    <li><a>Danh sách ký gửi</a></li>
-</ul>
-<div class="container-fluid">
+
+<div class="container-fluid h-100">
     <div class="row mb-2">
-        <div class="col-md-12">
-            <h2 class="text-danger">Danh sách ký gửi user</h1>
+        <ul id="breadcrumbs">
+            <li><a href="/">Trang chủ</a></li>
+            <li><a>Danh sách ký gửi</a></li>
+        </ul>
+    </div>
+    <div class="row bg-white px-2 py-2">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex">
+                    <div class="w-150px">
+                        <span class="fw-bold ">
+                            Trạng thái đơn:
+                        </span>
+                    </div>
+                    <div>
+                        <ul class="nav">
+                            <li class="nav-item" onclick="onClick(1)">
+                                <a class="nav-link text-capitalize py-0">Ký gửi</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(2)">
+                                <a class="nav-link text-capitalize py-0">Chờ duyệt</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(3)">
+                                <a class="nav-link text-capitalize py-0">Chờ giao</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(4)">
+                                <a class="nav-link text-capitalize py-0" href="#">Đang giao</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(5)">
+                                <a class="nav-link text-capitalize py-0" href="#">Người bán giao</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(6)">
+                                <a class="nav-link text-capitalize py-0" href="#">Hàng về kho TQ</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(7)">
+                                <a class="nav-link text-capitalize py-0" href="#">Vận chuyển quốc tế</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(8)">
+                                <a class="nav-link text-capitalize py-0" href="#">Đã nhận hàng</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(9)">
+                                <a class="nav-link text-capitalize py-0" href="#">Đã hủy</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(10)">
+                                <a class="nav-link text-capitalize py-0" href="#">Thất lạc</a>
+                            </li>
+                            <li class="nav-item" onclick="onClick(11)">
+                                <a class="nav-link text-capitalize py-0" href="#">Không nhận hàng</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <form class="row py-2 border-dashed">
+                <div class="col-5">
+                    <div>
+                        <span class="fw-bold">Nhập mã đơn:</span>
+                    </div>
+                    <div>
+                        @Html.TextBoxFor(model => searchText,new { @type="text",@class="form-control w-100",@placeholder="Nhập mã đơn hàng"})
+                    </div>
+                </div>
+                <div class="col-7">
+                    <div class="row col">
+                        <span class="fw-bold">Thời gian tạo:</span>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            @Html.TextBoxFor(model => fromDate,new { @type="date",@class="form-control w-100"})
+                        </div>
+                        <div class="col">
+                            @Html.TextBoxFor(model => toDate,new { @type="date",@class="form-control w-100"})
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="row py-2">
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-primary cursor-pointer">
+                                <i class="fas fa-chevron-down fa-xs"></i>
+                                Mở rộng tìm kiếm
+                            </span>
+                        </div>
+                        <div>
+                            <span class="cursor-pointer mr-2">
+                                <i class="fas fa-sync fa-xs"></i>
+                                Làm mới bộ lọc
+                            </span>
+                            <button class="btn btn-sm btn-primary">
+                                Tìm kiếm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-    <div class="col-md-12 table-responsive">
-        <p>
-            <a class="btn btn-sm btn-success" asp-action="Create">Thêm mới</a>
-        </p>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>
-                        ShippingOrderCode
-                    </th>
-                    <th>
-                        ShippingMethodName
-                    </th>
-                    <th>
-                        Services
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                    <th>
-                        TotalPrice
-                    </th>
-                    <th>
-                        Details
-                    </th>
-                    <th>
-                        Username
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ShippingOrderCode)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ShippingMethodName)
-                        </td>
-                        <td>
-                            <div class="form-group mb-4">
-                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                {
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" checked>
-                                        <label class="form-check-label" for="cbPack">Đóng gỗ</label>
+    <div class="row flex-columns bg-white mt-2">
+        <div class="col-md-12 mb-2">
+            <div class="d-flex align-items-center justify-content-between border-bottom">
+                <div>
+                    <h5 class="text-danger text-uppercase m-0">Danh sách đơn ký gửi </h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-end py-2">
+                    <a class="btn btn-sm  btn-primary" asp-action="Create" asp-method="post">
+                        <i class="fas fa-file-excel fa-lg"></i>
+                        Import
+                    </a>
+                    <a class="btn btn-sm btn-light mx-2" asp-action="Create" asp-method="post">
+                        <i class="fas fa-file-upload fa-lg" style="color: #d0d3d8;"></i>
+                        Export
+                    </a>
+                    <a class="btn btn-sm btn-primary" asp-action="Create" asp-method="post">Tạo mới</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 ">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                ShippingOrderCode
+                            </th>
+                            <th>
+                                ShippingMethodName
+                            </th>
+                            <th>
+                                Services
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                TotalPrice
+                            </th>
+                            <th>
+                                Details
+                            </th>
+                            <th>
+                                Username
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ShippingMethodName)
+                                </td>
+                                <td>
+                                    <div class="form-group mb-4">
+                                        @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                        {
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" checked>
+                                                <label class="form-check-label" for="cbPack">Đóng gỗ</label>
+                                            </div>
+                                        }
+                                        @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                        {
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" checked>
+                                                <label class="form-check-label" for="cbAirbag">Túi khí</label>
+                                            </div>
+                                        }
+                                        @if (item.IsInsurancePrice != null && item.IsInsurance == true)
+                                        {
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" checked>
+                                                <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
+                                            </div>
+                                        }
                                     </div>
-                                }
-                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                {
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" checked>
-                                        <label class="form-check-label" for="cbAirbag">Túi khí</label>
-                                    </div>
-                                }
-                                @if (item.IsInsurancePrice != null && item.IsInsurance == true)
-                                {
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" checked>
-                                        <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
-                                    </div>
-                                }
-                            </div>
-                        </td>
-                        <td>
-                            @Html.Raw(PJUtils.ShippingStatusHtml(item.Status))
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.TotalPrice)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CreatedDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Username)
-                        </td>
-                        <td>
-                            <a asp-action="Details" asp-route-id="@item.ID"><i class="far fa-eye"></i>      <span>Xem</span></a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
+                                </td>
+                                <td>
+                                    @Html.Raw(PJUtils.ShippingStatusHtml(item.Status))
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Username)
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.ID"><i class="far fa-eye"></i>      <span>Xem</span></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center bg-white p-2">
+                <div class="">
+                    <span>Tổng số:&nbsp<b>@Model.Count</b></span>
+                </div>
+                <div>
+                    <nav>
+                        <ul class="pagination m-0">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </div>
+    
 </div>

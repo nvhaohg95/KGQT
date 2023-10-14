@@ -88,7 +88,7 @@ window.helper = {
         return obj;
     },
 
-    showErr: function (message, title = "Lỗi") {
+    showErr = function (message, title = "Lỗi") {
         return Swal.fire(
             title,
             message,
@@ -96,7 +96,7 @@ window.helper = {
         );
     },
 
-    showSuc: function (message, refresh = true, title = "Thành công",) {
+    showSuc = function (message, refresh = true, title = "Thành công",) {
         return Swal.fire(
             title,
             message,

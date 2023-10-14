@@ -130,4 +130,10 @@ html {
     width: 100%;
     left: 0;
 }
+.border-dashed {
+    border-bottom: dashed 1px gray;
+}
+.w-150px{
+    width:150px;
+}
 

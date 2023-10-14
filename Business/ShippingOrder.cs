@@ -13,10 +13,6 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders;
-
-                if (!string.IsNullOrEmpty(userName))
-                    query = query.Where(x => x.Username == userName);
-
                 if (status > 0)
                     query = query.Where(x => x.Status == status);
 
