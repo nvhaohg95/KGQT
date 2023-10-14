@@ -210,7 +210,7 @@ namespace KGQT.Areas.Admin.Controllers
                         var p = new tbl_Package();
                         p.PackageCode = item;
                         p.Status = 1;
-                        p.ShippingMethod = id;
+                        p.MovingMethod = id;
                         p.CreatedBy = user.Username;
                         p.CreatedDate = DateTime.Now;
                         BusinessBase.Add(p);

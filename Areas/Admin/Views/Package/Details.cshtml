@@ -1,44 +1,270 @@
 ﻿@model KGQT.Models.tbl_Package
-
+@using KGQT.Commons
+@using Newtonsoft.Json
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <ul id="breadcrumbs" class="mb-2">
-    <li><a href="/">Trang chủ</a></li>
-    <li><a href="/Package/Index">Kiện</a></li>
-    <li><a>Chi tiết kiện</a></li>
+    <li><a href="/admin/home">Trang chủ</a></li>
+    <li><a href="/admin/ShippingOrder/Index">Danh sách ký gửi</a></li>
+    <li><a>Chi tiết</a></li>
 </ul>
-<section class="h-100 gradient-custom">
-    <div class="container-fluid py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
-                <div class="card" style="border-radius: 10px;">
-                    <div class="card-header px-4 py-5">
-                        <div class="card-header px-4 py-5">
-                            <h2 class="text-muted mb-0">
-                                Thông tin đơn: <span class="text-uppercase text-danger">@Model.PackageCode</span>
-                            </h2>
-                            <span class="py-2">Mã vận đơn: <strong>@Model.TransID)</strong></span>
+<div class="container-fluid py-3 h-100 gradient-custom">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
+            <div class="card" style="border-radius: 10px;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2>Thông tin đơn: <span class="text-uppercase text-danger">@Model.PackageCode</span></h2>
+                        </div>
+                        <div class="col-md-6">
+                            @if (Model.Status == 0)
+                            {
+                                <button type="button" onclick="confirm(@Model.ID)" class="btn btn-sm btn-primary float-right mx-2">Xác nhận đơn</button>
+                            }
+                            @if (Model.Status < 3)
+                            {
+                                <button type="button" onclick="cancel(@Model.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
+                            }
+                            <button type="button" class="btn-sm btn bg-orange text-white  float-right mx-2">Kiểm tra hàng kho TQ</button>
                         </div>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="form-row">
-                            <div class="form-group col-md-12">
-                                <label for="txtPackage">Chi tiết kiện</label>
-                                <input type="text" class="form-control" id="txtPackage" placeholder="Quét mã kiện hoặc nhập 3 số cuối" onkeydown="debounce(packageOnChange,1000)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul id="progressbar">
+                                <li class="timeline-step active">
+                                    Chưa khớp<br>
+                                    <small>14:12:19<br>12/10/2023</small>
+                                </li>
+                                <li class="timeline-step active">
+                                    Vận chuyển về SG<br>
+                                    <small>14:26:58<br>12/10/2023</small>
+                                </li>
+                                <li class="timeline-step active ">
+                                    Đã về kho SG<br>
+                                    <small>14:48:31<br>12/10/2023</small>
+                                </li>
+                                <li class="timeline-step active ">
+                                    Yêu cầu giao<br>
+                                    <small>00:00:00<br>01/01/0001</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary mb-4">
+                        <div class="panel-heading">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Thông tin khách hàng</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div>
+                                        <span>Khách hàng: @Model.FullName</span>
+                                    </div>
+                                    <div>
+                                        <span>Số điện thoại: @Model.Phone</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <span>Địa chỉ: @Model.Address</span>
+                                    </div>
+                                    <div>
+                                        <span>Email: @Model.Email</span>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
-                        <!--Start::Thông tin kiện-->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách Kiện</h3>
-                        </div>
-                        <div class="row flex-column" id="listOutput"></div>
-
                     </div>
+                    <div class="panel panel-primary mb-4">
+                        <div class="panel-heading">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Dịch vụ phụ</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
+                                    {
+                                        <div class="form-check-inline">
+
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (Model.IsInsurance != null && Model.IsInsurance == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                                            </label>
+                                        </div>
+                                        <!--End:: Kê khai-->
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Start::Thông tin đơn-->
+                    <div class="panel panel-primary mb-4">
+                        <div class="panel-heading">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Tài chính</h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="d-flex justify-content-between pt-2">
+                                <p class="text-muted mb-0">Phí vận chuyển:</p>
+                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.WeightPrice != null ? Model.WeightPrice : 0).Replace(",", ".")</span></p>
+                            </div>
+                            @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí đóng gỗ:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.WoodPackagePrice != null ? Model.WoodPackagePrice : 0).Replace(",", ".")</span></p>
+                                </div>
+                            }
+                            @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí bọt khí:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.AirPackagePrice != null ? Model.AirPackagePrice : 0).Replace(",", ".")</span></p>
+                                </div>
+                            }
+                            @if (Model.IsInsurance != null && Model.IsInsurance == true)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí bảo hiểm:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")</span></p>
+                                </div>
+                            }
+                            <!--End::Thông tin đơn-->
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer border-0 px-4 py-5"
+                     style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                    <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
+                        Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.TotalPrice != null ? Model.TotalPrice : 0).Replace(",", ".")</span>
+                    </h5>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+<script>
+    //Xác nhận
+    function confirm(id) {
+        $.ajax({
+            url: '/admin/ShippingOrder/Confirm',
+            type: 'Post',
+            data: { id },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Lỗi!');
+                else
+                    helper.showSuc('Đã xác nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+    //Hủy đơn
+    function cancel(id) {
+        $.ajax({
+            url: '/admin/ShippingOrder/Cancel',
+            type: 'Post',
+            data: { id },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Lỗi!');
+                else
+                    helper.showSuc('Đã hủy nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+    //Thêm kê khai
+    function addDeclare() {
+        let $id = $("#txtId"), $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
+        let id = $id.val(), link = $link.val(), qty = $Qty.val(), amount = $amount.val();
+
+        if (!link || !qty || !amount) {
+            helper.showErr('Vui lòng nhập đầy đủ thông tin!')
+            return;
+        }
+
+        $.ajax({
+            url: '/admin/ShippingOrder/AddDeclare',
+            type: 'Post',
+            data: { id, link, qty, amount, shipId: @Model.ID },
+            // other AJAX options here
+            success: function (result) {
+                if (result == -1)
+                    helper.showErr('Bạn đã kê khai sản phẩn này rồi!');
+
+                if (result == 0)
+                    helper.showErr('Lỗi!');
+
+                if (result == 1)
+                    helper.showSuc('Kê khai thành công!');
+
+                if (result == 2)
+                    helper.showSuc('Cập nhật thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+    //Sửa kê khai
+    function editDeclare(o) {
+        var obj = JSON.parse(decodeURIComponent(o));
+
+        $("#txtId").val(obj.ID);
+        $("#txtLink").val(obj.ProductLink);
+        $("#txtQty").val(obj.ProductQuantity);
+        $('#txtAmount').val(obj.ProductPrice);
+    }
+
+    //Xóa kê khai
+    function deleteDeclare(id) {
+        $.ajax({
+            url: '/admin/ShippingOrder/DeleteDeclare',
+            type: 'Post',
+            data: { id },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Lỗi!');
+                else
+                    helper.showSuc('Đã hủy nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+</script>
+

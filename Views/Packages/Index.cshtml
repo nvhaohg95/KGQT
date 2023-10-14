@@ -39,7 +39,7 @@
                                             id="drStt"
                                             data-mdb-toggle="dropdown"
                                             aria-expanded="false">
-                                        @PJUtils.ShippingStatus(item.Status.Value)
+                                        @PJUtils.ShippingStatus(item.Status)
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="drStt">
                                         <ul class="timeline">
@@ -90,7 +90,7 @@
                     </div>
                     <div class="row p-2 mx-0 my-2 border-bottom">
                         <div class="col-md-6">
-                            <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.ShippingMethod.Value)</span>
+                            <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
                         </div>
                         <div class="col-md-6">
                             Dịch vụ phụ:

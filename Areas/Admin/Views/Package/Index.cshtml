@@ -1,4 +1,7 @@
-﻿@{
+﻿@model IEnumerable<KGQT.Models.tbl_Package>
+@using KGQT.Commons
+
+@{
     ViewData["Title"] = "Kiện";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
@@ -6,105 +9,229 @@
     <li><a href="/">Trang chủ</a></li>
     <li><a>Kiện</a></li>
 </ul>
-<section class="h-100 gradient-custom">
-    <div class="container-fluid py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
-                <div class="card" style="border-radius: 10px;">
-                    <div class="card-body p-4">
-                        <div class="form-row">
-                            <div class="form-group col-md-12">
-                                <label for="txtPackage">Nhập/Quét kiện</label>
-                                <input type="text" class="form-control" id="txtPackage" placeholder="Quét mã kiện hoặc nhập 3 số cuối" onkeydown="debounce(packageOnChange,1000)">
+
+
+<div class="card" style="border-radius: 10px;">
+    <div class="card-body p-4">
+        <!--Start::Thông tin kiện-->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
+            <div>
+                <input type="file" id="importCNWH" hidden onchange="importCNWH(this)" />
+                <input type="file" id="exportCNWH" hidden onchange="exportCNWH(this)" />
+                <button type="button" class="btn btn-success btn-sm" onclick="importFile(1)">Cập nhật đơn nhập kho TQ</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="importFile(2)">Cập nhật đơn xuất kho TQ</button>
+                <a href="/packages/create" class="btn btn-primary btn-sm pointer-event">Thêm đơn</a>
+            </div>
+        </div>
+        @foreach (var item in Model)
+        {
+            <div class="card shadow-0 border mb-4">
+                <div class="card-body p-0 py-2">
+                    <div class="row border-bottom p-2 mx-0">
+                        <div class="col-md-8 align-self-center">
+                            <span class="cursor-pointer">
+                                <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                                <i class="fa fa-copy"></i>
+                            </span>
+                            -
+                            <span>Kho nhận: Quảng Châu</span>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row justify-content-end">
+                                <div class="dropdown p-2"> <button class="btn-sm btn bg-orange text-white">Kiểm tra hàng kho TQ</button></div>
+                                <div class="dropdown dropdown-hover p-2">
+                                    <button class="btn btn-sm px-0 btn-success"
+                                            type="button"
+                                            id="drStt"
+                                            data-mdb-toggle="dropdown"
+                                            aria-expanded="false">
+                                        @PJUtils.ShippingStatus(item.Status)
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="drStt">
+                                        <ul class="timeline">
+                                            @if (item.ReceivedDate != null)
+                                            {
+                                                <li class="timeline-item mb-5">
+                                                    <span class="fw-bold">Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                                    @*<p class=" mb-2 fw-bold">@item.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
+                                                </li>
+                                            }
+
+                                            @if (item.ImportedSGWH != null)
+                                            {
+                                                <li class="timeline-item mb-5">
+                                                    <span class="fw-bold">Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                                    @*<p class=" mb-2 fw-bold">@item.ImportedSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
+                                                </li>
+                                            }
+
+                                            @if (item.DateExpectation != null)
+                                            {
+                                                <li class="timeline-item mb-5">
+                                                    <span class="fw-bold">Đang trên đường về HCM - @item.DateExpectation.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                                    @*<p class=" mb-2 fw-bold">@item.DateExpectation.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
+                                                </li>
+                                            }
+
+                                            @if (item.ExportedCNWH != null)
+                                            {
+                                                <li class="timeline-item mb-5">
+                                                    <span class="fw-bold">Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                                    @*<p class=" mb-2 fw-bold">@item.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
+                                                </li>
+                                            }
+
+                                            @if (item.ReceivedDate == null && item.ExportedCNWH == null && item.TransportingToSGWH == null && item.ImportedSGWH == null)
+                                            {
+                                                <li class="p-2">
+                                                    Chưa có lịch sự kiện hàng
+                                                </li>
+                                            }
+                                        </ul>
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <!--Start::Thông tin kiện-->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách Kiện</h3>
+                    </div>
+                    <div class="row p-2 mx-0 mt-2">
+                        <div class="col-md-3">
+                            <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
                         </div>
-                        <div class="row flex-column" id="listOutput"></div>
+                        <div class="col-md-6">
+                            Dịch vụ phụ:
+                            @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                            {
+                                <div class="form-check-inline">
 
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                                    </label>
+                                </div>
+                            }
+                            @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                            {
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                                    </label>
+                                </div>
+                            }
+                            @if (item.IsInsurance != null && item.IsInsurance == true)
+                            {
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row px-2 mx-0 mb-2 border-bottom">
+                        <div class="col-md-3">
+                            <div>
+                                <span>Khách hàng: @item.FullName</span>
+                            </div>
+                            <div>
+                                <span>Số điện thoại: @item.Phone</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div>
+                                <span>Địa chỉ: @item.Address</span>
+                            </div>
+                            <div>
+                                <span>Email: @item.Email</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row p-2 mx-0 my-2">
+                        <div class="col-md-2">
+                            <div class="form-inline text-left">
+                                Tổng tiền hàng:  &nbsp;<p class=" mb-0"> @(item.WeightPrice ?? 0)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-inline text-left">
+                                Vận chuyển:  &nbsp;<p class=" mb-0">@(item.Weight ?? 0)kg - @(item.WeightPrice ?? 0)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-inline text-left">
+                                Phí đóng gỗ:  &nbsp;<p class=" mb-0"> @(item.WeightPrice != null ? item.WeightPrice : "-/-")</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-inline text-left">
+                                Phí bọt khí:  &nbsp;<p class=" mb-0"> @(item.AirPackagePrice != null ? item.AirPackagePrice : "-/-")</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-inline text-left">
+                                Phí bảo hiểm:  &nbsp;<p class=" mb-0"> @(item.IsInsurancePrice != null ? item.IsInsurancePrice : "-/-")</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-inline text-left">
+                                Ngày lên đơn:  &nbsp;<p class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
-</section>
+</div>
 
 <script>
-    $(document).ready(function () {
-        $('#txtPackage').focus();
-    });
+    function importFile(type) {
+        if (type == 1)
+            $('#importCNWH').click();
+        else
+            $('#exportCNWH').click();
+    }
 
-    function packageOnChange() {
-        var text = $('#txtPackage').val()
-        if (!text) return;
+    function importCNWH(o) {
+        const ip = $(o).get(0);
+        var file = ip.files;
+        let form = new FormData();
+        form.append("file", file[0]);
+
         $.ajax({
-            url: '/admin/package/scanpackage',
-            type: 'get',
-            data: { str: text },
-            // other AJAX options here
-            success: function (result) {
-                if (result && result.length) {
-                    var buffer = '';
-                    var template = $("#Template").html();
-                    result.forEach(function (arrayElement) {
-                        var data = arrayElement;
-                        buffer += eval('`' + template + '`');
-                    });
-                    $("#listOutput").html(buffer);
-                    $('#txtPackage').val('').focus();
-                }
-            },
-            error: function (xhr, status, err) {
-                // error handling
+            url: '/admin/package/ImportChinaWareHouse',
+            type: 'POST',
+            dataType: 'json',
+            data: form,
+            contentType: false,
+            processData: false,
+            success: function () {
+                alert('added to temp');
+            }, error: function (e) {
+                console.log(e);
             }
         });
-    };
-</script>
+    } 
+    
+    function exportCNWH(o) {
+        const ip = $(o).get(0);
+        var file = ip.files;
+        let form = new FormData();
+        form.append("file", file[0]);
 
-<script type="text/template" id="Template">
-    <div class="card shadow-0 border mb-4">
-        <div class="card-body p-2">
-           <div class="row">
-            <div class="col-md-2 align-self-center">
-                <div class="col-md-12 text-center d-flex justify-content-center align-items-center">
-                    <h2 class="text-danger mb-0"><a href="/admin/package/details?id=${data.id}">${data.packageCode}</a></h2>
-                </div>
-            </div>
-            <div class="col-md-10">
-                <div class="row">
-                    <div class="col-md-4 text-center d-flex justify-content-center align-items-center flex-column">
-                        <div class="row"> Cân nặng:  &nbsp; <strong class="text-muted mb-0"> ${data.weight || 0}</strong></div>
-                        <div class="row"> Qui đổi:  &nbsp; <strong class="text-muted mb-0"> ${data.weightExchange || 0}</strong></div>
-                    </div>
-                    <div class="col-md-4 text-center d-flex justify-content-center align-items-center flex-column">
-                        <div class="row">
-                            Đóng gỗ:  &nbsp; <strong class="text-muted mb-0"> ${data.woodPackageWeight || 0}</strong>
-                        </div>
-                        <div class="row"> Qui đổi:  &nbsp; <strong class="text-muted mb-0"> ${data.woodPackageWeightExchange || 0}</strong></div>
-                    </div>
-                    <div class="col-md-4 text-center d-flex justify-content-center align-items-center flex-column">
-                        <div class="row">
-                            Bọt khí:  &nbsp; <strong class="text-muted mb-0"> ${data.airPackageWeight || 0}</strong>
-                        </div>
-                        <div class="row"> Qui đổi:  &nbsp; <strong class="text-muted mb-0"> ${data.airPackageWeightExchange || 0}</strong></div>
-                    </div>
-                </div>
-                <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
-                <div class="row d-flex align-items-center">
-                    <div class="col-md-4 text-center d-flex justify-content-center align-items-center">
-                        Phí cân nặng:  &nbsp;<p class="text-muted mb-0"> ${data.WeightPrice || 0}</p>
-                    </div>
-                    <div class="col-md-4 text-center d-flex justify-content-center align-items-center">
-                        Phí Đóng gỗ:  &nbsp;<p class="text-muted mb-0">${data.WoodPackagePrice || 0}</p>
-                    </div>
-                    <div class="col-md-4 text-center d-flex justify-content-center align-items-center">
-                        Phí bọt khí:  &nbsp;<p class="text-muted mb-0"> ${data.WeightPrice || 0}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-        </div>
+        $.ajax({
+            url: '/admin/package/EmportChinaWareHouse',
+            type: 'POST',
+            dataType: 'json',
+            data: form,
+            contentType: false,
+            processData: false,
+            success: function () {
+                alert('added to temp');
+            }, error: function (e) {
+                console.log(e);
+            }
+        });
+    }
 </script>

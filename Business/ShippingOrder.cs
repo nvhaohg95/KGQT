@@ -54,6 +54,8 @@ namespace KGQT.Business
                 return db.SaveChanges() > 0;
             }
         }
+
+       
         #endregion
     }
 }

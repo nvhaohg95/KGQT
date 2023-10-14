@@ -14,7 +14,7 @@ namespace KGQT.Models
         /// 2. Đã về
         /// 3. Đã giao
         /// </summary>
-        public int? Status { get; set; }
+        public int Status { get; set; }
         public bool? IsAirPackage { get; set; }
         public double? AirPackagePrice { get; set; }
         public bool? IsWoodPackage { get; set; }
@@ -24,13 +24,15 @@ namespace KGQT.Models
         public double? Weight { get; set; }
         public double? MinWeight { get; set; }
         public double? WeightPrice { get; set; }
-        public int? ShippingMethod { get; set; }
+        public double? TotalPrice { get; set; }
+        public int MovingMethod { get; set; }
         public int? PaymentMethod { get; set; }
         public string? Declaration { get; set; }
         public double? DeclarePrice { get; set; }
         /// <summary>
         /// Chờ giao
         /// </summary>
+        public DateTime? ComfirmDate { get; set; }
         public DateTime? ExportedCNWH { get; set; }
         /// <summary>
         /// Đang giao
