@@ -34,9 +34,24 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public List<tbl_Package> ScanPackage(string str)
+        public IActionResult InStock(string str)
         {
-            return BusinessBase.GetList<tbl_Package>(x => x.PackageCode.Contains(str)).ToList();
+            var model = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.Contains(str)).ToList();
+            return View(model);
+        }
+        [HttpGet]
+        public IActionResult PackagePartial(DateTime date, int method, string code)
+        {
+            List<tbl_Package> packages = new List<tbl_Package>();
+            if (!string.IsNullOrEmpty(code))
+            {
+                DateTime start = date;
+                DateTime end = start.AddDays(1).AddTicks(-1);
+                packages = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.EndsWith(code)
+                && x.MovingMethod == method
+                && x.ExportedCNWH >= start && x.ExportedCNWH < end).ToList();
+            }
+            return PartialView("_Package", packages);
         }
 
         #region Function
