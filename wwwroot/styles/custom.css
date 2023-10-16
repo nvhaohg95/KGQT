@@ -1,10 +1,11 @@
 ﻿/*Start::Hover dropdown*/
 .dropdown-hover > .dropdown-menu {
-   min-width:240px;
-   right: 1em;
-   left:unset;
-   top:85%;
+    min-width: 240px;
+    right: 1em;
+    left: unset;
+    top: 85%;
 }
+
 .dropdown-hover:hover > .dropdown-menu {
     display: block;
 }
@@ -15,12 +16,12 @@
 }
 /*End::Hover dropdown*/
 
-/*Start::Timeline*/
+/*Start::Timeline veritcal*/
 .timeline {
     border-left: 1px solid hsl(0deg 0% 70.87%);
     position: relative;
     list-style: none;
-    margin-left:10px;
+    margin-left: 10px;
 }
 
     .timeline .timeline-item {
@@ -44,6 +45,67 @@
 
 
 /*End::Timeline*/
+
+/*Start: Timeline horizon*/
+#progressbar {
+    padding-left: 0px;
+    display: flex;
+}
+
+.timeline-step {
+    text-align:center;
+    list-style-type: none;
+    font-size: 10px;
+    float: left;
+    width: 100%;
+    position: relative;
+}
+
+    .timeline-step::after {
+        content: "";
+        width: 100%;
+        height: 3px;
+        background: #e8e8e8;
+        position: absolute;
+        left: -50%;
+        top: 8px;
+        z-index: 0;
+    }
+
+    .timeline-step::before {
+        content: "";
+        width: 20px;
+        height: 20px;
+        display: block;
+        font-size: 10px;
+        color: #333;
+        background: white;
+        border-radius: 50%;
+        margin: 0 auto 5px auto;
+        border: 3.5px solid #f17d59;
+    }
+
+#progressbar li.active::before {
+    background: white;
+    color: white;
+}
+
+
+#progressbar li:first-child::after {
+    content: "";
+   width:0;
+}
+
+#progressbar li.active:before, #progressbar li.active:after {
+    background: #f17d59;
+    color: white;
+}
+
+
+.timeline-step small {
+    color: #959091;
+}
+/*End: Timeline Horizon*/
 
 /*Start:: Breadsrumb */
 #breadcrumbs {
@@ -176,6 +238,6 @@
 
 
 /*Display*/
-.d-content{
-    display:contents;
+.d-content {
+    display: contents;
 }

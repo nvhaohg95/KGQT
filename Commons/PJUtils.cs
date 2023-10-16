@@ -7,6 +7,9 @@ using KGQT.Models.temp;
 using System.Xml;
 using Supremes;
 using System.Drawing;
+using ExcelDataReader;
+using System.Data;
+using System.Reflection;
 
 namespace KGQT.Commons
 {
@@ -99,7 +102,7 @@ namespace KGQT.Commons
             string sReturn = "";
             switch (status)
             {
-                case 0: 
+                case 0:
                     sReturn = "<span class=\"text-center p-1 mb-2 bg-danger text-white\">Chưa xác nhận</span>";
                     break;
                 case 1:
@@ -141,16 +144,16 @@ namespace KGQT.Commons
                 case 1:
                     sReturn = "Đã cập nhật MVĐ";
                     break;
+                //case 2:
+                //    sReturn = "Hàng về kho TQ";
+                //    break;
                 case 2:
-                    sReturn = "Hàng về kho TQ";
-                    break;
-                case 3:
                     sReturn = "Đang trên đường về HCM";
                     break;
-                case 4:
+                case 3:
                     sReturn = "Hàng về tới HCM";
                     break;
-                case 5:
+                case 4:
                     sReturn = "Đã nhận hàng";
                     break;
                 case 9:
@@ -185,6 +188,67 @@ namespace KGQT.Commons
                     break;
             }
             return sReturn;
+        }
+
+        public static List<ExcelModel> ExcelToJson(IFormFile file)
+        {
+            try
+            {
+                List<ExcelModel> oData = new List<ExcelModel>();
+
+                #region Variable Declaration
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                DataSet dsexcelRecords = new DataSet();
+                IExcelDataReader excelReader = null;
+                Stream FileStream = null;
+                var json = "";
+
+                FileStream = file.OpenReadStream();
+
+                if (FileStream != null)
+                {
+                    excelReader = ExcelReaderFactory.CreateReader(FileStream);
+                }
+
+                if (excelReader != null)
+                {
+                    DataSet result = excelReader.AsDataSet();
+                    if (result != null && result.Tables.Count > 0)
+                    {
+                        foreach (DataTable dtt in result.Tables)
+                        {
+                            var dt = dtt;
+                            //dt.Columns["Column"].ColumnName = "ID";
+                            dt.Rows.RemoveAt(0);
+
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                var obj = new ExcelModel();
+                                var count = dt.Rows[i].ItemArray.Count();
+                                if (count > 1)
+                                {
+                                    obj.Key = dt.Rows[i][0].ToString();
+                                    obj.Value = dt.Rows[i][1].ToString();
+
+                                }
+                                else
+                                {
+                                    obj.Key = dt.Rows[i][0].ToString();
+                                }
+                                oData.Add(obj);
+                            }
+                        }
+                    }
+                    return oData;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            #endregion
+            return null;
         }
     }
 }

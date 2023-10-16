@@ -20,7 +20,7 @@ namespace KGQT.Business.Base
                     bool s = db.SaveChanges() > 0;
                     if (s)
                     {
-                       Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));                     
+                        Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
                         return s;
                     }
                 }
@@ -169,14 +169,16 @@ namespace KGQT.Business.Base
             }
         }
 
-        public static IList<T> GetList<T>(Expression<Func<T, bool>> predicate) where T : class
+        public static IList<T> GetList<T>(Expression<Func<T, bool>>? predicate) where T : class
         {
             using (var db = new nhanshiphangContext())
             {
                 try
                 {
-                    return db.Set<T>().AsQueryable().Where(predicate).ToList();
-
+                    if (predicate != null)
+                        return db.Set<T>().AsQueryable().Where(predicate).ToList();
+                    else
+                        return db.Set<T>().ToList();
                 }
                 catch (Exception ex)
                 {
