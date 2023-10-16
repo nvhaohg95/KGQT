@@ -32,35 +32,6 @@ function showHidePass(idIcon, idInput) {
     }
 };
 
-
-function selectedTime() {
-    var fromDate = "";
-    var toDate = "";
-    var sOption = document.getElementById("dropdowTime").value
-    let date = new Date(); // get current date
-    switch (sOption) {
-        case "d":
-            fromDate = date.toISOString().split("T")[0];
-            toDate = date.toISOString().split("T")[0];
-            break;
-        case "w":
-            let first = date.getDate() - date.getDay(), last = first + 6;
-            fromDate = new Date(date.setDate(first)).toISOString().split("T")[0];
-            toDate = new Date(date.setDate(last)).toISOString().split("T")[0];
-            break;
-        case "m":
-            fromDate = new Date(date.getFullYear(), date.getMonth(), 0).toISOString().split("T")[0];
-            toDate = new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString().split("T")[0];
-            break;
-        case "y":
-            fromDate = new Date(date.getFullYear(), 0, 0).toISOString().split("T")[0];
-            toDate = new Date(date.getFullYear(), 11, 31).toISOString().split("T")[0];
-            break;
-    }
-    $("#inputFromTime").val(fromDate);
-    $("#inputToTime").val(toDate);
-};
-
 function debounce(func, within = 300, timerId = null) {
     window.callOnceTimers = window.callOnceTimers || {};
     if (timerId == null)

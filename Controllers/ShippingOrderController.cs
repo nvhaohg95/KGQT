@@ -25,7 +25,7 @@ namespace KGQT.Controllers
         public ActionResult Index()
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var lst = ShippingOrder.GetList(0, null, null, "", userLogin);
+            var lst = ShippingOrder.GetList(0, "",null, null);
             return View(lst);
         }
 

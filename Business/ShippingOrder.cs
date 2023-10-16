@@ -7,7 +7,7 @@ namespace KGQT.Business
 {
     public static class ShippingOrder
     {
-        public static List<tbl_ShippingOrder> GetList(int? status, DateTime? fromDate, DateTime? toDate, string? searchText, string userName = "", int page = 0, int pageSize = 20)
+        public static List<tbl_ShippingOrder> GetList(int? status ,string? ID, DateTime? fromDate, DateTime? toDate, int page = 0, int pageSize = 20)
         {
 
             using (var db = new nhanshiphangContext())
@@ -16,14 +16,14 @@ namespace KGQT.Business
                 if (status > 0)
                     query = query.Where(x => x.Status == status);
 
+                if(!string.IsNullOrEmpty(ID))
+                    query = query.Where(x => x.ShippingOrderCode == ID);
+
                 if (fromDate != null)
                     query = query.Where(x => x.CreatedDate >= fromDate);
 
                 if (toDate != null)
                     query = query.Where(x => x.CreatedDate <= toDate);
-
-                if (!string.IsNullOrEmpty(searchText))
-                    query = query.Where(x => x.ShippingOrderCode.Contains(searchText));
 
                 query = query.OrderByDescending(x => x.CreatedDate).Skip(page * pageSize).Take(pageSize);
                 var lstData = query.ToList();
