@@ -3,10 +3,15 @@ using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using NToastNotify;
+using System.Data;
+using System.Drawing.Printing;
 using System.Xml;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -25,11 +30,31 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region View
         // GET: ShippingOrderController
+        //[HttpGet]
+        //public ActionResult Index()
+        //{
+        //    var lst = ShippingOrder.GetList(0, null, null, "");
+        //    return View(lst);
+        //}
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Index(int? status,string? ID,DateTime? fromDate,DateTime? toDate)
         {
-            var lst = ShippingOrder.GetList(0, null, null, "");
-            return View(lst);
+            using (var db = new nhanshiphangContext())
+            {
+                var lst = ShippingOrder.GetList(status, ID, fromDate, toDate);
+                return View(lst);
+
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Index(string? ID,DateTime? fromDate, DateTime? toDate)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var lst = ShippingOrder.GetList(0,ID, fromDate, toDate);
+                return View(lst);
+            }
         }
 
         [HttpGet]
@@ -38,12 +63,7 @@ namespace KGQT.Areas.Admin.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Index(int status)
-        {
-            var lst = ShippingOrder.GetList(0, null, null, "");
-            return View("Index",lst);
-        }
+        
 
 
 
