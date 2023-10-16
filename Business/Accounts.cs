@@ -327,6 +327,8 @@ namespace KGQT.Business
                     Password = PJUtils.Encrypt("userpass", data.PassWord),
                     Email = data.Email,
                     Wallet = 0,
+                    Status= 1,
+                    RoleID = 4,
                     CreatedDate = DateTime.Now,
                     CreatedBy = data.UserName
                 };

@@ -59,6 +59,24 @@ namespace KGQT.Areas.Admin.Controllers
             bool s = Packages.UpdateStatusCNWH(content, 2, userLogin);
             return s;
         }
+
+        [HttpPost]
+        public JsonResult Create(tbl_Package form)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+
+            var user = Accounts.GetInfo(-1, form.Username);
+            form.Status = 0;
+            form.UID = user.ID;
+            form.Username = user.Username;
+            form.FullName = user.FirstName + " " + user.LastName;
+            form.Phone = user.Phone;
+            form.Email = user.Email;
+            form.Address = user.Address;
+            form.CreatedDate = DateTime.Now;
+            form.CreatedBy = userLogin;
+            return Json(BusinessBase.Add(form));
+        }
     }
 
     #endregion

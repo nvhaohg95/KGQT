@@ -30,6 +30,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_HistoryPayWallet> tbl_HistoryPayWallets { get; set; } = null!;
         public virtual DbSet<tbl_Notification> tbl_Notifications { get; set; } = null!;
         public virtual DbSet<tbl_Package> tbl_Packages { get; set; } = null!;
+        public virtual DbSet<tbl_Role> tbl_Roles { get; set; } = null!;
         public virtual DbSet<tbl_ShippingMethodAddDate> tbl_ShippingMethodAddDates { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrderDeclaration> tbl_ShippingOrderDeclarations { get; set; } = null!;
@@ -37,14 +38,14 @@ namespace KGQT.Models
         public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_TradeHistory> tbl_TradeHistories { get; set; } = null!;
         public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
-        public virtual DbSet<tbl_UserLevel> tbl_UserLevels { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-1TA69L2B;Initial Catalog=nhanshiphang;Integrated Security=True");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=LAPTOP-EOMC9SID;Database=nhanshiphang;User Id=sa;Password=abc123;Integrated Security=True; Trusted_Connection=True;");
             }
         }
 
@@ -203,6 +204,8 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_Package");
 
+                entity.Property(e => e.ComfirmDate).HasColumnType("datetime");
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.DateExpectation).HasColumnType("datetime");
@@ -211,9 +214,13 @@ namespace KGQT.Models
 
                 entity.Property(e => e.Email).HasMaxLength(100);
 
+                entity.Property(e => e.Exported).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.ExportedCNWH)
                     .HasColumnType("datetime")
                     .HasComment("Chờ giao");
+
+                entity.Property(e => e.Imported).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ImportedSGWH)
                     .HasColumnType("datetime")
@@ -232,6 +239,23 @@ namespace KGQT.Models
                 entity.Property(e => e.TransportingToSGWH)
                     .HasColumnType("datetime")
                     .HasComment("Đang giao");
+
+                entity.Property(e => e.WareHouse).HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<tbl_Role>(entity =>
+            {
+                entity.HasKey(e => e.RoleID);
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.RoleName).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbl_ShippingMethodAddDate>(entity =>
@@ -323,21 +347,6 @@ namespace KGQT.Models
                 entity.Property(e => e.Status).HasComment("1. Chờ duyệt\r\n2. Đã duyệt");
 
                 entity.Property(e => e.Type).HasComment("1. User gửi yêu cầu\r\n2. Admin tạo");
-            });
-
-            modelBuilder.Entity<tbl_UserLevel>(entity =>
-            {
-                entity.ToTable("tbl_UserLevel");
-
-                entity.Property(e => e.CreatedBy).HasMaxLength(250);
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.LevelName).HasMaxLength(250);
-
-                entity.Property(e => e.ModifiedBy).HasMaxLength(250);
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>
