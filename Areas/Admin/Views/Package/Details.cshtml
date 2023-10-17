@@ -33,26 +33,62 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                       @* <div class="col-md-12">
                             <ul id="progressbar">
-                                <li class="timeline-step active">
-                                    Chưa khớp<br>
-                                    <small>14:12:19<br>12/10/2023</small>
-                                </li>
-                                <li class="timeline-step active">
-                                    Vận chuyển về SG<br>
-                                    <small>14:26:58<br>12/10/2023</small>
-                                </li>
-                                <li class="timeline-step active ">
-                                    Đã về kho SG<br>
-                                    <small>14:48:31<br>12/10/2023</small>
-                                </li>
-                                <li class="timeline-step active ">
-                                    Yêu cầu giao<br>
-                                    <small>00:00:00<br>01/01/0001</small>
-                                </li>
+                                @if (Model.ExportedCNWH != null)
+                                {
+                                    <li class="timeline-step active">
+                                        Xuất kho TQ<br>
+                                        <small>@Model.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="timeline-step">
+                                        Xuất kho TQ
+                                    </li>
+                                }
+                                @if (Model.TransportingToSGWH != null)
+                                {
+                                    <li class="timeline-step active">
+                                        Đang trên đường về HCM<br>
+                                        <small>@Model.TransportingToSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="timeline-step">
+                                        Đang trên đường về HCM
+                                    </li>
+                                }
+                                @if (Model.ImportedSGWH != null)
+                                {
+                                    <li class="timeline-step active">
+                                        Về kho HCM<br>
+                                        <small>@Model.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="timeline-step">
+                                        Về kho HCM
+                                    </li>
+                                }
+                                @if (Model.ReceivedDate != null)
+                                {
+                                    <li class="timeline-step active">
+                                        Đã nhận hàng<br>
+                                        <small>@Model.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="timeline-step">
+                                        Đã nhận hàng
+                                    </li>
+                                }
                             </ul>
-                        </div>
+                        </div>*@
                     </div>
                     <div class="panel panel-primary mb-4">
                         <div class="panel-heading">
@@ -163,108 +199,109 @@
             </div>
         </div>
     </div>
-</div>
-<script>
-    //Xác nhận
-    function confirm(id) {
-        $.ajax({
-            url: '/admin/ShippingOrder/Confirm',
-            type: 'Post',
-            data: { id },
-            // other AJAX options here
-            success: function (result) {
-                if (!result)
-                    helper.showErr('Lỗi!');
-                else
-                    helper.showSuc('Đã xác nhận thành công!');
-            },
-            error: function (xhr, status, err) {
-                // error handling
-            }
-        });
-    }
-
-    //Hủy đơn
-    function cancel(id) {
-        $.ajax({
-            url: '/admin/ShippingOrder/Cancel',
-            type: 'Post',
-            data: { id },
-            // other AJAX options here
-            success: function (result) {
-                if (!result)
-                    helper.showErr('Lỗi!');
-                else
-                    helper.showSuc('Đã hủy nhận thành công!');
-            },
-            error: function (xhr, status, err) {
-                // error handling
-            }
-        });
-    }
-
-    //Thêm kê khai
-    function addDeclare() {
-        let $id = $("#txtId"), $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
-        let id = $id.val(), link = $link.val(), qty = $Qty.val(), amount = $amount.val();
-
-        if (!link || !qty || !amount) {
-            helper.showErr('Vui lòng nhập đầy đủ thông tin!')
-            return;
+    <script>
+        //Xác nhận
+        function confirm(id) {
+            $.ajax({
+                url: '/admin/ShippingOrder/Confirm',
+                type: 'Post',
+                data: { id },
+                // other AJAX options here
+                success: function (result) {
+                    if (!result)
+                        helper.showErr('Lỗi!');
+                    else
+                        helper.showSuc('Đã xác nhận thành công!');
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
         }
 
-        $.ajax({
-            url: '/admin/ShippingOrder/AddDeclare',
-            type: 'Post',
-            data: { id, link, qty, amount, shipId: @Model.ID },
-            // other AJAX options here
-            success: function (result) {
-                if (result == -1)
-                    helper.showErr('Bạn đã kê khai sản phẩn này rồi!');
+        //Hủy đơn
+        function cancel(id) {
+            $.ajax({
+                url: '/admin/ShippingOrder/Cancel',
+                type: 'Post',
+                data: { id },
+                // other AJAX options here
+                success: function (result) {
+                    if (!result)
+                        helper.showErr('Lỗi!');
+                    else
+                        helper.showSuc('Đã hủy nhận thành công!');
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+        }
 
-                if (result == 0)
-                    helper.showErr('Lỗi!');
+        //Thêm kê khai
+        function addDeclare() {
+            let $id = $("#txtId"), $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
+            let id = $id.val(), link = $link.val(), qty = $Qty.val(), amount = $amount.val();
 
-                if (result == 1)
-                    helper.showSuc('Kê khai thành công!');
-
-                if (result == 2)
-                    helper.showSuc('Cập nhật thành công!');
-            },
-            error: function (xhr, status, err) {
-                // error handling
+            if (!link || !qty || !amount) {
+                helper.showErr('Vui lòng nhập đầy đủ thông tin!')
+                return;
             }
-        });
-    }
 
-    //Sửa kê khai
-    function editDeclare(o) {
-        var obj = JSON.parse(decodeURIComponent(o));
+            $.ajax({
+                url: '/admin/ShippingOrder/AddDeclare',
+                type: 'Post',
+                data: { id, link, qty, amount, shipId: @Model.ID },
+                // other AJAX options here
+                success: function (result) {
+                    if (result == -1)
+                        helper.showErr('Bạn đã kê khai sản phẩn này rồi!');
 
-        $("#txtId").val(obj.ID);
-        $("#txtLink").val(obj.ProductLink);
-        $("#txtQty").val(obj.ProductQuantity);
-        $('#txtAmount').val(obj.ProductPrice);
-    }
+                    if (result == 0)
+                        helper.showErr('Lỗi!');
 
-    //Xóa kê khai
-    function deleteDeclare(id) {
-        $.ajax({
-            url: '/admin/ShippingOrder/DeleteDeclare',
-            type: 'Post',
-            data: { id },
-            // other AJAX options here
-            success: function (result) {
-                if (!result)
-                    helper.showErr('Lỗi!');
-                else
-                    helper.showSuc('Đã hủy nhận thành công!');
-            },
-            error: function (xhr, status, err) {
-                // error handling
-            }
-        });
-    }
+                    if (result == 1)
+                        helper.showSuc('Kê khai thành công!');
 
-</script>
+                    if (result == 2)
+                        helper.showSuc('Cập nhật thành công!');
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+        }
+
+        //Sửa kê khai
+        function editDeclare(o) {
+            var obj = JSON.parse(decodeURIComponent(o));
+
+            $("#txtId").val(obj.ID);
+            $("#txtLink").val(obj.ProductLink);
+            $("#txtQty").val(obj.ProductQuantity);
+            $('#txtAmount').val(obj.ProductPrice);
+        }
+
+        //Xóa kê khai
+        function deleteDeclare(id) {
+            $.ajax({
+                url: '/admin/ShippingOrder/DeleteDeclare',
+                type: 'Post',
+                data: { id },
+                // other AJAX options here
+                success: function (result) {
+                    if (!result)
+                        helper.showErr('Lỗi!');
+                    else
+                        helper.showSuc('Đã hủy nhận thành công!');
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+        }
+
+    </script>
+
+</div>
 

@@ -1,0 +1,115 @@
+﻿@model IEnumerable<KGQT.Models.tbl_Package>
+@using KGQT.Commons
+
+
+@foreach (var item in Model)
+{
+    <div class="card shadow-0 border mb-4">
+        <div class="card-body p-0 py-2">
+            <div class="row border-bottom p-2 mx-0">
+                <div class="col-md-8 align-self-center">
+                    <span class="cursor-pointer">
+                        <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                        <i class="fa fa-copy"></i>
+                    </span>
+                    -
+                    <span>Kho nhận: Quảng Châu</span>
+                </div>
+                <div class="col-md-4">
+                    <div class="row justify-content-end">
+                        <div class="dropdown p-2"> <button class="btn-sm btn bg-orange text-white">Kiểm tra hàng kho TQ</button></div>
+                        <div class="dropdown dropdown-hover p-2">
+                            <span class="btn btn-sm px-0 btn-success"  >
+                                @PJUtils.ShippingStatus(item.Status)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2 mx-0 mt-2">
+                <div class="col-md-3">
+                    <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                </div>
+                <div class="col-md-6">
+                    Dịch vụ phụ:
+                    @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                    {
+                        <div class="form-check-inline">
+
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                            </label>
+                        </div>
+                    }
+                    @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                    {
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                            </label>
+                        </div>
+                    }
+                    @if (item.IsInsurance != null && item.IsInsurance == true)
+                    {
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row px-2 mx-0 mb-2 border-bottom">
+                <div class="col-md-3">
+                    <div>
+                        <span>Khách hàng: @item.FullName</span>
+                    </div>
+                    <div>
+                        <span>Số điện thoại: @item.Phone</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div>
+                        <span>Địa chỉ: @item.Address</span>
+                    </div>
+                    <div>
+                        <span>Email: @item.Email</span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row p-2 mx-0 my-2">
+                <div class="col-md-2">
+                    <div class="form-inline text-left">
+                        Tổng tiền hàng:  &nbsp;<p class=" mb-0"> @(item.WeightPrice ?? 0)</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-inline text-left">
+                        Vận chuyển:  &nbsp;<p class=" mb-0">@(item.Weight ?? 0)kg - @(item.WeightPrice ?? 0)</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-inline text-left">
+                        Phí đóng gỗ:  &nbsp;<p class=" mb-0"> @(item.WeightPrice != null ? item.WeightPrice : "-/-")</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-inline text-left">
+                        Phí bọt khí:  &nbsp;<p class=" mb-0"> @(item.AirPackagePrice != null ? item.AirPackagePrice : "-/-")</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-inline text-left">
+                        Phí bảo hiểm:  &nbsp;<p class=" mb-0"> @(item.IsInsurancePrice != null ? item.IsInsurancePrice : "-/-")</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-inline text-left">
+                        Ngày lên đơn:  &nbsp;<p class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

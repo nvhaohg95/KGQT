@@ -24,7 +24,7 @@
                     <div class="row border-bottom p-2 mx-0">
                         <div class="col-md-8 align-self-center">
                             <span class="cursor-pointer">
-                                @item.PackageCode
+                                <a href="/packages/details?id=@item.ID"> @item.PackageCode</a>
                                 <i class="fa fa-copy"></i>
                             </span>
                             -
@@ -54,7 +54,7 @@
                                             @if (item.ImportedSGWH != null)
                                             {
                                                 <li class="timeline-item mb-5">
-                                                    <span class="fw-bold">Đã nhận hàng</span>
+                                                    <span class="fw-bold">Về kho HCM</span>
                                                     <p class="text-muted mb-2 fw-bold">@item.ImportedSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
                                                 </li>
                                             }
@@ -62,7 +62,7 @@
                                             @if (item.TransportingToSGWH != null)
                                             {
                                                 <li class="timeline-item mb-5">
-                                                    <span class="fw-bold">Đã nhận hàng</span>
+                                                    <span class="fw-bold">Đang trên đường về HCM</span>
                                                     <p class="text-muted mb-2 fw-bold">@item.TransportingToSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
                                                 </li>
                                             }
@@ -70,7 +70,7 @@
                                             @if (item.ExportedCNWH != null)
                                             {
                                                 <li class="timeline-item mb-5">
-                                                    <span class="fw-bold">Đã nhận hàng</span>
+                                                    <span class="fw-bold">Xuất kho TQ</span>
                                                     <p class="text-muted mb-2 fw-bold">@item.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
                                                 </li>
                                             }

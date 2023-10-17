@@ -21,6 +21,12 @@ namespace KGQT.Controllers
         {
             return View();
         }
+
+        public IActionResult Details(int id)
+        {
+            var model = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            return View(model);
+        }
         #endregion
 
         #region CRUD
