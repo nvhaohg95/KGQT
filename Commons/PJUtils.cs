@@ -103,31 +103,31 @@ namespace KGQT.Commons
             switch (status)
             {
                 case 0:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-danger text-white\">Chưa xác nhận</span>";
+                    sReturn = "<span class=\"badge badge-pill badge-secondary p-2\">Chưa xác nhận</span>";
                     break;
                 case 1:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-gray text-white\">Đã cập nhật MVĐ</span>";
+                    sReturn = "<span class=\"badge badge-pill badge-info p-2\">Đã cập nhật MVĐ</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-yellow-l1 text-white\">Hàng về kho TQ</span>";
+                    sReturn = "<span class=\"badge badge-pill bg-yellow-l1 p-2\">Hàng về kho TQ</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-yellow-l2 text-white\">Đang trên đường về HCM</span>";
+                    sReturn = "<span class=\"badge badge-pill bg-yellow-l2 p-2\">Đang trên đường về HCM</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-warning text-white\">Hàng về tới HCM</span>";
+                    sReturn = "<span class=\"badge badge-pill badge-warning p-2\">Hàng về tới HCM</span>";
                     break;
                 case 5:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-success text-white\">Đã nhận hàng</span>";
+                    sReturn = "<span class=\"badge badge-pill badge-success p-2\">Đã nhận hàng</span>";
                     break;
                 case 9:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-danger text-white\">Đã hủy</span>";
+                    sReturn = "<span class=\"badge badge-pill badge-danger p-2\">Đã hủy</span>";
                     break;
                 case 10:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-light text-white\">Thất lạc</span>";
+                    sReturn = "<span class=\"badge badge-pill badge-light p-2\">Thất lạc</span>";
                     break;
                 case 11:
-                    sReturn = "<span class=\"text-center p-1 mb-2 bg-light text-white\">Không nhận được hàng</span>";
+                    sReturn = "<span class=\"badge badge-pill badge-dark p-2\">Không nhận được hàng</span>";
                     break;
             }
             return sReturn;

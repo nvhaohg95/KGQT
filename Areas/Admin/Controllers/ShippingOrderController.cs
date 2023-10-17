@@ -29,43 +29,22 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region View
-        // GET: ShippingOrderController
-        //[HttpGet]
-        //public ActionResult Index()
-        //{
-        //    var lst = ShippingOrder.GetList(0, null, null, "");
-        //    return View(lst);
-        //}
         [HttpGet]
-        public ActionResult Index(int? status,string? ID,DateTime? fromDate,DateTime? toDate)
+        public ActionResult Index(int status,string ID,DateTime? fromDate,DateTime? toDate,int page = 1,int pageSize = 20)
         {
             using (var db = new nhanshiphangContext())
             {
-                var lst = ShippingOrder.GetList(status, ID, fromDate, toDate);
-                return View(lst);
-
-            }
-        }
-
-        [HttpPost]
-        public ActionResult Index(string? ID,DateTime? fromDate, DateTime? toDate)
-        {
-            using (var db = new nhanshiphangContext())
-            {
-                var lst = ShippingOrder.GetList(0,ID, fromDate, toDate);
+                @ViewData["page"] = page;
+                var lst = ShippingOrder.GetList(status, ID, fromDate, toDate, page, pageSize);
                 return View(lst);
             }
         }
-
+        
         [HttpGet]
         public ActionResult Create()
         {
             return View();
         }
-
-        
-
-
 
 
         // GET: ShippingOrderController/Details/5

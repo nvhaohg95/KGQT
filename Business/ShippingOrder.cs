@@ -7,16 +7,21 @@ namespace KGQT.Business
 {
     public static class ShippingOrder
     {
-        public static List<tbl_ShippingOrder> GetList(int? status ,string? ID, DateTime? fromDate, DateTime? toDate, int page = 0, int pageSize = 20)
+        #region Get List
+        public static List<tbl_ShippingOrder> GetList(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, string userName = "")
         {
 
             using (var db = new nhanshiphangContext())
             {
+                int pageNum = page - 1;
                 IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders;
+                if (!string.IsNullOrEmpty(userName))
+                    query = query.Where(x => x.Username == userName);
+
                 if (status > 0)
                     query = query.Where(x => x.Status == status);
 
-                if(!string.IsNullOrEmpty(ID))
+                if (!string.IsNullOrEmpty(ID))
                     query = query.Where(x => x.ShippingOrderCode == ID);
 
                 if (fromDate != null)
@@ -25,11 +30,15 @@ namespace KGQT.Business
                 if (toDate != null)
                     query = query.Where(x => x.CreatedDate <= toDate);
 
-                query = query.OrderByDescending(x => x.CreatedDate).Skip(page * pageSize).Take(pageSize);
+                query = query.OrderByDescending(x => x.CreatedDate)
+                    .Skip(pageNum * pageSize)
+                    .Take(pageSize);
                 var lstData = query.ToList();
                 return lstData;
             }
         }
+
+        #endregion
 
         #region CRUD
         public static bool UpdateFeeIsurance(int id)

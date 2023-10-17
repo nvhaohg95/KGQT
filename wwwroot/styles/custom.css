@@ -241,3 +241,10 @@
 .d-content {
     display: contents;
 }
+
+
+/*row height table*/
+tr {
+    line-height: 35px;
+    min-height: 35px;
+}
