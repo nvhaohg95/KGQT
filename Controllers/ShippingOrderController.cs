@@ -22,10 +22,11 @@ namespace KGQT.Controllers
 
         #region View
         // GET: ShippingOrderController
-        public ActionResult Index()
+        public ActionResult Index(int status,string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var lst = ShippingOrder.GetList(0, "",null, null);
+            @ViewData["page"] = page;
+            var lst = ShippingOrder.GetList(status,ID,fromDate, toDate,page,pageSize, userLogin);
             return View(lst);
         }
 

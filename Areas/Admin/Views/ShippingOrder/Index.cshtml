@@ -3,12 +3,14 @@
 @using KGQT.Commons
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách ký gửi";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     string ID = "";
     DateTime? fromDate = null;
     DateTime? toDate = null;
 }
+<script src="~/js/base.js" type="text/javascript"></script>
+
 <div class="container-fluid h-100 position-relative">
     <div class="row">
         <ul id="breadcrumbs">
@@ -30,66 +32,68 @@
                             <div>
                                 <ul class="nav">
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=1">Ký gửi</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(1)">Ký gửi</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=2">Chờ duyệt</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(2)">Chờ duyệt</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=3">Chờ giao</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(3)">Chờ giao</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=4">Đang giao</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(4)">Đang giao</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=5">Người bán giao</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(5)">Người bán giao</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=6">Hàng về kho TQ</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(6)">Hàng về kho TQ</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=7">Vận chuyển quốc tế</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(7)">Vận chuyển quốc tế</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=8">Đã nhận hàng</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(8)">Đã nhận hàng</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=9">Đã hủy</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(9)">Đã hủy</a>
                                     </li>
                                     <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" href="?status=10">Thất lạc</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(10)">Thất lạc</a>
                                     </li>
                                     <li class="nav-item py-2"> 
-                                        <a class="nav-link text-capitalize py-0" href="?status=11">Không nhận hàng</a>
+                                        <a class="nav-link text-capitalize py-0" onclick="sort(11)">Không nhận hàng</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="row  pb-2 border-dashed">
-                        <form class="col-12 row" id="myform" method="get">
-                            <div class="col-5">
-                                <div>
-                                    <span class="fw-bold" id="">Nhập mã đơn:</span>
-                                </div>
-                                <div>
-                                    @Html.TextBoxFor(model => ID,new { @type="text",@class="form-control w-100",@placeholder="Nhập mã đơn hàng"})
-                                </div>
-                            </div>
-                            <div class="col-7">
-                                <div class="row col">
-                                    <span class="fw-bold">Thời gian tạo:</span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        @Html.TextBoxFor(model => fromDate,new { @type="date",@class="form-control w-100"})
+                    <div class="row pb-2">
+                        <form class="col" id="myform" method="get">
+                            <div class="row">
+                                <div class="col-5">
+                                    <div>
+                                        <span class="fw-bold" id="">Nhập mã đơn:</span>
                                     </div>
-                                    <div class="col-6">
-                                        @Html.TextBoxFor(model => toDate,new { @type="date",@class="form-control w-100"})
+                                    <div>
+                                        @Html.TextBoxFor(model => ID,new { @type="text",@class="form-control w-100",@placeholder="Nhập mã đơn hàng"})
                                     </div>
                                 </div>
+                                <div class="col-7">
+                                    <div class="row col">
+                                        <span class="fw-bold">Thời gian tạo:</span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            @Html.TextBoxFor(model => fromDate,new { @type="date",@class="form-control w-100"})
+                                        </div>
+                                        <div class="col-6">
+                                            @Html.TextBoxFor(model => toDate,new { @type="date",@class="form-control w-100"})
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-12 py-2">
+                            <div class="row py-2">
                                 <div class="col">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div>
@@ -99,8 +103,8 @@
                                             </span>
                                         </div>
                                         <div>
-                                            <span class="cursor-pointer mr-2" id="resetForm">
-                                                <a href="index" class="text-decoration-none">
+                                            <span class="cursor-pointer mr-2" id="resetForm" onclick="resetForm()">
+                                                <a href="index?page=1" class="text-decoration-none">
                                                     <i class="fas fa-sync fa-xs"></i>
                                                     Làm mới bộ lọc
                                                 </a>
@@ -113,11 +117,6 @@
                                 </div>
                             </div>
                         </form>
-                        @*@using (Html.BeginForm(FormMethod.Post, new { @class = "col-12 row", @id = "myform" }))
-                        {
-                            
-                        }*@
-                       
                     </div>
                 </div>
             </div>
@@ -144,49 +143,77 @@
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-sm">
                             <thead class="thead-light">
-                                <tr>
-                                    <th class="font-weight-normal text-left" scope="col">
-                                        MĐH
+                                <tr class="font-weight-normal">
+                                    <th class="text-center" scope="col">
+                                        Mã đơn
                                     </th>
-                                    <th class="font-weight-normal text-center" scope="col">
-                                        Ngày tạo
+                                    <th class="text-center" scope="col">
+                                        Vận chuyển
                                     </th>
-                                    <th class="font-weight-normal text-center" scope="col">
-                                        Ngày dự kiến
+                                    <th class="text-center">
+                                        Dịch vụ
                                     </th>
-                                    <th class="font-weight-normal text-left" scope="col">
-                                        Khách hàng
-                                    </th>
-                                    <th class="font-weight-normal text-center" scope="col">
-                                        Tổng giá
-                                    </th>
-                                    <th class="font-weight-normal text-center" scope="col">
+                                    <th class="text-center">
                                         Trạng thái
                                     </th>
-                                    <th class="font-weight-normal text-center" scope="col"></th>
+                                    <th class="text-center">
+                                        Đơn giá
+                                    </th>
+                                    <th class="text-center">
+                                        Chi tiết
+                                    </th>
+                                    <th class="text-center">
+                                        Người tạo
+                                    </th>
+                                    <th class="text-center"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var item in Model)
                                 {
-                                    <tr class="table-light">
+                                    <tr class="table-light font-weight-normal">
                                         <td class="text-left">
                                             @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                         </td>
                                         <td class="text-center">
-                                            @Html.DisplayFor(modelItem => item.CreatedDate)
+                                            @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                         </td>
-                                        <td class="text-center">
-                                            @Html.DisplayFor(modelItem => item.DateExpectation)
+                                        <td class="text-left" style="vertical-align:middle">
+                                            <div class="form-group mb-0">
+                                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                                {
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                        <label class="form-check-label" for="cbPack">Đóng gỗ</label>
+                                                    </div>
+                                                }
+                                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                                {
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                        <label class="form-check-label" for="cbAirbag">Túi khí</label>
+                                                    </div>
+                                                }
+                                                @if (item.IsInsurancePrice != null && item.IsInsurance == true)
+                                                {
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                        <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
+                                                    </div>
+                                                }
+                                            </div>
                                         </td>
-                                        <td class="text-left">
-                                            @Html.DisplayFor(modelItem => item.Username)
+                                        <td class="text-center" style="vertical-align:middle">
+                                            @Html.Raw(PJUtils.ShippingStatusHtml(item.Status))
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" style="vertical-align:middle">
                                             @Html.DisplayFor(modelItem => item.TotalPrice)
                                         </td>
-                                        <td class="text-center">
-                                            @Html.DisplayFor(modelItem => item.Status)
+                                        <td class="text-center" style="vertical-align:middle">
+                                            @Html.DisplayFor(modelItem => item.CreatedDate)
+                                        </td>
+                                        <td class="text-center" style="vertical-align:middle">
+                                            @Html.DisplayFor(modelItem => item.Username)
                                         </td>
                                         <td class="text-center">
                                             <a class="text-primary" asp-action="Details" asp-route-id="@item.ID">
@@ -211,14 +238,18 @@
                             <nav>
                                 <ul class="pagination m-0">
                                     <li class="page-item">
-                                        <a class="page-link" href="#" aria-label="Previous">
+                                        <a class="page-link" onclick="getPage('Previous')" aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                             <span class="sr-only">Previous</span>
                                         </a>
                                     </li>
-                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
                                     <li class="page-item">
-                                        <a class="page-link" href="#" aria-label="Next">
+                                        <a class="page-link" id="pageNumber">
+                                            @ViewData["page"]
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" onclick="getPage('Next')" aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                             <span class="sr-only">Next</span>
                                         </a>
@@ -232,13 +263,51 @@
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        $("#resetForm").click(function () {
+@section Scripts {
+    @*<script type="text/javascript">
+        function resetForm() {
             $(':input', '#myform')
                 .not(':button, :submit, :reset, :hidden')
                 .val('')
-        });
-    });
-</script>
+        }
+        function sort(status) {
+            var ID = $('#myform').find('input[name="ID"]').val();
+            var fromDate = $('#myform').find('input[name="fromDate"]').val();
+            var toDate = $('#myform').find('input[name="toDate"]').val();
+            var params = `?status=${status}`;
+            if (ID != "") {
+                params += `&ID=${ID}`;
+            }
+            if (fromDate != "") {
+                params += `&fromDate=${fromDate}`;
+            }
+            if (toDate != "") {
+                params += `&toDate=${toDate}`;
+            }
+            window.history.replaceState(null, null, params);
+            location.reload()
+        }
+
+        function getPage(type = "Next") {
+            var urlParams = new URLSearchParams(window.location.search);
+            var crrPage = parseInt(urlParams.get("page"));
+            if(!crrPage)
+                crrPage = 1;
+            var pageNum = crrPage;
+            var crrUrl = location.href;
+            var newUrl = crrUrl;
+            if (!crrUrl.includes("page="))
+                crrUrl += `&page=${crrPage}`;
+            if (type == "Next")
+                pageNum = crrPage + 1;
+            else
+                pageNum = crrPage - 1;
+                if(pageNum <= 0)
+                    return;
+            newUrl = crrUrl.replace(`page=${crrPage}`, `page=${pageNum}`);
+            location.href = newUrl;
+        }
+    </script>*@
+}
+
 

@@ -56,7 +56,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Auth}/{action=Login}/{id?}");
+        pattern: "{controller}/{action}/{id?}", new { controller = "auth", action = "login" });
     endpoints.MapAreaControllerRoute(
       name: "admin",
       areaName: "admin",
