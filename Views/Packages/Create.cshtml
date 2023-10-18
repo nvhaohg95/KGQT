@@ -60,12 +60,12 @@
                         <label class="mb-0">Kê khai</label>
                     </div>
                     <div class="form-group mb-4">
-                        <label>Link sản phẩm</label>
+                        <label>Tên sản phẩm</label>
                         <input type="text" class="form-control" name="Declaration">
                     </div>
                     <div class="form-group mb-4">
                         <label>Giá</label>
-                        <input type="text" class="form-control" name="DeclarePrice">
+                        <input type="text" class="form-control" name="DeclarePrice" onkeyup="format(this)">
                     </div>
                 </div>
                 <div class="row justify-content-center">
@@ -83,6 +83,7 @@
                 addPackage();
         });
     });
+
     function addPackage() {
         const ip = $('#txtPackage').val();
         if (ip) {
@@ -119,7 +120,7 @@
             return
         }
 
-        if (!data.ShippingMethod) {
+        if (!data.MovingMethod) {
             helper.showErr('Hãy chọn loại vận chuyển!');
             return
         }
@@ -129,6 +130,10 @@
                 helper.showErr('Vui lòng kê khai thông tin để tính phí bảo hiểm!');
                 return;
             }
+        }
+
+        if (data.DeclarePrice){
+            data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
         }
 
         $.ajax({
@@ -146,6 +151,10 @@
                 // error handling
             }
         });
+    }
+
+    function format(e){
+        helper.getChange(e)
     }
 </script>
 

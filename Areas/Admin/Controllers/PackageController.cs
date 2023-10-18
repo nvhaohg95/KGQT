@@ -56,16 +56,6 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Function
         [HttpPost]
-        public async Task<bool> ImportChinaWareHouseAsync()
-        {
-            var file = Request.Form.Files[0];
-            List<ExcelModel> content = PJUtils.ExcelToJson(file);
-            var userLogin = HttpContext.Session.GetString("user");
-            bool s = Packages.UpdateStatusCNWH(content, 1, userLogin);
-            return s;
-        }
-
-        [HttpPost]
         public async Task<bool> EmportChinaWareHouseAsync()
         {
             var file = Request.Form.Files[0];
@@ -92,7 +82,13 @@ namespace KGQT.Areas.Admin.Controllers
             form.CreatedBy = userLogin;
             return Json(BusinessBase.Add(form));
         }
-    }
 
-    #endregion
+        [HttpGet]
+        public IActionResult GetAccount(string s)
+        {
+            var data = BusinessBase.GetList<tbl_Account>(x => x.Username.Contains(s)).ToList();
+            return Json(data);
+        }
+        #endregion
+    }
 }

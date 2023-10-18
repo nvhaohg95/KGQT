@@ -69,7 +69,7 @@
                     </div>
                     <div class="form-group mb-4">
                         <label>Giá</label>
-                        <input type="text" class="form-control" name="DeclarePrice">
+                        <input type="text" class="form-control" name="DeclarePrice" onkeyup="format(this)">
                     </div>
                 </div>
                 <div class="row justify-content-center">
@@ -86,12 +86,42 @@
             if (e.which == 13)
                 addPackage();
         });
+        $('#txtUserName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/Package/getaccount',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 3,
+            delay: 500,
+            select: function (event, ui) {
+                $(this).val(ui.item.username);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.username + " - " + item.email + "</div>")
+                .appendTo(ul);
+        };;
     });
     function addPackage() {
         const ip = $('#txtPackage').val();
         if (ip) {
             $.ajax({
-                url: '@Url.Action("CheckPackage", "Packages")',
+                url: '/admin/Package/CheckPackage',
                 type: 'GET',
                 data: { package: ip },
                 // other AJAX options here
@@ -129,7 +159,7 @@
             return
         }
 
-        if (!data.ShippingMethod) {
+        if (!data.MovingMethod) {
             helper.showErr('Hãy chọn loại vận chuyển!');
             return
         }
@@ -139,6 +169,10 @@
                 helper.showErr('Vui lòng kê khai thông tin để tính phí bảo hiểm!');
                 return;
             }
+        }
+
+        if (data.DeclarePrice) {
+            data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
         }
 
         $.ajax({
@@ -156,5 +190,9 @@
                 // error handling
             }
         });
+    }
+
+    function format(e) {
+        helper.getChange(e)
     }
 </script>

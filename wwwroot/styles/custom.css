@@ -1,4 +1,17 @@
-﻿/*Start::Hover dropdown*/
+﻿/*UI Autocomplete*/
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+/* IE 6 doesn't support max-height
+   * we use height instead, but this forces the menu to always be this tall
+   */
+* html .ui-autocomplete {
+    height: 100px;
+}
+/*Start::Hover dropdown*/
 .dropdown-hover > .dropdown-menu {
     min-width: 240px;
     right: 1em;
@@ -16,36 +29,6 @@
 }
 /*End::Hover dropdown*/
 
-/*Start::Timeline veritcal*/
-.timeline {
-    border-left: 1px solid hsl(0deg 0% 70.87%);
-    position: relative;
-    list-style: none;
-    margin-left: 10px;
-}
-
-    .timeline .timeline-item {
-        position: relative;
-    }
-
-        .timeline .timeline-item:after {
-            position: absolute;
-            display: block;
-            top: 0;
-        }
-
-        .timeline .timeline-item:after {
-            background-color: hsl(107.31deg 58.5% 41.23%);
-            left: -46px;
-            border-radius: 50%;
-            height: 11px;
-            width: 11px;
-            content: "";
-        }
-
-
-/*End::Timeline*/
-
 /*Start: Timeline horizon*/
 #progressbar {
     padding-left: 0px;
@@ -53,7 +36,7 @@
 }
 
 .timeline-step {
-    text-align:center;
+    text-align: center;
     list-style-type: none;
     font-size: 10px;
     float: left;
@@ -93,7 +76,7 @@
 
 #progressbar li:first-child::after {
     content: "";
-   width:0;
+    width: 0;
 }
 
 #progressbar li.active:before, #progressbar li.active:after {
@@ -240,4 +223,43 @@
 /*Display*/
 .d-content {
     display: contents;
+}
+
+
+
+/*css scroll*/
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+
+.scroll-y-80 {
+    overflow-y: auto;
+    height: 50px;
+    overflow-x: hidden;
+    list-style-type:none;
+}
+.timeline li::before {
+    content: '\2713';
+    color: #16eb06; /* Change the color */
+    font-weight: bold; /* If you want it to be bold */
+    display: inline-block; /* Needed to add space between the bullet and the text */
+    width: 1em; /* Also needed for space (tweak if needed) */
+    margin-left: -1em; /* Also needed for space (tweak if needed) */
 }

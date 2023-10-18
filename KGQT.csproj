@@ -1890,9 +1890,6 @@
     <None Include="wwwroot\vendor\jquery\jquery.js" />
     <None Include="wwwroot\vendor\jquery\jquery.min.js" />
     <None Include="wwwroot\vendor\jquery\jquery.min.map" />
-    <None Include="wwwroot\vendor\jquery\jquery.slim.js" />
-    <None Include="wwwroot\vendor\jquery\jquery.slim.min.js" />
-    <None Include="wwwroot\vendor\jquery\jquery.slim.min.map" />
   </ItemGroup>
 
   <ItemGroup>

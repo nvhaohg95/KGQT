@@ -17,9 +17,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
             <div>
-                <input type="file" id="importCNWH" hidden onchange="importCNWH(this)" />
                 <input type="file" id="exportCNWH" hidden onchange="exportCNWH(this)" />
-                <button type="button" class="btn btn-success btn-sm" onclick="importFile(1)">Cập nhật đơn nhập kho TQ</button>
                 <button type="button" class="btn btn-danger btn-sm" onclick="importFile(2)">Cập nhật đơn xuất kho TQ</button>
                 <a href="/admin/package/create" class="btn btn-primary btn-sm pointer-event">Thêm đơn</a>
             </div>
@@ -48,106 +46,96 @@
                                             aria-expanded="false">
                                         @PJUtils.ShippingStatus(item.Status)
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="drStt">
-                                        <ul class="timeline">
-                                            @if (item.ReceivedDate != null)
-                                            {
-                                                <li class="timeline-item mb-5">
-                                                    <span class="fw-bold">Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
-                                                    @*<p class=" mb-2 fw-bold">@item.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
-                                                </li>
-                                            }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row p-2 mx-0 mt-2">
+                                <div class="col-md-6">
+                                    <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                                </div>
+                                <div class="col-md-6">
+                                    Dịch vụ phụ:
+                                    @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                    {
+                                        <div class="form-check-inline">
 
-                                            @if (item.ImportedSGWH != null)
-                                            {
-                                                <li class="timeline-item mb-5">
-                                                    <span class="fw-bold">Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
-                                                    @*<p class=" mb-2 fw-bold">@item.ImportedSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
-                                                </li>
-                                            }
-
-                                            @if (item.DateExpectation != null)
-                                            {
-                                                <li class="timeline-item mb-5">
-                                                    <span class="fw-bold">Đang trên đường về HCM - @item.DateExpectation.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
-                                                    @*<p class=" mb-2 fw-bold">@item.DateExpectation.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
-                                                </li>
-                                            }
-
-                                            @if (item.ExportedCNWH != null)
-                                            {
-                                                <li class="timeline-item mb-5">
-                                                    <span class="fw-bold">Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>
-                                                    @*<p class=" mb-2 fw-bold">@item.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>*@
-                                                </li>
-                                            }
-
-                                            @if (item.ReceivedDate == null && item.ExportedCNWH == null && item.TransportingToSGWH == null && item.ImportedSGWH == null)
-                                            {
-                                                <li class="p-2">
-                                                    Chưa có lịch sự kiện hàng
-                                                </li>
-                                            }
-                                        </ul>
-
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (item.IsInsurance != null && item.IsInsurance == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row px-2 mx-0 mb-2">
+                                <div class="col-md-6">
+                                    <div>
+                                        <span>Khách hàng: @item.FullName</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <span>Số điện thoại: @item.Phone</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row p-2 mx-0 mt-2">
-                        <div class="col-md-3">
-                            <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
-                        </div>
                         <div class="col-md-6">
-                            Dịch vụ phụ:
-                            @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                            {
-                                <div class="form-check-inline">
+                            <ul class="my-2 mr-2 my-2 row col-md-7 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                                @if (item.ReceivedDate != null)
+                                {
+                                    <li class="ml-4 mb-2">
+                                        <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </li>
+                                }
 
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
-                                    </label>
-                                </div>
-                            }
-                            @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                            {
-                                <div class="form-check-inline">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
-                                    </label>
-                                </div>
-                            }
-                            @if (item.IsInsurance != null && item.IsInsurance == true)
-                            {
-                                <div class="form-check-inline">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
-                                    </label>
-                                </div>
-                            }
+                                @if (item.ImportedSGWH != null)
+                                {
+                                    <li class="ml-4 mb-2">
+                                        <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </li>
+                                }
+
+                                @if (item.DateExpectation != null)
+                                {
+                                    <li class="ml-4 mb-2">
+                                        <span>Đang trên đường về HCM - @item.DateExpectation.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </li>
+                                }
+
+                                @if (item.ExportedCNWH != null)
+                                {
+                                    <li class="ml-4 mb-2">
+                                        <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </li>
+                                }
+                            </ul>
                         </div>
                     </div>
-                    <div class="row px-2 mx-0 mb-2 border-bottom">
-                        <div class="col-md-3">
-                            <div>
-                                <span>Khách hàng: @item.FullName</span>
-                            </div>
-                            <div>
-                                <span>Số điện thoại: @item.Phone</span>
+                    <div class="row p-2 mx-0 my-2 border-top">
+                        <div class="col-md-2">
+                            <div class="form-inline text-left">
+                                Ngày lên đơn:  &nbsp;<p class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div>
-                                <span>Địa chỉ: @item.Address</span>
-                            </div>
-                            <div>
-                                <span>Email: @item.Email</span>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="row p-2 mx-0 my-2">
                         <div class="col-md-2">
                             <div class="form-inline text-left">
                                 Tổng tiền hàng:  &nbsp;<p class=" mb-0"> @(item.WeightPrice ?? 0)</p>
@@ -159,24 +147,31 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <div class="form-inline text-left">
-                                Phí đóng gỗ:  &nbsp;<p class=" mb-0"> @(item.WeightPrice != null ? item.WeightPrice : "-/-")</p>
-                            </div>
+                            @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                            {
+                                <div class="form-inline text-left">
+                                    Phí đóng gỗ: &nbsp;
+                                    <p class=" mb-0"> @(item.WeightPrice != null ? item.WeightPrice : "-/-") </p>
+                                </div>
+                            }
                         </div>
                         <div class="col-md-2">
-                            <div class="form-inline text-left">
-                                Phí bọt khí:  &nbsp;<p class=" mb-0"> @(item.AirPackagePrice != null ? item.AirPackagePrice : "-/-")</p>
-                            </div>
+                            @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                            {
+                                <div class="form-inline text-left">
+                                    Phí bọt khí:  &nbsp;
+                                    <p class=" mb-0"> @(item.AirPackagePrice != null ? item.AirPackagePrice : "-/-")</p>
+                                </div>
+                            }
                         </div>
                         <div class="col-md-2">
-                            <div class="form-inline text-left">
-                                Phí bảo hiểm:  &nbsp;<p class=" mb-0"> @(item.IsInsurancePrice != null ? item.IsInsurancePrice : "-/-")</p>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-inline text-left">
-                                Ngày lên đơn:  &nbsp;<p class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</p>
-                            </div>
+                            @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                            {
+                                <div class="form-inline text-left">
+                                    Phí bảo hiểm:  &nbsp;
+                                    <p class=" mb-0"> @(item.IsInsurancePrice != null ? item.IsInsurancePrice : "-/-")</p>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -187,33 +182,9 @@
 
 <script>
     function importFile(type) {
-        if (type == 1)
-            $('#importCNWH').click();
-        else
-            $('#exportCNWH').click();
+        $('#exportCNWH').click();
     }
 
-    function importCNWH(o) {
-        const ip = $(o).get(0);
-        var file = ip.files;
-        let form = new FormData();
-        form.append("file", file[0]);
-
-        $.ajax({
-            url: '/admin/package/ImportChinaWareHouse',
-            type: 'POST',
-            dataType: 'json',
-            data: form,
-            contentType: false,
-            processData: false,
-            success: function () {
-                alert('added to temp');
-            }, error: function (e) {
-                console.log(e);
-            }
-        });
-    } 
-    
     function exportCNWH(o) {
         const ip = $(o).get(0);
         var file = ip.files;
