@@ -34,6 +34,7 @@
                             </span>
                             -
                             <span>Kho nhận: Quảng Châu</span>
+                            <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                         </div>
                         <div class="col-md-4">
                             <div class="row justify-content-end">
@@ -131,12 +132,7 @@
                         </div>
                     </div>
                     <div class="row p-2 mx-0 my-2 border-top">
-                        <div class="col-md-2">
-                            <div class="form-inline text-left">
-                                Ngày lên đơn:  &nbsp;<p class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</p>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-inline text-left">
                                 Tổng tiền hàng:  &nbsp;<p class=" mb-0"> @(item.WeightPrice ?? 0)</p>
                             </div>

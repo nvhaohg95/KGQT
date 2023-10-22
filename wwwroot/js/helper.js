@@ -72,3 +72,17 @@
 
 const currency = [2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
+
+function formatVND() {
+    //add attribute data-type="currency" for input to set input type currency format
+    var inputMoney = document.querySelectorAll('[data-type="formatvnd"]');
+    function inputNumberTest() {
+        var regx = /\D+/g;
+        var number = this.value.replace(regx, "");
+        this.setAttribute('data-value', number);
+        return (this.value = number.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+    }
+    inputMoney.forEach(function (input, index) {
+        input.addEventListener("input", inputNumberTest);
+    });
+}

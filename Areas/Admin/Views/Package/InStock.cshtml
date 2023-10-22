@@ -8,47 +8,18 @@
     <li><a href="/admin/Package/Index">Đơn kí gửi</a></li>
     <li><a>Nhập kho</a></li>
 </ul>
-<div class="container bg-white py-4">
+<div class="container-fluid bg-white py-4">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
             <h1 class="text-danger">Nhập kho</h1>
         </div>
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group mb-4">
-                        <label class="required" for="txtShipID">Ngày xuất kho TQ:</label>
-                        <input type="date" class="form-control" id="txtDate" placeholder="Chọn thời gian">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group mb-2">
-                        <label class="required mb-0">Phương thức vận chuyển</label>
-                    </div>
-                    <div class="form-group pt-2 mb-2">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="MovingMethod" value="1">
-                            <label class="form-check-label" for="movingfast">Nhanh</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="MovingMethod" value="2">
-                            <label class="form-check-label" for="movingslow">Chậm</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="MovingMethod" value="3">
-                            <label class="form-check-label" for="movingofficial">Chính ngạch</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="form-group mb-4">
-                        <label class="required" for="txtShipID">Mã kiện:</label>
-                        <input type="text" class="form-control" id="txtCode" placeholder="Nhập 3 số cuối của mã kiện">
-                    </div>
-                </div>
+            <div class="form-group mb-4">
+                <label class="required" for="txtShipID">Mã kiện:</label>
+                <input type="text" class="form-control" id="txtCode" placeholder="Nhập 5 số cuối của mã kiện">
             </div>
 
-            <div class="row justify-content-center" id="lstPackage">
+            <div id="lstPackage">
             </div>
         </div>
     </div>
@@ -58,13 +29,11 @@
         //usually scanners throw an 'Enter' key at the end of read
         if (e.keyCode === 13) {
             let code = $('#txtCode').val();
-            let method = $('input[name="MovingMethod"]:checked').val();
-            let date = $('#txtDate').val();
             if (code) {
                 $.ajax({
                     url: '/admin/package/PackagePartial',
                     type: 'GET',
-                    data: { date, method, code },
+                    data: { code },
                     success: function (resonse) {
                         $('#lstPackage').html(resonse);
 
