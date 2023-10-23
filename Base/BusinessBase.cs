@@ -246,7 +246,7 @@ namespace KGQT.Business.Base
         #endregion
 
         #region tracklogship
-        public static void TrackLogShippingOrder(int userId, int shipId, string content, int type, string userName)
+        public static void TrackLog(int userId, int shipId, string content, int type, string userName)
         {
             using (var db = new nhanshiphangContext())
             {

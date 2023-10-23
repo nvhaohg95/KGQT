@@ -202,5 +202,18 @@
                 return;
             }
         }
+
+        $.ajax({
+            url: '/admin/Package/SubmitPack',
+            method: 'POST',
+            dataType: 'json',
+            data: { id, weight, woodPrice: wood, airPrice: air },
+            success: function (res) {
+                console.log(res)
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
     }
 </script>

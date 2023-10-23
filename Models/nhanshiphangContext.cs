@@ -279,6 +279,8 @@ namespace KGQT.Models
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ShippingMethodName).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbl_ShippingOrderDeclaration>(entity =>

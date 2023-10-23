@@ -216,27 +216,27 @@
 
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí vận chuyển:</p>
-                            <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.ShippingPrice.HasValue ? Model.Order.ShippingPrice : 0).Replace(",", ".")</span></p>
+                            <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.WeightPrice.HasValue ? Model.Order.WeightPrice : 0).Replace(",", ".")</span></p>
                         </div>
                         @if (Model.Order.IsWoodPackage != null && Model.Order.IsWoodPackage == true)
                         {
                             <div class="d-flex justify-content-between">
                                 <p class="text-muted mb-0">Phí đóng gỗ:</p>
-                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.IsWoodPackagePrice.HasValue ? Model.Order.IsWoodPackagePrice : 0).Replace(",", ".")</span></p>
+                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.WoodPackagePrice.HasValue ? Model.Order.WoodPackagePrice : 0).Replace(",", ".")</span></p>
                             </div>
                         }
                         @if (Model.Order.IsAirPackage != null && Model.Order.IsAirPackage == true)
                         {
                             <div class="d-flex justify-content-between">
                                 <p class="text-muted mb-0">Phí bọt khí:</p>
-                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.IsAirPackagePrice.HasValue ? Model.Order.IsAirPackagePrice : 0).Replace(",", ".")</span></p>
+                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.AirPackagePrice.HasValue ? Model.Order.AirPackagePrice : 0).Replace(",", ".")</span></p>
                             </div>
                         }
                         @if (Model.Order.IsInsurance != null && Model.Order.IsInsurance == true)
                         {
                             <div class="d-flex justify-content-between">
                                 <p class="text-muted mb-0">Phí bảo hiểm:</p>
-                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.IsInsurancePrice.HasValue ? Model.Order.IsInsurancePrice : 0).Replace(",", ".")</span></p>
+                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.InsurancePrice.HasValue ? Model.Order.InsurancePrice : 0).Replace(",", ".")</span></p>
                             </div>
                         }
                         <!--End::Thông tin đơn-->

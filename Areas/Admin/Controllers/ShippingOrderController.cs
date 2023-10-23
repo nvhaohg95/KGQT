@@ -164,7 +164,7 @@ namespace KGQT.Areas.Admin.Controllers
                             var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
                             if (ship != null)
                             {
-                                ship.IsInsurancePrice = feeInsur;
+                                ship.InsurancePrice = feeInsur;
                                 BusinessBase.Update(ship);
                             }
                         }
@@ -194,7 +194,7 @@ namespace KGQT.Areas.Admin.Controllers
                 if (!string.IsNullOrEmpty(sUser))
                 {
                     var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    BusinessBase.TrackLogShippingOrder(user.ID, order.ID, "{0} đã xác nhận đơn", 0, user.Username);
+                    BusinessBase.TrackLog(user.ID, order.ID, "{0} đã xác nhận đơn", 0, user.Username);
                     return true;
                 }
 
@@ -217,7 +217,7 @@ namespace KGQT.Areas.Admin.Controllers
                 if (!string.IsNullOrEmpty(sUser))
                 {
                     var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    BusinessBase.TrackLogShippingOrder(user.ID, order.ID, "{0} đã hủy đơn", 0, user.Username);
+                    BusinessBase.TrackLog(user.ID, order.ID, "{0} đã hủy đơn", 0, user.Username);
                     return true;
                 }
 
@@ -238,7 +238,7 @@ namespace KGQT.Areas.Admin.Controllers
             var lstDeclare = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == order.ID);
             var feeInsur = lstDeclare.Sum(x => x.PriceVND);
 
-            order.IsInsurancePrice = feeInsur * 0.05;
+            order.InsurancePrice = feeInsur * 0.05;
             order.ModifiedBy = HttpContext.Session.GetString("user");
             order.ModifiedDate = DateTime.Now;
             if (BusinessBase.Update(order))
@@ -247,7 +247,7 @@ namespace KGQT.Areas.Admin.Controllers
                 if (!string.IsNullOrEmpty(sUser))
                 {
                     var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    BusinessBase.TrackLogShippingOrder(user.ID, order.ID, "{0} đã xóa kê khai đơn" + id, 0, user.Username);
+                    BusinessBase.TrackLog(user.ID, order.ID, "{0} đã xóa kê khai đơn" + id, 0, user.Username);
                     return true;
                 }
 

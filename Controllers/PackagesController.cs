@@ -30,7 +30,6 @@ namespace KGQT.Controllers
         #endregion
 
         #region CRUD
-
         [HttpPost]
         public JsonResult Create(tbl_Package form)
         {
@@ -45,7 +44,18 @@ namespace KGQT.Controllers
             form.Address = user.Address;
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = user.Username;
-            return Json(BusinessBase.Add(form));
+
+            if (form.IsInsurance.HasValue && form.IsInsurance == true)
+            {
+                form.IsInsurancePrice = form.DeclarePrice * 0.05;
+            }
+
+            var s = BusinessBase.Add(form);
+            if (s)
+            {
+                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
+            }
+            return Json(s);
         }
         #endregion
 

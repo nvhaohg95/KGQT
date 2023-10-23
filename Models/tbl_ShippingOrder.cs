@@ -18,21 +18,16 @@ namespace KGQT.Models
         public double? Weight { get; set; }
         public double? WeightPrice { get; set; }
         public bool? IsWoodPackage { get; set; }
-        public double? IsWoodPackagePrice { get; set; }
+        public double? WoodPackagePrice { get; set; }
         public bool? IsAirPackage { get; set; }
-        public double? IsAirPackagePrice { get; set; }
+        public double? AirPackagePrice { get; set; }
         public bool? IsInsurance { get; set; }
-        public double? IsInsurancePrice { get; set; }
+        public double? InsurancePrice { get; set; }
         public int Status { get; set; }
         public int? PaymentMethod { get; set; }
-        public string? PaymentMethodName { get; set; }
-        public double? ShippingPrice { get; set; }
-        public double? ProductDeclarationPrice { get; set; }
         public double? TotalPrice { get; set; }
         public DateTime? DateExpectation { get; set; }
         public DateTime? DateExpectationEdit { get; set; }
-        public double? LessKG { get; set; }
-        public double? LessKGEdit { get; set; }
         public double? Currency { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
