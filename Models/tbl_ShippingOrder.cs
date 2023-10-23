@@ -15,6 +15,8 @@ namespace KGQT.Models
         public string? Address { get; set; }
         public int? ShippingMethod { get; set; }
         public string? ShippingMethodName { get; set; }
+        public double? Weight { get; set; }
+        public double? WeightPrice { get; set; }
         public bool? IsWoodPackage { get; set; }
         public double? IsWoodPackagePrice { get; set; }
         public bool? IsAirPackage { get; set; }

@@ -34,9 +34,12 @@ namespace KGQT.Areas.Admin.Controllers
         {
             using (var db = new nhanshiphangContext())
             {
+                var oData = ShippingOrder.GetList(status, ID, fromDate, toDate, page, pageSize);
+                var lstData = (List<tmpShippingOrder>)oData[0];
+                var totalPage = (int)oData[0];
                 @ViewData["page"] = page;
-                var lst = ShippingOrder.GetList(status, ID, fromDate, toDate, page, pageSize);
-                return View(lst);
+                @ViewData["totalPage"] = (int)oData[1];
+                return View(lstData);
             }
         }
         
