@@ -8,7 +8,7 @@ namespace KGQT.Business
     public static class ShippingOrder
     {
         #region Get List
-        public static List<tbl_ShippingOrder> GetList(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, string userName = "")
+        public static object[] GetList(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, string? userName = "")
         {
 
             using (var db = new nhanshiphangContext())
@@ -34,7 +34,9 @@ namespace KGQT.Business
                     .Skip(pageNum * pageSize)
                     .Take(pageSize);
                 var lstData = query.ToList();
-                return lstData;
+                decimal count = query.Count();
+                decimal totalPage = Math.Ceiling(count / pageSize);
+                return new object[] { lstData , totalPage};
             }
         }
 

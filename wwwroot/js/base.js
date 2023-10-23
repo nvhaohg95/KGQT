@@ -4,8 +4,6 @@ function clickChangePass() {
     $.ajax({
         url: '/home/changePassword',
         type: "POST",
-        dataType: 'json',
-        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         data: data,
         success: function (respone) {
             if (!respone.isError) {
@@ -66,22 +64,3 @@ function sort(status) {
     location.reload()
 }
 
-function getPage(type = "Next") {
-    var urlParams = new URLSearchParams(window.location.search);
-    var crrPage = parseInt(urlParams.get("page"));
-    if (!crrPage)
-        crrPage = 1;
-    var pageNum = crrPage;
-    var crrUrl = location.href;
-    var newUrl = crrUrl;
-    if (!crrUrl.includes("page="))
-        crrUrl += `&page=${crrPage}`;
-    if (type == "Next")
-        pageNum = crrPage + 1;
-    else
-        pageNum = crrPage - 1;
-    if (pageNum <= 0)
-        return;
-    newUrl = crrUrl.replace(`page=${crrPage}`, `page=${pageNum}`);
-    location.href = newUrl;
-}
