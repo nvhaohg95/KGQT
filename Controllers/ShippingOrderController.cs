@@ -113,7 +113,7 @@ namespace KGQT.Controllers
                             var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
                             if (ship != null)
                             {
-                                ship.IsInsurancePrice = feeInsur;
+                                ship.InsurancePrice = feeInsur;
                                 BusinessBase.Update(ship);
                             }
                         }
@@ -210,7 +210,7 @@ namespace KGQT.Controllers
                 if (!string.IsNullOrEmpty(sUser))
                 {
                     var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    BusinessBase.TrackLogShippingOrder(user.ID, order.ID, "{0} đã hủy đơn", 1, user.Username);
+                    BusinessBase.TrackLog(user.ID, order.ID, "{0} đã hủy đơn", 1, user.Username);
                     return true;
                 }
 

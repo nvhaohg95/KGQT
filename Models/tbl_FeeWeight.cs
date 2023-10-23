@@ -18,5 +18,6 @@ namespace KGQT.Models
         /// 2. Vận chuyển tiết kiệm
         /// </summary>
         public int? Type { get; set; }
+        public double? MinWeight { get; set; }
     }
 }

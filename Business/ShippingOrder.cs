@@ -54,7 +54,7 @@ namespace KGQT.Business
                 if (conf == null) return false;
 
                 double totalPrice = (double)db.tbl_ShippingOrderDeclarations.Where(x => x.ShippingOrderID == id).Sum(x => x.PriceVND);
-                oder.IsInsurancePrice = totalPrice * 0.05;
+                oder.InsurancePrice = totalPrice * 0.05;
                 db.Update(oder);
                 return db.SaveChanges() > 0;
             }

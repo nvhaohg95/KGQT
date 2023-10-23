@@ -17,7 +17,7 @@ namespace KGQT.Models
         public int Status { get; set; }
         public int MovingMethod { get; set; }
         public double? Weight { get; set; }
-        public double? MinWeight { get; set; }
+        public double? WeightReal { get; set; }
         public double? WeightPrice { get; set; }
         public bool? IsAirPackage { get; set; }
         public double? AirPackagePrice { get; set; }
