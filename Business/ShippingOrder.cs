@@ -13,6 +13,9 @@ namespace KGQT.Business
 
             using (var db = new nhanshiphangContext())
             {
+                var lstData = new List<tbl_ShippingOrder>();
+                decimal totalPage = 1;
+                decimal total = 0;
                 int pageNum = page - 1;
                 IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders;
                 if (!string.IsNullOrEmpty(userName))
@@ -30,13 +33,17 @@ namespace KGQT.Business
                 if (toDate != null)
                     query = query.Where(x => x.CreatedDate <= toDate);
 
-                query = query.OrderByDescending(x => x.CreatedDate)
+                total = query.Count();
+                if(total > 0)
+                {
+                    query = query.OrderByDescending(x => x.CreatedDate)
                     .Skip(pageNum * pageSize)
                     .Take(pageSize);
-                var lstData = query.ToList();
-                decimal count = query.Count();
-                decimal totalPage = Math.Ceiling(count / pageSize);
-                return new object[] { lstData , totalPage};
+                    lstData = query.ToList();
+                    totalPage = Math.Ceiling(total / pageSize);
+                }
+                
+                return new object[] { lstData , total , totalPage};
             }
         }
 

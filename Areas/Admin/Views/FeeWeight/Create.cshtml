@@ -1,0 +1,92 @@
+﻿@model KGQT.Models.tbl_FeeWeight
+
+@{
+    ViewData["Title"] = "Thêm mới bảng giá";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid h-100">
+    <div class="row mb-2">
+        <ul id="breadcrumbs">
+            <li><a href="/">Cấu hình</a></li>
+            <li><a href="index">Bảng giá</a></li>
+            <li><a>Thêm mới</a></li>
+        </ul>
+    </div>
+    <div class="row bg-white p-2">
+        <div class="col-12 ">
+            <h5 class="text-danger text-uppercase m-0">Thêm mới bảng giá</h5>
+        </div>
+        <div class="col-12 mt-2">
+            <form asp-action="create" method="post" class="row" id="formFeeWeight">
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Trọng lượng từ</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.WeightFrom,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Trọng lượng từ" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Trọng lượng đến</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.WeightTo ,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Trọng lượng đến" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Giá tiền</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.Amount,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Giá tiền" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Hình thức vận chuyển</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.DropDownListFor(model => model.Type,null,new { @class="form-control form-control-user border-none rounded" })
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                    <a class="btn btn-primary w-200px" onclick="insert()">Lưu</a>
+                    <a class="btn btn-warning ml-4 w-200px" href="index">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function insert() {
+        var data = helper.form2Object($('#formFeeWeight').serializeArray());
+        if (!data.WeightFrom) {
+            helper.showErr('Vui lòng nhập cân nặng từ!');
+            return
+        }
+
+        if (!data.WeightTo) {
+            helper.showErr('Vui lòng nhập cân nặng dến!');
+            return
+        }
+
+        if (!data.Amount) {
+            helper.showErr('Vui lòng nhập giá tiền!');
+            return;
+        }
+
+        $.ajax({
+            url: "/Admin/FeeWeight/create",
+            type: 'POST',
+            data: { form: data },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Thêm mới không thành công!')
+                else
+                    helper.showSuc('Thêm mới thành công!')
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+</script>
