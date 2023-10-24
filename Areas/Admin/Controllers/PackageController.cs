@@ -102,20 +102,20 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult SubmitPack(int id, double weight, double woodPrice, double airPrice)
+        public bool SubmitPack(int id, double weight, double woodPrice, double airPrice)
         {
             var crrUse = HttpContext.Session.GetString("user");
             var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
-            if (pack == null) return null;
-            var userId = pack.Username;
+            if (pack == null) return false;
+            var username = pack.Username;
 
             //Update tien package
             var lstFee = BusinessBase.GetList<tbl_FeeWeight>(x => x.Type == pack.MovingMethod);
-            if (lstFee == null || lstFee.Count == 0) return null;
+            if (lstFee == null || lstFee.Count == 0) return false;
 
             var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= weight && weight <= x.WeightTo);
 
-            if (lstFee == null || lstFee.Count == 0) return null;
+            if (lstFee == null || lstFee.Count == 0) return false;
             if (weight > fee.MinWeight)
                 pack.Weight = weight;
             else
@@ -124,6 +124,8 @@ namespace KGQT.Areas.Admin.Controllers
             pack.WeightPrice = weight * fee.Amount;
             pack.WoodPackagePrice = woodPrice;
             pack.AirPackagePrice = airPrice;
+            pack.TotalPrice = pack.WeightPrice + airPrice + woodPrice + Convert.ToDouble(pack.IsInsurance);
+            pack.Status = 3;
             pack.ModifiedBy = crrUse;
             pack.ModifiedDate = DateTime.Now;
             var p = BusinessBase.Update(pack);
@@ -133,17 +135,17 @@ namespace KGQT.Areas.Admin.Controllers
 
                 if (pack.IsAirPackage.HasValue && pack.IsAirPackage == true)
                 {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + airPrice + "kg", 0, crrUse);
+                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + airPrice + "đ", 0, crrUse);
                 }
                 if (pack.IsWoodPackage.HasValue && pack.IsWoodPackage == true)
                 {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + woodPrice + "kg", 0, crrUse);
+                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + woodPrice + "đ", 0, crrUse);
                 }
 
                 //Ktra xem hom nay khach da co don chua.
                 DateTime startDate = DateTime.Now.Date; //One day 
                 DateTime endDate = startDate.AddDays(1).AddTicks(-1);
-                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == userId && x.CreatedDate >= startDate && x.CreatedDate <= endDate && x.ShippingMethod == pack.MovingMethod);
+                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && x.CreatedDate >= startDate && x.CreatedDate <= endDate && x.ShippingMethod == pack.MovingMethod);
                 if (check != null)
                 {
                     var lstPack = BusinessBase.GetList<tbl_Package>(x => x.TransID == check.ID);
@@ -154,23 +156,76 @@ namespace KGQT.Areas.Admin.Controllers
                     double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => x.IsInsurancePrice.Value);
 
                     var totalPrice = totalWeightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice;
-                    check.Weight = totalWeight;
-                    check.WeightPrice = totalWeightPrice;
-                    check.WoodPackagePrice = totalWoodPrice;
-                    check.AirPackagePrice = totalAirPrice;
-                    check.InsurancePrice = totalInsurPrice;
+                    check.Weight = totalWeight + pack.Weight;
+                    check.WeightPrice = totalWeightPrice + pack.WeightPrice;
+                    check.WoodPackagePrice = totalWoodPrice + pack.WoodPackagePrice;
+                    check.AirPackagePrice = totalAirPrice + pack.AirPackagePrice;
+                    check.InsurancePrice = totalInsurPrice + pack.IsInsurancePrice;
+                    check.TotalPrice = totalPrice + pack.TotalPrice;
                     check.ModifiedBy = crrUse;
                     check.ModifiedDate = DateTime.Now;
-                    BusinessBase.Update(check);
+                    var oUpdate = BusinessBase.Update(check);
+                    if (p)
+                    {
+                        //Cập nhật TransId cho package
+                        var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == pack.ID);
+                        if (oPack != null)
+                        {
+                            oPack.TransID = check.ID;
+                            oPack.ModifiedBy = crrUse;
+                            oPack.ModifiedDate = DateTime.Now;
+                            BusinessBase.Update(oPack);
+                            BusinessBase.TrackLog(oPack.UID.Value, oPack.ID, "{0} đã cập nhật mã vận đơn " + check.ID + " vào kiện", 0, crrUse);
+                        }
+                    }
+                    BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã thêm kiện " + pack.PackageCode + " vào đơn", 0, crrUse);
                 }
                 else
                 {
                     var ship = new tbl_ShippingOrder();
+                    ship.ShippingOrderCode = pack.PackageCode;
+                    ship.Username = pack.Username;
+                    ship.FirstName = pack.FullName;
+                    ship.LastName = pack.FullName;
+                    ship.Email = pack.Email;
+                    ship.Address = pack.Address;
+                    ship.Phone = pack.Phone;
+                    ship.ShippingMethod = pack.MovingMethod;
+                    ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
+                    ship.Weight = pack.Weight;
+                    ship.WeightPrice = pack.WeightPrice;
+                    ship.IsAirPackage = pack.IsAirPackage;
+                    ship.AirPackagePrice = pack.AirPackagePrice;
+                    ship.IsWoodPackage = pack.IsWoodPackage;
+                    ship.WoodPackagePrice = pack.WoodPackagePrice;
+                    ship.IsInsurance = pack.IsInsurance;
+                    ship.InsurancePrice = pack.IsInsurancePrice;
+                    ship.TotalPrice = pack.AirPackagePrice + pack.WoodPackagePrice + pack.IsInsurancePrice + pack.WeightPrice;
+                    ship.Status = pack.Status;
+                    ship.CreatedDate = DateTime.Now;
+                    ship.CreatedBy = crrUse;
+                    var oAdd = BusinessBase.Add(ship);
+                    if (p)
+                    {
+                        var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == pack.ID);
+                        if (oPack != null)
+                        {
+                            oPack.TransID = ship.ID;
+                            oPack.ModifiedBy = crrUse;
+                            oPack.ModifiedDate = DateTime.Now;
+                            BusinessBase.Update(oPack);
+                            BusinessBase.TrackLog(oPack.UID.Value, oPack.ID, "{0} đã cập nhật mã vận đơn " + ship.ID + " vào kiện", 0, crrUse);
 
+                        }
+                        BusinessBase.TrackLog(pack.UID.Value, ship.ID, "{0} đã tạo đơn " + ship.ID + " với kiện " + pack.PackageCode + " vào đơn", 0, crrUse);
+                    }
 
                 }
             }
-            return Json(new { id, weight, woodPrice, airPrice });
+
+
+
+            return p;
         }
         #endregion
     }
