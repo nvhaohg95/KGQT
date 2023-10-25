@@ -47,5 +47,7 @@ namespace KGQT.Models
         public int? SaleID { get; set; }
         public string? SaleUsername { get; set; }
         public string? Token { get; set; }
+        public string? UserID { get; set; }
+
     }
 }
