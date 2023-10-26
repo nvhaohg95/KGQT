@@ -1,15 +1,11 @@
 ﻿using System.Text;
 using System.Security.Cryptography;
-using System.Net.Mail;
-using System.Net;
-using System.Text.RegularExpressions;
 using KGQT.Models.temp;
-using System.Xml;
-using Supremes;
-using System.Drawing;
 using ExcelDataReader;
 using System.Data;
-using System.Reflection;
+using System.Linq;
+using Fasterflect;
+using OfficeOpenXml;
 
 namespace KGQT.Commons
 {
@@ -189,7 +185,49 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
+        public static List<ExcelModel> ReadExcelToJson(IFormFile file)
+        {
+            string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string fileName = Guid.NewGuid().ToString() + file.Name;
+            FileInfo fileInfo = new FileInfo(Path.Combine(rootFolder, fileName));
+            Stream FileStream = file.OpenReadStream();
+            //using (var stream = new MemoryStream())
+            //{
+            //    file.CopyToAsync(stream);
+            //    using (ExcelPackage pack = new ExcelPackage(stream))
+            //    {
+            //        pack.SaveAs(fileInfo);
+            //    }
+            //}
+            List<ExcelModel> oData = new List<ExcelModel>();
+            using (ExcelPackage pack = new ExcelPackage(FileStream))
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelWorksheet worksheet = pack.Workbook.Worksheets.LastOrDefault();
+                if (worksheet == null)
+                {
 
+                }
+                else
+                {
+                    var rowCount = worksheet.Dimension.Rows;
+                    var columnCount = worksheet.Dimension.Columns;
+                    for (int column = 1; column < columnCount; column++)
+                    {
+                        for (int row = 2; row < rowCount; row++)
+                        {
+                            var v = worksheet.Cells[row, column].Value;
+                            if (v != null)
+                                oData.Add(new ExcelModel()
+                                {
+                                    Key = v.ToString()
+                                });
+                        }
+                    }
+                }
+            }
+            return oData;
+        }
         public static List<ExcelModel> ExcelToJson(IFormFile file)
         {
             try
@@ -215,6 +253,8 @@ namespace KGQT.Commons
                     DataSet result = excelReader.AsDataSet();
                     if (result != null && result.Tables.Count > 0)
                     {
+                        int index = result.Tables.Count - 1;
+
                         foreach (DataTable dtt in result.Tables)
                         {
                             var dt = dtt;

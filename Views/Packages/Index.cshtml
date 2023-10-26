@@ -39,10 +39,10 @@
                             <div class="col-md-6 row col-sm-12">
                                 <span>Tổng tiền hàng:  &nbsp;<strong> @string.Format("{0:N0}",item.TotalPrice != null ? item.TotalPrice : 0).Replace(",", ".")đ</strong></span>
                             </div>
-                            <div class="col-md-6 col-sm-12 row text-md-right">
+                            <div class="col-md-6 col-sm-12 row justify-content-md-end">
                                 @if (item.Status <= 1)
                                 {
-                                    <button class="btn-sm btn bg-orange text-white mb-sm-1">Kiểm tra hàng kho TQ</button>
+                                    <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
                                 }
                                 @if (item.Status <= 2)
                                 {
@@ -74,7 +74,7 @@
                             else
                             {
                                 <li>
-                                    <span>Xuất kho Trung Quốc</span>
+                                    <span>Đang trên đường về HCM</span>
                                 </li>
                             }
                             @if (item.ImportedSGWH != null)
@@ -86,7 +86,7 @@
                             else
                             {
                                 <li>
-                                    <span>Xuất kho Trung Quốc</span>
+                                    <span>Đã về kho HCM</span>
                                 </li>
                             }
                             @if (item.ReceivedDate != null)
@@ -98,7 +98,7 @@
                             else
                             {
                                 <li>
-                                    <span>Xuất kho Trung Quốc</span>
+                                    <span>Đã nhận hàng</span>
                                 </li>
                             }
                         </ul>

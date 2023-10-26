@@ -44,8 +44,8 @@
                             <div class="col-md-6 row col-sm-12">
                                 <span>Tổng tiền hàng:  &nbsp;<strong> @string.Format("{0:N0}",item.TotalPrice != null ? item.TotalPrice : 0).Replace(",", ".")đ</strong></span>
                             </div>
-                            <div class="col-md-6 col-sm-12 row text-md-right">
-                                <button class="btn-sm btn bg-orange text-white mb-sm-1">Kiểm tra hàng kho TQ</button>
+                            <div class="col-md-6 col-sm-12 row justify-content-md-end">
+                                <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
                                 <button class="btn btn-sm px-0 btn-success mb-sm-1" type="button"> @PJUtils.ShippingStatus(item.Status) </button>
                             </div>
                         </div>
@@ -188,8 +188,11 @@
             data: form,
             contentType: false,
             processData: false,
-            success: function () {
-                alert('added to temp');
+            success: function (res) {
+                if (res)
+                    helper.showSuc('Cập nhật thành công', true);
+                    else
+                    helper.showErr('Lỗi không đọc được thông tin file');
             }, error: function (e) {
                 console.log(e);
             }
