@@ -27,9 +27,11 @@ namespace KGQT.Controllers
             var userLogin = HttpContext.Session.GetString("user");
             @ViewData["page"] = page;
             var oData = ShippingOrder.GetList(status, ID, fromDate, toDate, page, pageSize, userLogin);
-            var lstData = (List<tmpShippingOrder>)oData[0];
-            var totalPage = (int)oData[0];
+            var lstData = oData[0] as List<tbl_ShippingOrder>;
+            var total = (decimal)oData[1];
+            var totalPage = (decimal)oData[2];
             @ViewData["page"] = page;
+            @ViewData["total"] = total;
             @ViewData["totalPage"] = totalPage;
             return View(lstData);
         }

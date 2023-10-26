@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewData["Title"] = "Bảng giá";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+<style>
+    .wh-150{
+        width:150px;
+        height:150px;
+    }
+</style>
+<div class="container-fluid h-100">
+    <div class="row mb-2">
+        <ul id="breadcrumbs">
+            <li><a href="/">Dịch vụ</a></li>
+            <li><a>Bảng giá</a></li>
+        </ul>
+    </div>
+    <div class="row bg-white p-2">
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <div class="d-flex justify-content-center p-2 w-100">
+                    <a href ="pricedetail">
+                        <img src="~/img/service-img-shipping1.jpg" class="card-img-top wh-150" alt="">
+                    </a>
+                </div>
+                <div class="card-body">
+                    <a href="pricedetail" class="card-title fw-bold text-uppercase text-decoration-none">
+                        <p class="card-title text-uppercase">Bảng giá hàng lô(Cùng một loại hàng)</p>
+                    </a>
+                    <p class="text-justify">
+                        Ký gửi: tức là bạn đã hoàn thành giao dịch với đối tác Trung Quốc và chỉ sử dụng dịch vụ vận chuyển hàng từ Trung Quốc ...
+                    </p>
+                    <a href="pricedetail" class="btn btn-info">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
