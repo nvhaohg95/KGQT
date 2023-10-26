@@ -153,7 +153,7 @@ namespace KGQT.Areas.Admin.Controllers
                     pack.ModifiedBy = crrUse;
                     pack.ModifiedDate = DateTime.Now;
                     BusinessBase.Update(pack);
-
+                    BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã cập nhật mã vận đơn " + check.ID + " vào kiện", 0, crrUse);
 
                     var lstPack = BusinessBase.GetList<tbl_Package>(x => x.TransID == check.ID);
                     double totalWeight = lstPack.Where(x => x.Weight != null).Sum(x => x.Weight.Value);
@@ -179,19 +179,6 @@ namespace KGQT.Areas.Admin.Controllers
                     check.ModifiedBy = crrUse;
                     check.ModifiedDate = DateTime.Now;
                     var oUpdate = BusinessBase.Update(check);
-                    if (p)
-                    {
-                        //Cập nhật TransId cho package
-                        var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == pack.ID);
-                        if (oPack != null)
-                        {
-                            oPack.TransID = check.ID;
-                            oPack.ModifiedBy = crrUse;
-                            oPack.ModifiedDate = DateTime.Now;
-                            BusinessBase.Update(oPack);
-                            BusinessBase.TrackLog(oPack.UID.Value, oPack.ID, "{0} đã cập nhật mã vận đơn " + check.ID + " vào kiện", 0, crrUse);
-                        }
-                    }
                     BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã thêm kiện " + pack.PackageCode + " vào đơn", 0, crrUse);
                 }
                 else
