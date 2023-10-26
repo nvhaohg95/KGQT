@@ -222,9 +222,6 @@ namespace KGQT.Areas.Admin.Controllers
 
                 }
             }
-
-
-
             return p;
         }
         #endregion
