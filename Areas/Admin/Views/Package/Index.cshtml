@@ -25,28 +25,29 @@
         @foreach (var item in Model)
         {
             <div class="card shadow-0 border mb-4">
-                <div class="card-body p-0 py-2">
-                    <div class="row border-bottom p-2 mx-0">
-                        <div class="col-md-6 col-sm-12 row">
-                            <div class="col-md-6 col-sm-12 ml-1 row align-items-center">
-                                <span class="cursor-pointer">
+                <div class="card-body p-0">
+                    <div class="row border-bottom p-2 mx-0 text-white" style="background-color: #00d0ffc9">
+                        <div class="col-md-12 col-sm-12 row">
+                            <div class="col-md-4 col-sm-12 ml-1 row align-items-center">
+                                <span class="cursor-pointer pr-2">
                                     <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
                                     <i class="fa fa-copy"></i>
                                 </span>
                                 -
-                                <span>Kho nhận: Quảng Châu</span>
+                                <span class="pl-2">Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
                             </div>
-                            <div class="col-md-6 ml-1 col-sm-12 row align-items-center">
+                            <div class="col-md-4 ml-1 col-sm-12 row align-items-center">
                                 <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                             </div>
-                        </div>
-                        <div class="col-md-6 col-sm-12 row align-items-center">
-                            <div class="col-md-6 row col-sm-12">
-                                <span>Tổng tiền hàng:  &nbsp;<strong> @string.Format("{0:N0}",item.TotalPrice != null ? item.TotalPrice : 0).Replace(",", ".")đ</strong></span>
-                            </div>
-                            <div class="col-md-6 col-sm-12 row justify-content-md-end">
-                                <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
-                                <button class="btn btn-sm px-0 btn-success mb-sm-1" type="button"> @PJUtils.ShippingStatus(item.Status) </button>
+                            <div class="col-md-4 col-sm-12 row justify-content-md-end">
+                                @if (item.Status < 2)
+                                {
+                                    <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
+                                }
+                                else
+                                {
+                                    @Html.Raw(PJUtils.ShippingStatusHtml(item.Status))
+                                }
                             </div>
                         </div>
                     </div>
@@ -191,7 +192,7 @@
             success: function (res) {
                 if (res)
                     helper.showSuc('Cập nhật thành công', true);
-                    else
+                else
                     helper.showErr('Lỗi không đọc được thông tin file');
             }, error: function (e) {
                 console.log(e);

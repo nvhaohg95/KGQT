@@ -15,31 +15,26 @@
         <!--Start::Thông tin kiện-->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
-            <a href="/packages/create" class="btn-success btn-sm pointer-event">Thêm đơn</a>
+            <a href="/package/create" class="btn-success btn-sm pointer-event">Thêm đơn</a>
         </div>
         @foreach (var item in Model)
         {
             <div class="card shadow-0 border mb-4">
                 <div class="card-body p-0 py-0">
                     <div class="row border-bottom p-2 mx-0 bg-success text-white">
-                        <div class="col-md-6 col-sm-12 row">
+                        <div class="col-md-12 col-sm-12 row">
                             <div class="col-md-6 col-sm-12 ml-1 row align-items-center">
                                 <span class="cursor-pointer">
                                     <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
                                     <i class="fa fa-copy"></i>
                                 </span>
                                <span class="mx-2"> - </span>
-                                <span>Kho nhận: Quảng Châu</span>
+                                <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
                             </div>
-                            <div class="col-md-6 ml-1 col-sm-12 row align-items-center">
+                            <div class="col-md-3 ml-1 col-sm-12 row align-items-center">
                                 <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                             </div>
-                        </div>
-                        <div class="col-md-6 col-sm-12 row align-items-center">
-                            <div class="col-md-6 row col-sm-12">
-                                <span>Tổng tiền hàng:  &nbsp;<strong> @string.Format("{0:N0}",item.TotalPrice != null ? item.TotalPrice : 0).Replace(",", ".")đ</strong></span>
-                            </div>
-                            <div class="col-md-6 col-sm-12 row justify-content-md-end">
+                            <div class="col-md-3 col-sm-12 row justify-content-md-end">
                                 @if (item.Status <= 1)
                                 {
                                     <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
@@ -52,7 +47,7 @@
                         </div>
                     </div>
                     <div class="row p-2 mx-0 my-2 border-bottom">
-                        <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 mb-0 mt-4">
+                        <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 mb-0">
                             @if (item.ExportedCNWH != null)
                             {
                                 <li class="active-tl">

@@ -62,7 +62,7 @@ namespace KGQT.Areas.Admin.Controllers
             var file = Request.Form.Files[0];
             List<ExcelModel> content = PJUtils.ReadExcelToJson(file);
             var userLogin = HttpContext.Session.GetString("user");
-            bool s = Packages.UpdateStatusCNWH(content, 2, userLogin);
+            bool s = Packages.UpdateStatusCNWH(content, 3, userLogin);
             return s;
         }
 
@@ -124,7 +124,7 @@ namespace KGQT.Areas.Admin.Controllers
             pack.WoodPackagePrice = woodPrice;
             pack.AirPackagePrice = airPrice;
             pack.TotalPrice = pack.WeightPrice + airPrice + woodPrice + Convert.ToDouble(pack.IsInsurance);
-            pack.Status = 3;
+            pack.Status = 4;
             pack.ModifiedBy = crrUse;
             pack.ModifiedDate = DateTime.Now;
             var p = BusinessBase.Update(pack);
