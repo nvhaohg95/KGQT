@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<KGQT.Models.tbl_FeeWeight>
 @{
-    ViewData["Title"] = "Bảng giá";
+    ViewData["Title"] = "Phí vận chuyển";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
@@ -8,17 +8,17 @@
     <div class="row mb-2">
         <ul id="breadcrumbs">
             <li><a href="/">Cấu hình</a></li>
-            <li><a>Bảng giá</a></li>
+            <li><a>Phí vận chuyển</a></li>
         </ul>
     </div>
     <div class="row bg-white p-2">
         <div class="col-12 ">
             <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h5 class="text-danger text-uppercase m-0">Bảng giá</h5>
+                <div class="text-start">
+                    <h5 class="text-danger text-uppercase m-0">PHÍ VẬN CHUYỂN</h5>
                 </div>
                 <div class="d-flex align-items-center justify-content-end py-2">
-                    <a class="btn btn-sm btn-primary" href="create">Thêm mới</a>
+                    <a class="btn btn-success" href="create">Thêm mới</a>
                 </div>
             </div>
         </div>
@@ -49,17 +49,23 @@
                                 <sup>đ&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</sup>
                             </td>
                             <td>
-                                @if(item.Type == 1)
+                                @switch(item.Type)
                                 {
-                                    <span>Gói bay nhanh</span>
-                                }
-                                else if (item.Type == 2)
-                                {
-                                    <span>Gói bay thường</span>
-                                }
-                                else if (item.Type == 3)
-                                {
-                                    <span>Gói bộ</span>
+                                    case 1:
+                                        <span>Tuyến bay nhanh</span>
+                                        break;
+                                    case 2:
+                                        <span>Tuyến bay thường</span>
+                                        break;
+                                    case 3:
+                                        <span>Tuyến bộ</span>
+                                        break;
+                                    case 4:
+                                        <span>Tuyến lô</span>
+                                        break;
+                                    case 5:
+                                        <span>Tuyến biển</span>
+                                        break;
                                 }
                             </td>
                             <td>
@@ -70,7 +76,6 @@
                             </td>
                         </tr>
                     }
-                    
                 </tbody>
             </table>
         </div>
