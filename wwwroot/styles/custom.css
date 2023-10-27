@@ -88,6 +88,70 @@
 .timeline-step small {
     color: #959091;
 }
+
+.step {
+    position: relative;
+    z-index: 0;
+}
+
+    .step li {
+        list-style: none;
+        float: left;
+        width: 25%;
+        position: relative;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+        .step li:before {
+            width: 15px;
+            height: 15px;
+            border: 3px solid #a1a1a1;
+            border-radius: 50%;
+            display: block;
+            text-align: center;
+            line-height: 50px;
+            margin: 0 auto 10px auto;
+            background: #fff;
+            color: #000;
+            transition: all ease-in-out .3s;
+            cursor: pointer;
+            content: ''
+        }
+
+        .step li:after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background-color: grey;
+            top: 8px;
+            left: -50%;
+            z-index: -999;
+            transition: all ease-in-out .3s;
+        }
+
+        .step li:first-child:after {
+            content: none;
+        }
+
+        .step li.active-tl {
+            color: #555555;
+        }
+
+            .step li.active-tl:before {
+                background: #4caf50;
+                border-color: #4caf50;
+                color: #F1F1F1;
+            }
+
+            .step li.active-tl + li:after {
+                background: #4caf50;
+            }
+
+        .step li span {
+            font-size: 12px;
+        }
 /*End: Timeline Horizon*/
 
 /*Start:: Breadsrumb */
@@ -258,7 +322,7 @@ tr {
 
 .scroll-y-80 {
     overflow-y: auto;
-    height: 50px;
+    height: 80px;
     overflow-x: hidden;
     list-style-type:none;
 }

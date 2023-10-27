@@ -11,8 +11,8 @@
     <li><a href="/admin/package/Index">Danh sách ký gửi</a></li>
     <li><a>Chi tiết</a></li>
 </ul>
-<div class="container-fluid py-3 h-100 gradient-custom">
-    <div class="row d-flex justify-content-center align-items-center h-100">
+<div class="container-fluid h-100 gradient-custom">
+    <div class="row d-flex justify-content-center">
         <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
             <div class="card" style="border-radius: 10px;">
                 <div class="card-body">
@@ -29,66 +29,63 @@
                             {
                                 <button type="button" onclick="cancel(@Model.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
                             }
-                            <button type="button" class="btn-sm btn bg-orange text-white  float-right mx-2">Kiểm tra hàng kho TQ</button>
+                            @if (Model.Status == 1)
+                            {
+                                <button type="button" class="btn-sm btn bg-orange text-white  float-right mx-2">Kiểm tra hàng kho TQ</button>
+                            }
                         </div>
                     </div>
                     <div class="row">
-                       @* <div class="col-md-12">
-                            <ul id="progressbar">
-                                @if (Model.ExportedCNWH != null)
-                                {
-                                    <li class="timeline-step active">
-                                        Xuất kho TQ<br>
-                                        <small>@Model.ExportedCNWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="timeline-step">
-                                        Xuất kho TQ
-                                    </li>
-                                }
-                                @if (Model.TransportingToSGWH != null)
-                                {
-                                    <li class="timeline-step active">
-                                        Đang trên đường về HCM<br>
-                                        <small>@Model.TransportingToSGWH.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="timeline-step">
-                                        Đang trên đường về HCM
-                                    </li>
-                                }
-                                @if (Model.ImportedSGWH != null)
-                                {
-                                    <li class="timeline-step active">
-                                        Về kho HCM<br>
-                                        <small>@Model.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="timeline-step">
-                                        Về kho HCM
-                                    </li>
-                                }
-                                @if (Model.ReceivedDate != null)
-                                {
-                                    <li class="timeline-step active">
-                                        Đã nhận hàng<br>
-                                        <small>@Model.ReceivedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="timeline-step">
-                                        Đã nhận hàng
-                                    </li>
-                                }
-                            </ul>
-                        </div>*@
+                        <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12">
+                            @if (Model.ExportedCNWH != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Xuất kho Trung Quốc <br> @Model.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Xuất kho Trung Quốc</span>
+                                </li>
+                            }
+                            @if (Model.DateExpectation != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đang trên đường về HCM <br> @Model.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Xuất kho Trung Quốc</span>
+                                </li>
+                            }
+                            @if (Model.ImportedSGWH != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đã về kho HCM <br> @Model.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Xuất kho Trung Quốc</span>
+                                </li>
+                            }
+                            @if (Model.ReceivedDate != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đã nhận hàng <br> @Model.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Xuất kho Trung Quốc</span>
+                                </li>
+                            }
+                        </ul>
                     </div>
                     <div class="panel panel-primary mb-4">
                         <div class="panel-heading">
@@ -163,27 +160,27 @@
 
                             <div class="d-flex justify-content-between pt-2">
                                 <p class="text-muted mb-0">Phí vận chuyển:</p>
-                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.WeightPrice != null ? Model.WeightPrice : 0).Replace(",", ".")</span></p>
+                                <p class="text-muted mb-0"><span>@Model.Weight</span>kg - <span class="fw-bold me-4">@string.Format("{0:N0}",Model.WeightPrice != null ? Model.WeightPrice : 0).Replace(",", ".")đ</span></p>
                             </div>
                             @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
                             {
                                 <div class="d-flex justify-content-between">
                                     <p class="text-muted mb-0">Phí đóng gỗ:</p>
-                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.WoodPackagePrice != null ? Model.WoodPackagePrice : 0).Replace(",", ".")</span></p>
+                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.WoodPackagePrice != null ? Model.WoodPackagePrice : 0).Replace(",", ".")đ</span></p>
                                 </div>
                             }
                             @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
                             {
                                 <div class="d-flex justify-content-between">
                                     <p class="text-muted mb-0">Phí bọt khí:</p>
-                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.AirPackagePrice != null ? Model.AirPackagePrice : 0).Replace(",", ".")</span></p>
+                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.AirPackagePrice != null ? Model.AirPackagePrice : 0).Replace(",", ".")đ</span></p>
                                 </div>
                             }
                             @if (Model.IsInsurance != null && Model.IsInsurance == true)
                             {
                                 <div class="d-flex justify-content-between">
                                     <p class="text-muted mb-0">Phí bảo hiểm:</p>
-                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")</span></p>
+                                    <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")đ</span></p>
                                 </div>
                             }
                             <!--End::Thông tin đơn-->
@@ -193,7 +190,7 @@
                 <div class="card-footer border-0 px-4 py-5"
                      style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                     <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
-                        Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.TotalPrice != null ? Model.TotalPrice : 0).Replace(",", ".")</span>
+                        Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.TotalPrice != null ? Model.TotalPrice : 0).Replace(",", ".")đ</span>
                     </h5>
                 </div>
             </div>
@@ -302,6 +299,5 @@
         }
 
     </script>
-
 </div>
 

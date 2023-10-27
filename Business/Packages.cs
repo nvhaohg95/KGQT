@@ -33,45 +33,28 @@ namespace KGQT.Business
             {
                 List<tbl_Package> lst = new List<tbl_Package>();
                 List<string> ids = model.Select(x => x.Key).ToList();
-                var query = db.tbl_Packages.Where(x => ids.Contains(x.PackageCode));
-                if (status == 1)
-                    query = query.Where(x => x.Imported == false);
-                else
-                    query = query.Where(x => x.Exported == false);
-
+                var query = db.tbl_Packages.Where(x => ids.Contains(x.PackageCode) && x.Exported == false);
                 lst = query.ToList();
                 foreach (var item in lst)
                 {
                     item.Status = status;
-                    if (status == 1)
+                    var dt = DateTime.Now;
+                    item.ExportedCNWH = dt;
+                    if (item.MovingMethod == 1)
                     {
-                        item.ComfirmDate = DateTime.Now;
-                        item.Imported = true;
+                        item.DateExpectation = dt.AddDays(6);
                     }
-                    else
+
+                    if (item.MovingMethod == 2)
                     {
-                        var exportDate = model.FirstOrDefault(x => x.Key == item.PackageCode).Value;
-                        if (exportDate != null)
-                        {
-                            var dt = DateTime.Parse(exportDate);
-                            item.ExportedCNWH = dt;
-                            if (item.MovingMethod == 1)
-                            {
-                                item.DateExpectation = dt.AddDays(6);
-                            }
-
-                            if (item.MovingMethod == 2)
-                            {
-                                item.DateExpectation = dt.AddDays(10);
-                            }
-
-                            if (item.MovingMethod == 3)
-                            {
-                                item.DateExpectation = dt.AddDays(15);
-                            }
-                            item.Exported = true;
-                        }
+                        item.DateExpectation = dt.AddDays(10);
                     }
+
+                    if (item.MovingMethod == 3)
+                    {
+                        item.DateExpectation = dt.AddDays(15);
+                    }
+                    item.Exported = true;
                     item.ModifiedBy = userName;
                     item.ModifiedDate = DateTime.Now;
                     db.Update(item);
