@@ -127,6 +127,7 @@ namespace KGQT.Areas.Admin.Controllers
             pack.Status = 4;
             pack.ModifiedBy = crrUse;
             pack.ModifiedDate = DateTime.Now;
+            pack.ImportedSGWH = DateTime.Now;
             var p = BusinessBase.Update(pack);
             if (p)
             {
@@ -203,7 +204,7 @@ namespace KGQT.Areas.Admin.Controllers
                     ship.IsInsurance = pack.IsInsurance;
                     ship.InsurancePrice = pack.IsInsurancePrice;
                     ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice;
-                    ship.Status = pack.Status;
+                    ship.Status = 1;
                     ship.CreatedDate = DateTime.Now;
                     ship.CreatedBy = crrUse;
                     var oAdd = BusinessBase.Add(ship);

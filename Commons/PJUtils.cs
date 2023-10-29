@@ -99,7 +99,7 @@ namespace KGQT.Commons
             return "";
         }
 
-        public static string ShippingStatusHtml(int status)
+        public static string PackageStatusHtml(int status)
         {
             string sReturn = "";
             switch (status)
@@ -133,7 +133,7 @@ namespace KGQT.Commons
             return sReturn;
         }
 
-        public static string ShippingStatus(int status)
+        public static string PackageStatus(int status)
         {
             string sReturn = "";
             switch (status)
@@ -167,22 +167,42 @@ namespace KGQT.Commons
             return sReturn;
         }
 
-        public static string PackageStatus(int status)
+        public static string ShippingOrderStatusHtml(int status)
         {
             string sReturn = "";
             switch (status)
             {
                 case 1:
-                    sReturn = "Vận chuyển quốc tế";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning p-2\">Chờ thanh toán</span>";
                     break;
                 case 2:
-                    sReturn = "Chờ giao";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success p-2\">Đã thanh toán</span>";
                     break;
                 case 3:
-                    sReturn = "Đang giao";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger p-2\">Đã hủy</span>";
                     break;
                 case 4:
-                    sReturn = "Đã nhận hàng";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info p-2\">Khác</span>";
+                    break;             
+            }
+            return sReturn;
+        }
+        public static string ShippingOrderStatus(int status)
+        {
+            string sReturn = "";
+            switch (status)
+            {
+                case 1:
+                    sReturn = "Chờ thanh toán";
+                    break;
+                case 2:
+                    sReturn = "Đã thanh toán";
+                    break;
+                case 3:
+                    sReturn = "Đã hủy";
+                    break;
+                case 4:
+                    sReturn = "Khác";
                     break;
             }
             return sReturn;

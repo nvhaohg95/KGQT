@@ -24,7 +24,7 @@
                             <button type="button" onclick="cancel(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
                         }
                     </h2>
-                    <div class="px-0 pt-2 col-md-12"><span>Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingStatusHtml(Model.Order.Status))</div>
+                    <div class="px-0 pt-2 col-md-12"><span>Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))</div>
                     <div class="px-0 pt-2 col-md-12 row">
                         <div class="col-md-4">Khách hàng: <strong>@Model.Order.FirstName</strong></div>
                         <div class="col-md-4"><i class="fa fa-phone px-2"></i><strong>@Model.Order.Phone</strong></div>
