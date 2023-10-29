@@ -9,6 +9,15 @@
     DateTime? fromDate = null;
     DateTime? toDate = null;
 }
+<style>
+    .nav-tile {
+        width: 120px;
+    }
+
+    .nav-sort {
+        width: calc(100%-120px);
+    }
+</style>
 <script src="~/js/base.js" type="text/javascript"></script>
 <script>
     function getPage(type = "Next") {
@@ -43,46 +52,44 @@
             <div class="row bg-white px-2 py-2">
                 <div class="col">
                     <div class="row">
-                        <div class="col d-flex">
-                            <div class="w-150px">
-                                <span class="fw-bold ">
-                                    Trạng thái đơn:
-                                </span>
+                        <div class="col-12 d-flex">
+                            <div class="py-2">
+                                <p class="nav-tile fw-bold mb-0">Trạng thái đơn:</p>
                             </div>
-                            <div>
+                            <div class="nav-sort">
                                 <ul class="nav">
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(1)">Ký gửi</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(1)">Ký gửi</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(2)">Chờ duyệt</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(2)">Chờ duyệt</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(3)">Chờ giao</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(3)">Chờ giao</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(4)">Đang giao</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(4)">Đang giao</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(5)">Người bán giao</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(5)">Người bán giao</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(6)">Hàng về kho TQ</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(6)">Hàng về kho TQ</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(7)">Vận chuyển quốc tế</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(7)">Vận chuyển quốc tế</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(8)">Đã nhận hàng</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(8)">Đã nhận hàng</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(9)">Đã hủy</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(9)">Đã hủy</a>
                                     </li>
-                                    <li class="nav-item py-2">
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(10)">Thất lạc</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(10)">Thất lạc</a>
                                     </li>
-                                    <li class="nav-item py-2"> 
-                                        <a class="nav-link text-capitalize py-0" onclick="sort(11)">Không nhận hàng</a>
+                                    <li class="nav-item py-2 mr-4">
+                                        <a href="#" class="nav-link text-capitalize py-0 border btn-outline-secondary" onclick="sort(11)">Không nhận hàng</a>
                                     </li>
                                 </ul>
                             </div>
