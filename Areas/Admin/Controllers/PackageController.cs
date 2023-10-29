@@ -1,4 +1,5 @@
 ﻿using ExcelDataReader;
+using Fasterflect;
 using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using System.Data;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text;
 
@@ -25,6 +27,12 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var o = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            return View(o);
         }
 
         [HttpGet]
@@ -56,6 +64,12 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         #region Function
+        [HttpGet]
+        public bool CheckPackage(string package)
+        {
+            return Packages.CheckExist(package);
+        }
+
         [HttpPost]
         public async Task<bool> EmportChinaWareHouseAsync()
         {
@@ -64,6 +78,49 @@ namespace KGQT.Areas.Admin.Controllers
             var userLogin = HttpContext.Session.GetString("user");
             bool s = Packages.UpdateStatusCNWH(content, 3, userLogin);
             return s;
+        }
+
+        [HttpPost]
+        public bool Update(tempPackage form)
+        {
+            var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
+            if(p == null) return false;
+
+            if (form.Username != p.Username)
+            {
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == form.Username);
+                if (user == null) return false;
+
+                p.Username = user.Username;
+                p.UID = user.ID;
+            }
+            p.PackageCode = form.PackageCode;
+            p.MovingMethod = form.MovingMethod;
+            p.IsAirPackage = form.IsAirPackage;
+            p.AirPackagePrice= form.AirPackagePrice;
+            p.IsInsurancePrice = form.IsInsurancePrice;
+            p.Declaration = form.Declaration;
+            p.DeclarePrice = form.DeclarePrice;
+            p.IsWoodPackage = form.IsWoodPackage;
+            p.WoodPackagePrice = form.WoodPackagePrice;
+            p.WareHouse = form.WareHouse;
+            p.Status = form.Status;
+            p.ModifiedBy = HttpContext.Session.GetString("user");
+            p.ModifiedDate = DateTime.Now;
+            return BusinessBase.Update(p);
+            //foreach(PropertyInfo propertyInfo in form.GetType().GetProperties())
+            //{
+            //    if(propertyInfo.GetValue(form, null) != null)
+            //    {
+            //        PropertyInfo p = p.GetType().GetProperty(propertyInfo.Name);
+            //        var pValue = p.GetValue(p, null);
+            //        var value = propertyInfo.GetValue(form, null);
+            //        if (pValue != value)
+            //        {
+            //            p.SetValue(p, Convert.ChangeType(value, propertyInfo.PropertyType));
+            //        }
+            //    }
+            //}
         }
 
         [HttpPost]
@@ -109,7 +166,7 @@ namespace KGQT.Areas.Admin.Controllers
             if (pack == null) return false;
             var username = pack.Username;
 
-            //Update tien package
+            //Update tien p
             var lstFee = BusinessBase.GetList<tbl_FeeWeight>(x => x.Type == pack.MovingMethod);
             if (lstFee == null || lstFee.Count == 0) return false;
 
@@ -149,7 +206,7 @@ namespace KGQT.Areas.Admin.Controllers
                 if (check != null)
                 {
 
-                    //Cap nhat lai tranid cho package
+                    //Cap nhat lai tranid cho p
                     pack.TransID = check.ID;
                     pack.ModifiedBy = crrUse;
                     pack.ModifiedDate = DateTime.Now;

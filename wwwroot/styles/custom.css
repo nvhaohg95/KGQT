@@ -324,8 +324,9 @@ tr {
     overflow-y: auto;
     height: 80px;
     overflow-x: hidden;
-    list-style-type:none;
+    list-style-type: none;
 }
+
 .timeline li::before {
     content: '\2713';
     color: #16eb06; /* Change the color */
@@ -340,4 +341,44 @@ tr {
     .modal-lg, .modal-xl {
         max-width: 700px;
     }
+}
+
+
+/*Coppy*/
+.copy-text{
+    position:relative;
+    z-index:1;
+}
+
+.copy-text:active {
+    background: #809ce2;
+}
+
+.copy-text:before {
+    content: "Copied";
+    position: absolute;
+    top: -45px;
+    right: 0px;
+    background: #5c81dc;
+    padding: 8px 10px;
+    border-radius: 20px;
+    font-size: 15px;
+    display: none;
+}
+
+.copy-text:after {
+    content: "";
+    position: absolute;
+    top: -20px;
+    right: 25px;
+    width: 10px;
+    height: 10px;
+    background: #5c81dc;
+    transform: rotate(45deg);
+    display: none;
+}
+
+.copy-text.active:before,
+.copy-text.active:after {
+    display: block;
 }

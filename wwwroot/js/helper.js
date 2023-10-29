@@ -37,6 +37,8 @@
         let valueRef = e;
 
         var str1 = valueRef.value;
+        if (!str1) return;
+
         if (
             str1[str1.length - 1].charCodeAt() < 48 ||
             str1[str1.length - 1].charCodeAt() > 57
@@ -68,6 +70,15 @@
             i++;
         }
     },
+
+    copy: function (e,input) {
+        input.select();
+        document.execCommand("copy");
+        e.classList.add("active");
+        setTimeout(function () {
+            e.classList.remove("active");
+        }, 2500);
+    }
 };
 
 const currency = [2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];

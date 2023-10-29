@@ -24,6 +24,7 @@
         </div>
         @foreach (var item in Model)
         {
+            <input type="text" hidden value="@item.PackageCode" id="package-code">
             <div class="card shadow-0 border mb-4">
                 <div class="card-body p-0">
                     <div class="row border-bottom p-2 mx-0 text-white" style="background-color: #00d0ffc9">
@@ -31,7 +32,15 @@
                             <div class="col-md-4 col-sm-12 ml-1 row align-items-center">
                                 <span class="cursor-pointer pr-2">
                                     <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
-                                    <i class="fa fa-copy"></i>
+                                    @if (item.Status < 5)
+                                    {
+                                        <a href="/admin/package/edit?id=@item.ID" class="text-decoration-none">
+                                            <i class="fa fa-edit mx-2"></i>
+                                        </a>
+                                    }
+                                    <span class="copy-text mx-2" onclick="copy(this)">
+                                        <i class="fa fa-copy" ></i>
+                                    </span>
                                 </span>
                                 -
                                 <span class="pl-2">Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
@@ -198,5 +207,10 @@
                 console.log(e);
             }
         });
+    }
+
+    function copy(e) {
+        var input = $('#package-code');
+        helper.copy(e, input);
     }
 </script>

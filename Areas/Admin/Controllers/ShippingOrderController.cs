@@ -45,13 +45,6 @@ namespace KGQT.Areas.Admin.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-
         // GET: ShippingOrderController/Details/5
         public ActionResult Details(int id)
         {
@@ -60,37 +53,6 @@ namespace KGQT.Areas.Admin.Controllers
             model.Packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
             model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
             return View(model);
-        }
-
-        // POST: ShippingOrderController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-
-        // POST: ShippingOrderController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
         #endregion
 
@@ -103,8 +65,8 @@ namespace KGQT.Areas.Admin.Controllers
 
         // POST: ShippingOrderController/Create
         /// <summary>
-        /// Status: 0: chưa xác nhận, 1: Đã cập nhật mã vận đơn, 2:Hàng về kho TQ, 3:Đang trên đường về HCM,
-        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,9:Đã hủy, 10: Thất lạc, 1: không nhận dc hàng
+        /// Status: 1: chưa xác nhận,2:Hàng về kho TQ, 3:Đang trên đường về HCM,
+        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,9:Đã hủy, 10: Thất lạc, 11: không nhận dc hàng
         /// </summary>
         /// <param name="form"></param>
         /// <param name="package"></param>
