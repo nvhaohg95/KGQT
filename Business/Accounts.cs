@@ -126,6 +126,7 @@ namespace KGQT.Business
             us.IsOutCityCustomer = acc.IsOutCityCustomer;
             us.IsNotReceiveMail = acc.IsNotReceiveMail;
             us.CreateDate = acc.CreatedDate;
+            us.UserID = acc.UserID;
             return us;
         }
 
@@ -303,21 +304,12 @@ namespace KGQT.Business
                 }
 
                 var isUserName = _db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
-                var isEmail = _db.tbl_Accounts.FirstOrDefault(x => x.Email == data.Email);
                 if (isUserName != null)
                 {
                     result.IsError = true;
                     result.Key = "UserName";
                     result.Type = 1;
                     result.Message = "Tên tài khoản đã được sử dụng.";
-                    return result;
-                }
-                if (isEmail != null)
-                {
-                    result.IsError = true;
-                    result.Key = "Email";
-                    result.Type = 1;
-                    result.Message = "Địa chỉ email đã được sử dụng.";
                     return result;
                 }
 

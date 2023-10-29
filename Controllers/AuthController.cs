@@ -42,6 +42,8 @@ namespace KGQT.Controllers
                 var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
                 if (user != null)
                 {
+                    if(user.UserID == "ttloc")
+                        return RedirectToAction("admin", "home");
                     return RedirectToAction("dashboard", "home");
                 }
             }
@@ -60,6 +62,8 @@ namespace KGQT.Controllers
             }
             HttpContext.Session.SetString("user", data.UserName);
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
+            if ((result.Data as UserLogin).UserID == "ttloc")
+                return RedirectToAction("home", "admin");
             return RedirectToAction("dashboard", "home");
             //var result = new DataReturnModel() { };
             //result.Data = new UserLogin() { Username = "loc", FirstName = "Lộc", LastName = "Trần", IMG = "" };

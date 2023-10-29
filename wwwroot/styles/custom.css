@@ -334,3 +334,10 @@ tr {
     width: 1em; /* Also needed for space (tweak if needed) */
     margin-left: -1em; /* Also needed for space (tweak if needed) */
 }
+
+/*Resize modal lg*/
+@media(min-width: 992px) {
+    .modal-lg, .modal-xl {
+        max-width: 700px;
+    }
+}
