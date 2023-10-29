@@ -65,6 +65,7 @@ namespace KGQT.Business
                     user.UserID = acc.UserID;
                     user.UserName = acc.Username;
                     user.Password = acc.Password;
+                    user.RoleID = acc.RoleID;
                 }
                 if(accInfo != null)
                 {

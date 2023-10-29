@@ -77,6 +77,7 @@ namespace KGQT.Models.temp
     public class AccountInfo
     {
         public int? ID { get; set; }
+        public int? RoleID { get; set; }
         public string? UserID { get; set; }
         public string? UserName { get; set; }
         public string? FullName { get; set; }

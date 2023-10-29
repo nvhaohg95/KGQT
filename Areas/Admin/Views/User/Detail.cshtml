@@ -4,88 +4,108 @@
     ViewData["Title"] = "Detail";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
-<h1>Detail</h1>
-
-<div>
-    <h4>AccountInfo</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FullName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IMG)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IMG)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Phone)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gender)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gender)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BirthDay)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BirthDay)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-    </dl>
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="/admin/home">Trang chủ</a></li>
+    <li><a href="/admin/user/Index">Tài khoản</a></li>
+    <li><a>Chi tiết tài khoản</a></li>
+</ul>
+<div class="container bg-white py-4">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+            <h1 class="text-danger">Chi tiết tài khoản</h1>
+        </div>
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+            <form method="post" action="Create" id="frmShip">
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Mã định danh</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="UserID" value="@Model.UserID">
+                        <input type="text" hidden name="ID" value="@Model.ID">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Tài khoản</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" value="@Model.UserName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Họ</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" value="@Model.FirstName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Tên</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" value="@Model.LastName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Ngày sinh</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" value="@Model.BirthDay.Value.ToString("dd/MM/yy")">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputtext" class="col-sm-2 col-form-label">Giới tính</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" id="gender" value="@(Model.Gender == 1 ? "Nam" : "Nữ")">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Số ĐT</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" value="@Model.Phone">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" value="@Model.Email">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Địa chỉ</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control" value="@Model.Address">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Vai trò</label>
+                    <div class="col-sm-10">
+                        <select name="RoleID" class="form-control">
+                            <option value="4" @(Model.RoleID == 4 ? "selected" : "")>Khách</option>
+                            <option value="2" @(Model.RoleID == 2 ? "selected" : "")>Nhân viên</option>
+                            <option value="3" @(Model.RoleID == 3 ? "selected" : "")>Sales</option>
+                            <option value="1" @(Model.RoleID == 1 ? "selected" : "")>Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <button type="button" class="btn btn-success w-100" onclick="update()">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<script>
+    function update() {
+        var data = helper.form2Object($('#frmShip').serializeArray());
+            $.ajax({
+                url: '/admin/User/Update',
+                type: 'Post',
+                data: { form: data },
+                // other AJAX options here
+                success: function (result) {
+                    if (result.error) {
+                        helper.showErr(result.mssg);
+                    } else
+                        helper.showSuc("Cập nhật thành công");
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+    }
+</script>
