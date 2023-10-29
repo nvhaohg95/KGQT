@@ -90,7 +90,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row py-2">
+                   @* <div class="row py-2">
                         <div class="col">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
@@ -112,7 +112,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>*@
                 </form>
             </div>
         </div>
@@ -122,17 +122,6 @@
             <div class="d-flex align-items-center justify-content-between border-bottom">
                 <div>
                     <h5 class="text-danger text-uppercase m-0">Danh sách đơn ký gửi </h5>
-                </div>
-                <div class="d-flex align-items-center justify-content-end py-2">
-                    <a class="btn btn-sm  btn-primary" asp-action="Create" asp-method="post">
-                        <i class="fas fa-file-excel fa-lg"></i>
-                        Import
-                    </a>
-                    <a class="btn btn-sm btn-light mx-2" asp-action="Create" asp-method="post">
-                        <i class="fas fa-file-upload fa-lg" style="color: #d0d3d8;"></i>
-                        Export
-                    </a>
-                    <a class="btn btn-sm btn-primary" asp-action="Create" asp-method="post">Tạo mới</a>
                 </div>
             </div>
         </div>
@@ -154,7 +143,7 @@
                                 Trạng thái
                             </th>
                             <th class="text-center">
-                                Đơn giá
+                                Tổng tiền
                             </th>
                             <th class="text-center">
                                 Chi tiết
@@ -201,7 +190,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center" style="vertical-align:middle">
-                                    @Html.Raw(PJUtils.ShippingStatusHtml(item.Status))
+                                    @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                 </td>
                                 <td class="text-center" style="vertical-align:middle">
                                     @Html.DisplayFor(modelItem => item.TotalPrice)

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace KGQT.Controllers
 {
-    public class PackagesController : Controller
+    public class PackageController : Controller
     {
         #region View
         public IActionResult Index()
