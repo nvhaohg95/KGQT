@@ -20,10 +20,6 @@
                 <div class="card-header">
                     <h2 class="text-muted mb-0">
                         Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span>
-                        @if (Model.Order.Status < 3)
-                        {
-                            <button type="button" onclick="cancel(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
-                        }
                     </h2>
                     <span class="py-2">Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))
                 </div>
