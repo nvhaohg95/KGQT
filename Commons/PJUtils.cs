@@ -133,6 +133,20 @@ namespace KGQT.Commons
             return sReturn;
         }
 
+        public static string TradeName(int type)
+        {
+            string name = "";
+            switch (type)
+            {
+                case 1:
+                    name = "Thanh đoán đơn hàng {0}";
+                    break;
+                case 2:
+                    break;
+            }
+            return name;
+        }
+
         public static string PackageStatus(int status)
         {
             string sReturn = "";
@@ -173,17 +187,17 @@ namespace KGQT.Commons
             switch (status)
             {
                 case 1:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning p-2\">Chờ thanh toán</span>";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning\">Chờ thanh toán</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success p-2\">Đã thanh toán</span>";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success\">Đã thanh toán</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger p-2\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info p-2\">Khác</span>";
-                    break;             
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info\">Khác</span>";
+                    break;
             }
             return sReturn;
         }

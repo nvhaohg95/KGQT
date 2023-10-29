@@ -291,12 +291,16 @@
                 }
                 <!--End::Thông tin đơn-->
             </div>
-            <div class="card-footer border-0 px-4 py-5"
-                 style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+            <div class="card-footer border-0 rounded-bottom"
+                 style="background-color: #008cd0;">
                 <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
                     Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.Order.TotalPrice.HasValue ? Model.Order.TotalPrice : 0).Replace(",", ".")đ</span>
                 </h5>
             </div>
+        </div>
+
+        <div class="w-100 py-2">
+            <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
         </div>
     </div>
 </div>
@@ -320,7 +324,7 @@
             }
         });
     }
-    
+
     //Hủy đơn
     function cancel(id) {
         $.ajax({
@@ -396,6 +400,29 @@
                     helper.showErr('Lỗi!');
                 else
                     helper.showSuc('Đã hủy nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+    //Thanh toán
+    function payment() {
+        $.ajax({
+            url: '/admin/shippingOrder/payment',
+            type: 'Post',
+            data: { id: @Model.Order.ID },
+            // other AJAX options here
+            success: function (res) {
+                if (!res)
+                    helper.showErr('Lỗi!');
+                else {
+                    if (res.error)
+                        helper.showErr('Tài khoản không đủ tiền, cần phải nạp thêm' + res.mssg);
+                    else
+                        helper.showSuc('Thanh toán thành công!');
+                }
             },
             error: function (xhr, status, err) {
                 // error handling

@@ -18,9 +18,7 @@
         <div class="card" style="border-radius: 10px;">
             <div class="card-header">
                 <div class="card-header">
-                    <h2 class="text-muted mb-0">
-                        Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span>
-                    </h2>
+                    <h2>Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span></h2>
                     <span class="py-2">Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))
                 </div>
             </div>
@@ -136,7 +134,7 @@
                             <div class="row p-2 mx-0 my-2">
                                 <div class="col-md-3">
                                     <div class="form-inline text-left">
-                                       Cân nặng:  &nbsp;<p class=" mb-0">@(item.Weight ?? 0)kg</p>
+                                        Cân nặng:  &nbsp;<p class=" mb-0">@(item.Weight ?? 0)kg</p>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -280,14 +278,19 @@
                 }
                 <!--End::Thông tin đơn-->
             </div>
-            <div class="card-footer border-0 px-4 py-5"
-                 style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+            <div class="card-footer border-0 rounded-bottom"
+                 style="background-color: #008cd0;">
                 <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
                     Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.Order.TotalPrice.HasValue ? Model.Order.TotalPrice : 0).Replace(",", ".")đ</span>
                 </h5>
             </div>
         </div>
+
+        <div class="w-100 py-2">
+            <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
+        </div>
     </div>
+
 </div>
 <script>
     //Hủy đơn
@@ -302,6 +305,28 @@
                     helper.showErr('Lỗi!');
                 else
                     helper.showSuc('Đã hủy nhận thành công!');
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+    function payment() {
+        $.ajax({
+            url: '@Url.Action("Payment", "ShippingOrder")',
+            type: 'Post',
+            data: { id: @Model.Order.ID },
+            // other AJAX options here
+            success: function (res) {
+                if (!res)
+                    helper.showErr('Lỗi!');
+                else {
+                    if (res.error)
+                        helper.showErr('Tài khoản không đủ tiền, cần phải nạp thêm ' + res.mssg);
+                    else
+                        helper.showSuc('Thanh toán thành công!');
+                }
             },
             error: function (xhr, status, err) {
                 // error handling
@@ -344,7 +369,6 @@
 
     function editDeclare(o) {
         var obj = JSON.parse(decodeURIComponent(o));
-
         $("#txtId").val(obj.ID);
         $("#txtLink").val(obj.ProductLink);
         $("#txtQty").val(obj.ProductQuantity);
