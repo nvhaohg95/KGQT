@@ -56,38 +56,4 @@
         </div>
     </div>
 </div>
-<script>
-    function insert() {
-        var data = helper.form2Object($('#formFeeWeight').serializeArray());
-        if (!data.WeightFrom) {
-            helper.showErr('Vui lòng nhập trọng lượng từ!');
-            return
-        }
 
-        if (!data.WeightTo) {
-            helper.showErr('Vui lòng nhập trọng lượng dến!');
-            return
-        }
-
-        if (!data.Amount) {
-            helper.showErr('Vui lòng nhập giá tiền!');
-            return;
-        }
-
-        $.ajax({
-            url: "/Admin/FeeWeight/create",
-            type: 'POST',
-            data: { form: data },
-            // other AJAX options here
-            success: function (result) {
-                if (!result)
-                    helper.showErr('Thêm mới không thành công!')
-                else
-                    helper.showSuc('Thêm mới thành công!')
-            },
-            error: function (xhr, status, err) {
-                // error handling
-            }
-        });
-    }
-</script>

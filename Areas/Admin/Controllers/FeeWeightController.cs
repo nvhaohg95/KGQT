@@ -3,6 +3,9 @@ using KGQT.Business;
 using KGQT.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using KGQT.Models.temp;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -10,10 +13,20 @@ namespace KGQT.Areas.Admin.Controllers
     public class FeeWeightController : Controller
     {
         #region Index
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Index(int page)
         {
-            var lst = FeeWeight.GetList();
-            return View(lst);
+            var viewModel = new FeeWeightVM();
+            var oData = FeeWeight.GetList();
+            viewModel.ListFeeWeight = oData[0] as List<tbl_FeeWeight>;
+            decimal total = (decimal)oData[1];
+            decimal totalPage = (decimal)oData[2];
+            @ViewData["page"] = page;
+            @ViewData["total"] = total;
+            @ViewData["totalPage"] = totalPage;
+            viewModel.FeeWeight = new tbl_FeeWeight();
+            GetDropdownFeeWeightType();
+            return View(viewModel);
         }
         #endregion
 
@@ -97,6 +110,5 @@ namespace KGQT.Areas.Admin.Controllers
     {
         public int ID { get; set; }
         public string Name { get; set; }
-
     }
 }

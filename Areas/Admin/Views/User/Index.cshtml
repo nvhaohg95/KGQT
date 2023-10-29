@@ -1,4 +1,6 @@
-﻿@model IEnumerable<KGQT.Models.temp.AccountInfo>
+﻿@model KGQT.Models.temp.UserVM;
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Danh sách người dùng";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -19,6 +21,7 @@
         outline:none;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
+    
 </style>
 <div class="container-fluid h-100">
     <div class="row mb-2">
@@ -34,12 +37,17 @@
                     <h5 class="text-danger text-uppercase m-0">DANH SÁCH NGƯỜI DÙNG</h5>
                 </div>
                 <div class="col-6 d-flex justify-content-end">
-                    <a class="btn btn-success w-100px" href="Create">Thêm mới</a>
+                    <button class="btn btn-success w-100px" data-toggle="modal" data-target="#exampleModal">Thêm mới</button>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end mt-2">
-                <input type="search" placeholder="Tìm kiếm" class="input" />
-                <button type="button" class="btn btn-primary w-100px">Tìm kiếm</button>
+                <form method="get">
+                    <input type="search" placeholder="Tìm kiếm" class="input" name="searchText"/>
+                    <a href="/Admin/User/Index" class="text-decoration-none" title="Làm mới bộ lọc">
+                        <i class="fas fa-sync fa-xs"></i>
+                    </a>
+                    <button type="submit" class="btn btn-primary w-100px">Tìm kiếm</button>
+                </form>
             </div>
         </div>
         <div class="col-12">
@@ -55,39 +63,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.ListUser)
                     {
                         <tr>
                             <td>
-                                @item.UserID
+                                <span>@item.UserID</span>
                             </td>
                             <td class="text-truncate">
                                 <div class="d-flex align-items-center">
-                                    <img src="@item.IMG" title="@(item.UserName)" width="40" height="40" class="rounded-circle" />
-                                    <span class="ml-2">
-                                        @item.UserName
-                                    </span>
+                                    <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@item.FullName" width="40" height="40" class="rounded-circle" />
+                                    <span class="ml-2">@item.FullName</span>
                                 </div>
-                                
                             </td>
                             <td>
-                                @(item.BirthDay != null ? item.BirthDay.Value.ToString("dd/MM/yyyy") : "")
+                                <span>@(item.BirthDay != null ? item.BirthDay.Value.ToString("dd/MM/yyyy") : "")</span>
                             </td>
                             <td class="text-truncate">
                                 <span>@item.Email</span>
                             </td>
                             <td>
-                                @item.Phone
+                                <span>@item.Phone</span>
                             </td>
                             <td>
-                                <a class="text-primary" asp-action="detail" asp-route-id="@item.ID">
+                                <a class="text-primary" href="/Admin/User/Detail?id=@item.ID">
                                     <i class="far fa-edit"></i>
                                     <span>Xem</span>
                                 </a>
-                                <a class="text-danger" asp-action="Delete" asp-route-id="@item.ID">
+                                <span class="cursor-pointer text-danger" onclick="clickDelete(@item.ID)">
                                     <i class="fas fa-trash-alt"></i>
                                     <span>Xóa</span>
-                                </a>
+                                </span>
                             </td>
                         </tr>
                     }
@@ -95,5 +100,237 @@
             </table>
         </div>
     </div>
+    <div class="row bg-white p-2">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <span>
+                Tổng số:&nbsp
+                <b>@(ViewData["total"] != null ? ViewData["total"] : 0)</b>
+            </span>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <nav class="d-flex justify-content-end">
+                @{
+                    int page = int.Parse(ViewData["page"].ToString());
+                    int totalPage = int.Parse(ViewData["totalPage"].ToString());
+                    if (page < totalPage)
+                    {
+                        <ul class="pagination m-0">
+                            @if (page > 1)
+                            {
+                                <li class="page-item" disable="true">
+                                    <a class="page-link" onclick="nextPage(@(page-1))" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                            }
+                            <li class="page-item">
+                                <a class="page-link" id="pageNumber">
+                                    @ViewData["page"]
+                                </a>
+                            </li>
+                            @if (page < totalPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" onclick="nextPage(@(page+1))" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                }
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- popup -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="exampleModalLabel">Thêm người dùng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="container" id="formAddUser">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <label asp-for="@Model.User.UserID" class="control-label">
+                                <span class="fw-bold">Mã người dùng</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input asp-for="@Model.User.UserID" name="UserID" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.FirstName" class="control-label">
+                                <span class="fw-bold">Họ</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input asp-for="@Model.User.FirstName" name="FirstName" class="form-control" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.LastName" class="control-label">
+                                <span v>Tên</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input asp-for="@Model.User.LastName" name="LastName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.BirthDay" class="control-label">
+                                <span class="fw-bold">Ngày sinh</span>
+                            </label>
+                            <input asp-for="@Model.User.BirthDay" name="BirthDay" class="form-control" type="date" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.Gender" class="control-label">
+                                <span class="fw-bold">Giới tính</span>
+                            </label>
+                            <select asp-for="@Model.User.Gender" name="Gender" class="form-control">
+                                <option selected value="0"></option>
+                                <option value="1">Nam</option>
+                                <option value="2">Nữ</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.Email" class="control-label">
+                                <span class="fw-bold">Email</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input asp-for="@Model.User.Email" name="Email" class="form-control" type="email" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.Phone" class="control-label">
+                                <span v>SĐT</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input asp-for="@Model.User.Phone" name="Phone" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.UserName" class="control-label">
+                                <span class="fw-bold">Tài khoản</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input asp-for="@Model.User.UserName" name="UserName" class="form-control" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label asp-for="@Model.User.Password" class="control-label">
+                                <span class="fw-bold">Mật khẩu</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input asp-for="@Model.User.Password" name="Password" class="form-control" type="password" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <label asp-for="@Model.User.Address" class="control-label">
+                                <span class="fw-bold">Địa chỉ</span>
+                                <span class="text-danger"></span>
+                            </label>
+                            <input asp-for="@Model.User.Address" name="Address" class="form-control" />
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary w-100px" onclick="insert()">Lưu</button>
+            </div>
+        </div>
+    </div>
 </div>
 
+<script>
+    function nextPage(page) {
+        debugger
+        var totalPage = @ViewData["totalPage"];
+        var crrPage = @ViewData["page"]
+        if (page <= 0 || page > totalPage)
+            return;
+        if (!location.href.includes("page="))
+            location.href += `?page=${page}`;
+        else
+            location.href = location.href.replace(`page=${crrPage}`, `page=${page}`);
+    }
+    function insert() {
+        var data = helper.form2Object($('#formAddUser').serializeArray());
+        if (!data.UserID) {
+            helper.showErr('Mã người dùng không được bỏ trống!');
+            return
+        }
+
+        if (!data.FirstName) {
+            helper.showErr('Họ tên người dùng không được bỏ trống!');
+            return
+        }
+
+        if (!data.LastName) {
+            helper.showErr('Họ tên người dùng không được bỏ trống!');
+            return;
+        }
+
+        if (!data.Email) {
+            helper.showErr('Địa chỉ Email không được bỏ trống!');
+            return
+        }
+
+        if (!data.Phone) {
+            helper.showErr('Số điện thoại không được bỏ trống!');
+            return
+        }
+
+        if (!data.UserName) {
+            helper.showErr('Tài khoản không được bỏ trống!');
+            return;
+        }
+
+        if (!data.Password) {
+            helper.showErr('Mật khẩu không được bỏ trống!');
+            return;
+        }
+        
+        $.ajax({
+            url: "/Admin/User/Create",
+            type: 'POST',
+            data: data,
+            success: function (reponse) {
+                if (reponse.isError) 
+                {
+                    helper.showErr(reponse.message)
+                }
+                else
+                    helper.showSuc('Thêm mới thành công!')
+            },
+            error: function (xhr, status, err) {
+                if (!reponse)
+                    helper.showErr('Phát sinh lỗi.!')
+            }
+        });
+    }
+    function clickDelete(id){
+        $.ajax({
+            url: "/Admin/User/Delete",
+            type: 'POST',
+            data: {id : id},
+            success: function (reponse) {
+                if (!reponse) 
+                    helper.showErr("Xóa không thành công.")
+                else
+                    helper.showSuc('Xóa thành công!')
+            }
+        });
+    }
+
+</script>
