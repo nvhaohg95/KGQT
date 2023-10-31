@@ -234,11 +234,14 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 col-sm-12 form-group">
-                            <label asp-for="@Model.User.Address" class="control-label">
-                                <span class="fw-bold">Địa chỉ</span>
-                                <span class="text-danger"></span>
+                            <label asp-for="@Model.User.RoleID" class="control-label">
+                                <span class="fw-bold">Loại tài khoản</span>
+                                <span class="text-danger">(*)</span>
                             </label>
-                            <input asp-for="@Model.User.Address" name="Address" class="form-control" />
+                            <select asp-for="@Model.User.RoleID" name="RoleID" class="form-control">
+                                <option selected value="0">Người dùng</option>
+                                <option value="1">Nhân viên</option>
+                            </select>
                         </div>
                     </div>
                     
