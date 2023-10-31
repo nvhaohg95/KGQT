@@ -382,3 +382,11 @@ tr {
 .copy-text.active:after {
     display: block;
 }
+.sb-nav-fixed #layoutSidenav #layoutSidenav_nav .sb-sidenav {
+    top: 70px;
+    padding-top: 70px;
+}
+
+.sb-nav-fixed #layoutSidenav #layoutSidenav_content {
+    top: 70px;
+}
