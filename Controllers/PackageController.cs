@@ -3,6 +3,7 @@ using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 
 namespace KGQT.Controllers
@@ -10,10 +11,12 @@ namespace KGQT.Controllers
     public class PackageController : Controller
     {
         #region View
-        public IActionResult Index()
+        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
             var username = HttpContext.Session.GetString("user");
             var model = BusinessBase.GetList<tbl_Package>(x => x.Username == username);
+            @ViewData["page"] = page;
+            @ViewData["status"] = status;
             return View(model);
         }
 

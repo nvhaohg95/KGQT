@@ -25,7 +25,6 @@ namespace KGQT.Controllers
         public ActionResult Index(int status,string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            @ViewData["page"] = page;
             var oData = ShippingOrder.GetList(status, ID, fromDate, toDate, page, pageSize, userLogin);
             var lstData = oData[0] as List<tbl_ShippingOrder>;
             var total = (decimal)oData[1];
@@ -33,6 +32,7 @@ namespace KGQT.Controllers
             @ViewData["page"] = page;
             @ViewData["total"] = total;
             @ViewData["totalPage"] = totalPage;
+            @ViewData["status"] = status;
             return View(lstData);
         }
 
