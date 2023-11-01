@@ -81,7 +81,7 @@
                         <input type="text" class="form-control" name="DeclarePrice" onkeyup="format(this)">
                     </div>
                 </div>
-                <div class="row justify-content-center">
+                <div class="col-md-12 col-sm-12 col-lg-12 text-center">
                     <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
                     <button type="button" class="btn btn-success" onclick="insert()">Lưu</button>
                 </div>
@@ -190,7 +190,7 @@
         $.ajax({
             url: '/admin/Package/Create',
             type: 'POST',
-            data: { form: data },
+            data: { sData:JSON.stringify(data) },
             // other AJAX options here
             success: function (result) {
                 if (!result)

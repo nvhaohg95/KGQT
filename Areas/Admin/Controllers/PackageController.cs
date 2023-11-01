@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader;
 using Fasterflect;
+using KGQT.Base;
 using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
@@ -71,12 +72,14 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<bool> EmportChinaWareHouseAsync()
+        public async Task<int> EmportChinaWareHouseAsync()
         {
             var file = Request.Form.Files[0];
+            if (file == null) return -1;
             List<ExcelModel> content = PJUtils.ReadExcelToJson(file);
+            Log.Info("Import", JsonConvert.SerializeObject(content));
             var userLogin = HttpContext.Session.GetString("user");
-            bool s = Packages.UpdateStatusCNWH(content, 3, userLogin);
+            int s = Packages.UpdateStatusCNWH(content, 3, userLogin);
             return s;
         }
 
@@ -84,7 +87,7 @@ namespace KGQT.Areas.Admin.Controllers
         public bool Update(tempPackage form)
         {
             var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
-            if(p == null) return false;
+            if (p == null) return false;
 
             if (form.Username != p.Username)
             {
@@ -97,7 +100,7 @@ namespace KGQT.Areas.Admin.Controllers
             p.PackageCode = form.PackageCode;
             p.MovingMethod = form.MovingMethod;
             p.IsAirPackage = form.IsAirPackage;
-            p.AirPackagePrice= form.AirPackagePrice;
+            p.AirPackagePrice = form.AirPackagePrice;
             p.IsInsurancePrice = form.IsInsurancePrice;
             p.Declaration = form.Declaration;
             p.DeclarePrice = form.DeclarePrice;
@@ -124,10 +127,10 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public JsonResult Create(tbl_Package form)
-        {
+        public JsonResult Create(string sData)
+            {
             var userLogin = HttpContext.Session.GetString("user");
-
+            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
             var user = Accounts.GetInfo(-1, form.Username);
             form.Status = 0;
             form.UID = user.ID;

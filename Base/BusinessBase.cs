@@ -1,7 +1,6 @@
 using KGQT.Base;
 using KGQT.Commons;
 using KGQT.Models;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Linq.Expressions;
 

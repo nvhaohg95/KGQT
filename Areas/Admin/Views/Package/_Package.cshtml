@@ -5,35 +5,21 @@
 {
     <div class="card shadow-0 border mb-4">
         <div class="card-body p-0 py-2">
-            <div class="row border-bottom p-2 mx-0 align-items-center">
-                <div class="col-md-12 col-sm-12 row">
-                    <div class="col-md-6 col-sm-12 row align-items-center">
-                        <span class="cursor-pointer">
-                            <a href="/admin/package/details?id=@Model.ID">@Model.PackageCode</a>
-                            <i class="fa fa-copy"></i>
-                        </span>
-                        -
-                        <span>Kho nhận: @PJUtils.WareHouse(Model.WareHouse)</span>
-                    </div>
-                    <div class="col-md-3 col-sm-12 row align-items-center">
-                        <span>
-                            Ngày lên đơn:  &nbsp;<strong class=" mb-0">
-                                @Model.CreatedDate.Value.ToString("dd/MM/yyyy")
-                            </strong>
-                        </span>
-                    </div>
-                    <div class="col-md-3 col-sm-12 row align-items-center">
-                        @if (Model.Status == 2)
-                        {
-                            <div class="col-md-6 col-sm-12 row justify-content-md-end">
-                                <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2" onclick="submitFn(@Model.ID)">Cập nhật</button>
-                            </div>
-                        }
-                        else
-                        {
-                            @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
-                        }
-                    </div>
+            <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                <div class="col-md-6 my-auto">
+                    <span class="cursor-pointer">
+                        <a href="/admin/package/details?id=@Model.ID">@Model.PackageCode</a>
+                        <i class="fa fa-copy"></i>
+                    </span>
+                    <span class="mx-2"> - </span>
+                    <span>Kho nhận: @PJUtils.WareHouse(Model.WareHouse)</span>
+                </div>
+                <div class="col-md-3 my-auto">
+                    <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(Model.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
+                </div>
+                <div class="col-md-3 text-right">
+                    @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
+                    <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2" onclick="submitFn(@Model.ID)">Cập nhật</button>
                 </div>
             </div>
             <div class="row">
@@ -116,12 +102,12 @@
                     </ul>
                 </div>
             </div>
-            <div class="row p-2 mx-0 my-2 border-top">
+            <div class="row m-0 pt-2 border-top">
                 <div class="col-md-3">
                     <div class="row">
-                        <label for="staticEmail" class="col-md-6 col-form-label">Cân nặng:</label>
-                        <div class="col-md-6">
-                            @if (Model.Status > 2)
+                        <div class="form-inline text-left">
+                            Cân nặng:  &nbsp;
+                            @if (Model.Status > 4)
                             {
                                 <p class="form-control mb-0 border-0">@string.Format("{0:N0}",Model.WeightPrice != null ? Model.WeightPrice : 0).Replace(",", ".")đ</p>
                             }
@@ -132,13 +118,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
-                    {
+                @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
+                {
+                    <div class="col-md-3">
+
                         <div class="row">
-                            <label for="staticEmail" class="col-md-6 col-form-label">Phí đóng gỗ:</label>
-                            <div class="col-md-6">
-                                @if (Model.Status > 2)
+                            <div class="form-inline text-left">
+                                Đóng gỗ:  &nbsp;
+                                @if (Model.Status > 4)
                                 {
                                     <p class="form-control mb-0 border-0">@(Model.Weight)kg - @string.Format("{0:N0}",Model.WoodPackagePrice != null ? Model.WoodPackagePrice : 0).Replace(",", ".")đ</p>
                                 }
@@ -148,15 +135,16 @@
                                 }
                             </div>
                         </div>
-                    }
-                </div>
-                <div class="col-md-3">
-                    @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
-                    {
+                    </div>
+                }
+                @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+                {
+                    <div class="col-md-3">
+
                         <div class="row">
-                            <label for="staticEmail" class="col-md-6 col-form-label"> Phí bọt khí:</label>
-                            <div class="col-md-6">
-                                @if (Model.Status > 2)
+                            <div class="form-inline text-left">
+                                Bọt khí:  &nbsp;
+                                @if (Model.Status > 4)
                                 {
                                     <p class="form-control mb-0 border-0"> @string.Format("{0:N0}",Model.AirPackagePrice != null ? Model.AirPackagePrice : 0).Replace(",", ".")đ</p>
                                 }
@@ -164,21 +152,22 @@
                                 {
                                     <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" />
                                 }
+
                             </div>
                         </div>
-                    }
-                </div>
-                <div class="col-md-3">
-                    @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
-                    {
+                    </div>
+                }
+                @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+                {
+                    <div class="col-md-3 align-self-center">
                         <div class="row">
-                            <label for="staticEmail" class="col-md-6 col-form-label"> Phí bảo hiểm:</label>
-                            <div class="col-md-6">
-                                <p class="form-control mb-0 border-0"> @string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")đ</p>
+                            <div class="form-inline text-left">
+                                Phí bảo hiểm:  &nbsp;
+                                <p class=" mb-0">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")đ</p>
                             </div>
                         </div>
-                    }
-                </div>
+                    </div>
+                }
             </div>
         </div>
     </div>

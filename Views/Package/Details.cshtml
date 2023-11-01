@@ -78,27 +78,27 @@
 
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí vận chuyển:</p>
-                            <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.WeightPrice != null ? Model.WeightPrice : 0).Replace(",", ".")</span></p>
+                            <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.WeightPrice != null ? Model.WeightPrice : 0).Replace(",", ".")</span></p>
                         </div>
                         @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
                         {
                             <div class="d-flex justify-content-between">
                                 <p class="text-muted mb-0">Phí đóng gỗ:</p>
-                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.WoodPackagePrice != null ? Model.WoodPackagePrice : 0).Replace(",", ".")</span></p>
+                                <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.WoodPackagePrice != null ? Model.WoodPackagePrice : 0).Replace(",", ".")</span></p>
                             </div>
                         }
                         @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
                         {
                             <div class="d-flex justify-content-between">
                                 <p class="text-muted mb-0">Phí bọt khí:</p>
-                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.AirPackagePrice != null ? Model.AirPackagePrice : 0).Replace(",", ".")</span></p>
+                                <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.AirPackagePrice != null ? Model.AirPackagePrice : 0).Replace(",", ".")</span></p>
                             </div>
                         }
                         @if (Model.IsInsurance != null && Model.IsInsurance == true)
                         {
                             <div class="d-flex justify-content-between">
                                 <p class="text-muted mb-0">Phí bảo hiểm:</p>
-                                <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")</span></p>
+                                <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")</span></p>
                             </div>
                         }
                         <!--End::Thông tin đơn-->

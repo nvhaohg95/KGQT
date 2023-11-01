@@ -1,5 +1,8 @@
-﻿using KGQT.Models;
+﻿using KGQT.Base;
+using KGQT.Models;
 using KGQT.Models.temp;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace KGQT.Business
 {
@@ -26,40 +29,45 @@ namespace KGQT.Business
 
 
         #region CRUD
-        public static bool UpdateStatusCNWH(List<ExcelModel> model, int status, string userName)
+        public static int UpdateStatusCNWH(List<ExcelModel> model, int status, string userName)
         {
-            if (model.Count == 0) return false;
+            Log.Info("model", JsonConvert.SerializeObject(model));
+
+            if (model.Count == 0) return -1;
             using (var db = new nhanshiphangContext())
             {
-                List<tbl_Package> lst = new List<tbl_Package>();
                 List<string> ids = model.Select(x => x.Key).ToList();
-                var query = db.tbl_Packages.Where(x => ids.Contains(x.PackageCode) && x.Exported == false);
-                lst = query.ToList();
-                foreach (var item in lst)
+                List<tbl_Package> lst = db.tbl_Packages.Where(x => ids.Contains(x.PackageCode) && x.Exported == false).ToList();
+                Log.Info("List<tbl_Package>", JsonConvert.SerializeObject(lst));
+                if (lst.Count > 0)
                 {
-                    item.Status = status;
-                    var dt = DateTime.Now;
-                    item.ExportedCNWH = dt;
-                    if (item.MovingMethod == 1)
+                    foreach (var item in lst)
                     {
-                        item.DateExpectation = dt.AddDays(6);
-                    }
+                        item.Status = status;
+                        var dt = DateTime.Now;
+                        item.ExportedCNWH = dt;
+                        if (item.MovingMethod == 1)
+                        {
+                            item.DateExpectation = dt.AddDays(6);
+                        }
 
-                    if (item.MovingMethod == 2)
-                    {
-                        item.DateExpectation = dt.AddDays(10);
-                    }
+                        if (item.MovingMethod == 2)
+                        {
+                            item.DateExpectation = dt.AddDays(10);
+                        }
 
-                    if (item.MovingMethod == 3)
-                    {
-                        item.DateExpectation = dt.AddDays(15);
+                        if (item.MovingMethod == 3)
+                        {
+                            item.DateExpectation = dt.AddDays(15);
+                        }
+                        item.Exported = true;
+                        item.ModifiedBy = userName;
+                        item.ModifiedDate = DateTime.Now;
+                        db.Update(item);
                     }
-                    item.Exported = true;
-                    item.ModifiedBy = userName;
-                    item.ModifiedDate = DateTime.Now;
-                    db.Update(item);
+                    return db.SaveChanges();
                 }
-                return db.SaveChanges() > 0;
+                return 0;
             }
         }
         #endregion

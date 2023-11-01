@@ -245,7 +245,7 @@
         $.ajax({
             url: '/admin/Package/Update',
             type: 'POST',
-            data: { form: data },
+            data: { sData: JSON.stringify(data) },
             // other AJAX options here
             success: function (result) {
                 if (!result)
