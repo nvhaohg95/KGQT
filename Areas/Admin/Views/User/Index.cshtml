@@ -1,4 +1,5 @@
-﻿@model KGQT.Models.temp.UserVM;
+﻿@using KGQT.Models.temp;
+@model KGQT.Models.temp.UserVM;
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -84,7 +85,7 @@
                             <td>
                                 <span>@item.Phone</span>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a class="text-primary" href="/Admin/User/Detail?id=@item.ID">
                                     <i class="far fa-edit"></i>
                                     <span>Xem</span>
@@ -112,7 +113,7 @@
                 @{
                     int page = int.Parse(ViewData["page"].ToString());
                     int totalPage = int.Parse(ViewData["totalPage"].ToString());
-                    if (page < totalPage)
+                    if (page <= totalPage)
                     {
                         <ul class="pagination m-0">
                             @if (page > 1)
@@ -156,14 +157,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="container" id="formAddUser">
+                <form class="container" id="formAddUser" autocomplete="off">
                     <div class="row">
                         <div class="col-md-12 col-sm-12 form-group">
                             <label asp-for="@Model.User.UserID" class="control-label">
-                                <span class="fw-bold">Mã người dùng</span>
+                                <span class="fw-bold">Mã định danh</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input asp-for="@Model.User.UserID" name="UserID" class="form-control" />
+                            <input asp-for="@Model.User.UserID" name="UserID" class="form-control" autocomplete="off" />
                         </div>
                     </div>
                     <div class="row">
@@ -172,14 +173,14 @@
                                 <span class="fw-bold">Họ</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input asp-for="@Model.User.FirstName" name="FirstName" class="form-control" />
+                            <input asp-for="@Model.User.FirstName" name="FirstName" class="form-control" autocomplete="off" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <label asp-for="@Model.User.LastName" class="control-label">
                                 <span v>Tên</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input asp-for="@Model.User.LastName" name="LastName" class="form-control" />
+                            <input asp-for="@Model.User.LastName" name="LastName" class="form-control" autocomplete="off" />
                         </div>
                     </div>
                     <div class="row">
@@ -187,7 +188,7 @@
                             <label asp-for="@Model.User.BirthDay" class="control-label">
                                 <span class="fw-bold">Ngày sinh</span>
                             </label>
-                            <input asp-for="@Model.User.BirthDay" name="BirthDay" class="form-control" type="date" />
+                            <input asp-for="@Model.User.BirthDay" name="BirthDay" class="form-control" type="date" autocomplete="off" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <label asp-for="@Model.User.Gender" class="control-label">
@@ -210,7 +211,7 @@
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <label asp-for="@Model.User.Phone" class="control-label">
-                                <span v>SĐT</span>
+                                <span class="fw-bold">SĐT</span>
                                 <span class="text-danger">(*)</span>
                             </label>
                             <input asp-for="@Model.User.Phone" name="Phone" class="form-control" />
@@ -222,14 +223,14 @@
                                 <span class="fw-bold">Tài khoản</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input asp-for="@Model.User.UserName" name="UserName" class="form-control" />
+                            <input asp-for="@Model.User.UserName" name="UserName" class="form-control" autocomplete="off" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <label asp-for="@Model.User.Password" class="control-label">
                                 <span class="fw-bold">Mật khẩu</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input asp-for="@Model.User.Password" name="Password" class="form-control" type="password" />
+                            <input asp-for="@Model.User.Password" name="Password" class="form-control" type="password" autocomplete="off" />
                         </div>
                     </div>
                     <div class="row">
@@ -238,10 +239,7 @@
                                 <span class="fw-bold">Loại tài khoản</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <select asp-for="@Model.User.RoleID" name="RoleID" class="form-control">
-                                <option selected value="0">Người dùng</option>
-                                <option value="1">Nhân viên</option>
-                            </select>
+                            @Html.DropDownListFor(model => model.User.RoleID,ViewBag.Roles as SelectList,new { @class="form-control", @name="RoleID"})
                         </div>
                     </div>
                     
@@ -269,6 +267,7 @@
     }
     function insert() {
         var data = helper.form2Object($('#formAddUser').serializeArray());
+        data["RoleID"] = data["User.RoleID"]
         if (!data.UserID) {
             helper.showErr('Mã người dùng không được bỏ trống!');
             return
@@ -303,7 +302,10 @@
             helper.showErr('Mật khẩu không được bỏ trống!');
             return;
         }
-        
+        if (!data.RoleID) {
+            helper.showErr('Loại tài khoản ko được bỏ trống!');
+            return;
+        }
         $.ajax({
             url: "/Admin/User/Create",
             type: 'POST',

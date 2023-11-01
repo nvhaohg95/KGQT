@@ -128,7 +128,6 @@ namespace KGQT.Business
                 reponse.IsError = true;
                 reponse.Message = "Mật khẩu không được bỏ trống!";
                 return reponse;
-
             }
             var regex = new Regex("^[a-zA-Z0-9 ]*$");
             var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
@@ -174,6 +173,7 @@ namespace KGQT.Business
                     Password = PJUtils.Encrypt("userpass", data.Password),
                     Email = data.Email,
                     Wallet = 0,
+                    RoleID = data.RoleID,
                     CreatedDate = DateTime.Now,
                     CreatedBy = createdBy
                 };
