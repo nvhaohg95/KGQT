@@ -27,37 +27,27 @@
             <input type="text" hidden value="@item.PackageCode" id="package-code">
             <div class="card shadow-0 border mb-4">
                 <div class="card-body p-0">
-                    <div class="row border-bottom p-2 mx-0 text-white" style="background-color: #00d0ffc9">
-                        <div class="col-md-12 col-sm-12 row">
-                            <div class="col-md-4 col-sm-12 ml-1 row align-items-center">
-                                <span class="cursor-pointer pr-2">
-                                    <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
-                                    @if (item.Status < 5)
-                                    {
-                                        <a href="/admin/package/edit?id=@item.ID" class="text-decoration-none">
-                                            <i class="fa fa-edit mx-2"></i>
-                                        </a>
-                                    }
-                                    <span class="copy-text mx-2" onclick="copy(this)">
-                                        <i class="fa fa-copy" ></i>
-                                    </span>
-                                </span>
-                                -
-                                <span class="pl-2">Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
-                            </div>
-                            <div class="col-md-4 ml-1 col-sm-12 row align-items-center">
-                                <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
-                            </div>
-                            <div class="col-md-4 col-sm-12 row justify-content-md-end">
-                                @if (item.Status < 2)
-                                {
-                                    <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
-                                }
-                                else
-                                {
-                                    @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
-                                }
-                            </div>
+                    <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                        <div class="col-md-6 my-auto">
+                            <span class="cursor-pointer">
+                                <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                                <i class="fa fa-copy"></i>
+                            </span>
+                            <span class="mx-2"> - </span>
+                            <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                        </div>
+                        <div class="col-md-3 my-auto">
+                            <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
+                        </div>
+                        <div class="col-md-3 text-right">
+                            @if (item.Status < 2)
+                            {
+                                <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
+                            }
+                            else
+                            {
+                                @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
+                            }
                         </div>
                     </div>
                     <div class="row">
@@ -73,7 +63,7 @@
                                         <div class="form-check-inline">
 
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                                                <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
                                             </label>
                                         </div>
                                     }
@@ -81,7 +71,7 @@
                                     {
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                                                <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
                                             </label>
                                         </div>
                                     }
@@ -89,7 +79,7 @@
                                     {
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                                                <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
                                             </label>
                                         </div>
                                     }
@@ -199,10 +189,24 @@
             contentType: false,
             processData: false,
             success: function (res) {
-                if (res)
-                    helper.showSuc('Cập nhật thành công', true);
-                else
-                    helper.showErr('Lỗi không đọc được thông tin file');
+                if (!res) {
+                    helper.showErr('Lỗi !!!!');
+                    return;
+                } else {
+                    if (res == -1) {
+                        helper.showErr('Lỗi không đọc được thông tin file');
+                        return;
+                    }
+                    if (res == 0) {
+                        helper.showErr('Không có kiện nào được cập nhật');
+                        return;
+                    }
+
+                    if (res == 1) {
+                        helper.showSuc('Cập nhật thành công', true);
+                        return;
+                    }
+                }
             }, error: function (e) {
                 console.log(e);
             }

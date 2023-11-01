@@ -1,8 +1,10 @@
-﻿using KGQT.Business;
+﻿using KGQT.Base;
+using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 
 namespace KGQT.Controllers
@@ -10,10 +12,12 @@ namespace KGQT.Controllers
     public class PackageController : Controller
     {
         #region View
-        public IActionResult Index()
+        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
             var username = HttpContext.Session.GetString("user");
             var model = BusinessBase.GetList<tbl_Package>(x => x.Username == username);
+            @ViewData["page"] = page;
+            @ViewData["status"] = status;
             return View(model);
         }
 
@@ -31,7 +35,7 @@ namespace KGQT.Controllers
 
         #region CRUD
         [HttpPost]
-        public JsonResult Create(tbl_Package form)
+        public bool Create(tbl_Package form)
         {
             var userLogin = HttpContext.Session.GetString("user");
             var user = Accounts.GetInfo(-1, userLogin);
@@ -55,7 +59,13 @@ namespace KGQT.Controllers
             {
                 BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
             }
-            return Json(s);
+            return s;
+        }
+
+        [HttpPost]
+        public bool Test()
+        {
+            return true;
         }
         #endregion
 

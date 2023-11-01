@@ -3,47 +3,114 @@
 @{
     ViewData["Title"] = "Danh sách ký gửi";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    int status = (int)ViewData["status"];
 }
 
 <ul id="breadcrumbs" class="mb-2">
     <li><a href="/">Trang chủ</a></li>
-    <li><a class="active">Danh sách ký gửi</a></li>
+    <li><a class="active">Danh sách ký gửi</a></li>
 </ul>
-
+<div class="row bg-white px-2 py-2">
+    <div class="col">
+        <div class="row">
+            <div class="col-12 d-flex">
+                <div class="py-2 mr-2" style="margin:auto 0">
+                    <p class="nav-tile fw-bold mb-0">Trạng thái:</p>
+                </div>
+                <div class="nav-sort">
+                    <ul class="nav">
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == -1 || status == 0 ? "bg-danger text-white" : "")" onclick="sort(-1)">Tất cả</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 1? "bg-danger text-white" : "")" onclick="sort(1)">Chưa xác nhận</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 2? "bg-danger text-white" : "")" onclick="sort(2)">Hàng về kho TQ</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 3? "bg-danger text-white" : "")" onclick="sort(3)">Đang trên đường về HCM</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 4? "bg-danger text-white" : "")" onclick="sort(4)">Hàng về tới HCM</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 5 ? "bg-danger text-white" : "")" onclick="sort(5)">Đã nhận hàng</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 9 ? "bg-danger text-white" : "")" onclick="sort(9)">Đã hủy</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 10 ? "bg-danger text-white" : "")" onclick="sort(10)">Thất lạc</a>
+                        </li>
+                        <li class="nav-item py-2 mr-4">
+                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 11 ? "bg-danger text-white" : "")" onclick="sort(11)">Không nhận được hàng</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row py-2">
+            <form class="col" id="myform" method="get">
+                <div class="row">
+                    <div class="col-5">
+                        <div>
+                            <span class="fw-bold" id="">Nhập mã đơn:</span>
+                        </div>
+                        <div>
+                            <input type="text" class="form-control w-100" id="ID" name="ID" placeholder="Nhập mã đơn hàng" />
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row col">
+                            <span class="fw-bold">Thời gian tạo:</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="date" class="form-control w-100" id="fromDate" name="fromDate" />
+                            </div>
+                            <div class="col-6">
+                                <input type="date" class="form-control w-100" id="toDate" name="toDate" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="card" style="border-radius: 10px;">
     <div class="card-body p-4">
         <!--Start::Thông tin kiện-->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
+            <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
             <a href="/package/create" class="btn-success btn-sm pointer-event">Thêm đơn</a>
         </div>
         @foreach (var item in Model)
         {
             <div class="card shadow-0 border mb-4">
                 <div class="card-body p-0 py-0">
-                    <div class="row border-bottom p-2 mx-0 bg-success text-white">
-                        <div class="col-md-12 col-sm-12 row">
-                            <div class="col-md-6 col-sm-12 ml-1 row align-items-center">
-                                <span class="cursor-pointer">
-                                    <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
-                                    <i class="fa fa-copy"></i>
-                                </span>
-                               <span class="mx-2"> - </span>
-                                <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
-                            </div>
-                            <div class="col-md-3 ml-1 col-sm-12 row align-items-center">
-                                <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
-                            </div>
-                            <div class="col-md-3 col-sm-12 row justify-content-md-end">
-                                @if (item.Status <= 1)
-                                {
-                                    <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
-                                }
-                                @if (item.Status <= 2)
-                                {
-                                    <button class="btn btn-sm px-0 btn-danger mb-sm-1" type="button">Hủy đơn</button>
-                                }
-                            </div>
+                    <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                        <div class="col-md-6 my-auto">
+                            <span class="cursor-pointer">
+                                <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                                <i class="fa fa-copy"></i>
+                            </span>
+                            <span class="mx-2"> - </span>
+                            <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                        </div>
+                        <div class="col-md-3 my-auto">
+                            <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
+                        </div>
+                        <div class="col-md-3 text-right">
+                            @if (item.Status <= 1)
+                            {
+                                <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
+                            }
+                            @if (item.Status <= 2)
+                            {
+                                <button class="btn btn-sm btn-danger mb-sm-1" type="button">Hủy đơn</button>
+                            }
                         </div>
                     </div>
                     <div class="row p-2 mx-0 my-2 border-bottom">
@@ -109,7 +176,7 @@
                                 <div class="form-check-inline">
 
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
                                     </label>
                                 </div>
                             }
@@ -117,7 +184,7 @@
                             {
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
                                     </label>
                                 </div>
                             }
@@ -125,7 +192,7 @@
                             {
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
                                     </label>
                                 </div>
                             }

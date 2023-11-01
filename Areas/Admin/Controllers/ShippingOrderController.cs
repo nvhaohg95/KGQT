@@ -51,7 +51,6 @@ namespace KGQT.Areas.Admin.Controllers
             var model = new OrderDetails();
             model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             model.Packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
-            model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
             return View(model);
         }
         #endregion
