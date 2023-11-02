@@ -12,15 +12,15 @@ namespace KGQT.Areas.Admin.Controllers
     public class UserController : Controller
     {
         #region Index
-        public IActionResult Index(int page, string searchText = "")
+        public IActionResult Index(string searchText ,int page ,int pageSize = 5)
         {
-            var oData = UserBusiness.GetListUser(searchText, page);
+            var oData = UserBusiness.GetPage(searchText, page, pageSize);
             var lst = oData[0] as List<AccountInfo>;
-            decimal total = (decimal)oData[1];
-            decimal totalPage = (decimal)oData[2];
-            ViewData["page"] = page != 0 ? page : 1;
-            ViewData["total"] = total;
-            ViewData["totalPage"] = totalPage;
+            int totalRecord = (int)oData[1];
+            int totalPage = (int)oData[2];
+            @ViewData["page"] = page;
+            @ViewData["totalRecord"] = totalRecord;
+            @ViewData["totalPage"] = totalPage;
             var userVM = new UserVM();
             userVM.ListUser = lst;
             userVM.User = new AccountInfo();

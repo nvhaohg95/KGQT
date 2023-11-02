@@ -9,14 +9,13 @@ namespace KGQT.Business
     public static class UserBusiness
     {
         #region Get List User
-        public static object[] GetListUser(string searchText = "", int page = 1, int pageSize = 5)
+        public static object[] GetPage(string searchText = "", int page = 1, int pageSize = 5)
         {
             using (var db = new nhanshiphangContext())
             {
                 var lst = new List<AccountInfo>();
-                decimal total = 0;
-                decimal totalPage = 0;
-                int pageNum = page > 1 ? page - 1 : 0;
+                int total = 0;
+                int totalPage = 0;
                 var query = from acc in db.tbl_Accounts.ToList().DefaultIfEmpty()
                             join accInfo in db.tbl_AccountInfos.ToList().DefaultIfEmpty()
                             on acc.ID equals accInfo.UID
@@ -37,11 +36,11 @@ namespace KGQT.Business
                     query = query.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText));
 
                 total = query.Count();
-                totalPage = Math.Ceiling(total / pageSize);
                 if (total > 0)
                 {
+                    totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                     lst = query.OrderByDescending(x => x.UserName)
-                        .Skip(pageNum * pageSize)
+                        .Skip((page - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
                 }

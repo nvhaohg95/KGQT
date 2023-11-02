@@ -40,12 +40,14 @@ function debounce(func, within = 300, timerId = null) {
     window.callOnceTimers[timerId] = timer;
 }
 
-
+// reset form
 function resetForm() {
     $(':input', '#myform')
         .not(':button, :submit, :reset, :hidden')
         .val('')
 }
+
+// serach from
 function sort(status) {
     var ID = $('#myform').find('input[name="ID"]').val();
     var fromDate = $('#myform').find('input[name="fromDate"]').val();
@@ -63,4 +65,5 @@ function sort(status) {
     window.history.replaceState(null, null, params);
     location.reload()
 }
+
 
