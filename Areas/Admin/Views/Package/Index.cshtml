@@ -182,23 +182,20 @@
         form.append("file", file[0]);
 
         $.ajax({
-            url: '/admin/package/EmportChinaWareHouse',
+            url: '/admin/package/ExportChinaWareHouse',
             type: 'POST',
             dataType: 'json',
             data: form,
             contentType: false,
             processData: false,
             success: function (res) {
-                if (!res) {
-                    helper.showErr('Lỗi !!!!');
-                    return;
-                } else {
+
                     if (res == -1) {
                         helper.showErr('Lỗi không đọc được thông tin file');
                         return;
                     }
                     if (res == 0) {
-                        helper.showErr('Không có kiện nào được cập nhật');
+                        helper.showWarn('Không có kiện nào khớp với file vừa chọn');
                         return;
                     }
 
@@ -206,7 +203,6 @@
                         helper.showSuc('Cập nhật thành công', true);
                         return;
                     }
-                }
             }, error: function (e) {
                 console.log(e);
             }

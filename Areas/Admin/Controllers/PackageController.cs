@@ -72,12 +72,16 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<int> EmportChinaWareHouseAsync()
+        public async Task<int> ExportChinaWareHouseAsync()
         {
             var file = Request.Form.Files[0];
-            if (file == null) return -1;
+            if (file == null)
+            {
+                Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
+                return -1;
+            }
             List<ExcelModel> content = PJUtils.ReadExcelToJson(file);
-            Log.Info("Import", JsonConvert.SerializeObject(content));
+            Log.Info("Cập nhật xuất kho China", "File content:" + JsonConvert.SerializeObject(content));
             var userLogin = HttpContext.Session.GetString("user");
             int s = Packages.UpdateStatusCNWH(content, 3, userLogin);
             return s;
@@ -128,7 +132,7 @@ namespace KGQT.Areas.Admin.Controllers
 
         [HttpPost]
         public JsonResult Create(string sData)
-            {
+        {
             var userLogin = HttpContext.Session.GetString("user");
             var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
             var user = Accounts.GetInfo(-1, form.Username);

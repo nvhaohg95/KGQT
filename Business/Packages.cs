@@ -31,14 +31,12 @@ namespace KGQT.Business
         #region CRUD
         public static int UpdateStatusCNWH(List<ExcelModel> model, int status, string userName)
         {
-            Log.Info("model", JsonConvert.SerializeObject(model));
-
             if (model.Count == 0) return -1;
             using (var db = new nhanshiphangContext())
             {
                 List<string> ids = model.Select(x => x.Key).ToList();
                 List<tbl_Package> lst = db.tbl_Packages.Where(x => ids.Contains(x.PackageCode) && x.Exported == false).ToList();
-                Log.Info("List<tbl_Package>", JsonConvert.SerializeObject(lst));
+                Log.Info("Cập nhật xuất kho China","Danh sách kiện khớp với file :"+ JsonConvert.SerializeObject(lst));
                 if (lst.Count > 0)
                 {
                     foreach (var item in lst)

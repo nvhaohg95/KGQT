@@ -9,14 +9,14 @@ namespace KGQT.Base
         {
             string path = Config.Settings.LogPath;
             string fileName = DateTime.Now.ToString("ddMMyyyy");
-            path = Path.Combine(path, fileName);
+            path = Path.Combine(path, fileName,type);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             path = path + "/log.txt";
             using (StreamWriter fs = new StreamWriter(path,true))
             {
-                fs.WriteLine($"[{type}]-[{DateTime.Now}] -{title} : {message}");
+                fs.WriteLine($"[{type}]-[{DateTime.Now}] - {title} : {message}");
             }
         }
 
