@@ -30,16 +30,17 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region View
         [HttpGet]
-        public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1)
+        public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1,int pageSize = 20)
         {
             using (var db = new nhanshiphangContext())
             {
-                var oData = ShippingOrder.GetList(status, ID, fromDate, toDate, page);
+                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize);
                 var lstData = oData[0] as List<tbl_ShippingOrder>;
-                decimal total = (decimal)oData[1];
-                decimal totalPage = (decimal)oData[2];
+                int totalRecord = (int)oData[1];
+                int totalPage = (int)oData[2];
+                @ViewData["status"] = status;
                 @ViewData["page"] = page;
-                @ViewData["total"] = total;
+                @ViewData["totalRecord"] = totalRecord;
                 @ViewData["totalPage"] = totalPage;
                 return View(lstData);
             }

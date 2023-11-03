@@ -12,18 +12,19 @@ namespace KGQT.Areas.Admin.Controllers
     public class UserController : Controller
     {
         #region Index
-        public IActionResult Index(int page, string searchText = "")
+        public IActionResult Index(string searchText ,int page ,int pageSize = 5)
         {
-            var oData = UserBusiness.GetListUser(searchText, page);
+            var oData = UserBusiness.GetPage(searchText, page, pageSize);
             var lst = oData[0] as List<AccountInfo>;
-            decimal total = (decimal)oData[1];
-            decimal totalPage = (decimal)oData[2];
-            ViewData["page"] = page != 0 ? page : 1;
-            ViewData["total"] = total;
-            ViewData["totalPage"] = totalPage;
+            int totalRecord = (int)oData[1];
+            int totalPage = (int)oData[2];
+            @ViewData["searchText"] = searchText;
+            @ViewData["page"] = page;
+            @ViewData["totalRecord"] = totalRecord;
+            @ViewData["totalPage"] = totalPage;
+            @ViewData["lstRoles"] = GetListUserRole();
             var userVM = new UserVM();
             userVM.ListUser = lst;
-            userVM.User = new AccountInfo();
             return View(userVM);
         }
 
@@ -34,6 +35,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Detail(int id)
         {
             var user = UserBusiness.GetUser(id);
+            @ViewData["lstRoles"] = GetListUserRole();
             return View(user);
         }
         #endregion
@@ -77,5 +79,31 @@ namespace KGQT.Areas.Admin.Controllers
             return new { error = true, mssg = "Không tìm thấy thông tin" };
         }
         #endregion
+
+
+        #region Get User Infor
+        public IActionResult Infor()
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var user = UserBusiness.GetUserInfor(userLogin);
+            return View(user);
+        }
+        #endregion
+
+        private List<UserRole> GetListUserRole()
+        {
+           List<UserRole> lst = new List<UserRole>();
+            using (var db = new nhanshiphangContext())
+            {
+                lst = db.tbl_Roles.OrderBy(x => x.RoleID).Select(x => new UserRole()
+                {
+                    RoleID = x.RoleID,
+                    RoleName = x.RoleName
+                }).ToList();
+            }
+            return lst;
+        }
     }
+
+    
 }

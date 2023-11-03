@@ -2,7 +2,6 @@
 using KGQT.Models;
 using KGQT.Models.temp;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace KGQT.Business
 {
@@ -14,16 +13,30 @@ namespace KGQT.Business
                 return db.tbl_Packages.Any(x => x.PackageCode == package);
         }
 
-        public static List<tbl_Package> GetPage(string username = "")
+        public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2)
         {
             using (var db = new nhanshiphangContext())
             {
+                var lstData = new List<tbl_Package>();
+                int count = 0;
+                int totalPage = 0;
                 IQueryable<tbl_Package> qry = db.tbl_Packages;
-                if (!string.IsNullOrEmpty(username))
+                if(status > 0)
+                    qry = qry.Where(x => x.Status == status);
+                if (!string.IsNullOrEmpty(ID))
+                    qry = qry.Where(x => x.PackageCode == ID);
+                if (fromDate != null)
+                    qry = qry.Where(x => x.CreatedDate >= fromDate);
+                if (toDate != null)
+                    qry = qry.Where(x => x.CreatedDate <= toDate);
+
+                count = qry.Count();
+                if(count > 0)
                 {
-                    qry = qry.Where(x => x.Username == username);
-                }
-                return qry.ToList();
+                    totalPage = Convert.ToInt32(Math.Ceiling((decimal)count / pageSize));
+                    lstData = qry.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                }    
+                return new object[] {lstData, count, totalPage};
             }
         }
 

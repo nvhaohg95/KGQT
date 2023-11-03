@@ -9,14 +9,13 @@ namespace KGQT.Business
     public static class UserBusiness
     {
         #region Get List User
-        public static object[] GetListUser(string searchText = "", int page = 1, int pageSize = 5)
+        public static object[] GetPage(string searchText = "", int page = 1, int pageSize = 5)
         {
             using (var db = new nhanshiphangContext())
             {
                 var lst = new List<AccountInfo>();
-                decimal total = 0;
-                decimal totalPage = 0;
-                int pageNum = page > 1 ? page - 1 : 0;
+                int total = 0;
+                int totalPage = 0;
                 var query = from acc in db.tbl_Accounts.ToList().DefaultIfEmpty()
                             join accInfo in db.tbl_AccountInfos.ToList().DefaultIfEmpty()
                             on acc.ID equals accInfo.UID
@@ -37,11 +36,11 @@ namespace KGQT.Business
                     query = query.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText));
 
                 total = query.Count();
-                totalPage = Math.Ceiling(total / pageSize);
                 if (total > 0)
                 {
+                    totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                     lst = query.OrderByDescending(x => x.UserName)
-                        .Skip(pageNum * pageSize)
+                        .Skip((page - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
                 }
@@ -80,6 +79,40 @@ namespace KGQT.Business
                 }
                 return user;
             }
+        }
+        #endregion
+
+        #region Get User Infor
+        public static AccountInfo GetUserInfor(string username)
+        {
+            var data = new AccountInfo();
+
+            using (var db = new nhanshiphangContext())
+            {
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == username);
+                if(acc != null)
+                {
+                    data.ID = acc.ID;
+                    data.UserID = acc.UserID;
+                    data.UserName = acc.Username;
+                    data.Password = PJUtils.Encrypt("userpass", acc.Password);
+                    data.RoleID = acc.RoleID;
+                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                    if(accInfo != null)
+                    {
+                        data.IMG = accInfo.IMG;
+                        data.BirthDay = accInfo.BirthDay;
+                        data.Gender = accInfo.Gender;
+                        data.Phone = accInfo.Phone;
+                        data.Email = accInfo.Email;
+                        data.Address = accInfo.Address;
+                        data.FirstName = accInfo.FirstName;
+                        data.LastName = accInfo.LastName;
+                        data.FullName = string.Concat(accInfo.FirstName, " ", accInfo.LastName);
+                    }
+                }
+            }
+            return data;
         }
         #endregion
 
@@ -128,7 +161,6 @@ namespace KGQT.Business
                 reponse.IsError = true;
                 reponse.Message = "Mật khẩu không được bỏ trống!";
                 return reponse;
-
             }
             var regex = new Regex("^[a-zA-Z0-9 ]*$");
             var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
@@ -174,6 +206,7 @@ namespace KGQT.Business
                     Password = PJUtils.Encrypt("userpass", data.Password),
                     Email = data.Email,
                     Wallet = 0,
+                    RoleID = data.RoleID,
                     CreatedDate = DateTime.Now,
                     CreatedBy = createdBy
                 };
@@ -233,5 +266,7 @@ namespace KGQT.Business
             }
         }
         #endregion
+
+
     }
 }

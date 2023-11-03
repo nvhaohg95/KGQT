@@ -148,7 +148,13 @@ html {
     right: 20px;
 }
 
+.nav-tile {
+    width: 100px;
+}
 
+.nav-sort {
+    width: calc(100%-100px);
+}
 
 /*custom*/
 

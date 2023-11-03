@@ -8,15 +8,14 @@ namespace KGQT.Business
     public static class ShippingOrder
     {
         #region Get List
-        public static object[] GetList(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, string? userName = "")
+        public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, string? userName = "")
         {
 
             using (var db = new nhanshiphangContext())
             {
                 var lstData = new List<tbl_ShippingOrder>();
-                decimal totalPage = 1;
-                decimal total = 0;
-                int pageNum = page - 1;
+                int totalPage = 1;
+                int total = 0;
                 IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders;
                 if (!string.IsNullOrEmpty(userName))
                     query = query.Where(x => x.Username == userName);
@@ -36,11 +35,10 @@ namespace KGQT.Business
                 total = query.Count();
                 if(total > 0)
                 {
-                    query = query.OrderByDescending(x => x.CreatedDate)
-                    .Skip(pageNum * pageSize)
-                    .Take(pageSize);
-                    lstData = query.ToList();
-                    totalPage = Math.Ceiling(total / pageSize);
+                    totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
+                    lstData = query.OrderByDescending(x => x.CreatedDate)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize).ToList();
                 }
                 
                 return new object[] { lstData , total , totalPage};

@@ -19,10 +19,17 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("admin")]
     public class PackageController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2)
         {
-            var model = Packages.GetPage();
-            return View(model);
+            var oData = Packages.GetPage(status,ID,fromDate,toDate,page,pageSize);
+            var lstPackage = oData[0];
+            int totalRecord = (int)oData[1];
+            int totalPage = (int)oData[2];
+            @ViewData["status"] = status;
+            @ViewData["page"] = page;
+            @ViewData["totalRecord"] = totalRecord;
+            @ViewData["totalPage"] = totalPage;
+            return View(lstPackage);
         }
 
         public IActionResult Create()
