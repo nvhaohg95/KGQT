@@ -390,3 +390,7 @@ tr {
 .sb-nav-fixed #layoutSidenav #layoutSidenav_content {
     top: 70px;
 }
+.icon-16{
+    width:16px;
+    height:16px;
+}
