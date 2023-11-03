@@ -5,6 +5,7 @@ using KGQT.Base;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using KGQT.Models.temp;
 
 namespace KGQT.Models
 {
@@ -372,5 +373,7 @@ namespace KGQT.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public DbSet<KGQT.Models.temp.AccountInfo>? AccountInfo { get; set; }
     }
 }

@@ -82,6 +82,40 @@ namespace KGQT.Business
         }
         #endregion
 
+        #region Get User Infor
+        public static AccountInfo GetUserInfor(string username)
+        {
+            var data = new AccountInfo();
+
+            using (var db = new nhanshiphangContext())
+            {
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == username);
+                if(acc != null)
+                {
+                    data.ID = acc.ID;
+                    data.UserID = acc.UserID;
+                    data.UserName = acc.Username;
+                    data.Password = PJUtils.Encrypt("userpass", acc.Password);
+                    data.RoleID = acc.RoleID;
+                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                    if(accInfo != null)
+                    {
+                        data.IMG = accInfo.IMG;
+                        data.BirthDay = accInfo.BirthDay;
+                        data.Gender = accInfo.Gender;
+                        data.Phone = accInfo.Phone;
+                        data.Email = accInfo.Email;
+                        data.Address = accInfo.Address;
+                        data.FirstName = accInfo.FirstName;
+                        data.LastName = accInfo.LastName;
+                        data.FullName = string.Concat(accInfo.FirstName, " ", accInfo.LastName);
+                    }
+                }
+            }
+            return data;
+        }
+        #endregion
+
         #region Add User
         public static DataReturnModel AddUser(AccountInfo data,string createdBy)
         {
@@ -232,5 +266,7 @@ namespace KGQT.Business
             }
         }
         #endregion
+
+
     }
 }

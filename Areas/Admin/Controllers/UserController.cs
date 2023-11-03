@@ -18,13 +18,13 @@ namespace KGQT.Areas.Admin.Controllers
             var lst = oData[0] as List<AccountInfo>;
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
+            @ViewData["searchText"] = searchText;
             @ViewData["page"] = page;
             @ViewData["totalRecord"] = totalRecord;
             @ViewData["totalPage"] = totalPage;
+            @ViewData["lstRoles"] = GetListUserRole();
             var userVM = new UserVM();
             userVM.ListUser = lst;
-            userVM.User = new AccountInfo();
-            GetDropdownUserRole();
             return View(userVM);
         }
 
@@ -35,8 +35,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Detail(int id)
         {
             var user = UserBusiness.GetUser(id);
-            GetDropdownUserRole();
-
+            @ViewData["lstRoles"] = GetListUserRole();
             return View(user);
         }
         #endregion
@@ -82,7 +81,16 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
 
-        private List<UserRole> GetDropdownUserRole(int? selectedValue = null)
+        #region Get User Infor
+        public IActionResult Infor()
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var user = UserBusiness.GetUserInfor(userLogin);
+            return View(user);
+        }
+        #endregion
+
+        private List<UserRole> GetListUserRole()
         {
            List<UserRole> lst = new List<UserRole>();
             using (var db = new nhanshiphangContext())
@@ -92,7 +100,6 @@ namespace KGQT.Areas.Admin.Controllers
                     RoleID = x.RoleID,
                     RoleName = x.RoleName
                 }).ToList();
-                ViewBag.Roles = new SelectList(lst, "RoleID", "RoleName", selectedValue);
             }
             return lst;
         }
