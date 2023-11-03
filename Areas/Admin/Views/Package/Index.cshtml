@@ -103,7 +103,7 @@
                             <div class="col-md-6 my-auto">
                                 <span class="cursor-pointer">
                                     <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
-                                    <i class="fa fa-copy"></i>
+                                    <i class="fa fa-copy btn-copy" data-value="@item.ID"></i>
                                 </span>
                                 <span class="mx-2"> - </span>
                                 <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
@@ -251,35 +251,35 @@
         </span>
     </div>
     <div class="col-11">
-    @if (totalPage > 1)
-    {
-        <nav class="d-flex justify-content-center">
-            <ul class="pagination m-0">
-                <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
-                    <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" id="pageNumber">
-                        @(page)
-                    </a>
-                </li>
+        @if (totalPage > 1)
+        {
+            <nav class="d-flex justify-content-center">
+                <ul class="pagination m-0">
+                    <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
+                        <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" id="pageNumber">
+                            @(page)
+                        </a>
+                    </li>
                     <li class="@(page >= totalPage ? "page-item disabled" : "page-item cursor-pointer")">
-                    <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                        <span class="sr-only">Next</span>
-                    </a>
-                </li>
+                        <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
 
-            </ul>
-        </nav>
-    }
+                </ul>
+            </nav>
+        }
     </div>
 
 </div>
-
+<div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>
 <script>
     function getPage(pageIndex) {
         var totalPage = @totalPage;
@@ -310,27 +310,32 @@
             processData: false,
             success: function (res) {
 
-                    if (res == -1) {
-                        helper.showErr('Lỗi không đọc được thông tin file');
-                        return;
-                    }
-                    if (res == 0) {
-                        helper.showWarn('Không có kiện nào khớp với file vừa chọn');
-                        return;
-                    }
+                if (res == -1) {
+                    helper.showErr('Lỗi không đọc được thông tin file');
+                    return;
+                }
+                if (res == 0) {
+                    helper.showWarn('Không có kiện nào khớp với file vừa chọn');
+                    return;
+                }
 
-                    if (res == 1) {
-                        helper.showSuc('Cập nhật thành công', true);
-                        return;
-                    }
+                if (res == 1) {
+                    helper.showSuc('Cập nhật thành công', true);
+                    return;
+                }
             }, error: function (e) {
                 console.log(e);
             }
         });
     }
 
-    function copy(e) {
-        var input = $('#package-code');
-        helper.copy(e, input);
-    }
+    $(document).ready(function () {
+        $('.btn-copy').off('click').on('click', function () {
+            let text = $(this).data('value');
+            $(this).select();
+            navigator.clipboard.writeText(text);
+            $('#copied-success').css('opacity', '1');
+            setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
+        })
+    })
 </script>
