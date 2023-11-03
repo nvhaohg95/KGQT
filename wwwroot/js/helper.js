@@ -21,6 +21,14 @@
         );
     },
 
+    showWarn: function (message, title = "Cảnh báo") {
+        return Swal.fire(
+            title,
+            message,
+            'warning'
+        );
+    },
+
     showSuc: function (message, refresh = true, title = "Thành công",) {
         return Swal.fire(
             title,

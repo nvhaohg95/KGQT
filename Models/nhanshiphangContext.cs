@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using KGQT.Base;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using KGQT.Models.temp;
 
 namespace KGQT.Models
 {
     public partial class nhanshiphangContext : DbContext
     {
         IConfiguration _configuration = new ConfigurationBuilder()
-                            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                            .Build();
+                           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                           .Build();
         public nhanshiphangContext()
         {
         }
@@ -373,7 +369,5 @@ namespace KGQT.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-        public DbSet<KGQT.Models.temp.AccountInfo>? AccountInfo { get; set; }
     }
 }
