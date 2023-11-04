@@ -8,6 +8,9 @@
     int page = (int)ViewData["page"];
     int totalRecord = (int)ViewData["totalRecord"];
     int totalPage = (int)ViewData["totalPage"];
+    var ID = ViewData["ID"];
+    var fromDate = ViewData["fromDate"];
+    var toDate = ViewData["toDate"];
 
 }
 <ul id="breadcrumbs" class="mb-2">
@@ -16,12 +19,12 @@
 </ul>
 
 <div class="row bg-white p-2">
-    <div class="col-12">
+    <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="row">
-            <div class="col-12">
+            <div class="col-lg-12 col-md-12 col-sm-12">
                 <p class="fw-bold mb-0">Trạng thái:</p>
             </div>
-            <div class="col-12">
+            <div class="col-lg-12 col-md-12 col-sm-12">
                 <ul class="nav">
                     <li class="nav-item py-2 mr-2">
                         <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == -1 || status == 0 ? "bg-danger text-white" : "")" onclick="sort(-1)">Tất cả</a>
@@ -54,26 +57,34 @@
             </div>
         </div>
         <div class="row py-2">
-            <form class="col" id="myform" method="get">
+            <form class="col-lg-12 col-md-12 col-sm-12" id="myform" method="get">
                 <div class="row">
-                    <div class="col-5">
-                        <div>
-                            <span class="fw-bold" id="">Nhập mã đơn:</span>
+                    <div class="col-4">
+                        <div class="row">
+                            <span class="fw-bold">Nhập mã đơn:</span>
                         </div>
-                        <div>
-                            <input type="text" class="form-control w-100" id="ID" name="ID" placeholder="Nhập mã đơn hàng" />
+                        <div class="row mt-2">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                @Html.TextBoxFor(model => ID,"",new { @type="search", @class="form-control", @placeholder="Nhập mã đơn hàng" })
+                            </div>
                         </div>
                     </div>
-                    <div class="col-7">
-                        <div class="row col">
+                    <div class="col-lg-8 col-md-12 col-sm-12">
+                        <div class="row">
                             <span class="fw-bold">Thời gian tạo:</span>
                         </div>
                         <div class="row">
-                            <div class="col-6">
-                                <input type="date" class="form-control w-100" id="fromDate" name="fromDate" />
+                            <div class="col-lg-5 col-md-12 col-sm-12 mt-2">
+                                @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
                             </div>
-                            <div class="col-6">
-                                <input type="date" class="form-control w-100" id="toDate" name="toDate" />
+                            <div class="col-lg-5 col-md-12 col-sm-12 mt-2">
+                                @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
+                            </div>
+                            <div class="col-lg-2 col-md-12 col-sm-12 mt-2 d-flex align-items-center justify-content-end">
+                                <a href="Index" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
+                                    <i class="fas fa-sync fa-xs"></i>
+                                </a>
+                                <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
                             </div>
                         </div>
                     </div>
@@ -83,11 +94,11 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-12 card card mx-2" style="border-radius: 10px;">
+    <div class="col-lg-12 col-md-12 col-sm-12 card" style="border-radius: 10px;">
         <div class="card-body p-4">
             <!--Start::Thông tin kiện-->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
+                <h3 class="lead fw-normal mb-0 text-primary text-uppercase">DANH SÁCH KIỆN</h3>
                 <div>
                     <input type="file" id="exportCNWH" hidden onchange="exportCNWH(this)" />
                     <button type="button" class="btn btn-danger btn-sm" onclick="importFile(2)">Cập nhật đơn xuất kho TQ</button>
@@ -286,7 +297,12 @@
         if (pageIndex <= 0 || pageIndex > totalPage)
             return;
         if (!location.href.includes("page="))
-            location.href += `?page=${pageIndex}`;
+        {
+            if (location.href.charAt(location.href.length - 1) == "=")
+                location.href += `&page=${pageIndex}`;
+            else
+                location.href += `?page=${pageIndex}`;
+        }
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
