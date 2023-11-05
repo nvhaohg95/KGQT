@@ -13,7 +13,7 @@ namespace KGQT.Business
                 return db.tbl_Packages.Any(x => x.PackageCode == package);
         }
 
-        public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2)
+        public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2,string userName = "")
         {
             using (var db = new nhanshiphangContext())
             {
@@ -24,12 +24,13 @@ namespace KGQT.Business
                 if (status > 0)
                     qry = qry.Where(x => x.Status == status);
                 if (!string.IsNullOrEmpty(ID))
-                    qry = qry.Where(x => x.PackageCode == ID);
+                    qry = qry.Where(x => x.PackageCode.Contains(ID));
                 if (fromDate != null)
                     qry = qry.Where(x => x.CreatedDate >= fromDate);
                 if (toDate != null)
                     qry = qry.Where(x => x.CreatedDate <= toDate);
-
+                if (!string.IsNullOrEmpty(userName))
+                    qry = qry.Where(x => x.Username == userName);
                 count = qry.Count();
                 if (count > 0)
                 {

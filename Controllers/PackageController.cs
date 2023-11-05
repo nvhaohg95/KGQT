@@ -12,13 +12,21 @@ namespace KGQT.Controllers
     public class PackageController : Controller
     {
         #region View
-        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
+        public IActionResult Index(int status, string ID, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 2)
         {
             var username = HttpContext.Session.GetString("user");
-            var model = BusinessBase.GetList<tbl_Package>(x => x.Username == username);
-            @ViewData["page"] = page;
-            @ViewData["status"] = status;
-            return View(model);
+            var oData = Packages.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
+            var lstPackage = oData[0];
+            int totalRecord = (int)oData[1];
+            int totalPage = (int)oData[2];
+            ViewData["status"] = status;
+            ViewData["page"] = page;
+            ViewData["totalRecord"] = totalRecord;
+            ViewData["totalPage"] = totalPage;
+            ViewData["ID"] = ID;
+            ViewData["fromDate"] = fromDate;
+            ViewData["toDate"] = toDate;
+            return View(lstPackage);
         }
 
         public IActionResult Create()

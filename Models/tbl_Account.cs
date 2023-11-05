@@ -6,7 +6,6 @@ namespace KGQT.Models
     public partial class tbl_Account
     {
         public int ID { get; set; }
-        public string? UserID { get; set; }
         public string? Username { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
@@ -48,5 +47,6 @@ namespace KGQT.Models
         public int? SaleID { get; set; }
         public string? SaleUsername { get; set; }
         public string? Token { get; set; }
+        public string? UserID { get; set; }
     }
 }

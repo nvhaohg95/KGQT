@@ -25,10 +25,13 @@ namespace KGQT.Areas.Admin.Controllers
             var lstPackage = oData[0];
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
-            @ViewData["status"] = status;
-            @ViewData["page"] = page;
-            @ViewData["totalRecord"] = totalRecord;
-            @ViewData["totalPage"] = totalPage;
+            ViewData["status"] = status;
+            ViewData["page"] = page;
+            ViewData["totalRecord"] = totalRecord;
+            ViewData["totalPage"] = totalPage;
+            ViewData["ID"] = ID;
+            ViewData["fromDate"] = fromDate;
+            ViewData["toDate"] = toDate;
             return View(lstPackage);
         }
 
