@@ -98,7 +98,7 @@
         $('#txtUserName').autocomplete({
             source: function (request, response) {
                 $.ajax({
-                    url: '/admin/Package/getaccount',
+                    url: '/admin/package/AutoComplete',
                     type: 'GET',
                     data: {
                         s: request.term

@@ -74,6 +74,8 @@ namespace KGQT.Areas.Admin.Controllers
             return PartialView("_Package", package);
         }
 
+
+      
         #region Function
         [HttpGet]
         public bool CheckPackage(string package)
@@ -82,15 +84,16 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<int> ExportChinaWareHouseAsync()
+        public async Task<int> ExportChinaWareHouseAsync(string sheet, IFormFile file)
         {
-            var file = Request.Form.Files[0];
             if (file == null)
             {
                 Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
                 return -1;
             }
-            List<ExcelModel> content = PJUtils.ReadExcelToJson(file);
+            List<ExcelModel> content = PJUtils.ReadExcelToJson(file,sheet);
+            if (content == null)
+                return -2;
             Log.Info("Cập nhật xuất kho China", "File content:" + JsonConvert.SerializeObject(content));
             var userLogin = HttpContext.Session.GetString("user");
             int s = Packages.UpdateStatusCNWH(content, 3, userLogin);
@@ -178,11 +181,12 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAccount(string s)
+        public IActionResult AutoComplete(string s)
         {
             var data = BusinessBase.GetList<tbl_Account>(x => x.Username.Contains(s)).ToList();
             return Json(data);
         }
+
 
         [HttpPost]
         public bool SubmitPack(int id, double weight, double woodPrice, double airPrice)
@@ -309,6 +313,20 @@ namespace KGQT.Areas.Admin.Controllers
                 }
             }
             return p;
+        }
+
+        [HttpPost]
+        public bool Cancel(int id)
+        {
+            var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            if (p != null)
+            {
+                p.Status = 9;
+                p.ModifiedBy = HttpContext.Session.GetString("user");
+                p.ModifiedDate = DateTime.Now;
+                return BusinessBase.Update(p);
+            }
+            return false;
         }
         #endregion
     }

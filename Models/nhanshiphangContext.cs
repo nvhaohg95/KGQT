@@ -38,6 +38,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_TradeHistory> tbl_TradeHistories { get; set; } = null!;
         public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
+        public virtual DbSet<tbl_Withdraw> tbl_Withdraws { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -351,6 +352,33 @@ namespace KGQT.Models
                 entity.Property(e => e.Status).HasComment("1. Chờ duyệt\r\n2. Đã duyệt");
 
                 entity.Property(e => e.Type).HasComment("1. User gửi yêu cầu\r\n2. Admin tạo");
+            });
+
+            modelBuilder.Entity<tbl_Withdraw>(entity =>
+            {
+                entity.ToTable("tbl_Withdraw");
+
+                entity.Property(e => e.AcceptDate).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(250);
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.DateSend).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedBy).HasMaxLength(250);
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PaymentMethod).HasComment("1. Tiền mặt\r\n2. Chuyển khoản\r\n");
+
+                entity.Property(e => e.Status).HasComment("1: Đang chờ\r\n2: Thành công\r\n3: Hủy");
+
+                entity.Property(e => e.TradeType).HasComment("1. Phí giao hàng\r\n2. Khác");
+
+                entity.Property(e => e.Type).HasComment("1. Nạp tiền\r\n2. Rút tiền\r\n3. Truy thu\r\n4. Truy thu khác\r\n5. Chi\r\n6. Nạp tiền tại kho\r\n7. Rút tiền tại kho\r\n8. Chi công ty\r\n9. Thu công ty");
+
+                entity.Property(e => e.Username).HasMaxLength(250);
             });
 
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>

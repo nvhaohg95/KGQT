@@ -221,7 +221,7 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
-        public static List<ExcelModel> ReadExcelToJson(IFormFile file)
+        public static List<ExcelModel> ReadExcelToJson(IFormFile file, string name)
         {
             string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
             string fileName = Guid.NewGuid().ToString() + file.Name;
@@ -239,10 +239,10 @@ namespace KGQT.Commons
             using (ExcelPackage pack = new ExcelPackage(FileStream))
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                ExcelWorksheet worksheet = pack.Workbook.Worksheets.LastOrDefault();
+                ExcelWorksheet worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
                 if (worksheet == null)
                 {
-
+                    return null;
                 }
                 else
                 {
