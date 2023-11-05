@@ -7,9 +7,6 @@ namespace KGQT.Models
 {
     public partial class nhanshiphangContext : DbContext
     {
-        IConfiguration _configuration = new ConfigurationBuilder()
-                           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                           .Build();
         public nhanshiphangContext()
         {
         }
@@ -41,6 +38,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_TradeHistory> tbl_TradeHistories { get; set; } = null!;
         public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
+        public virtual DbSet<tbl_Withdraw> tbl_Withdraws { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -48,7 +46,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("KGQT"));
+                optionsBuilder.UseSqlServer("Data Source=LAPTOP-1TA69L2B;Initial Catalog=nhanshiphang;Integrated Security=True;");
             }
         }
 
@@ -65,8 +63,6 @@ namespace KGQT.Models
                 entity.Property(e => e.RoleID).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
                 entity.Property(e => e.Status).HasComment("1. Not Active\r\n2. Active\r\n3. Banned");
-
-                entity.Property(e => e.UserID).HasMaxLength(50);
 
                 entity.Property(e => e.UserLevel).HasComment("1. thành viên\r\n2. dịch vụ order\r\n3. shop đồng\r\n4. shop bạc\r\n5. shop vàng\r\n6. shop kim cương\r\n7. shop vip 1\r\n8. shop vip 2\r\n9. shop vip 3\r\n10. shop vip 4");
             });
@@ -354,6 +350,33 @@ namespace KGQT.Models
                 entity.Property(e => e.Status).HasComment("1. Chờ duyệt\r\n2. Đã duyệt");
 
                 entity.Property(e => e.Type).HasComment("1. User gửi yêu cầu\r\n2. Admin tạo");
+            });
+
+            modelBuilder.Entity<tbl_Withdraw>(entity =>
+            {
+                entity.ToTable("tbl_Withdraw");
+
+                entity.Property(e => e.AcceptDate).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(250);
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.DateSend).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedBy).HasMaxLength(250);
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PaymentMethod).HasComment("1. Tiền mặt\r\n2. Chuyển khoản\r\n");
+
+                entity.Property(e => e.Status).HasComment("1: Đang chờ\r\n2: Thành công\r\n3: Hủy");
+
+                entity.Property(e => e.TradeType).HasComment("1. Phí giao hàng\r\n2. Khác");
+
+                entity.Property(e => e.Type).HasComment("1. Nạp tiền\r\n2. Rút tiền\r\n3. Truy thu\r\n4. Truy thu khác\r\n5. Chi\r\n6. Nạp tiền tại kho\r\n7. Rút tiền tại kho\r\n8. Chi công ty\r\n9. Thu công ty");
+
+                entity.Property(e => e.Username).HasMaxLength(250);
             });
 
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>
