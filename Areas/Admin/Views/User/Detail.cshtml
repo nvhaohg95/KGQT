@@ -1,8 +1,10 @@
-﻿@model KGQT.Models.temp.AccountInfo
+﻿@using KGQT.Models.temp;
+@model KGQT.Models.temp.AccountInfo
 
 @{
     ViewData["Title"] = "Detail";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var lstRoles = ViewData["lstRoles"] as List<UserRole>;
 }
 <ul id="breadcrumbs" class="mb-2">
     <li><a href="/admin/home">Trang chủ</a></li>
@@ -74,7 +76,15 @@
                 <div class="form-group row">
                     <label for="staticEmail" class="col-sm-2 col-form-label">Vai trò</label>
                     <div class="col-sm-10">
-                        @Html.DropDownListFor(model => model.RoleID,ViewBag.Roles as SelectList,new {@class="form-control",@name="RoleID"})
+                        <select name="RoleID" class="form-control">
+                            @if (lstRoles != null)
+                            {
+                                foreach (var item in lstRoles)
+                                {
+                                    <option value="@item.RoleID" selected="@(Model.RoleID == item.RoleID)">@item.RoleName</option>
+                                }
+                            }
+                        </select>
                     </div>
                 </div>
                 <div class="row justify-content-center">

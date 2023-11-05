@@ -3,8 +3,6 @@ using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -12,10 +10,10 @@ namespace KGQT.Areas.Admin.Controllers
     public class UserController : Controller
     {
         #region Index
-        public IActionResult Index(string searchText ,int page ,int pageSize = 5)
+        public IActionResult Index(string searchText ,int page = 1 ,int pageSize = 10)
         {
             var oData = UserBusiness.GetPage(searchText, page, pageSize);
-            var lst = oData[0] as List<AccountInfo>;
+            var lstData = oData[0] as List<AccountInfo>;
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
             @ViewData["searchText"] = searchText;
@@ -23,9 +21,7 @@ namespace KGQT.Areas.Admin.Controllers
             @ViewData["totalRecord"] = totalRecord;
             @ViewData["totalPage"] = totalPage;
             @ViewData["lstRoles"] = GetListUserRole();
-            var userVM = new UserVM();
-            userVM.ListUser = lst;
-            return View(userVM);
+            return View(lstData);
         }
 
         #endregion
@@ -35,7 +31,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Detail(int id)
         {
             var user = UserBusiness.GetUser(id);
-            @ViewData["lstRoles"] = GetListUserRole();
+            ViewData["lstRoles"] = GetListUserRole();
             return View(user);
         }
         #endregion
@@ -86,6 +82,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var userLogin = HttpContext.Session.GetString("user");
             var user = UserBusiness.GetUserInfor(userLogin);
+            @ViewData["lstRoles"] = GetListUserRole();
             return View(user);
         }
         #endregion

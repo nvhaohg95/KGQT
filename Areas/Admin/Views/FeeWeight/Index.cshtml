@@ -1,8 +1,14 @@
-﻿@model KGQT.Models.temp.FeeWeightVM
+﻿@model List<KGQT.Models.tbl_FeeWeight>;
+@using KGQT.Areas.Admin.Controllers;
 
 @{
     ViewData["Title"] = "Phí vận chuyển";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int page = (int)ViewData["page"];
+    int totalRecord = (int)ViewData["totalRecord"];
+    int totalPage = (int)ViewData["totalPage"];
+    var lstFeeWeightType = ViewData["lstFeeWeightType"] as List<FeeWeightType>;
+
 }
 
 <div class="container-fluid h-100">
@@ -19,7 +25,7 @@
                     <h5 class="text-danger text-uppercase m-0">PHÍ VẬN CHUYỂN</h5>
                 </div>
                 <div class="d-flex align-items-center justify-content-end py-2">
-                    <button class="btn btn-success w-100px" data-toggle="modal" data-target="#exampleModal">Thêm mới</button>
+                    <button class="btn btn-sm btn-success w-100px" data-toggle="modal" data-target="#exampleModal">Thêm mới</button>
                 </div>
             </div>
         </div>
@@ -28,31 +34,31 @@
                 <thead class="thead-light">
                     <tr class="font-weight-normal">
                         <th scope="col">STT</th>
-                        <th scope="col">Cân nặng</th>
-                        <th scope="col">Giá tiền</th>
-                        <th scope="col">Gói vận chuyển</th>
-                        <th scope="col">Thao tác</th>
+                        <th scope="col" class="text-center">Cân nặng</th>
+                        <th scope="col" class="text-center">Giá tiền</th>
+                        <th scope="col" class="text-center">Gói vận chuyển</th>
+                        <th scope="col" class="text-center">Thao tác</th>
 
                     </tr>
                 </thead>
                 <tbody class="h-100 overflow-auto">
                     @{
                         int i = 0;
-                        foreach (var item in Model.ListFeeWeight)
+                        foreach (var item in Model)
                         {
                             i = i + 1;
                             <tr>
                                 <td>
-                                    <span>@i</span>
+                                    <span>@(((page - 1) * 10) + i)</span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <span>@("Từ " + item.WeightFrom + " đến " + item.WeightTo + "kg")</span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @string.Format("{0:N0}",item.Amount != null ? item.Amount : 0).Replace(",", ".")
                                     <sup>đ&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</sup>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @switch (item.Type)
                                     {
                                         case 1:
@@ -72,10 +78,10 @@
                                             break;
                                     }
                                 </td>
-                                <td>
-                                    <a class="text-primary" asp-action="index" asp-route-id="@item.ID">
-                                        <i class="far fa-edit"></i>
-                                        <span>Xem</span>
+                                <td class="text-center">
+                                    <a class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)">
+                                        <i class="fas fa-trash-alt"></i>
+                                        <span>Xóa</span>
                                     </a>
                                 </td>
                             </tr>
@@ -89,44 +95,35 @@
         <div class="col-lg-6 col-md-6 col-sm-6">
             <span>
                 Tổng số:&nbsp
-                <b>@(ViewData["total"] != null ? ViewData["total"] : 0)</b>
+                <b>@totalRecord</b>
             </span>
         </div>
         <div class ="col-lg-6 col-md-6 col-sm-6">
-            <nav class="d-flex justify-content-end">
-                @{
-                    int page = int.Parse(ViewData["page"].ToString());
-                    int totalPage = int.Parse(ViewData["totalPage"].ToString());
-                    if(page < totalPage)
-                    {
-                        <ul class="pagination m-0">
-                            @if (page > 1)
-                            {
-                                <li class="page-item" disable="true">
-                                    <a class="page-link" onclick="getPage('Previous')" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                        <span class="sr-only">Previous</span>
-                                    </a>
-                                </li>
-                            }
-                            <li class="page-item">
-                                <a class="page-link" id="pageNumber">
-                                    @ViewData["page"]
-                                </a>
-                            </li>
-                            @if (page < totalPage)
-                            {
-                                <li class="page-item">
-                                    <a class="page-link" onclick="getPage('Next')" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                        <span class="sr-only">Next</span>
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    }
-                }
-            </nav>
+            @if (totalPage > 1)
+            {
+                <nav class="d-flex justify-content-center">
+                    <ul class="pagination m-0">
+                        <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
+                            <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" id="pageNumber">
+                                @(page)
+                            </a>
+                        </li>
+                        <li class="@(page >= totalPage ? "page-item disabled" : "page-item cursor-pointer")">
+                            <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            }
         </div>
     </div>
 
@@ -150,7 +147,16 @@
                                 <span class="fw-bold">Tuyến vận chuyển</span>
                                 <span class="text-danger">(*)</span>
                             </div>
-                            @Html.DropDownListFor(model => model.FeeWeight.Type,ViewBag.Type as SelectList,new { @class="form-control form-control-user border-none rounded",@name="Type" })
+
+                            <select name="Type" class="form-control">
+                                @if(lstFeeWeightType != null)
+                                {
+                                    foreach (var item in lstFeeWeightType)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                }
+                            </select>
                         </div>
                     </div>
                     <div class="row">
@@ -159,14 +165,14 @@
                                 <span class="fw-bold">Cân nặng từ</span>
                                 <span class="text-danger">(*)</span>
                             </div>
-                            @Html.TextBoxFor(model => model.FeeWeight.WeightFrom,new { @class="form-control form-control-user border-none rounded",@name="WeightFrom" , @autofocus="autofocus", @placeholder="Từ" })
+                            <input class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng đến</span>
                                 <span class="text-danger">(*)</span>
                             </div>
-                            @Html.TextBoxFor(model => model.FeeWeight.WeightTo,new { @class="form-control form-control-user border-none rounded",@name="WeightTo" , @autofocus="autofocus", @placeholder="Đến" })
+                            <input class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
                         </div>
                     </div>
                     <div class="row">
@@ -175,58 +181,88 @@
                                 <span class="fw-bold">Giá tiền</span>
                                 <span class="text-danger">(*)</span>
                             </div>
-                            @Html.TextBoxFor(model => model.FeeWeight.Amount,"",new { @class="form-control form-control-user border-none rounded",@name="Amount", @placeholder="Giá tiền" })
+                            <input class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" />
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary w-100px" onclick=" insert()">Lưu</button>
+                <button type="button" class="btn btn-primary w-100px" onclick="insert()">Thêm</button>
             </div>
         </div>
     </div>
 </div>
 <script>
+    // insert
     function insert() {
         var data = helper.form2Object($('#formFeeWeight').serializeArray());
-        if (!data["FeeWeight.WeightFrom"]) {
+        if (!data["WeightFrom"]) {
             helper.showErr('Vui lòng nhập cân nặng nhỏ nhất!');
             return
         }
 
-        if (!data["FeeWeight.WeightTo"]) {
+        if (!data["WeightTo"]) {
             helper.showErr('Vui lòng nhập cân nặng lớn nhất!');
             return
         }
 
-        if (!data["FeeWeight.Amount"]) {
+        if (!data["Amount"]) {
             helper.showErr('Vui lòng nhập giá tiền!');
             return;
-        }
-        var obj = {
-            Type:data["FeeWeight.Type"],
-            WeightFrom: data["FeeWeight.WeightFrom"],
-            WeightTo: data["FeeWeight.WeightTo"],
-            Amount: data["FeeWeight.Amount"]
         }
         $.ajax({
             url: "/Admin/FeeWeight/create",
             type: 'POST',
-            data: obj ,
+            data: data,
             // other AJAX options here
             success: function (reponse) {
                 if (!reponse)
                 {
-                    helper.showErr('Thêm mới không thành công!')
+                    helper.showErr('Thêm không thành công!')
                 }
                 else
-                    helper.showSuc('Thêm mới thành công!')
+                    helper.showSuc('Thêm thành công!')
             },
             error: function (xhr, status, err) {
-                if (!reponse)
                     helper.showErr('Phát sinh lỗi.!')
             }
         });
+    }
+    // delete
+    function clickDelete(id){
+        $.ajax({
+            url: "/Admin/FeeWeight/Delete",
+            type: 'POST',
+            data: { ID:id },
+            // other AJAX options here
+            success: function (reponse) 
+            {
+                if (!reponse) 
+                {
+                    helper.showErr('Xóa không thành công!')
+                }
+                else
+                    helper.showSuc('Xóa thành công!')
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Phát sinh lỗi.!')
+            }
+        });
+    }
+
+    // get page
+    function getPage(pageIndex) {
+        var totalPage = @totalPage;
+        if (pageIndex <= 0 || pageIndex > totalPage)
+            return;
+        if (!location.href.includes("page=")) {
+            if (location.href.charAt(location.href.length - 1) == "=")
+                location.href += `&page=${pageIndex}`;
+            else
+                location.href += `?page=${pageIndex}`;
+        }
+        else
+            location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
 </script>
