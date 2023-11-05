@@ -218,14 +218,14 @@
                             else
                             {
                                 <img class="img-profile rounded-circle"
-                                     src="~/img/undraw_profile.svg">
+                                 src="~/img/undraw_profile.svg">
                             }
                         }
                         else
                         {
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold"></span>
                             <img class="img-profile rounded-circle"
-                                 src="~/img/undraw_profile.svg">
+                             src="~/img/undraw_profile.svg">
                         }
                     }
 
@@ -233,14 +233,15 @@
                 <!-- Dropdown - User Information -->
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="userDropdown">
-                     @if(acc?.RoleID < 4){
-                    <a class="dropdown-item" href="/admin/home">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Đến trang quản trị
-                    </a>
-                    <div class="dropdown-divider"></div>
-                     }
-                    <a class="dropdown-item">
+                    @if (acc?.RoleID < 4)
+                    {
+                        <a class="dropdown-item" href="/admin/home">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Đến trang quản trị
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    }
+                    <a class="dropdown-item" href="/user/details?id=@acc?.ID">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         Thông tin tài khoản
                     </a>

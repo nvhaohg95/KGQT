@@ -19,7 +19,7 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("admin")]
     public class PackageController : Controller
     {
-        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2)
+        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var oData = Packages.GetPage(status,ID,fromDate,toDate,page,pageSize);
             var lstPackage = oData[0];
@@ -99,7 +99,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
             if (p == null) return false;
-
+            int oldStt = p.Status;
             if (form.Username != p.Username)
             {
                 var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == form.Username);
@@ -121,6 +121,15 @@ namespace KGQT.Areas.Admin.Controllers
             p.Status = form.Status;
             p.ModifiedBy = HttpContext.Session.GetString("user");
             p.ModifiedDate = DateTime.Now;
+            if(oldStt != p.Status)
+            {
+                if(p.Status == 3)
+                {
+                    p.ExportedCNWH = DateTime.Now;
+                    p.DateExpectation = Packages.UpdateExp(p);
+                    p.Exported = true;
+                }
+            }
             return BusinessBase.Update(p);
             //foreach(PropertyInfo propertyInfo in form.GetType().GetProperties())
             //{

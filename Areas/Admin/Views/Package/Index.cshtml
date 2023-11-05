@@ -103,7 +103,9 @@
                             <div class="col-md-6 my-auto">
                                 <span class="cursor-pointer">
                                     <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
-                                    <i class="fa fa-copy btn-copy" data-value="@item.ID"></i>
+                                    <span class=" btn-copy" data-value="@item.PackageCode">
+                                    <i class="fa fa-copy"></i>
+                                    </span>
                                 </span>
                                 <span class="mx-2"> - </span>
                                 <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
@@ -112,6 +114,7 @@
                                 <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                             </div>
                             <div class="col-md-3 text-right">
+                                <a href="/admin/package/edit?id=@item.ID" class="btn-sm btn bg-warning text-white mr-md-2">Chỉnh sửa</a>
                                 @if (item.Status < 2)
                                 {
                                     <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
