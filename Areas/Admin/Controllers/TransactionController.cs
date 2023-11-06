@@ -15,43 +15,6 @@ namespace KGQT.Areas.Admin.Controllers
             return View();
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
-        #endregion
-
-        #region Function
-        [HttpPost]
-        public IActionResult Insert(tbl_Withdraw model)
-        {
-            var user = Accounts.GetFullInfo(null, -1, model.Username);
-            if(user != null)
-            {
-                model.UID = user.ID; 
-                model.Fullname = user.FirstName + " " + user.LastName;
-            }
-            model.Status = 2;
-            model.Type = 1;
-            model.CreatedBy = HttpContext.Session.GetString("user");
-            model.CreatedDate = DateTime.Now;
-            var s = BusinessBase.Add(model);
-            if (s)
-            {
-                user.Wallet += model.Amount;
-              s = BusinessBase.Update(model);
-
-            }
-            return Ok(s);
-        }
-
-        [HttpGet]
-        public IActionResult AutoComplete(string s)
-        {
-            var data = BusinessBase.GetList<tbl_Account>(x => x.Username.Contains(s)).ToList();
-            return Json(data);
-        }
-
         #endregion
 
         #region Recharge

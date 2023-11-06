@@ -73,6 +73,15 @@
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
 
+            <!--Wallet-->
+            <li class="nav-item dropdown no-arrow mx-1">
+            @if(acc != null){
+                    <span class="nav-link dropdown-toggle text-dark font-weight-bold">Ví tiền: @string.Format("{0:N0}đ",acc.Wallet).Replace(",",".")</span>
+                }else
+                {
+                    <span >Ví tiền: 0đ</span>
+                }
+            </li>
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"

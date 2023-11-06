@@ -201,6 +201,27 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
+        
+        public static string WithDrawStatusHtml(int status)
+        {
+            string sReturn = "";
+            switch (status)
+            {
+                case 1:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning\">Nạp tiền</span>";
+                    break;
+                case 2:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success\">Rút tiền</span>";
+                    break;
+                case 3:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";
+                    break;
+                case 4:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info\">Khác</span>";
+                    break;
+            }
+            return sReturn;
+        }
         public static string ShippingOrderStatus(int status)
         {
             string sReturn = "";

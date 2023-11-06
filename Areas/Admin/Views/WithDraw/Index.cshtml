@@ -1,0 +1,260 @@
+﻿@using KGQT.Models;
+@using KGQT.Commons;
+@model List<KGQT.Models.tbl_Withdraw>;
+@{
+    ViewData["Title"] = "Nạp tiền";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int status = (int)ViewData["status"];
+    var fromDate = ViewData["fromDate"];
+    var toDate = ViewData["toDate"];
+    int page = (int)ViewData["page"];
+    int totalRecord = (int)ViewData["totalRecord"];
+    int totalPage = (int)ViewData["totalPage"];
+}
+
+@{
+    string getUserName(int uID)
+    {
+        string userName = uID + ""; ;
+        using (var db = new nhanshiphangContext())
+        {
+            var user = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == uID);
+            if (user != null)
+            {
+                userName = string.Concat(user.FirstName, " ", user.LastName);
+            }
+        }
+        return userName;
+    }
+}
+<div class="row mb-2">
+    <ul id="breadcrumbs">
+        <li><a>Quản lý giao dịch</a></li>
+        <li><a>Nạp tiền</a></li>
+    </ul>
+</div>
+<div class="row bg-white p-2">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <p class="fw-bold mb-0">Trạng thái:</p>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <ul class="nav">
+                    <li class="nav-item py-2 mr-2">
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 0 ? "bg-danger text-white" : "")" onclick="clickStatus(0)">Tất cả</a>
+                    </li>
+                    <li class="nav-item py-2 mr-2">
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 1? "bg-danger text-white" : "")" onclick="clickStatus(1)">Đã duyệt</a>
+                    </li>
+                    <li class="nav-item py-2 mr-2">
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 2? "bg-danger text-white" : "")" onclick="clickStatus(2)">Chờ duyệt</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row py-2">
+            <form class="col-lg-12 col-md-12 col-sm-12" id="myform" method="get">
+                <div class="row">
+                    <div class="col-lg-3 col-md-12 col-sm-12 mt-2">
+                        <p class="fw-bold m-0">Từ ngày:</p>
+                        @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
+                    </div>
+                    <div class="col-lg-3 col-md-12 col-sm-12 mt-2">
+                        <p class="fw-bold m-0">Đến ngày:</p>
+                        @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
+                    </div>
+                    <div class="col-lg-2 col-md-12 col-sm-12 mt-2 d-flex align-items-end">
+                        <div class="d-flex align-items-center">
+                            <a href="Recharge" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
+                                <i class="fas fa-sync fa-xs"></i>
+                            </a>
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--Start: Danh sách giao dịch-->
+<div class="row bg-white p-2">
+    <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 text-left">
+                <h5 class="text-danger text-uppercase fw-bold">NẠP TIỀN</h5>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                <a class="btn btn-sm btn-success w-100px" href="/admin/withdraw/create"><i class="fas fa-plus"></i>&nbspThêm</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
+        <table class="table table-border">
+            <thead class="thead-light">
+                <tr>
+                    <td class="text-center"><b>Mã GD</b></td>
+                    <td class="text-center"><b>Số tiền</b></td>
+                    <td class="text-center"><b>Loại GD</b></td>
+                    <td class="text-center"><b>Ngày tạo</b></td>
+                    <td class="text-center"><b>Người tạo</b></td>
+                    <td class="text-center"><b>Trạng thái</b></td>
+                    <td class="text-center"><b>Thao tác</b></td>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center">@item.ID</td>
+                        <td class="text-center">
+                            @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
+                        </td>
+                        <td class="text-center">
+                            @Html.Raw(PJUtils.WithDrawStatusHtml(item.Type.Value))
+                        </td>
+                        <td class="text-center">
+                            @{
+                                if (item.CreatedDate != null)
+                                {
+                                    <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                    <span>dd/mm/yyy</span>
+                                }
+                            }
+                        </td>
+                        <td class="text-center">
+                            @{
+                                if (item.Type == 1)
+                                {
+                                    <span>Khách gửi yêu cầu</span>
+                                }
+                                else
+                                {
+                                    <span>Admin tạo</span>
+                                }
+                            }
+                        </td>
+                        <td class="text-center">
+                            @{
+                                if (item.Status == 1)
+                                {
+                                    <span class="badge badge-pill badge-danger p-2">Chờ duyệt</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-pill badge-success p-2">Đã duyệt</span>
+                                }
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-secondary" href="/Admin/Transaction/Detail?id=@item.ID">
+                                <i class="far fa-edit"></i>
+                                <span>Xem</span>
+                            </a>
+                            @if (item.Status == 1)
+                            {
+                                <a class="btn btn-sm btn-success" onclick="clickApproval(@item.ID)">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span>Duyệt</span>
+                                </a>
+                            }
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--Start: Phân trang-->
+<div class="row p-2">
+    <div class="col-1">
+        <span>
+            Tổng số:&nbsp
+            <b>@totalRecord</b>
+        </span>
+    </div>
+    <div class="col-11">
+        @if (totalPage > 1)
+        {
+            <nav class="d-flex justify-content-center">
+                <ul class="pagination m-0">
+                    <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
+                        <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" id="pageNumber">
+                            @(page)
+                        </a>
+                    </li>
+                    <li class="@(page >= totalPage ? "page-item disabled" : "page-item cursor-pointer")">
+                        <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        }
+    </div>
+
+</div>
+<script>
+    // get page
+    function getPage(pageIndex) {
+        var totalPage = @totalPage;
+        if (pageIndex <= 0 || pageIndex > totalPage)
+            return;
+        if (!location.href.includes("page=")) {
+            if (location.href.charAt(location.href.length - 1) == "=")
+                location.href += `&page=${pageIndex}`;
+            else
+                location.href += `?page=${pageIndex}`;
+        }
+        else
+            location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
+    }
+    // serach by status
+    function clickStatus(status) {
+        var fromDate = $('#myform').find('input[name="fromDate"]').val();
+        var toDate = $('#myform').find('input[name="toDate"]').val();
+        var params = `?status=${status}`;
+        if (fromDate != "") {
+            params += `&fromDate=${fromDate}`;
+        }
+        if (toDate != "") {
+            params += `&toDate=${toDate}`;
+        }
+        window.history.replaceState(null, null, params);
+        location.reload()
+    }
+    // approval
+    function clickApproval(id) {
+        $.ajax({
+            url: '/Admin/Transaction/Recharge',
+            type: "POST",
+            data: { ID: id },
+            success: function (reponse) {
+                if (reponse.isError) {
+                    helper.showErr(reponse.message ?? "Duyệt không thành công!")
+                }
+                else
+                    helper.showSuc('Duyệt thành công.')
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Phát sinh lỗi.!')
+            }
+        });
+    }
+
+
+</script>

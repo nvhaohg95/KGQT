@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Nạp tiền";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var user = ViewData["user"];
 }
 
 <ul id="breadcrumbs" class="mb-2">
@@ -19,7 +20,7 @@
             <form method="post" action="Create" id="frmShip">
                 <div class="form-group mb-4">
                     <label class="required" for="txtShipID">Tài khoản khách hàng:</label>
-                    <input type="text" class="form-control" id="txtUserName" name="Username" placeholder="Nhập tài khoản khách hàng">
+                    <input type="text" class="form-control" id="txtUserName" name="Username" value="@user" placeholder="Nhập tài khoản khách hàng">
                 </div>
                 <div class="form-group mb-4">
                     <label class="required" for="sltPaymentMethod">Ngân hàng:</label>

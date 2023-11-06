@@ -90,6 +90,7 @@ namespace KGQT.Models.temp
         public DateTime? BirthDay { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+        public double Wallet { get; set; }
 
 
     }
