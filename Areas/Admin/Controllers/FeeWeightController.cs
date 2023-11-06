@@ -14,31 +14,22 @@ namespace KGQT.Areas.Admin.Controllers
     {
         #region Index
         [HttpGet]
-        public IActionResult Index(int page)
+        public IActionResult Index(int page = 1,int pageSize = 10)
         {
-            var viewModel = new FeeWeightVM();
-            var oData = FeeWeight.GetList();
-            viewModel.ListFeeWeight = oData[0] as List<tbl_FeeWeight>;
-            decimal total = (decimal)oData[1];
-            decimal totalPage = (decimal)oData[2];
-            @ViewData["page"] = page;
-            @ViewData["total"] = total;
-            @ViewData["totalPage"] = totalPage;
-            viewModel.FeeWeight = new tbl_FeeWeight();
-            GetDropdownFeeWeightType();
-            return View(viewModel);
+            var oData = FeeWeightBusiness.GetPage(page, pageSize);
+            var lstData = oData[0] as List<tbl_FeeWeight>;
+            int totalRecord = (int)oData[1];
+            int totalPage = (int)oData[2];
+            ViewData["page"] = page;
+            ViewData["totalRecord"] = totalRecord;
+            ViewData["totalPage"] = totalPage;
+            ViewData["lstFeeWeightType"] = GetListFeeWeigthType();
+            return View(lstData);
         }
         #endregion
 
 
         #region Create
-        [HttpGet]
-        public IActionResult Create() {
-
-            GetDropdownFeeWeightType();
-            return View();
-        }
-
         [HttpPost]
         public JsonResult Create(tbl_FeeWeight form)
         {
@@ -64,12 +55,20 @@ namespace KGQT.Areas.Admin.Controllers
             {
                 BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo bảng giá", 0, user.Username);
             }
-            GetDropdownFeeWeightType();
             return Json(isSave);
         }
         #endregion
 
-        private List<FeeWeightType> GetDropdownFeeWeightType(int? selectedValue = null)
+
+        #region Delete
+        [HttpPost]
+        public bool Delete(int id) 
+        {
+            var result = FeeWeightBusiness.Delete(id);
+            return result;
+        }
+        #endregion
+        private List<FeeWeightType> GetListFeeWeigthType()
         {
             var lst = new List<FeeWeightType>();
             var item1 = new FeeWeightType()
@@ -102,7 +101,6 @@ namespace KGQT.Areas.Admin.Controllers
             lst.Add(item3);
             lst.Add(item4);
             lst.Add(item5);
-            ViewBag.Type = new SelectList(lst, "ID", "Name", selectedValue);
             return lst;
         }
     }

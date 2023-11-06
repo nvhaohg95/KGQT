@@ -1,5 +1,5 @@
 ﻿@using KGQT.Models.temp;
-@model KGQT.Models.temp.UserVM;
+@model List<KGQT.Models.temp.AccountInfo>;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Danh sách người dùng";
@@ -68,7 +68,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.ListUser)
+                @foreach (var item in Model)
                 {
                     <tr>
                         <td>
@@ -90,14 +90,14 @@
                             <span>@item.Phone</span>
                         </td>
                         <td class="text-center">
-                            <a class="text-primary" href="/Admin/withdraw/create?user=@item.UserName">
+                            <a class="btn btn-sm btn-primary href="/Admin/withdraw/create?user=@item.UserName">
                                 <i class="far fa-wallet"></i>
                                 <span>Nạp tiền</span>
-                            </a>    <a class="text-primary" href="/Admin/User/Detail?id=@item.ID">
+                            </a>    <a class="btn btn-sm btn-secondary href="/Admin/User/Detail?id=@item.ID">
                                 <i class="far fa-edit"></i>
                                 <span>Xem</span>
                             </a>
-                            <span class="cursor-pointer text-danger" onclick="clickDelete(@item.ID)">
+                            <span class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)">
                                 <i class="fas fa-trash-alt"></i>
                                 <span>Xóa</span>
                             </span>
@@ -141,7 +141,6 @@
                 </ul>
             </nav>
         }
-
     </div>
 </div>
 <!-- popup -->
@@ -335,9 +334,14 @@
         var totalPage = @totalPage;
         if (pageIndex <= 0 || pageIndex > totalPage)
             return;
-        if (!location.href.includes("page="))
-            location.href += `?page=${pageIndex}`;
+        if (!location.href.includes("page=")) {
+            if (location.href.charAt(location.href.length - 1) == "=")
+                location.href += `&page=${pageIndex}`;
+            else
+                location.href += `?page=${pageIndex}`;
+        }
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
+
     }
 </script>

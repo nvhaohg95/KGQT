@@ -3,12 +3,62 @@
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
-
+<style>
+    .card {
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 10px 10px 10px #bebebe, -15px -15px 15px #ffffff;
+    }
+</style>
 <ul id="breadcrumbs" class="mb-2">
     <li><a>Trang chủ</a></li>
 </ul>
-<div class="container-fluid">
-    <div class="row">
+<div class="row bg-white">
+    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-primary">Đơn hàng</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="card-link">Xem chi tiết</a>
+            </div>
+        </div>
     </div>
+    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-danger">Ví cá nhân</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="card-link">Xem chi tiết</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-dark">Thông tin tài khoản</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="card-link">Xem chi tiết</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-warning">Thông báo</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="card-link">Xem chi tiết</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-infor">Liên hệ</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="card-link">Xem chi tiết</a>
+            </div>
+        </div>
+    </div>
+
 </div>
 
