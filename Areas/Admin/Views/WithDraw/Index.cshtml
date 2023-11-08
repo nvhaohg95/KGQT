@@ -1,5 +1,6 @@
 ﻿@using KGQT.Models;
-@model List<KGQT.Models.tbl_Transaction>;
+@using KGQT.Commons;
+@model List<KGQT.Models.tbl_Withdraw>;
 @{
     ViewData["Title"] = "Nạp tiền";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -12,7 +13,7 @@
 }
 
 @{
-    string  getUserName(int uID)
+    string getUserName(int uID)
     {
         string userName = uID + ""; ;
         using (var db = new nhanshiphangContext())
@@ -84,7 +85,7 @@
                 <h5 class="text-danger text-uppercase fw-bold">NẠP TIỀN</h5>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 text-right">
-                <a class="btn btn-sm btn-success w-100px" href="/admin/Transaction/create"><i class="fas fa-plus"></i>&nbspThêm</a>
+                <a class="btn btn-sm btn-success w-100px" href="/admin/withdraw/create"><i class="fas fa-plus"></i>&nbspThêm</a>
             </div>
         </div>
     </div>
@@ -93,6 +94,7 @@
             <thead class="thead-light">
                 <tr>
                     <td class="text-center"><b>Mã GD</b></td>
+                    <td class="text-center"><b>Số tiền</b></td>
                     <td class="text-center"><b>Loại GD</b></td>
                     <td class="text-center"><b>Ngày tạo</b></td>
                     <td class="text-center"><b>Người tạo</b></td>
@@ -105,18 +107,12 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.ID</td>
+                        <td class="text-center">@item.ID</td>
                         <td class="text-center">
-                            @{
-                                if (item.INOUT == 1)
-                                {
-                                    <span class="badge badge-pill badge-primary p-2">Lệnh nạp tiền</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-pill badge-warning p-2">Lệnh rút tiền</span>
-                                }
-                            }
+                            @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
+                        </td>
+                        <td class="text-center">
+                            @Html.Raw(PJUtils.WithDrawStatusHtml(item.Type.Value))
                         </td>
                         <td class="text-center">
                             @{
@@ -242,15 +238,14 @@
         location.reload()
     }
     // approval
-    function clickApproval(id){
+    function clickApproval(id) {
         $.ajax({
             url: '/Admin/Transaction/Recharge',
             type: "POST",
-            data: {ID : id},
+            data: { ID: id },
             success: function (reponse) {
-                if (reponse.isError) 
-                {
-                    helper.showErr(reponse.message ?? "Duyệt không thành công!" )
+                if (reponse.isError) {
+                    helper.showErr(reponse.message ?? "Duyệt không thành công!")
                 }
                 else
                     helper.showSuc('Duyệt thành công.')
@@ -260,5 +255,6 @@
             }
         });
     }
+
 
 </script>

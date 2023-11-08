@@ -1,4 +1,6 @@
 ﻿using KGQT.Business;
+using KGQT.Business.Base;
+using KGQT.Models;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 
@@ -19,10 +21,13 @@ namespace KGQT.Controllers
         }
         #endregion
 
-        public ActionResult Index()
+        public ActionResult Details(int id)
         {
-            return View();  
+            var acc = Accounts.GetInfo(id,"");
+            return View(acc);  
         }
+
+
 
         #region LIST ORDER
 

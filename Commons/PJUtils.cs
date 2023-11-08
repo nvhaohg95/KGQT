@@ -201,6 +201,27 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
+        
+        public static string WithDrawStatusHtml(int status)
+        {
+            string sReturn = "";
+            switch (status)
+            {
+                case 1:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning\">Nạp tiền</span>";
+                    break;
+                case 2:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success\">Rút tiền</span>";
+                    break;
+                case 3:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";
+                    break;
+                case 4:
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info\">Khác</span>";
+                    break;
+            }
+            return sReturn;
+        }
         public static string ShippingOrderStatus(int status)
         {
             string sReturn = "";
@@ -221,7 +242,7 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
-        public static List<ExcelModel> ReadExcelToJson(IFormFile file)
+        public static List<ExcelModel> ReadExcelToJson(IFormFile file, string name)
         {
             string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
             string fileName = Guid.NewGuid().ToString() + file.Name;
@@ -239,10 +260,10 @@ namespace KGQT.Commons
             using (ExcelPackage pack = new ExcelPackage(FileStream))
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                ExcelWorksheet worksheet = pack.Workbook.Worksheets.LastOrDefault();
+                ExcelWorksheet worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
                 if (worksheet == null)
                 {
-
+                    return null;
                 }
                 else
                 {

@@ -10,8 +10,8 @@
 </ul>
 <div class="container bg-white py-4">
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <h1 class="text-danger">Cập nhật kiện</h1>
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12 mb-4">
+            <h2 class="lead fw-normal mb-0 text-primary text-uppercase">Cập nhật kiện</h2>
         </div>
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
             <form method="post" action="Create" id="frmShip">
@@ -107,7 +107,7 @@
                         <option value="11" @(Model.Status == 11 ? "selected" : "")>không nhận dc hàng</option>
                     </select>
                 </div>
-                <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
                     <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
                     <button type="button" class="btn btn-success" onclick="update()">Lưu</button>
                 </div>
@@ -205,7 +205,7 @@
 
     function update() {
         var data = helper.form2Object($('#frmShip').serializeArray());
-
+        data.ID = @Model.ID;
         if (!data.Username) {
             helper.showErr('Vui lòng nhập tài khoản khách hàng!');
             return
@@ -245,7 +245,7 @@
         $.ajax({
             url: '/admin/Package/Update',
             type: 'POST',
-            data: { sData: JSON.stringify(data) },
+            data: { form: data },
             // other AJAX options here
             success: function (result) {
                 if (!result)

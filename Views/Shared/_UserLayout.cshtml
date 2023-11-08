@@ -73,6 +73,15 @@
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
 
+            <!--Wallet-->
+            <li class="nav-item dropdown no-arrow mx-1">
+            @if(acc != null){
+                    <span class="nav-link dropdown-toggle text-dark font-weight-bold">Ví tiền: @string.Format("{0:N0}đ",acc.Wallet).Replace(",",".")</span>
+                }else
+                {
+                    <span >Ví tiền: 0đ</span>
+                }
+            </li>
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
@@ -218,14 +227,14 @@
                             else
                             {
                                 <img class="img-profile rounded-circle"
-                                     src="~/img/undraw_profile.svg">
+                                 src="~/img/undraw_profile.svg">
                             }
                         }
                         else
                         {
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold"></span>
                             <img class="img-profile rounded-circle"
-                                 src="~/img/undraw_profile.svg">
+                             src="~/img/undraw_profile.svg">
                         }
                     }
 
@@ -233,14 +242,15 @@
                 <!-- Dropdown - User Information -->
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="userDropdown">
-                     @if(acc?.RoleID < 4){
-                    <a class="dropdown-item" href="/admin/home">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Đến trang quản trị
-                    </a>
-                    <div class="dropdown-divider"></div>
-                     }
-                    <a class="dropdown-item">
+                    @if (acc?.RoleID < 4)
+                    {
+                        <a class="dropdown-item" href="/admin/home">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Đến trang quản trị
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    }
+                    <a class="dropdown-item" href="/user/details?id=@acc?.ID">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         Thông tin tài khoản
                     </a>

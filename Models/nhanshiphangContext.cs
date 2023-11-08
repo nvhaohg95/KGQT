@@ -46,7 +46,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-1TA69L2B;Initial Catalog=nhanshiphang;Integrated Security=True;");
+                optionsBuilder.UseSqlServer("Data Source=LAPTOP-1TA69L2B;Initial Catalog=nhanshiphang;Integrated Security=True");
             }
         }
 
@@ -63,6 +63,8 @@ namespace KGQT.Models
                 entity.Property(e => e.RoleID).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
                 entity.Property(e => e.Status).HasComment("1. Not Active\r\n2. Active\r\n3. Banned");
+
+                entity.Property(e => e.UserID).HasMaxLength(50);
 
                 entity.Property(e => e.UserLevel).HasComment("1. thành viên\r\n2. dịch vụ order\r\n3. shop đồng\r\n4. shop bạc\r\n5. shop vàng\r\n6. shop kim cương\r\n7. shop vip 1\r\n8. shop vip 2\r\n9. shop vip 3\r\n10. shop vip 4");
             });

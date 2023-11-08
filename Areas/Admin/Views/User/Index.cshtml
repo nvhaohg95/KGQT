@@ -90,7 +90,10 @@
                             <span>@item.Phone</span>
                         </td>
                         <td class="text-center">
-                            <a class="btn btn-sm btn-secondary" href="/Admin/User/Detail?id=@item.ID">
+                            <a class="btn btn-sm btn-primary" href="/Admin/withdraw/create?user=@item.UserName">
+                                <i class="far fa-wallet"></i>
+                                <span>Nạp tiền</span>
+                            </a>    <a class="btn btn-sm btn-secondary" href="/Admin/User/Detail?id=@item.ID">
                                 <i class="far fa-edit"></i>
                                 <span>Xem</span>
                             </a>
@@ -259,7 +262,7 @@
     function insert() {
         var data = helper.form2Object($('#formAddUser').serializeArray());
         if (!data.UserID) {
-            helper.showErr('Mã người dùng không được bỏ trống!');
+            helper.showErr('Mã định danh không được bỏ trống!');
             return
         }
 
@@ -293,7 +296,7 @@
             return;
         }
         if (!data.RoleID) {
-            helper.showErr('Loại tài khoản ko được bỏ trống!');
+            helper.showErr('Loại tài khoản không được bỏ trống!');
             return;
         }
         $.ajax({

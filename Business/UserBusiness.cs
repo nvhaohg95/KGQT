@@ -23,6 +23,7 @@ namespace KGQT.Business
                             {
                                 ID = acc.ID,
                                 UserID = acc.UserID,
+                                UserName = acc.Username,
                                 FirstName = accInfo.FirstName,
                                 LastName = accInfo.LastName,
                                 FullName = accInfo.FirstName + " " + accInfo.LastName,
@@ -65,6 +66,7 @@ namespace KGQT.Business
                     user.UserName = acc.Username;
                     user.Password = acc.Password;
                     user.RoleID = acc.RoleID;
+                    user.Wallet = acc.Wallet.Value;
                 }
                 if(accInfo != null)
                 {

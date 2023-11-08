@@ -94,102 +94,99 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="card" style="border-radius: 10px;">
-        <div class="card-body p-4">
-            <!--Start::Thông tin kiện-->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
-                <a href="/package/create" class="btn-success btn-sm pointer-event">Thêm đơn</a>
-            </div>
-            @foreach (var item in Model)
-            {
-                <div class="card shadow-0 border mb-4">
-                    <div class="card-body p-0 py-0">
-                        <div class="row mx-0 py-2 border-bottom bg-success text-white">
-                            <div class="col-md-6 my-auto">
-                                <span class="cursor-pointer">
-                                    <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+<div class="card" style="border-radius: 10px;">
+    <div class="card-body p-4">
+        <!--Start::Thông tin kiện-->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
+            <a href="/package/create" class="btn-success btn-sm pointer-event">Thêm đơn</a>
+        </div>
+        @foreach (var item in Model)
+        {
+            <div class="card shadow-0 border mb-4">
+                <div class="card-body p-0 py-0">
+                    <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                        <div class="col-md-6 my-auto">
+                            <span class="cursor-pointer">
+                                <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                                <span class=" btn-copy" data-value="@item.PackageCode">
                                     <i class="fa fa-copy"></i>
                                 </span>
-                                <span class="mx-2"> - </span>
-                                <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
-                            </div>
-                            <div class="col-md-3 my-auto">
-                                <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
-                            </div>
-                            <div class="col-md-3 text-right">
-                                @if (item.Status <= 1)
-                                {
-                                    <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
-                                }
-                                @if (item.Status <= 2)
-                                {
-                                    <button class="btn btn-sm btn-danger mb-sm-1" type="button">Hủy đơn</button>
-                                }
-                            </div>
+                            </span>
+                            <span class="mx-2"> - </span>
+                            <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
                         </div>
-                        <div class="row p-2 mx-0 my-2 border-bottom">
-                            <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 mb-0">
-                                @if (item.ExportedCNWH != null)
-                                {
-                                    <li class="active-tl">
-                                        <span>Xuất kho Trung Quốc <br> @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <span>Xuất kho Trung Quốc</span>
-                                    </li>
-                                }
-                                @if (item.DateExpectation != null)
-                                {
-                                    <li class="active-tl">
-                                        <span>Đang trên đường về HCM <br> @item.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <span>Đang trên đường về HCM</span>
-                                    </li>
-                                }
-                                @if (item.ImportedSGWH != null)
-                                {
-                                    <li class="active-tl">
-                                        <span>Đã về kho HCM <br> @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <span>Đã về kho HCM</span>
-                                    </li>
-                                }
-                                @if (item.ReceivedDate != null)
-                                {
-                                    <li class="active-tl">
-                                        <span>Đã nhận hàng <br> @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <span>Đã nhận hàng</span>
-                                    </li>
-                                }
-                            </ul>
+                        <div class="col-md-3 my-auto">
+                            <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                         </div>
-                        <div class="row p-2 mx-0 my-2 border-bottom">
-                            <div class="col-md-6">
-                                <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
-                            </div>
-                            <div class="col-md-6">
-                                Dịch vụ phụ:
-                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                {
-                                    <div class="form-check-inline">
+                        <div class="col-md-3 text-right">
+                            @if (item.Status <= 1)
+                            {
+                                <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
+                            }
+                        </div>
+                    </div>
+                    <div class="row p-2 mx-0 my-2 border-bottom">
+                        <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 mb-0">
+                            @if (item.ExportedCNWH != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Xuất kho Trung Quốc <br> @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Xuất kho Trung Quốc</span>
+                                </li>
+                            }
+                            @if (item.DateExpectation != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đang trên đường về HCM <br> @item.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Đang trên đường về HCM</span>
+                                </li>
+                            }
+                            @if (item.ImportedSGWH != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đã về kho HCM <br> @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Đã về kho HCM</span>
+                                </li>
+                            }
+                            @if (item.ReceivedDate != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đã nhận hàng <br> @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Đã nhận hàng</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="row p-2 mx-0 my-2 border-bottom">
+                        <div class="col-md-6">
+                            <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                        </div>
+                        <div class="col-md-6">
+                            Dịch vụ phụ:
+                            @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                            {
+                                <div class="form-check-inline">
 
                                         <label class="form-check-label">
                                             <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
@@ -291,6 +288,15 @@
     </div>
 </div>
 <script>
+    $(document).ready(function () {
+        $('.btn-copy').off('click').on('click', function () {
+            let text = $(this).data('value');
+            $(this).select();
+            navigator.clipboard.writeText(text);
+            $('#copied-success').css('opacity', '1');
+            setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
+        })
+    })
     function getPage(pageIndex) {
         var totalPage = @totalPage;
         if (pageIndex <= 0 || pageIndex > totalPage)
@@ -306,3 +312,6 @@
     }
     
 </script>
+</div>
+
+<div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>

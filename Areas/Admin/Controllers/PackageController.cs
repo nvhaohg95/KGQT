@@ -19,7 +19,7 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("admin")]
     public class PackageController : Controller
     {
-        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2)
+        public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var oData = Packages.GetPage(status,ID,fromDate,toDate,page,pageSize);
             var lstPackage = oData[0];
@@ -74,6 +74,8 @@ namespace KGQT.Areas.Admin.Controllers
             return PartialView("_Package", package);
         }
 
+
+      
         #region Function
         [HttpGet]
         public bool CheckPackage(string package)
@@ -82,15 +84,16 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<int> ExportChinaWareHouseAsync()
+        public async Task<int> ExportChinaWareHouseAsync(string sheet, IFormFile file)
         {
-            var file = Request.Form.Files[0];
             if (file == null)
             {
                 Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
                 return -1;
             }
-            List<ExcelModel> content = PJUtils.ReadExcelToJson(file);
+            List<ExcelModel> content = PJUtils.ReadExcelToJson(file,sheet);
+            if (content == null)
+                return -2;
             Log.Info("Cập nhật xuất kho China", "File content:" + JsonConvert.SerializeObject(content));
             var userLogin = HttpContext.Session.GetString("user");
             int s = Packages.UpdateStatusCNWH(content, 3, userLogin);
@@ -102,7 +105,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
             if (p == null) return false;
-
+            int oldStt = p.Status;
             if (form.Username != p.Username)
             {
                 var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == form.Username);
@@ -124,6 +127,15 @@ namespace KGQT.Areas.Admin.Controllers
             p.Status = form.Status;
             p.ModifiedBy = HttpContext.Session.GetString("user");
             p.ModifiedDate = DateTime.Now;
+            if(oldStt != p.Status)
+            {
+                if(p.Status == 3)
+                {
+                    p.ExportedCNWH = DateTime.Now;
+                    p.DateExpectation = Packages.UpdateExp(p);
+                    p.Exported = true;
+                }
+            }
             return BusinessBase.Update(p);
             //foreach(PropertyInfo propertyInfo in form.GetType().GetProperties())
             //{
@@ -169,11 +181,12 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAccount(string s)
+        public IActionResult AutoComplete(string s)
         {
             var data = BusinessBase.GetList<tbl_Account>(x => x.Username.Contains(s)).ToList();
             return Json(data);
         }
+
 
         [HttpPost]
         public bool SubmitPack(int id, double weight, double woodPrice, double airPrice)
@@ -300,6 +313,20 @@ namespace KGQT.Areas.Admin.Controllers
                 }
             }
             return p;
+        }
+
+        [HttpPost]
+        public bool Cancel(int id)
+        {
+            var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            if (p != null)
+            {
+                p.Status = 9;
+                p.ModifiedBy = HttpContext.Session.GetString("user");
+                p.ModifiedDate = DateTime.Now;
+                return BusinessBase.Update(p);
+            }
+            return false;
         }
         #endregion
     }
