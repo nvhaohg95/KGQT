@@ -9,96 +9,148 @@
 <ul id="breadcrumbs" class="mb-2">
     <li><a href="/admin/home">Trang chủ</a></li>
     <li><a href="/admin/user/Index">Tài khoản</a></li>
-    <li><a>Chi tiết tài khoản</a></li>
+    <li><a>Thông tin tài khoản</a></li>
 </ul>
-<div class="container bg-white py-4">
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <h1 class="text-primary fw-bold text-uppercase">Chi tiết tài khoản</h1>
-        </div>
-        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <form method="post" action="Create" id="frmShip">
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Mã định danh</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" name="UserID" value="@Model.UserID">
-                        <input type="text" hidden name="ID" value="@Model.ID">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Tài khoản</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" value="@Model.UserName">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Họ</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" value="@Model.FirstName">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Tên</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" value="@Model.LastName">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Ngày sinh</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" value="@(Model.BirthDay != null? Model.BirthDay.Value.ToString("dd/MM/yy") : "dd/MM/yyyy")">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="inputtext" class="col-sm-2 col-form-label">Giới tính</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" id="gender" value="@(Model.Gender != null ? Model.Gender == 1 ? "Nam" : "Nữ" : "")">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Số ĐT</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" value="@Model.Phone">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" value="@Model.Email">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Địa chỉ</label>
-                    <div class="col-sm-10">
-                        <input type="text" readonly class="form-control" value="@Model.Address">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="staticEmail" class="col-sm-2 col-form-label">Vai trò</label>
-                    <div class="col-sm-10">
-                        <select name="RoleID" class="form-control">
-                            @if (lstRoles != null)
-                            {
-                                foreach (var item in lstRoles)
+
+<div class="row justify-content-center py-4">
+    <div class="col-lg-8 col-md-12 col-sm-12" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
+        <div class="row bg-white justify-content-center p-4">
+            <div class="col-lg-12 col-md-3 col-sm-12">
+                <div class="row justify-content-center mb-2">
+                    <div class="col-lg-3 col-md-12 col-sm-3">
+                        <div class="text-center">
+                            @{
+                                if (!string.IsNullOrEmpty(Model.IMG))
                                 {
-                                    <option value="@item.RoleID" selected="@(Model.RoleID == item.RoleID)">@item.RoleName</option>
+                                    <img class="rounded-circle mb-2 w-100" src="@Model.IMG" height="150" />
+                                }
+                                else
+                                {
+                                    <img class="rounded-circle mb-2" src="~/img/avt-user-emty.jpg" width="150" height="150" />
                                 }
                             }
-                        </select>
+                        </div>
+                        <div class="text-center mb-2">
+                            <p title="@(string.Concat(Model.FirstName, " ", Model.LastName))" class="fw-bold text-truncate text-uppercase text-danger m-0">@(string.Concat(Model.FirstName, " ", Model.LastName))</p>
+                        </div>
                     </div>
                 </div>
-                <div class="row justify-content-center">
-                    <button type="button" class="btn btn-success w-100" onclick="update()">Cập nhật</button>
+                
+            </div>
+            <form class="col-lg-12 col-md-9 col-sm-12" method="post" action="Create" id="formUser">
+                <!--Start:Thông tin cá nhân-->
+                <div class="row">
+                    <h6 class="text-primary">THÔNG TIN CÁ NHÂN</h6>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="FirstName">Họ<span class="text-danger">(*)</span></label>
+                            <input name="FirstName" id="FirstName" value="@Model.FirstName" type="text" class="form-control" placeholder="Họ" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="LastName">Tên<span class="text-danger">(*)</span></label>
+                            <input name="LastName" id="LastName" value="@Model.LastName" type="text" class="form-control" placeholder="Tên" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="BirthDay">Ngày sinh</label>
+                            <input name="BirthDay" id="BirthDay" value="@(Model.BirthDay != null ?  Model.BirthDay.Value.ToString("dd/MM/yyyy") : "dd/MM/yyyy")" type="datetime" class="form-control" placeholder="Ngày sinh" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="Gender">Giới tính</label>
+                            <select name="Gender" class="form-control">
+                                <option value="1" selected="@(Model.Gender == 1)">Nam</option>
+                                <option value="2" selected="@(Model.Gender == 2)">Nữ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="Email">Email<span class="text-danger">(*)</span></label>
+                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Địa chỉ email" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="Phone">SDT<span class="text-danger">(*)</span></label>
+                            <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="Address">Địa chỉ</label>
+                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+
+                <!--Thông tin tài khoản-->
+                <div class="row">
+                    <h6 class="text-primary">TÀI KHOẢN</h6>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="UserID">Mã định danh<span class="text-danger">(*)</span></label>
+                            <input name="UserID" id="UserID" value="@Model.UserID" type="text" class="form-control" placeholder="Mã định danh" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="RoleID">Loại tài khoản<span class="text-danger">(*)</span></label>
+                            <select name="RoleID" class="form-control">
+                                @if (lstRoles != null)
+                                {
+                                    foreach (var item in lstRoles)
+                                    {
+                                        <option value="@item.RoleID" selected="@(Model.RoleID == item.RoleID)">@item.RoleName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="UserName">Tài khoản<span class="text-danger">(*)</span></label>
+                            <input name="UserName" id="UserName" value="@Model.UserName" type="text" class="form-control" placeholder="Tài khoản" disabled/>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="Password">Mật khẩu<span class="text-danger">(*)</span></label>
+                            <input name="Password" id="Password" value="@Model.Password" type="Password" class="form-control" placeholder="Mật khẩu" disabled/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-2">
+                    <button type="button" class="btn btn-success w-100px" onclick="update()">Cập nhật</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 <script>
     function update() {
-        var data = helper.form2Object($('#frmShip').serializeArray());
+        var data = helper.form2Object($('#formUser').serializeArray());
             $.ajax({
-                url: '/admin/User/Update',
+                url: '/Admin/User/Update',
                 type: 'Post',
                 data: { form: data },
                 // other AJAX options here
@@ -109,7 +161,7 @@
                         helper.showSuc("Cập nhật thành công");
                 },
                 error: function (xhr, status, err) {
-                    // error handling
+                    helper.showErr("Hệ thống thực thi không thành công!");
                 }
             });
     }
