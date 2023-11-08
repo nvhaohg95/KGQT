@@ -1,7 +1,14 @@
-﻿@model KGQT.Models.temp.UserLogin
+﻿@using KGQT.Models.temp;
+@using Newtonsoft.Json;
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var sUser = Context.Session.GetString("US_LOGIN");
+    UserLogin user = null;
+    if (!string.IsNullOrEmpty(sUser))
+    {
+        user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+    }
 }
 <style>
     .card {
@@ -19,14 +26,14 @@
         <div class="card bg-primary text-white mb-4">
             <div class="card-body">ĐƠN HÀNG</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-primary stretched-link" href="Package/Index">Xem chi tiết</a>
+                <a class="small text-primary stretched-link" href="/Package/Index">Xem chi tiết</a>
                 <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-danger text-white mb-4">
-            <div class="card-body">SỐ DƯ VÍ</div>
+            <div class="card-body">VÍ CÁ NHÂN</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
                 <a class="small text-primary stretched-link" href="#">Xem chi tiết</a>
                 <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
@@ -37,7 +44,7 @@
         <div class="card bg-success text-white mb-4">
             <div class="card-body text-uppercase">TÀI KHOẢN</div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-primary stretched-link" href="#">Xem chi tiết</a>
+                <a class="small text-primary stretched-link" href="/User/Detail?id=@user.ID">Xem chi tiết</a>
                 <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>

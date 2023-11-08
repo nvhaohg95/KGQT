@@ -75,12 +75,17 @@
 
             <!--Wallet-->
             <li class="nav-item dropdown no-arrow mx-1">
-            @if(acc != null){
-                    <span class="nav-link dropdown-toggle text-dark font-weight-bold">Ví tiền: @string.Format("{0:N0}đ",acc.Wallet).Replace(",",".")</span>
-                }else
-                {
-                    <span >Ví tiền: 0đ</span>
-                }
+            @if(acc != null)
+            {
+                    <span class="nav-link">
+                        <span class="text-dark">Ví cá nhân&nbsp:&nbsp</span>
+                    <span class="fw-bold text-danger">@string.Format("{0:N0}đ",acc.Wallet).Replace(",",".")</span>
+                    </span>
+            }
+            else
+            {
+                    <span>Số dư ví: <span class ="fw-bold text-danger">0đ</span></span>
+            }
             </li>
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1">
@@ -250,7 +255,7 @@
                         </a>
                         <div class="dropdown-divider"></div>
                     }
-                    <a class="dropdown-item" href="/user/details?id=@acc?.ID">
+                    <a class="dropdown-item" href="/User/Detail?id=@acc?.ID">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         Thông tin tài khoản
                     </a>

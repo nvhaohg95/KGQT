@@ -26,7 +26,6 @@ namespace KGQT.Business
                                 UserName = acc.Username,
                                 FirstName = accInfo.FirstName,
                                 LastName = accInfo.LastName,
-                                FullName = accInfo.FirstName + " " + accInfo.LastName,
                                 BirthDay = accInfo.BirthDay,
                                 Gender = accInfo.Gender,
                                 Email = accInfo.Email,
@@ -72,11 +71,11 @@ namespace KGQT.Business
                 {
                     user.FirstName = accInfo.FirstName;
                     user.LastName = accInfo.LastName;
-                    user.FullName = accInfo.FirstName + " " + accInfo.LastName;
                     user.BirthDay = accInfo.BirthDay;
                     user.Gender = accInfo.Gender;
                     user.Email = accInfo.Email;
                     user.Phone = accInfo.Phone;
+                    user.Address = accInfo.Address;
                     user.IMG = accInfo.IMG;
                 }
                 return user;
@@ -110,7 +109,6 @@ namespace KGQT.Business
                         data.Address = accInfo.Address;
                         data.FirstName = accInfo.FirstName;
                         data.LastName = accInfo.LastName;
-                        data.FullName = string.Concat(accInfo.FirstName, " ", accInfo.LastName);
                     }
                 }
             }
