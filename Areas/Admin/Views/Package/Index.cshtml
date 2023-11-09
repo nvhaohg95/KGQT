@@ -125,7 +125,10 @@
                             </div>
                             <div class="col-md-3 text-right">
                                 <a href="/admin/package/edit?id=@item.ID" class="btn-sm btn bg-warning text-white mr-md-2">Chỉnh sửa</a>
-                                <button class="btn-sm btn bg-danger text-white mb-sm-1 mr-md-2" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                @if (item.Status != 5 && item.Status != 9)
+                                {
+                                    <button class="btn-sm btn bg-danger text-white mb-sm-1 mr-md-2" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                }
                                 @if (item.Status < 2)
                                 {
                                     <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
@@ -308,20 +311,20 @@
             <div class="modal-body">
                 <div class="form-group mb-4">
                     <label class="required" for="exportCNWH">File Excel:</label>
-                  @*<input type="file" id="exportCNWH" hidden onchange="exportCNWH(this)" />*@
+                    @*<input type="file" id="exportCNWH" hidden onchange="exportCNWH(this)" />*@
                     <input type="file" class="form-control" id="exportCNWH">
                 </div>
                 <div class="form-group mb-4">
                     <label class="required" for="txtShipID">Tên Sheet:</label>
                     <input type="text" class="form-control" id="txtSheet" name="txtSheet" placeholder="Nhập tên sheet cần đọc dữ liệu (cần nhập chính xác tên)">
                 </div>
-              @*  <div class="form-group mb-4">
-                    <label class="required" for="control">Vị trí cột bắt đầu:</label>
-                    <input type="text" class="form-control" id="txtColumn" placeholder="Nhập vị trí cột bắt đầu đọc (VD: A)">
+                @*  <div class="form-group mb-4">
+                <label class="required" for="control">Vị trí cột bắt đầu:</label>
+                <input type="text" class="form-control" id="txtColumn" placeholder="Nhập vị trí cột bắt đầu đọc (VD: A)">
                 </div>
                 <div class="form-group mb-4">
-                    <label class="required" for="txtRow">Vị trí hàng bắt đầu:</label>
-                    <input type="text" class="form-control" id="txtRow" placeholder="Nhập vị trí hàng bắt đầu đọc (VD: 1)">
+                <label class="required" for="txtRow">Vị trí hàng bắt đầu:</label>
+                <input type="text" class="form-control" id="txtRow" placeholder="Nhập vị trí hàng bắt đầu đọc (VD: 1)">
                 </div>*@
             </div>
             <div class="modal-footer">
@@ -358,7 +361,7 @@
         let sheet = $("#txtSheet").val();
         let form = new FormData();
         form.append("file", file[0]);
-        form.append("sheet",sheet);
+        form.append("sheet", sheet);
         $.ajax({
             url: '/admin/package/ExportChinaWareHouse',
             type: 'POST',
@@ -397,7 +400,7 @@
         $.ajax({
             url: '/admin/Package/Cancel',
             type: 'POST',
-            data: { id},
+            data: { id },
             // other AJAX options here
             success: function (result) {
                 if (!result)
