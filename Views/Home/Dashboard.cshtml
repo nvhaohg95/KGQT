@@ -1,7 +1,14 @@
-﻿@model KGQT.Models.temp.UserLogin
+﻿@using KGQT.Models.temp;
+@using Newtonsoft.Json;
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var sUser = Context.Session.GetString("US_LOGIN");
+    UserLogin user = null;
+    if (!string.IsNullOrEmpty(sUser))
+    {
+        user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+    }
 }
 <style>
     .card {
@@ -13,52 +20,43 @@
 <ul id="breadcrumbs" class="mb-2">
     <li><a>Trang chủ</a></li>
 </ul>
-<div class="row bg-white">
-    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-primary">Đơn hàng</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="card-link">Xem chi tiết</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-danger">Ví cá nhân</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="card-link">Xem chi tiết</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-dark">Thông tin tài khoản</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="card-link">Xem chi tiết</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-warning">Thông báo</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="card-link">Xem chi tiết</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 p-4">
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-infor">Liên hệ</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="card-link">Xem chi tiết</a>
-            </div>
-        </div>
-    </div>
 
+<div class="row p-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">ĐƠN HÀNG</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-primary stretched-link" href="/Package/Index">Xem chi tiết</a>
+                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-danger text-white mb-4">
+            <div class="card-body">VÍ CÁ NHÂN</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-primary stretched-link" href="#">Xem chi tiết</a>
+                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body text-uppercase">TÀI KHOẢN</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-primary stretched-link" href="/User/Detail?id=@user.ID">Xem chi tiết</a>
+                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body text-uppercase">THÔNG BÁO</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-primary stretched-link" href="#">Xem chi tiết</a>
+                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
 </div>
 

@@ -31,6 +31,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Detail(int id)
         {
             var user = UserBusiness.GetUser(id);
+            ViewData["ID"] = id;
             ViewData["lstRoles"] = GetListUserRole();
             return View(user);
         }
@@ -56,9 +57,9 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Update
-        public object Update(tbl_Account form)
+        public object Update(int ID,tbl_Account form)
         {
-            var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == form.ID);
+            var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == ID);
             if (user == null) return new { error = true, mssg = "Không tìm thấy thông tin" };
             if (user.UserID == form.UserID) return new { error = false };
             var exist = BusinessBase.Exist<tbl_Account>(x => x.UserID == form.UserID && x.ID != user.ID);
