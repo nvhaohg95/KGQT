@@ -1,8 +1,10 @@
 ﻿using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Models;
+using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 using System.Drawing.Printing;
 
 namespace KGQT.Areas.Admin.Controllers
@@ -52,7 +54,20 @@ namespace KGQT.Areas.Admin.Controllers
                 var u = BusinessBase.GetOne<tbl_Account>(x=>x.ID== user.ID);
                 u.Wallet += model.Amount;
                 s = BusinessBase.Update(u);
-
+                // update số dư ví
+                var sUser = HttpContext.Session.GetString("US_LOGIN");
+                if(s)
+                {
+                    if (!string.IsNullOrEmpty(sUser))
+                    {
+                        UserLogin acc = JsonConvert.DeserializeObject<UserLogin>(sUser);
+                        if (acc != null)
+                        {
+                            acc.Wallet = u.Wallet;
+                            HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(acc));
+                        }
+                    }
+                }    
             }
             return Ok(s);
         }
