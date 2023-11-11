@@ -23,7 +23,7 @@ namespace KGQT.Areas.Admin.Controllers
             ViewData["page"] = page;
             ViewData["totalRecord"] = totalRecord;
             ViewData["totalPage"] = totalPage;
-            ViewData["lstFeeWeightType"] = GetListFeeWeigthType();
+            ViewData["lstFeeWeightType"] = GetListFeeWeigthCategory();
             return View(lstData);
         }
         #endregion
@@ -68,30 +68,30 @@ namespace KGQT.Areas.Admin.Controllers
             return result;
         }
         #endregion
-        private List<FeeWeightType> GetListFeeWeigthType()
+        private List<FeeweightCategory> GetListFeeWeigthCategory()
         {
-            var lst = new List<FeeWeightType>();
-            var item1 = new FeeWeightType()
+            var lst = new List<FeeweightCategory>();
+            var item1 = new FeeweightCategory()
             {
                 ID = 1,
                 Name = "Tuyến bay nhanh"
             };
-            var item2 = new FeeWeightType()
+            var item2 = new FeeweightCategory()
             {
                 ID = 2,
                 Name = "Tuyến bay thường"
             };
-            var item3 = new FeeWeightType()
+            var item3 = new FeeweightCategory()
             {
                 ID = 3,
                 Name = "Tuyến bộ"
             };
-            var item4 = new FeeWeightType()
+            var item4 = new FeeweightCategory()
             {
                 ID = 4,
                 Name = "Tuyến lô"
             };
-            var item5 = new FeeWeightType()
+            var item5 = new FeeweightCategory()
             {
                 ID = 5,
                 Name = "Tuyến biển"
@@ -104,9 +104,5 @@ namespace KGQT.Areas.Admin.Controllers
             return lst;
         }
     }
-    public class FeeWeightType
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-    }
+    
 }

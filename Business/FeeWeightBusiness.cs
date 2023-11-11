@@ -1,4 +1,5 @@
 ﻿using KGQT.Models;
+using System.Linq;
 
 namespace KGQT.Business
 {
@@ -39,11 +40,17 @@ namespace KGQT.Business
         #endregion
 
         #region Get List
-        public static List<tbl_FeeWeight> GetList()
+        public static List<tbl_FeeWeight> GetList(int type)
         {
             using (var db = new nhanshiphangContext())
             {
-                var lstData = db.tbl_FeeWeights.OrderByDescending(x => x.CreatedDate).ToList();
+                var lstData = new List<tbl_FeeWeight>();
+                var query = db.tbl_FeeWeights.Where(x => x.Type == type);
+                var total = query.Count();  
+                if(total > 0)
+                {
+                    lstData = query.OrderBy(x => x.WeightFrom).ToList();
+                }  
                 return lstData;
             }
         }

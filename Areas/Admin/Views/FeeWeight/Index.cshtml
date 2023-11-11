@@ -1,5 +1,5 @@
 ﻿@model List<KGQT.Models.tbl_FeeWeight>;
-@using KGQT.Areas.Admin.Controllers;
+@using KGQT.Models.temp;
 
 @{
     ViewData["Title"] = "Phí vận chuyển";
@@ -7,7 +7,7 @@
     int page = (int)ViewData["page"];
     int totalRecord = (int)ViewData["totalRecord"];
     int totalPage = (int)ViewData["totalPage"];
-    var lstFeeWeightType = ViewData["lstFeeWeightType"] as List<FeeWeightType>;
+    var lstFeeWeightType = ViewData["lstFeeWeightType"] as List<FeeweightCategory>;
 
 }
 
