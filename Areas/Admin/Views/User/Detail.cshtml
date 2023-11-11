@@ -2,14 +2,14 @@
 @model KGQT.Models.temp.AccountInfo
 
 @{
-    ViewData["Title"] = "Detail";
+    ViewData["Title"] = "Thông tin tài khoản";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var ID = ViewData["ID"];
     var lstRoles = ViewData["lstRoles"] as List<UserRole>;
 }
 <ul id="breadcrumbs" class="mb-2">
-    <li><a href="/admin/home">Trang chủ</a></li>
-    <li><a href="/admin/user/Index">Tài khoản</a></li>
+    <li><a>Người dùng</a></li>
+    <li><a href="/Admin/User/Index">Danh sách</a></li>
     <li><a>Thông tin tài khoản</a></li>
 </ul>
 
@@ -45,7 +45,7 @@
             <form class="col-lg-12 col-md-9 col-sm-12" method="post" action="Create" id="formUser">
                 <!--Start:Thông tin cá nhân-->
                 <div class="row">
-                    <h6 class="text-primary">THÔNG TIN CÁ NHÂN</h6>
+                    <h6 class="fw-bold text-primary">THÔNG TIN CÁ NHÂN</h6>
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12">
@@ -117,7 +117,7 @@
 
                 <!--Thông tin tài khoản-->
                 <div class="row">
-                    <h6 class="text-primary">TÀI KHOẢN</h6>
+                    <h6 class="fw-bold text-primary">TÀI KHOẢN</h6>
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12">
