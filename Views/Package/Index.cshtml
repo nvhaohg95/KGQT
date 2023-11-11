@@ -188,67 +188,66 @@
                             {
                                 <div class="form-check-inline">
 
-                                        <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
-                                        </label>
-                                    </div>
-                                }
-                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                {
-                                    <div class="form-check-inline">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
-                                        </label>
-                                    </div>
-                                }
-                                @if (item.IsInsurance != null && item.IsInsurance == true)
-                                {
-                                    <div class="form-check-inline">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
-                                        </label>
-                                    </div>
-                                }
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
+                                    </label>
+                                </div>
+                            }
+                            @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                            {
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
+                                    </label>
+                                </div>
+                            }
+                            @if (item.IsInsurance != null && item.IsInsurance == true)
+                            {
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row p-2 mx-0 my-2">
+                        <div class="col-md-3">
+                            <div class="form-inline text-left">
+                                Vận chuyển:  &nbsp;<p class=" mb-0">@(item.Weight ?? 0)kg -@string.Format("{0:N0}",item.WeightPrice != null ? item.WeightPrice : 0).Replace(",", ".")đ</p>
                             </div>
                         </div>
-                        <div class="row p-2 mx-0 my-2">
-                            <div class="col-md-3">
+                        <div class="col-md-2">
+                            @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                            {
                                 <div class="form-inline text-left">
-                                    Vận chuyển:  &nbsp;<p class=" mb-0">@(item.Weight ?? 0)kg -@string.Format("{0:N0}",item.WeightPrice != null ? item.WeightPrice : 0).Replace(",", ".")đ</p>
+                                    Phí đóng gỗ: &nbsp;
+                                    <p class=" mb-0"> @string.Format("{0:N0}",item.WoodPackagePrice != null ? item.WoodPackagePrice : 0).Replace(",", ".")đ </p>
                                 </div>
-                            </div>
-                            <div class="col-md-2">
-                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                {
-                                    <div class="form-inline text-left">
-                                        Phí đóng gỗ: &nbsp;
-                                        <p class=" mb-0"> @string.Format("{0:N0}",item.WoodPackagePrice != null ? item.WoodPackagePrice : 0).Replace(",", ".")đ </p>
-                                    </div>
-                                }
-                            </div>
-                            <div class="col-md-2">
-                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                {
-                                    <div class="form-inline text-left">
-                                        Phí bọt khí:  &nbsp;
-                                        <p class=" mb-0">@string.Format("{0:N0}",item.AirPackagePrice != null ? item.AirPackagePrice : 0).Replace(",", ".")đ</p>
-                                    </div>
-                                }
-                            </div>
-                            <div class="col-md-2">
-                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                {
-                                    <div class="form-inline text-left">
-                                        Phí bảo hiểm:  &nbsp;
-                                        <p class=" mb-0">@string.Format("{0:N0}",item.IsInsurancePrice != null ? item.IsInsurancePrice : 0).Replace(",", ".")đ</p>
-                                    </div>
-                                }
-                            </div>
+                            }
+                        </div>
+                        <div class="col-md-2">
+                            @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                            {
+                                <div class="form-inline text-left">
+                                    Phí bọt khí:  &nbsp;
+                                    <p class=" mb-0">@string.Format("{0:N0}",item.AirPackagePrice != null ? item.AirPackagePrice : 0).Replace(",", ".")đ</p>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-2">
+                            @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                            {
+                                <div class="form-inline text-left">
+                                    Phí bảo hiểm:  &nbsp;
+                                    <p class=" mb-0">@string.Format("{0:N0}",item.IsInsurancePrice != null ? item.IsInsurancePrice : 0).Replace(",", ".")đ</p>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>
 <!--Start: Phân trang-->
@@ -310,7 +309,7 @@
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
-    
+
 </script>
 </div>
 

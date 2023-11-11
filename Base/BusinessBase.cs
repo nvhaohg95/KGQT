@@ -133,6 +133,24 @@ namespace KGQT.Business.Base
             return true;
         }
 
+        public static int GetCount<T>(Expression<Func<T, bool>> expression = null) where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    var query = db.Set<T>().AsQueryable();
+                    if (expression != null)
+                        query = query.Where(expression);
+                    return query.Count();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return 0;
+                }
+            }
+        }
 
         public static T GetOne<T>(Expression<Func<T, bool>> predicate) where T : class
         {

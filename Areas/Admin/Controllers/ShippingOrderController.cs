@@ -227,7 +227,7 @@ namespace KGQT.Areas.Admin.Controllers
 
             var username = HttpContext.Session.GetString("user");
 
-            var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == username);
+            var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == oOrder.Username);
 
             if (oUser == null) return false;
 
@@ -243,7 +243,7 @@ namespace KGQT.Areas.Admin.Controllers
                 var s = BusinessBase.Update(oOrder);
                 if (s)
                 {
-                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, username);
+                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
 
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);
@@ -270,7 +270,7 @@ namespace KGQT.Areas.Admin.Controllers
                         pack.ModifiedDate = DateTime.Now;
                         BusinessBase.Update(pack);
 
-                        BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, username);
+                        BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, oOrder.Username);
                     }
                     return new { res = false };
                 }

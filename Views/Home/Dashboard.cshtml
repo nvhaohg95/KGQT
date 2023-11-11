@@ -3,12 +3,12 @@
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
-    var sUser = Context.Session.GetString("US_LOGIN");
-    UserLogin user = null;
-    if (!string.IsNullOrEmpty(sUser))
-    {
-        user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-    }
+    var p3 = ViewData["pack_st3"];
+    var p4 = ViewData["pack_st4"];
+    var p5 = ViewData["pack_st5"];
+    var s1 = ViewData["order_st1"];
+    var s2 = ViewData["order_st2"];
+    var s = ViewData["ordertotal"];
 }
 <style>
     .card {
@@ -22,41 +22,66 @@
 </ul>
 
 <div class="row p-4">
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-6 col-md-6">
         <div class="card bg-primary text-white mb-4">
-            <div class="card-body">ĐƠN HÀNG</div>
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <h2>ĐƠN HÀNG</h2>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fa-10 text-white stretched-link">Chưa thanh toán</span>
+                    <div class="fa-10 text-white">@s1</div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fa-10 text-white stretched-link">Đã thanh toán</span>
+                    <div class="fa-10 text-white">@s2</div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fa-10 text-white stretched-link">Tổng số đơn</span>
+                    <div class="fa-10 text-white">@s</div>
+                </div>
+
+            </div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-primary stretched-link" href="/Package/Index">Xem chi tiết</a>
-                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
+                <a class="fa-10 text-primary stretched-link" href="/ShippingOrder/Index">Xem chi tiết</a>
+                <div class="fa-10 text-primary"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-danger text-white mb-4">
-            <div class="card-body">VÍ CÁ NHÂN</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-primary stretched-link" href="#">Xem chi tiết</a>
-                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-6 col-md-6">
         <div class="card bg-success text-white mb-4">
-            <div class="card-body text-uppercase">TÀI KHOẢN</div>
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <h2>KIỆN HÀNG</h2>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fa-10 text-white stretched-link">Đang trên đường về HCM</span>
+                    <span class="fa-10 text-white">@p3</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fa-10 text-white stretched-link">Hàng về tới HCM</span>
+                    <span class="fa-10 text-white">@p4</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fa-10 text-white stretched-link">Đã nhận hàng</span>
+                    <span class="fa-10 text-white">@p5</span>
+                </div>
+
+            </div>
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-primary stretched-link" href="/User/Detail?id=@user.ID">Xem chi tiết</a>
-                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
+                <a class="fa-10 text-primary stretched-link" href="/Package/Index">Xem chi tiết</a>
+                <div class="fa-10 text-primary"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-warning text-white mb-4">
-            <div class="card-body text-uppercase">THÔNG BÁO</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-primary stretched-link" href="#">Xem chi tiết</a>
-                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
-            </div>
-        </div>
+    @*<div class="col-xl-4 col-md-6">
+    <div class="card bg-warning text-white mb-4">
+    <div class="card-body text-uppercase">THÔNG BÁO</div>
+    <div class="card-footer d-flex align-items-center justify-content-between">
+    <a class="fa-10 text-primary stretched-link" href="#">Xem chi tiết</a>
+    <div class="fa-10 text-primary"><i class="fas fa-angle-right"></i></div>
     </div>
+    </div>
+    </div>*@
 </div>
 

@@ -1,4 +1,5 @@
 ﻿using KGQT.Business;
+using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Components;
@@ -37,15 +38,15 @@ namespace KGQT
         [HttpGet]
         public ActionResult Dashboard()
         {
-            var sUser = HttpContext.Session.GetString("US_LOGIN");
-            UserLogin user = null;
-            if (!string.IsNullOrEmpty(sUser))
-            {
-                user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                if (user != null)
-                    return View();
-            }
-            return RedirectToAction("login", "auth");
+            var username = HttpContext.Session.GetString("user");
+            ViewData["pack_st3"] = BusinessBase.GetCount<tbl_Package>(x => x.Status == 3);
+            ViewData["pack_st4"] = BusinessBase.GetCount<tbl_Package>(x => x.Status == 4);
+            ViewData["pack_st5"] = BusinessBase.GetCount<tbl_Package>(x => x.Status == 5) ;
+
+            ViewData["order_st1"] = BusinessBase.GetCount<tbl_ShippingOrder>(x => x.Status == 3) ;
+            ViewData["order_st2"] = BusinessBase.GetCount<tbl_ShippingOrder>(x => x.Status == 4) ;
+            ViewData["ordertotal"] = BusinessBase.GetCount<tbl_ShippingOrder>();
+            return View();
 
         }
 

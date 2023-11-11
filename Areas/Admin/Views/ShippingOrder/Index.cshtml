@@ -31,19 +31,19 @@
                         <div class="col-12">
                             <ul class="nav">
                                 <li class="nav-item py-2 mr-4">
-                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light" onclick="sort(-1)">Tất cả</a>
+                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == -1 || status == 0 ? "bg-danger text-white" : "")" onclick="sort(-1)">Tất cả</a>
                                 </li>
                                 <li class="nav-item py-2 mr-4">
-                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light" onclick="sort(1)">Đã thanh toán</a>
+                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 1 ? "bg-danger text-white" : "")" onclick="sort(1)">Đã thanh toán</a>
                                 </li>
                                 <li class="nav-item py-2 mr-4">
-                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light" onclick="sort(2)">Đã hủy</a>
+                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 2 ? "bg-danger text-white" : "")" onclick="sort(2)">Đã hủy</a>
                                 </li>
                                 <li class="nav-item py-2 mr-4">
-                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light" onclick="sort(3)">Thất lạc</a>
+                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 3 ? "bg-danger text-white" : "")" onclick="sort(3)">Thất lạc</a>
                                 </li>
                                 <li class="nav-item py-2 mr-4">
-                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light" onclick="sort(4)">Không nhận hàng</a>
+                                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 4 ? "bg-danger text-white" : "")" onclick="sort(4)">Không nhận hàng</a>
                                 </li>
                             </ul>
                         </div>

@@ -127,7 +127,7 @@
                                 <a href="/admin/package/edit?id=@item.ID" class="btn-sm btn bg-warning text-white mr-md-2">Chỉnh sửa</a>
                                 @if (item.Status != 5 && item.Status != 9)
                                 {
-                                    <button class="btn-sm btn bg-danger text-white mb-sm-1 mr-md-2" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                    <button class="btn-sm btn bg-danger text-white mr-md-2" onclick="cancel(@item.ID)">Hủy đơn</button>
                                 }
                                 @if (item.Status < 2)
                                 {

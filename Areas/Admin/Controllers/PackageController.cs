@@ -21,7 +21,7 @@ namespace KGQT.Areas.Admin.Controllers
     {
         public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = Packages.GetPage(status,ID,fromDate,toDate,page,pageSize);
+            var oData = Packages.GetPage(status, ID, fromDate, toDate, page, pageSize);
             var lstPackage = oData[0];
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
@@ -75,7 +75,7 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
 
-      
+
         #region Function
         [HttpGet]
         public bool CheckPackage(string package)
@@ -91,7 +91,7 @@ namespace KGQT.Areas.Admin.Controllers
                 Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
                 return -1;
             }
-            List<ExcelModel> content = PJUtils.ReadExcelToJson(file,sheet);
+            List<ExcelModel> content = PJUtils.ReadExcelToJson(file, sheet);
             if (content == null)
                 return -2;
             Log.Info("Cập nhật xuất kho China", "File content:" + JsonConvert.SerializeObject(content));
@@ -127,9 +127,9 @@ namespace KGQT.Areas.Admin.Controllers
             p.Status = form.Status;
             p.ModifiedBy = HttpContext.Session.GetString("user");
             p.ModifiedDate = DateTime.Now;
-            if(oldStt != p.Status)
+            if (oldStt != p.Status)
             {
-                if(p.Status == 3)
+                if (p.Status == 3)
                 {
                     p.ExportedCNWH = DateTime.Now;
                     p.DateExpectation = Packages.UpdateExp(p);
@@ -207,6 +207,7 @@ namespace KGQT.Areas.Admin.Controllers
                 pack.Weight = weight;
             else
                 pack.Weight = fee.MinWeight;
+            pack.WeightPrice = weight * fee.Amount;
             pack.WeightReal = weight;
             pack.WoodPackagePrice = woodPrice;
             pack.AirPackagePrice = airPrice;
