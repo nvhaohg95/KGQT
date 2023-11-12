@@ -293,7 +293,7 @@ namespace KGQT.Business.Base
                 t.OldValue = old;
                 t.CreatedBy = userName;
                 t.CreatedOn = DateTime.Now;
-                db.tbl_TrackShippingOrders.Add(t);
+                db.tbl_SystemLogs.Add(t);
                 db.SaveChanges();
             }
 
