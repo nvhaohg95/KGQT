@@ -20,7 +20,7 @@ namespace KGQT.Areas.Admin.Controllers
             @ViewData["page"] = page;
             @ViewData["totalRecord"] = totalRecord;
             @ViewData["totalPage"] = totalPage;
-            @ViewData["lstRoles"] = GetListUserRole();
+            @ViewData["lstRoles"] = UserBusiness.GetListUserRole();
             return View(lstData);
         }
 
@@ -30,11 +30,12 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Detail(int id)
         {
-            var user = UserBusiness.GetUser(id);
+            var user = UserBusiness.GetUserByID(id);
             ViewData["ID"] = id;
-            ViewData["lstRoles"] = GetListUserRole();
+            ViewData["lstRoles"] = UserBusiness.GetListUserRole();
             return View(user);
         }
+
         #endregion
 
         #region Create
@@ -76,32 +77,8 @@ namespace KGQT.Areas.Admin.Controllers
             return new { error = true, mssg = "Không tìm thấy thông tin" };
         }
         #endregion
-
-
-        #region Get User Infor
-        public IActionResult Infor()
-        {
-            var userLogin = HttpContext.Session.GetString("user");
-            var user = UserBusiness.GetUserInfor(userLogin);
-            @ViewData["lstRoles"] = GetListUserRole();
-            return View(user);
-        }
-        #endregion
-
-        private List<UserRole> GetListUserRole()
-        {
-           List<UserRole> lst = new List<UserRole>();
-            using (var db = new nhanshiphangContext())
-            {
-                lst = db.tbl_Roles.OrderBy(x => x.RoleID).Select(x => new UserRole()
-                {
-                    RoleID = x.RoleID,
-                    RoleName = x.RoleName
-                }).ToList();
-            }
-            return lst;
-        }
+        
     }
 
-    
+
 }

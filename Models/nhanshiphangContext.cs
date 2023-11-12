@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Configuration;
 using KGQT.Base;
+using KGQT.Models.temp;
 namespace KGQT.Models
 {
     public partial class nhanshiphangContext : DbContext
@@ -398,5 +399,7 @@ namespace KGQT.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public DbSet<KGQT.Models.temp.AccountInfo>? AccountInfo { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Insert(tbl_Withdraw model)
         {
-            var user = Accounts.GetFullInfo(null, -1, model.Username);
+            var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
             if (user != null)
             {
                 model.UID = user.ID;

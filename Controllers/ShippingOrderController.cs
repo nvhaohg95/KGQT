@@ -72,7 +72,7 @@ namespace KGQT.Controllers
             try
             {
                 var userLogin = HttpContext.Session.GetString("user");
-                var user = Accounts.GetInfo(-1, userLogin);
+                var user = AccountBusiness.GetInfo(-1, userLogin);
                 form.Status = 0;
                 form.CreatedDate = DateTime.Now;
                 form.CreatedBy = user.Username;
