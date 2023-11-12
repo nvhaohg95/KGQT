@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using Fasterflect;
 using OfficeOpenXml;
+using System.Security.Policy;
 
 namespace KGQT.Commons
 {
@@ -91,6 +92,7 @@ namespace KGQT.Commons
             if (ware == "2") return "Phật Sơn";
             return "";
         }
+
         public static string ShippingMethodName(int status)
         {
             if (status == 1) return "Nhanh";
@@ -201,7 +203,7 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
-        
+
         public static string WithDrawStatusHtml(int status)
         {
             string sReturn = "";
@@ -222,6 +224,7 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
+
         public static string ShippingOrderStatus(int status)
         {
             string sReturn = "";
@@ -242,20 +245,43 @@ namespace KGQT.Commons
             }
             return sReturn;
         }
+
+        public static string TradeType(int type)
+        {
+            string s = "";
+            switch (type)
+            {
+                case 1:
+                    s = "Thanh toán đơn hàng";
+                    break;
+                case 2:
+                    s = "Nhận lại tiền hang";
+                    break;
+                case 3:
+                    s = "Admin nạp tiền";
+                    break;
+                case 4:
+                    s = "Rút tiề";
+                    break;
+                case 5:
+                    s = "Hủy rút tiền";
+                    break;
+                case 6:
+                    s = "Nạp tiền tại kho";
+                    break;
+                case 7:
+                    s = "Rút tiền tại kho";
+                    break;
+            }
+            return s;
+        }
+
         public static List<ExcelModel> ReadExcelToJson(IFormFile file, string name)
         {
             string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
             string fileName = Guid.NewGuid().ToString() + file.Name;
             FileInfo fileInfo = new FileInfo(Path.Combine(rootFolder, fileName));
             Stream FileStream = file.OpenReadStream();
-            //using (var stream = new MemoryStream())
-            //{
-            //    file.CopyToAsync(stream);
-            //    using (ExcelPackage pack = new ExcelPackage(stream))
-            //    {
-            //        pack.SaveAs(fileInfo);
-            //    }
-            //}
             List<ExcelModel> oData = new List<ExcelModel>();
             using (ExcelPackage pack = new ExcelPackage(FileStream))
             {
@@ -290,6 +316,7 @@ namespace KGQT.Commons
             }
             return oData;
         }
+
         public static List<ExcelModel> ExcelToJson(IFormFile file)
         {
             try

@@ -623,6 +623,7 @@ namespace KGQT.Business
                            {
                                ID = acc.ID,
                                UserID = acc.UserID,
+                               UserName = acc.Username,
                                FirstName = accInfo.FirstName,
                                LastName = accInfo.LastName,
                                BirthDay = accInfo.BirthDay,

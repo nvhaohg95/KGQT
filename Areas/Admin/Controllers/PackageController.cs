@@ -159,6 +159,7 @@ namespace KGQT.Areas.Admin.Controllers
             var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
             var user = AccountBusiness.GetInfo(-1, form.Username);
             form.Status = 0;
+            form.PackageCode = form.PackageCode.Trim().Replace("\'","").Replace(" ", "");
             form.UID = user.ID;
             form.Username = user.Username;
             form.FullName = user.FirstName + " " + user.LastName;

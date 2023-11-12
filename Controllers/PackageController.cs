@@ -47,6 +47,7 @@ namespace KGQT.Controllers
         {
             var userLogin = HttpContext.Session.GetString("user");
             var user = AccountBusiness.GetInfo(-1, userLogin);
+            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             form.Status = 0;
             form.UID = user.ID;
             form.Username = user.Username;
