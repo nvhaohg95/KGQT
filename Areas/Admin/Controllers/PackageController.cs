@@ -157,7 +157,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var userLogin = HttpContext.Session.GetString("user");
             var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
-            var user = Accounts.GetInfo(-1, form.Username);
+            var user = AccountBusiness.GetInfo(-1, form.Username);
             form.Status = 0;
             form.UID = user.ID;
             form.Username = user.Username;

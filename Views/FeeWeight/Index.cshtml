@@ -1,0 +1,37 @@
+﻿@using KGQT.Models.temp;
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var lstData = ViewData["lstData"] as List<FeeweightCategory>;
+}
+
+<div class="row mb-2">
+    <ul id="breadcrumbs">
+        <li><a>Dịch vụ</a></li>
+        <li><a>Phí vận chuyển</a></li>
+    </ul>
+</div>
+<div class="row bg-white px-4">
+    @foreach (var item in lstData)
+    {
+        <div class="col-3 mt-4">
+            <div class="card">
+                <div class="d-flex justify-content-center p-2 w-100">
+                    <a href="Detail?type=@(item.ID)">
+                        <img src="~/img/service-img-shipping1.jpg" class="card-img-top" width="150" height="150">
+                    </a>
+                </div>
+                <div class="card-body">
+                    <a href="Detail?type=@(item.ID)" class="card-title fw-bold text-uppercase text-decoration-none">
+                        <p class="card-title text-uppercase">@item.Name</p>
+                    </a>
+                    <p class="text-justify">
+                        Mô tả.
+                    </p>
+                    <a href="Detail?type=@(item.ID)" class="btn btn-sm btn-info">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

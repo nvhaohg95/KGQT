@@ -46,7 +46,7 @@ namespace KGQT.Controllers
         public bool Create(tbl_Package form)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var user = Accounts.GetInfo(-1, userLogin);
+            var user = AccountBusiness.GetInfo(-1, userLogin);
             form.Status = 0;
             form.UID = user.ID;
             form.Username = user.Username;

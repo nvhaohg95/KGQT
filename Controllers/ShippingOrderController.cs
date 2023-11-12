@@ -30,6 +30,9 @@ namespace KGQT.Controllers
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
             @ViewData["status"] = status;
+            @ViewData["ID"] = ID;
+            @ViewData["fromDate"] = fromDate;
+            @ViewData["toDate"] = toDate;
             @ViewData["page"] = page;
             @ViewData["totalRecord"] = totalRecord;
             @ViewData["totalPage"] = totalPage;
@@ -69,7 +72,7 @@ namespace KGQT.Controllers
             try
             {
                 var userLogin = HttpContext.Session.GetString("user");
-                var user = Accounts.GetInfo(-1, userLogin);
+                var user = AccountBusiness.GetInfo(-1, userLogin);
                 form.Status = 0;
                 form.CreatedDate = DateTime.Now;
                 form.CreatedBy = user.Username;

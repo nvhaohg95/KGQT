@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Danh sách người dùng";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    string searchText = (string)ViewData["searchText"];
+    var searchText = ViewData["searchText"];
     int page = (int)ViewData["page"];
     int totalRecord = (int)ViewData["totalRecord"];
     int totalPage = (int)ViewData["totalPage"];
@@ -12,7 +12,7 @@
 
 }
 <style>
-    .input{
+    .input {
         height: calc(1.5em + 0.75rem + 2px);
         padding: 0.375rem 0.75rem;
         margin-right: 2px;
@@ -24,10 +24,9 @@
         background-clip: padding-box;
         border: 1px solid #d1d3e2;
         border-radius: 0.35rem;
-        outline:none;
+        outline: none;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
-    
 </style>
 <div class="row mb-2">
     <ul id="breadcrumbs">
@@ -44,7 +43,7 @@
             <div class="col-12 d-flex align-items-center justify-content-between">
                 <form method="get">
                     @Html.TextBoxFor(model => searchText,"",new {@type="search", @placeholder="Tìm kiếm", @class="input", @name="searchText"})
-                    <a href="/Admin/User/Index?page=1" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
+                    <a href="/Admin/Account/Index?page=1" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
                         <i class="fas fa-sync fa-xs"></i>
                     </a>
                     <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
@@ -57,11 +56,11 @@
         <table class="table table-bordered">
             <thead class="thead-light table-sm">
                 <tr class="fw-bold">
-                    <th >MĐD</th>
-                    <th >Họ tên</th>
-                    <th >Ngày sinh</th>
-                    <th >Email</th>
-                    <th >SĐT</th>
+                    <th>MĐD</th>
+                    <th>Họ tên</th>
+                    <th>Ngày sinh</th>
+                    <th>Email</th>
+                    <th>SĐT</th>
                     <th class="text-center">Thao tác</th>
                 </tr>
             </thead>
@@ -88,11 +87,11 @@
                             <span>@item.Phone</span>
                         </td>
                         <td class="text-center">
-                            <a class="btn btn-sm btn-primary" href="/Admin/withdraw/create?user=@item.UserName">
+                            <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.UserName">
                                 <i class="far fa-wallet"></i>
                                 <span>Nạp tiền</span>
-                            </a> 
-                            <a class="btn btn-sm btn-secondary" href="/Admin/User/Detail?id=@item.ID">
+                            </a>
+                            <a class="btn btn-sm btn-secondary" href="/Admin/Account/Detail?id=@item.ID">
                                 <i class="far fa-edit"></i>
                                 <span>Xem</span>
                             </a>
@@ -226,7 +225,7 @@
                                 <span class="fw-bold">Mật khẩu</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input name="Password" class="form-control" type="password" autocomplete="off"/>
+                            <input name="Password" class="form-control" type="password" autocomplete="off" />
                         </div>
                     </div>
                     <div class="row">
@@ -236,7 +235,7 @@
                                 <span class="text-danger">(*)</span>
                             </label>
                             <select name="RoleID" class="form-control" autocomplete="off">
-                                @if(lstRoles != null)
+                                @if (lstRoles != null)
                                 {
                                     foreach (var item in lstRoles)
                                     {
@@ -246,7 +245,7 @@
                             </select>
                         </div>
                     </div>
-                    
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -299,30 +298,28 @@
             return;
         }
         $.ajax({
-            url: "/Admin/User/Create",
+            url: "/Admin/Account/Create",
             type: 'POST',
             data: data,
             success: function (reponse) {
-                if (reponse.isError) 
-                {
+                if (reponse.isError) {
                     helper.showErr(reponse.message)
                 }
                 else
                     helper.showSuc('Thêm mới thành công!')
             },
             error: function (xhr, status, err) {
-                if (!reponse)
-                    helper.showErr('Phát sinh lỗi.!')
+                    helper.showErr('Hệ thống thực thi không thành công!')
             }
         });
     }
-    function clickDelete(id){
+    function clickDelete(id) {
         $.ajax({
-            url: "/Admin/User/Delete",
+            url: "/Admin/Account/Delete",
             type: 'POST',
-            data: {id : id},
+            data: { id: id },
             success: function (reponse) {
-                if (!reponse) 
+                if (!reponse)
                     helper.showErr("Xóa không thành công.")
                 else
                     helper.showSuc('Xóa thành công!')

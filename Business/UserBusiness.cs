@@ -8,7 +8,7 @@ namespace KGQT.Business
 {
     public static class UserBusiness
     {
-        #region Get List User
+        #region Get Page User
         public static object[] GetPage(string searchText = "", int page = 1, int pageSize = 5)
         {
             using (var db = new nhanshiphangContext())
@@ -51,7 +51,7 @@ namespace KGQT.Business
         #endregion
 
         #region Get User By ID
-        public static AccountInfo GetUser(int id)
+        public static AccountInfo GetUserByID(int id)
         {
             using(var db = new nhanshiphangContext())
             {
@@ -65,7 +65,7 @@ namespace KGQT.Business
                     user.UserName = acc.Username;
                     user.Password = acc.Password;
                     user.RoleID = acc.RoleID;
-                    user.Wallet = acc.Wallet.Value;
+                    user.Wallet = acc.Wallet;
                 }
                 if(accInfo != null)
                 {
@@ -80,39 +80,6 @@ namespace KGQT.Business
                 }
                 return user;
             }
-        }
-        #endregion
-
-        #region Get User Infor
-        public static AccountInfo GetUserInfor(string username)
-        {
-            var data = new AccountInfo();
-
-            using (var db = new nhanshiphangContext())
-            {
-                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == username);
-                if(acc != null)
-                {
-                    data.ID = acc.ID;
-                    data.UserID = acc.UserID;
-                    data.UserName = acc.Username;
-                    data.Password = PJUtils.Encrypt("userpass", acc.Password);
-                    data.RoleID = acc.RoleID;
-                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                    if(accInfo != null)
-                    {
-                        data.IMG = accInfo.IMG;
-                        data.BirthDay = accInfo.BirthDay;
-                        data.Gender = accInfo.Gender;
-                        data.Phone = accInfo.Phone;
-                        data.Email = accInfo.Email;
-                        data.Address = accInfo.Address;
-                        data.FirstName = accInfo.FirstName;
-                        data.LastName = accInfo.LastName;
-                    }
-                }
-            }
-            return data;
         }
         #endregion
 
@@ -267,6 +234,180 @@ namespace KGQT.Business
         }
         #endregion
 
+        #region Get List User Role
+        public static List<UserRole> GetListUserRole()
+        {
+            List<UserRole> lst = new List<UserRole>();
+            using (var db = new nhanshiphangContext())
+            {
+                lst = db.tbl_Roles.OrderBy(x => x.RoleID).Select(x => new UserRole()
+                {
+                    RoleID = x.RoleID,
+                    RoleName = x.RoleName
+                }).ToList();
+            }
+            return lst;
+        }
+        #endregion
 
+        #region Get User By User Name
+        public static AccountInfo GetUserByUserName(string username)
+        {
+            var user = new AccountInfo();
+
+            using (var db = new nhanshiphangContext())
+            {
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == username);
+                if (acc != null)
+                {
+                    user.ID = acc.ID;
+                    user.UserID = acc.UserID;
+                    user.UserName = acc.Username;
+                    user.Password = PJUtils.Encrypt("userpass", acc.Password);
+                    user.RoleID = acc.RoleID;
+                    user.Wallet = acc.Wallet;
+                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                    if (accInfo != null)
+                    {
+                        user.IMG = accInfo.IMG;
+                        user.BirthDay = accInfo.BirthDay;
+                        user.Gender = accInfo.Gender;
+                        user.Phone = accInfo.Phone;
+                        user.Email = accInfo.Email;
+                        user.Address = accInfo.Address;
+                        user.FirstName = accInfo.FirstName;
+                        user.LastName = accInfo.LastName;
+                    }
+                }
+            }
+            return user;
+        }
+        #endregion
+
+        #region Update User
+        public static DataReturnModel Update(AccountInfo data,string userModifiedBy)
+        {
+            var result = new DataReturnModel();
+            if(data != null)
+            {
+                using (var db = new nhanshiphangContext())
+                {
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
+                    if (acc != null)
+                    {
+                        acc.Email = data.Email;
+                        acc.ModifiedBy = userModifiedBy;
+                        acc.ModifiedDate = DateTime.Now;
+                        db.Update(acc);
+                        var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                        if (acc != null)
+                        {
+                            accInfo.FirstName = data.FirstName;
+                            accInfo.LastName = data.LastName;
+                            accInfo.Gender = data.Gender;
+                            accInfo.BirthDay = data.BirthDay;
+                            accInfo.Email = data.Email;
+                            accInfo.Phone = data.Phone;
+                            accInfo.Address = data.Address;
+                            accInfo.Phone = data.Phone;
+                            accInfo.ModifiedBy = userModifiedBy;
+                            accInfo.ModifiedDate = DateTime.Now;
+                            db.Update(accInfo);
+                        }
+                        var isSave = db.SaveChanges();
+                        if (isSave > 0)
+                        {
+                            result.IsError = false;
+                            result.Data = data;
+                            result.Message = "Cập nhật thành công";
+                            return result;
+                        }
+                        else
+                        {
+                            result.IsError = true;
+                            result.Message = "Cập nhật không thành công";
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Message = "Không tìm thấy thông tin tài khoản";
+                        return result;
+                    }
+                }
+            }
+            else
+            {
+                result.IsError = true;
+                result.Message = "Cập nhật không thành công";
+                return result;
+            }
+        }
+
+        #endregion
+
+        #region Update User
+        public static DataReturnModel UpdateInfo(AccountInfo data)
+        {
+            var result = new DataReturnModel();
+            if (data != null)
+            {
+                using (var db = new nhanshiphangContext())
+                {
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
+                    if (acc != null)
+                    {
+                        acc.Email = data.Email;
+                        acc.ModifiedBy = data.UserName;
+                        acc.ModifiedDate = DateTime.Now;
+                        db.Update(acc);
+                        var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                        if (acc != null)
+                        {
+                            accInfo.FirstName = data.FirstName;
+                            accInfo.LastName = data.LastName;
+                            accInfo.Gender = data.Gender;
+                            accInfo.BirthDay = data.BirthDay;
+                            accInfo.Email = data.Email;
+                            accInfo.Phone = data.Phone;
+                            accInfo.Address = data.Address;
+                            accInfo.Phone = data.Phone;
+                            accInfo.ModifiedBy = data.UserName;
+                            accInfo.ModifiedDate = DateTime.Now;
+                            db.Update(accInfo);
+                        }
+                        var isSave = db.SaveChanges();
+                        if (isSave > 0)
+                        {
+                            result.IsError = false;
+                            result.Data = data;
+                            result.Message = "Cập nhật thành công";
+                            return result;
+                        }
+                        else
+                        {
+                            result.IsError = true;
+                            result.Message = "Cập nhật không thành công";
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Message = "Không tìm thấy thông tin tài khoản";
+                        return result;
+                    }
+                }
+            }
+            else
+            {
+                result.IsError = true;
+                result.Message = "Cập nhật không thành công";
+                return result;
+            }
+        }
+
+        #endregion
     }
 }

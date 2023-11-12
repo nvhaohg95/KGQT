@@ -20,10 +20,9 @@ namespace KGQT.Areas.Admin.Controllers
     {
         #region constructor
         private IToastNotification _toastNotification;
-        private static NamespaceHandling _db;
         public ShippingOrderController(IToastNotification toastNotification)
         {
-            _toastNotification = toastNotification;
+            this._toastNotification = toastNotification;
         }
 
         #endregion
@@ -39,6 +38,9 @@ namespace KGQT.Areas.Admin.Controllers
                 int totalRecord = (int)oData[1];
                 int totalPage = (int)oData[2];
                 @ViewData["status"] = status;
+                @ViewData["ID"] = ID;
+                @ViewData["fromDate"] = fromDate;
+                @ViewData["toDate"] = toDate;
                 @ViewData["page"] = page;
                 @ViewData["totalRecord"] = totalRecord;
                 @ViewData["totalPage"] = totalPage;
@@ -78,7 +80,7 @@ namespace KGQT.Areas.Admin.Controllers
             try
             {
                 var userLogin = HttpContext.Session.GetString("user");
-                var user = Accounts.GetInfo(-1, form.Username);
+                var user = AccountBusiness.GetInfo(-1, form.Username);
                 form.Status = 1;
                 form.CreatedDate = DateTime.Now;
                 form.CreatedBy = userLogin;

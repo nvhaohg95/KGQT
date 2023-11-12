@@ -10,7 +10,7 @@ namespace KGQT.Controllers
         //Bảng giá
         public IActionResult Index()
         {
-            var lst = FeeWeightBusiness.GetList();
+            var lst = FeeWeightBusiness.GetList(0);
             return View(lst);
         }
 

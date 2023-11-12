@@ -54,7 +54,7 @@ namespace KGQT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(UserModel data)
         {
-            var result = Accounts.Login(data.UserName, data.PassWord);
+            var result = AccountBusiness.Login(data.UserName, data.PassWord);
             if (result.IsError)
             {
                 ModelState.AddModelError(result.Key, result.Message);
@@ -62,13 +62,13 @@ namespace KGQT.Controllers
             }
             HttpContext.Session.SetString("user", data.UserName);
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
-            if ((result.Data as UserLogin).RoleID == 1)
-                return RedirectToAction("home", "admin");
+            if(result.Data != null)
+            {
+                var user = result.Data as UserLogin;
+                if (user.RoleID == 1)
+                    return RedirectToAction("home", "admin");
+            }
             return RedirectToAction("dashboard", "home");
-            //var result = new DataReturnModel() { };
-            //result.Data = new UserLogin() { Username = "loc", FirstName = "Lộc", LastName = "Trần", IMG = "" };
-            //HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
-            //return RedirectToAction("home", "admin");
         }
         #endregion
 
@@ -97,7 +97,7 @@ namespace KGQT.Controllers
                 {
                     data.Path = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", "avatars");
                 }
-                var result = Accounts.RegisterAccount(data);
+                var result = AccountBusiness.RegisterAccount(data);
                 if (result.IsError)
                 {
                     if (result.Type == 1)
@@ -126,7 +126,7 @@ namespace KGQT.Controllers
                 var time = DateTime.Parse(strToken.Split("|")[1]);
                 if (DateTime.Now.Subtract(time).TotalMinutes <= 30)
                 {
-                    var acc = Accounts.GetByUsernameAndToken(userName, token);
+                    var acc = AccountBusiness.GetByUsernameAndToken(userName, token);
                     if (acc != null)
                     {
                         var data = new ForgotPassWord();
@@ -144,7 +144,7 @@ namespace KGQT.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = Accounts.ForgotPassword(data);
+                var result = AccountBusiness.ForgotPassword(data);
                 if (result.IsError)
                 {
                     if (result.Type == 1)
@@ -165,7 +165,7 @@ namespace KGQT.Controllers
         [HttpPost]
         public async Task<JsonResult> SendMailForgetPassword(string email)
         {
-            var result = await Accounts.SendMailForgetPassword(_mailSettings, email);
+            var result = await AccountBusiness.SendMailForgetPassword(_mailSettings, email);
             if (result.IsError)
                 NotificationService.AddWarningToastMessage(result.Message);
             else

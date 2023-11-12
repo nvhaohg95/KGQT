@@ -24,10 +24,22 @@ namespace KGQT.Controllers
 
         public ActionResult Detail(int id)
         {
-            var user = UserBusiness.GetUser(id);
+            var user = UserBusiness.GetUserByID(id);
             ViewData["ID"] = id;
+            ViewData["lstRoles"] = UserBusiness.GetListUserRole();
             return View(user);
         }
+
+        #region User Info
+        public ActionResult Infor(int id)
+        {
+            var userName = HttpContext.Session.GetString("user");
+            var user = UserBusiness.GetUserByUserName(userName);
+            ViewData["userName"] = userName;
+            ViewData["lstRoles"] = UserBusiness.GetListUserRole();
+            return View(user);
+        }
+        #endregion
 
         #region Update
         [HttpPost]
@@ -56,6 +68,7 @@ namespace KGQT.Controllers
             }
             return new { error = true, mssg = "Không tìm thấy thông tin" };
         }
+
         #endregion
 
     }

@@ -14,10 +14,14 @@ namespace KGQT.Models
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
         /// <summary>
-        /// 1. Vận chuyển nhanh
-        /// 2. Vận chuyển tiết kiệm
+        /// 1 bay nhanh
+        /// 2 bay thường
+        /// 3 bộ
+        /// 4 lô 
+        /// 5 biển
         /// </summary>
         public int? Type { get; set; }
+
         public double? MinWeight { get; set; }
     }
 }

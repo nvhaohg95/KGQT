@@ -56,7 +56,7 @@ namespace KGQT
         [HttpPost]
         public JsonResult ChangePassword(ChangePassword data)
         {
-            var result = Accounts.ChangePassword(data);
+            var result = AccountBusiness.ChangePassword(data);
             if (result.IsError)
             {
                 NotificationService.AddErrorToastMessage(result.Message);
