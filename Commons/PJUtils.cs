@@ -260,7 +260,12 @@ namespace KGQT.Commons
             using (ExcelPackage pack = new ExcelPackage(FileStream))
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                ExcelWorksheet worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
+                ExcelWorksheet worksheet = null;
+                if (!string.IsNullOrEmpty(name))
+                    worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
+                else
+                    worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.LastOrDefault();
+
                 if (worksheet == null)
                 {
                     return null;

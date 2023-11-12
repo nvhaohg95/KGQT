@@ -73,29 +73,6 @@
                                     </div>
                                 </div>
                             </div>
-                            @* <div class="row py-2">
-                            <div class="col">
-                            <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                            <span class="text-primary cursor-pointer">
-                            <i class="fas fa-chevron-down fa-xs"></i>
-                            Mở rộng tìm kiếm
-                            </span>
-                            </div>
-                            <div>
-                            <span class="cursor-pointer mr-2" id="resetForm" onclick="resetForm()">
-                            <a href="index?page=1" class="text-decoration-none">
-                            <i class="fas fa-sync fa-xs"></i>
-                            Làm mới bộ lọc
-                            </a>
-                            </span>
-                            <button type="submit" class="btn btn-sm btn-primary">
-                            Tìm kiếm
-                            </button>
-                            </div>
-                            </div>
-                            </div>
-                            </div>*@
                         </form>
                     </div>
                 </div>
@@ -174,7 +151,7 @@
                                             @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                         </td>
                                         <td class="text-center" style="vertical-align:middle">
-                                            @Html.DisplayFor(modelItem => item.TotalPrice)
+                                            @string.Format("{0:N0}đ", item.TotalPrice).Replace(",",".")
                                         </td>
                                         <td class="text-center" style="vertical-align:middle">
                                             @Html.DisplayFor(modelItem => item.CreatedDate)
@@ -183,7 +160,7 @@
                                             @Html.DisplayFor(modelItem => item.Username)
                                         </td>
                                         <td class="text-center">
-                                            <a class="btn btn-sm btn-secondary" href="/Admin/ShippingOrder/Details?id=@item.ID">
+                                            <a class="btn btn-sm btn-info" href="/Admin/ShippingOrder/Details?id=@item.ID">
                                                 <i class="far fa-edit"></i>
                                                 <span>Xem</span>
                                             </a>

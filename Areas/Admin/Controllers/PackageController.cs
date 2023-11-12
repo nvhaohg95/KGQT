@@ -207,11 +207,9 @@ namespace KGQT.Areas.Admin.Controllers
                 pack.Weight = weight;
             else
                 pack.Weight = fee.MinWeight;
-            pack.WeightPrice = weight * fee.Amount;
             pack.WeightReal = weight;
             pack.WoodPackagePrice = woodPrice;
             pack.AirPackagePrice = airPrice;
-            pack.TotalPrice = pack.WeightPrice + airPrice + woodPrice + Convert.ToDouble(pack.IsInsurance);
             pack.Status = 4;
             pack.ModifiedBy = crrUse;
             pack.ModifiedDate = DateTime.Now;
@@ -286,11 +284,11 @@ namespace KGQT.Areas.Admin.Controllers
                     ship.Weight = pack.Weight;
                     ship.WeightPrice = pack.Weight * fee.Amount;
                     ship.IsAirPackage = pack.IsAirPackage;
-                    ship.AirPackagePrice = pack.AirPackagePrice;
+                    ship.AirPackagePrice = pack.AirPackagePrice ?? 0;
                     ship.IsWoodPackage = pack.IsWoodPackage;
-                    ship.WoodPackagePrice = pack.WoodPackagePrice;
+                    ship.WoodPackagePrice = pack.WoodPackagePrice ?? 0;
                     ship.IsInsurance = pack.IsInsurance;
-                    ship.InsurancePrice = pack.IsInsurancePrice;
+                    ship.InsurancePrice = pack.IsInsurancePrice ?? 0;
                     ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice;
                     ship.Status = 1;
                     ship.CreatedDate = DateTime.Now;

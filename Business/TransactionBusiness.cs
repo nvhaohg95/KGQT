@@ -1,4 +1,5 @@
-﻿using KGQT.Models;
+﻿using KGQT.Business.Base;
+using KGQT.Models;
 using KGQT.Models.temp;
 
 namespace KGQT.Business
@@ -98,6 +99,5 @@ namespace KGQT.Business
             return result;
         }
         #endregion
-
     }
 }

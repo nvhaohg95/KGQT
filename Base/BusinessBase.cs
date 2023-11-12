@@ -280,5 +280,24 @@ namespace KGQT.Business.Base
 
         }
         #endregion
+
+        #region sys_log
+        public static void SysLog(int userId, int type, string content,string old, string userName)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var t = new tbl_SystemLog();
+                t.ID = Guid.NewGuid();
+                t.Type = type;
+                t.Content = content;
+                t.OldValue = old;
+                t.CreatedBy = userName;
+                t.CreatedOn = DateTime.Now;
+                db.tbl_TrackShippingOrders.Add(t);
+                db.SaveChanges();
+            }
+
+        }
+        #endregion
     }
 }

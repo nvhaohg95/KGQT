@@ -53,7 +53,7 @@ namespace KGQT.Areas.Admin.Controllers
             var isSave = BusinessBase.Add(form);
             if (isSave)
             {
-                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo bảng giá", 0, user.Username);
+                BusinessBase.SysLog(user.ID, 1, "{0} đã tạo bảng giá", "", user.Username);
             }
             return Json(isSave);
         }

@@ -22,7 +22,7 @@ namespace KGQT.Controllers
 
         #region View
         // GET: ShippingOrderController
-        public ActionResult Index(int status,string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
+        public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
             var userLogin = HttpContext.Session.GetString("user");
             var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
@@ -240,8 +240,6 @@ namespace KGQT.Controllers
             bool check = oUser.Wallet > oOrder.TotalPrice;
             if (check)
             {
-                var pay = oUser.Wallet - oOrder.TotalPrice;
-
                 oOrder.Status = 2;
                 oOrder.ModifiedBy = username;
                 oOrder.ModifiedDate = DateTime.Now;
@@ -249,24 +247,15 @@ namespace KGQT.Controllers
                 var s = BusinessBase.Update(oOrder);
                 if (s)
                 {
-                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, username);
-
+                    oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
+                    var pay = oUser.Wallet - oOrder.TotalPrice;
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);
 
-                    var trade = new tbl_TradeHistory();
-                    trade.UID = oUser.ID;
-                    trade.Title = PJUtils.TradeName(1);
-                    trade.OrderCode = oOrder.ShippingOrderCode;
-                    trade.OrderPrice = string.Format("{0:N0}đ", oOrder.TotalPrice).Replace(",", ".");
-                    trade.AmountIn = "0";
-                    trade.AmountDebt = "0";
-                    trade.PaymentMethod = 1;
-                    trade.PayCode = Guid.NewGuid().ToString("N");
-                    trade.Status = 1;
-                    trade.CreatedDate = DateTime.Now;
-                    trade.CreatedBy = "Auto";
-                    BusinessBase.Add(trade);
+                    #region Logs
+                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, oOrder.TotalPrice.Value, 1, 1, pay.Value);
+                    #endregion
 
                     var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
                     foreach (var pack in packs)

@@ -30,7 +30,7 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region View
         [HttpGet]
-        public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1,int pageSize = 20)
+        public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -189,34 +189,6 @@ namespace KGQT.Areas.Admin.Controllers
             return false;
         }
 
-        [HttpPost]
-        public bool DeleteDeclare(int id)
-        {
-            var entity = BusinessBase.GetOne<tbl_ShippingOrderDeclaration>(x => x.ID == id);
-            var s = BusinessBase.Remove<tbl_ShippingOrderDeclaration>(entity);
-            if (!s)
-                return false;
-
-            var order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == entity.ShippingOrderID);
-            var lstDeclare = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == order.ID);
-            var feeInsur = lstDeclare.Sum(x => x.PriceVND);
-
-            order.InsurancePrice = feeInsur * 0.05;
-            order.ModifiedBy = HttpContext.Session.GetString("user");
-            order.ModifiedDate = DateTime.Now;
-            if (BusinessBase.Update(order))
-            {
-                var sUser = HttpContext.Session.GetString("US_LOGIN");
-                if (!string.IsNullOrEmpty(sUser))
-                {
-                    var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    BusinessBase.TrackLog(user.ID, order.ID, "{0} đã xóa kê khai đơn" + id, 0, user.Username);
-                    return true;
-                }
-
-            }
-            return false;
-        }
 
         [HttpPost]
         public object Payment(int id)
@@ -234,8 +206,6 @@ namespace KGQT.Areas.Admin.Controllers
             bool check = oUser.Wallet > oOrder.TotalPrice;
             if (check)
             {
-                var pay = oUser.Wallet - oOrder.TotalPrice;
-
                 oOrder.Status = 2;
                 oOrder.ModifiedBy = username;
                 oOrder.ModifiedDate = DateTime.Now;
@@ -243,10 +213,16 @@ namespace KGQT.Areas.Admin.Controllers
                 var s = BusinessBase.Update(oOrder);
                 if (s)
                 {
-                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
+                    oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
+                    var pay = oUser.Wallet - oOrder.TotalPrice;
 
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);
+
+                    #region Logs
+                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 0, oOrder.Username);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, oOrder.TotalPrice.Value, 1, 1, pay.Value);
+                    #endregion
 
                     var trade = new tbl_TradeHistory();
                     trade.UID = oUser.ID;

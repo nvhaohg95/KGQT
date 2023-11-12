@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using System.Configuration;
-using KGQT.Base;
+
 namespace KGQT.Models
 {
     public partial class nhanshiphangContext : DbContext
     {
-        IConfiguration _configuration = new ConfigurationBuilder()
-                           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                           .Build();
         public nhanshiphangContext()
         {
         }
@@ -39,6 +35,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrderDeclaration> tbl_ShippingOrderDeclarations { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrderStatusHistory> tbl_ShippingOrderStatusHistories { get; set; } = null!;
+        public virtual DbSet<tbl_SystemLog> tbl_SystemLogs { get; set; } = null!;
         public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_TradeHistory> tbl_TradeHistories { get; set; } = null!;
         public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
@@ -50,7 +47,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("KGQT"));
+                optionsBuilder.UseSqlServer("Server=LAPTOP-EOMC9SID;Database=nhanshiphang;User Id=sa;Password=abc123;Integrated Security=True; Trusted_Connection=True;");
             }
         }
 
@@ -189,7 +186,7 @@ namespace KGQT.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TradeType).HasComment("1: Đặt cọc\r\n2: Nhận lại tiền đặt cọc\r\n3: Thanh toán hóa đơn\r\n4: Admin nạp tiền\r\n5: Rút tiền\r\n6: Hủy rút tiền\r\n7. Nhận tiền khiếu nại đơn hàng\r\n8. Trừ tiền lưu kho\r\n9. Truy thu\r\n11.Nạp tiền tại kho\r\n12.Rút tiền tại kho\r\n");
+                entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n");
 
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });
@@ -307,6 +304,15 @@ namespace KGQT.Models
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<tbl_SystemLog>(entity =>
+            {
+                entity.Property(e => e.ID).HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<tbl_TrackShippingOrder>(entity =>
             {
                 entity.ToTable("tbl_TrackShippingOrder");
@@ -319,7 +325,9 @@ namespace KGQT.Models
 
                 entity.Property(e => e.ModifieldOn).HasColumnType("datetime");
 
-                entity.Property(e => e.Type).HasDefaultValueSql("((0))");
+                entity.Property(e => e.Type)
+                    .HasDefaultValueSql("((0))")
+                    .HasComment("0: admin, 1: khách");
             });
 
             modelBuilder.Entity<tbl_TradeHistory>(entity =>

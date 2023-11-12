@@ -2,6 +2,7 @@
 using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -54,6 +55,11 @@ namespace KGQT.Areas.Admin.Controllers
                 var u = BusinessBase.GetOne<tbl_Account>(x=>x.ID== user.ID);
                 u.Wallet += model.Amount;
                 s = BusinessBase.Update(u);
+
+                #region Logs
+                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Amount.Value, 1, 1, u.Wallet.Value);
+                #endregion
+
                 // update số dư ví
                 var sUser = HttpContext.Session.GetString("US_LOGIN");
                 if(s)
