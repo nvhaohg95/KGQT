@@ -26,7 +26,7 @@
                     <label class="required" for="sltPaymentMethod">Ngân hàng:</label>
                     <select class="form-control" name="PaymentMethod" id="sltPaymentMethod" onchange="pmtChanged(this)">
                         <option>----Chọn hình thức nạp tiền----</option>
-                        <option value="1">Tiền mặt</option>
+                        <option value="1" selected>Tiền mặt</option>
                         <option value="2">Chuyển khoản</option>
                     </select>
                 </div>
@@ -124,7 +124,7 @@
             data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
 
         //  data.PaymentMethod = $('#pmtChanged').find(":selected").val();
-        if (!data.PaymentMethod == 2) {
+        if (!data.PaymentMethod) {
             helper.showErr('Vui lòng nhập hình thức nạp!');
             return
         }

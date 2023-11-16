@@ -824,6 +824,7 @@ namespace KGQT.Business
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
                     if (acc != null)
                     {
+                        acc.RoleID = data.RoleID;
                         acc.Email = data.Email;
                         acc.ModifiedBy = userModifiedBy;
                         acc.ModifiedDate = DateTime.Now;

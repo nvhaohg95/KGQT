@@ -7,6 +7,20 @@ namespace KGQT.Business
 {
     public static class ShippingOrder
     {
+        #region Get count
+        public static object[] GetAllStatus(string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var data = db.tbl_ShippingOrders.Where(x => x.Username == username);
+                int st1 = data.Where(x => x.Status == 1).Count();
+                int st2 = data.Where(x => x.Status == 2).Count();
+                int total = data.Count();
+                return new object[] { st1, st2, total };
+            }
+        }
+        #endregion
+
         #region Get List
         public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, string? userName = "")
         {
@@ -33,15 +47,15 @@ namespace KGQT.Business
                     query = query.Where(x => x.CreatedDate <= toDate);
 
                 total = query.Count();
-                if(total > 0)
+                if (total > 0)
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                     lstData = query.OrderByDescending(x => x.CreatedDate)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize).ToList();
                 }
-                
-                return new object[] { lstData , total , totalPage};
+
+                return new object[] { lstData, total, totalPage };
             }
         }
 
@@ -67,7 +81,7 @@ namespace KGQT.Business
             }
         }
 
-       
+
         #endregion
     }
 }

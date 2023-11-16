@@ -50,7 +50,6 @@
     <None Include="wwwroot\js\demo\chart-area-demo.js" />
     <None Include="wwwroot\js\demo\chart-bar-demo.js" />
     <None Include="wwwroot\js\demo\chart-pie-demo.js" />
-    <None Include="wwwroot\js\demo\datatables-demo.js" />
     <None Include="wwwroot\js\sb-admin-2.js" />
     <None Include="wwwroot\js\sb-admin-2.min.js" />
     <None Include="wwwroot\scss\navs\_global.scss" />

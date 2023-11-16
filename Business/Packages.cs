@@ -7,12 +7,23 @@ namespace KGQT.Business
 {
     public static class Packages
     {
+        #region Select
+        public static object[] GetAllStatus(string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var data = db.tbl_Packages.Where(x => x.Username == username);
+                int st1 = data.Where(x => x.Status ==3).Count();
+                int st2 = data.Where(x => x.Status == 4).Count();
+                int st3 = data.Where(x => x.Status == 5).Count();
+                return new object[] { st1, st2, st3 };
+            }
+        }
         public static bool CheckExist(string package)
         {
             using (var db = new nhanshiphangContext())
                 return db.tbl_Packages.Any(x => x.PackageCode == package);
         }
-
         public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2, string userName = "")
         {
             using (var db = new nhanshiphangContext())
@@ -40,7 +51,7 @@ namespace KGQT.Business
                 return new object[] { lstData, count, totalPage };
             }
         }
-
+        #endregion
 
         #region CRUD
         public static object[] UpdateStatusCNWH(List<ExcelModel> model, int status, string userName)
