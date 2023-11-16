@@ -46,15 +46,14 @@ namespace KGQT.Business
                     var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == withDraw.UID);
                     if (user != null)
                     {
-                        if (user.Wallet == null)
-                            user.Wallet = 0;
-                        user.Wallet = user.Wallet + withDraw.Amount;
+                        var moneyLeft = user.Wallet != null ? user.Wallet : 0;
+                        user.Wallet = moneyLeft + withDraw.Amount;
                         var transaction = new tbl_Transaction()
                         {
                             UIDReceive = user.ID,
                             Amount = withDraw.Amount,
                             Type = 2,
-                            CreatedBy = userName, // ID or UserID or UserName ??
+                            CreatedBy = userName,
                             CreatedDate = DateTime.Now
                         };
                         switch (withDraw.Type)
@@ -77,10 +76,14 @@ namespace KGQT.Business
                         db.Update(user);
                         db.Update(withDraw);
                         var isSave = db.SaveChanges();
-                        if (isSave > 3)
+                        if (isSave == 3)
                         {
+
                             result.IsError = false;
                             result.Message = "Duyệt thành công.";
+                            #region Logs
+                            HistoryPayWallet.Insert(user.ID, user.Username, withDraw.ID, withDraw.Amount.Value, 1, 1, moneyLeft.Value);
+                            #endregion
                             return result;
                         }
                         else
@@ -97,6 +100,46 @@ namespace KGQT.Business
                 }
             }
             return result;
+        }
+        #endregion
+
+
+        #region Add
+        public static bool Insert(int? UID, double? amount, int? inOut, int? withDrawType, string createdBy)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var transaction = new tbl_Transaction()
+                {
+                    UIDReceive = UID,
+                    Amount = amount,
+                    INOUT = inOut,
+                    Type = 2,
+                    CreatedBy = createdBy,
+                    CreatedDate = DateTime.Now
+                };
+                switch (withDrawType)
+                {
+                    case 1:
+                    case 6:
+                        transaction.Type = 1;
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 7:
+                    case 8:
+                    case 9:
+                        transaction.Type = 2;
+                        break;
+                }
+                db.Add(transaction);
+                var kq = db.SaveChanges();
+                if (kq > 0)
+                    return true;
+            }
+            return false;
         }
         #endregion
     }

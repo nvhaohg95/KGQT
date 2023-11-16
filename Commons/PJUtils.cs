@@ -258,13 +258,13 @@ namespace KGQT.Commons
                     s = "Thanh toán đơn hàng";
                     break;
                 case 2:
-                    s = "Nhận lại tiền hang";
+                    s = "Hoàn tiền";
                     break;
                 case 3:
                     s = "Admin nạp tiền";
                     break;
                 case 4:
-                    s = "Rút tiề";
+                    s = "Rút tiền";
                     break;
                 case 5:
                     s = "Hủy rút tiền";
