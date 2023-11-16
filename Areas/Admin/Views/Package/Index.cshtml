@@ -54,6 +54,7 @@
                         <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 11 ? "bg-danger text-white" : "")" onclick="sort(11)">Không nhận được hàng</a>
                     </li>
                 </ul>
+                <a class="btn btn-secondary" href="/admin/package/DownloadFile">Download</a>
             </div>
         </div>
         <div class="row py-2">
@@ -248,7 +249,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                
+
                                 <div class="form-inline text-left">
                                     Phí bảo hiểm:  &nbsp;
                                     @if (item.IsAirPackage != null && item.IsAirPackage == true)
@@ -313,15 +314,17 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group mb-4">
-                    <label class="required" for="exportCNWH">File Excel:</label>
-                    @*<input type="file" id="exportCNWH" hidden onchange="exportCNWH(this)" />*@
-                    <input type="file" class="form-control" id="exportCNWH">
-                </div>
-                <div class="form-group mb-4">
-                    <label class="required" for="txtShipID">Tên Sheet:</label>
-                    <input type="text" class="form-control" id="txtSheet" name="txtSheet" placeholder="Nhập tên sheet cần đọc dữ liệu (cần nhập chính xác tên)">
-                </div>
+                <form id="uploadExcel">
+                    <div class="form-group mb-4">
+                        <label class="required" for="exportCNWH">File Excel:</label>
+                        @*<input type="file" id="exportCNWH" hidden onchange="exportCNWH(this)" />*@
+                        <input type="file" class="form-control" id="exportCNWH">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtShipID">Tên Sheet:</label>
+                        <input type="text" class="form-control" id="txtSheet" name="txtSheet" placeholder="Nhập tên sheet cần đọc dữ liệu (cần nhập chính xác tên)">
+                    </div>
+                </form>
                 @*  <div class="form-group mb-4">
                 <label class="required" for="control">Vị trí cột bắt đầu:</label>
                 <input type="text" class="form-control" id="txtColumn" placeholder="Nhập vị trí cột bắt đầu đọc (VD: A)">
@@ -363,6 +366,8 @@
     function exportCNWH() {
         let file = $("#exportCNWH")[0].files;
         let sheet = $("#txtSheet").val();
+        $("#uploadExcel").reset();
+        return;
         let form = new FormData();
         form.append("file", file[0]);
         form.append("sheet", sheet);
@@ -374,26 +379,32 @@
             contentType: false,
             processData: false,
             success: function (res) {
-
-                if (res == -2) {
+                let status = res.status;
+                if (status == -2) {
                     helper.showErr('không tìm thấy Sheet vừa nhập, vui lòng kiểm tra lại');
                     return;
                 }
 
-                if (res == -1) {
+                if (status == -1) {
                     helper.showErr('Lỗi không đọc được thông tin file');
                     return;
                 }
 
-                if (res == 0) {
-                    helper.showWarn('Không có kiện nào khớp với file vừa chọn');
+                if (status == 0) {
+                    helper.showWarn('Không tìm thấy kiện nào khớp với file vừa chọn');
                     return;
                 }
 
-                if (res == 1) {
+                if (status == 1) {
+                    if (res.path) {
+                        var a = document.createElement('a');
+                        a.href = "/admin/package/downloadfile?filepath=" + res.path;
+                        a.dispatchEvent(new MouseEvent('click'));
+                    }
                     helper.showSuc('Cập nhật thành công', true);
                     return;
                 }
+
             }, error: function (e) {
                 console.log(e);
             }

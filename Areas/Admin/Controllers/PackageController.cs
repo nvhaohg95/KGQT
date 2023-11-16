@@ -8,6 +8,7 @@ using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
+using MimeKit;
 using Newtonsoft.Json;
 using System.Data;
 using System.Reflection;
@@ -19,6 +20,7 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("admin")]
     public class PackageController : Controller
     {
+        #region View
         public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var oData = Packages.GetPage(status, ID, fromDate, toDate, page, pageSize);
@@ -74,8 +76,15 @@ namespace KGQT.Areas.Admin.Controllers
             return PartialView("_Package", package);
         }
 
+        [HttpGet]
+        public IActionResult DownloadFile(string filePath)
+        {
+            filePath = "D:\\Src\\KGQT\\bin\\Debug\\net6.0\\ExportExcel\\16112023/T11_1日YT7423331377870.xlsm";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, MimeTypes.GetMimeType(filePath), Path.GetFileName(filePath));
+        }
 
-
+        #endregion
         #region Function
         [HttpGet]
         public bool CheckPackage(string package)
@@ -84,20 +93,32 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<int> ExportChinaWareHouseAsync(string sheet, IFormFile file)
+        public object ExportChinaWareHouse(string sheet, IFormFile file)
         {
             if (file == null)
             {
                 Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
-                return -1;
+                return new { status = -1 };
             }
+
             List<ExcelModel> content = PJUtils.ReadExcelToJson(file, sheet);
             if (content == null)
-                return -2;
+                return new { status = -2 };
+
             Log.Info("Cập nhật xuất kho China", "File content:" + JsonConvert.SerializeObject(content));
             var userLogin = HttpContext.Session.GetString("user");
-            int s = Packages.UpdateStatusCNWH(content, 3, userLogin);
-            return s;
+            object[] oData = Packages.UpdateStatusCNWH(content, 3, userLogin);
+            int s = Int32.Parse(oData[0].ToString());
+            if (s > 0)
+            {
+                if (oData.Length > 1)
+                {
+                    string path = PJUtils.MarkupValueExcel(file, sheet, oData[1] as List<string>);
+                    return new { status = s, path };
+                }
+                return new { status = s };
+            }
+            return new { status = s };
         }
 
         [HttpPost]
@@ -159,7 +180,7 @@ namespace KGQT.Areas.Admin.Controllers
             var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
             var user = AccountBusiness.GetInfo(-1, form.Username);
             form.Status = 0;
-            form.PackageCode = form.PackageCode.Trim().Replace("\'","").Replace(" ", "");
+            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             form.UID = user.ID;
             form.Username = user.Username;
             form.FullName = user.FirstName + " " + user.LastName;

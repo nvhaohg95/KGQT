@@ -7,6 +7,9 @@ using System.Linq;
 using Fasterflect;
 using OfficeOpenXml;
 using System.Security.Policy;
+using System.Drawing;
+using KGQT.Base;
+using Newtonsoft.Json;
 
 namespace KGQT.Commons
 {
@@ -278,9 +281,6 @@ namespace KGQT.Commons
 
         public static List<ExcelModel> ReadExcelToJson(IFormFile file, string name)
         {
-            string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string fileName = Guid.NewGuid().ToString() + file.Name;
-            FileInfo fileInfo = new FileInfo(Path.Combine(rootFolder, fileName));
             Stream FileStream = file.OpenReadStream();
             List<ExcelModel> oData = new List<ExcelModel>();
             using (ExcelPackage pack = new ExcelPackage(FileStream))
@@ -315,6 +315,84 @@ namespace KGQT.Commons
                 }
             }
             return oData;
+        }
+
+        public static string MarkupValueExcel(IFormFile file, string name, List<string> data)
+        {
+
+            if (file == null || data == null || data.Count == 0) return "";
+            string fileName = file.FileName;
+
+            using Stream FileStream = file.OpenReadStream();
+            using (ExcelPackage pack = new ExcelPackage(FileStream))
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelWorksheet worksheet = null;
+                if (!string.IsNullOrEmpty(name))
+                    worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
+                else
+                    worksheet = pack.Workbook.Worksheets.LastOrDefault();
+
+                if (worksheet == null)
+                {
+                    return "";
+                }
+                else
+                {
+                    #region Read value
+                    var rowCount = worksheet.Dimension.Rows;
+                    var columnCount = worksheet.Dimension.Columns;
+                    for (int column = 1; column < columnCount; column++)
+                    {
+                        for (int row = 2; row < rowCount; row++)
+                        {
+                            var v = worksheet.Cells[row, column].Value;
+                            if (v != null)
+                            {
+                                v = v.ToString().Trim().Replace("\'", "").Replace(" ", "");
+                                if (data.Contains(v))
+                                {
+                                    worksheet.Cells[row, column].Style.Fill.SetBackground(Color.Green);
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region save file was edit
+                    try
+                    {
+                        string pathRoot = AppDomain.CurrentDomain.BaseDirectory;
+                        pathRoot = Path.Combine(pathRoot, "ExportExcel", DateTime.Now.ToString("ddMMyyyy"));
+                        if (!Directory.Exists(pathRoot))
+                            Directory.CreateDirectory(pathRoot);
+
+                        string sheet = worksheet.Name;
+                        if (!string.IsNullOrEmpty(sheet))
+                        {
+                            var splitName = fileName.Split('.');
+
+                            if (splitName.Length > 1)
+                            {
+                                fileName = splitName[0] + "_" + sheet + "." + splitName[1];
+                            }
+                            else
+                                fileName = fileName + "_" + sheet;
+                        }
+                        pathRoot = pathRoot + "/" + fileName;
+
+                        pack.SaveAs(pathRoot);
+                        byte[] fileBytes = System.IO.File.ReadAllBytes(pathRoot);
+                        return pathRoot;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Export file excel", JsonConvert.SerializeObject(ex));
+                        return "";
+                    }
+                    #endregion
+                }
+            }
         }
 
         public static List<ExcelModel> ExcelToJson(IFormFile file)
