@@ -16,7 +16,7 @@ namespace KGQT.Areas.Admin.Controllers
         #region View
         public IActionResult Index(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = WithDraw.GetList(status, fromDate, toDate, page, pageSize);
+            var oData = WithDrawBusiness.GetList(status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
             var totalRecord = (int)oData[1];
             var totalPage = (int)oData[2];
@@ -28,6 +28,7 @@ namespace KGQT.Areas.Admin.Controllers
             ViewData["totalPage"] = totalPage;
             return View(lstData);
         }
+        [HttpGet]
         public IActionResult Create(string user)
         {
             ViewData["user"] = user;
@@ -59,26 +60,19 @@ namespace KGQT.Areas.Admin.Controllers
                 #region Logs
                 HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Amount.Value, 1, 1, u.Wallet.Value);
                 #endregion
-
-                // update số dư ví
-                var sUser = HttpContext.Session.GetString("US_LOGIN");
-                if(s)
-                {
-                    if (!string.IsNullOrEmpty(sUser))
-                    {
-                        UserLogin acc = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                        if (acc != null)
-                        {
-                            acc.Wallet = u.Wallet;
-                            HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(acc));
-                        }
-                    }
-                }    
             }
             return Ok(s);
         }
 
 
+        
+        [HttpPost]
+        public DataReturnModel Arppoval(int id)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var result = TransactionBusiness.ApprovalRecharge(id, userLogin);
+            return result;
+        } 
         [HttpGet]
         public IActionResult AutoComplete(string s)
         {
@@ -86,5 +80,33 @@ namespace KGQT.Areas.Admin.Controllers
             return Json(data);
         }
         #endregion
+
+        #region Tạo lệnh nạp tiền
+        [HttpPost]
+        public bool Create(tbl_Withdraw model)
+        {
+            var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
+            string userLogin = HttpContext.Session.GetString("user");
+            if (user != null && !string.IsNullOrEmpty(userLogin))
+            {
+                model.UID = user.ID;
+                model.Fullname = user.FirstName + " " + user.LastName;
+                model.Status = 2;
+                model.Type = 1;
+                model.CreatedBy = userLogin;
+                model.CreatedDate = DateTime.Now;
+                return WithDrawBusiness.Insert(model, userLogin);
+            }
+            return false;
+        }
+        #endregion
+
+        #region Duyệt lệnh nạp tiền
+        public bool Approval(int ID)
+        {
+            return false;
+        }
+        #endregion
+
     }
 }

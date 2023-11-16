@@ -260,11 +260,15 @@
                         Thông tin tài khoản
                     </a>
                     <div class="dropdown-divider"></div>
+                    <a class="dropdown-item">
+                        <i class="fas fa-money-check-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Nạp tiền
+                    </a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" data-toggle="modal" data-target="#changePassWordModal">
                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                         Đổi mật khẩu
                     </a>
-
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="@Url.ActionLink("logout","auth")">
                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -292,10 +296,27 @@
                             <span><i class="fas fa-box icon-16"></i></span>
                             <span class="ml-2">KIỆN HÀNG</span>
                         </a>
-                        <a class="nav-link" asp-action="Recharge" asp-controller="Transaction">
-                            <span><i class="fas fa-money-check-alt icon-16"></i></span>
-                            <span class="ml-2">NẠP TIỀN</span>
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts1" aria-expanded="false" aria-controls="collapseLayouts1">
+                            <span><i class="fas fa-wallet icon-16"></i></span>
+                            <span class="ml-2">VÍ TIỀN</span>
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
+                        <div class="collapse" id="collapseLayouts1" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" asp-action="Recharge" asp-controller="Transaction">
+                                    <p class="mb-0">
+                                        <i class="fas fa-dollar-sign icon-16"></i>
+                                        <span>NẠP TIỀN</span>
+                                    </p>
+                                </a>
+                                <a class="nav-link" asp-action="History" asp-controller="Transaction">
+                                    <p class="mb-0">
+                                        <i class="fas fa-exchange icon-16"></i>
+                                        <span>LỊCH SỬ GIAO DỊCH</span>
+                                    </p>
+                                </a>
+                            </nav>
+                        </div>
                         <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                             <span><i class="fas fa-tags icon-16"></i></span>
                             <span class="ml-2">DỊCH VỤ</span>

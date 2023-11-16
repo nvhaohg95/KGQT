@@ -54,14 +54,14 @@
         </div>
     </div>
     <div class="col-12">
-        <table class="table table-bordered">
-            <thead class="thead-light table-sm">
+        <table class="table table-border">
+            <thead class="thead-light">
                 <tr class="fw-bold">
-                    <th >MĐD</th>
-                    <th >Họ tên</th>
-                    <th >Ngày sinh</th>
-                    <th >Email</th>
-                    <th >SĐT</th>
+                    <th class="text-center">MĐD</th>
+                    <th class="text-center">Họ tên</th>
+                    <th class="text-center">Ngày sinh</th>
+                    <th class="text-center">Email</th>
+                    <th class="text-center">SĐT</th>
                     <th class="text-center">Thao tác</th>
                 </tr>
             </thead>
@@ -69,22 +69,22 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
+                        <td class="text-left">
                             <span>@item.UserID</span>
                         </td>
-                        <td class="text-truncate">
+                        <td class="text-left text-truncate">
                             <div class="d-flex align-items-center">
                                 <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@(string.Concat(item.FirstName," ", item.LastName))" width="40" height="40" class="rounded-circle" />
-                                <span class="ml-2">@string.Concat(item.FirstName," ", item.LastName)</span>
+                                <span class="ml-2" title="@string.Concat(item.FirstName," ", item.LastName)">@string.Concat(item.FirstName," ", item.LastName)</span>
                             </div>
                         </td>
-                        <td>
-                            <span>@(item.BirthDay != null ? item.BirthDay.Value.ToString("dd/MM/yyyy") : "dd/MM/yyyy")</span>
+                        <td class="text-center">
+                            <span>@(item.BirthDay != null ? item.BirthDay.Value.ToString("dd/MM/yyyy") : "dd/mm/yyyy")</span>
                         </td>
-                        <td class="text-truncate">
-                            <span>@item.Email</span>
+                        <td class="text-center text-truncate">
+                            <span title="@item.Email">@item.Email</span>
                         </td>
-                        <td>
+                        <td class="text-center text-truncate">
                             <span>@item.Phone</span>
                         </td>
                         <td class="text-center">

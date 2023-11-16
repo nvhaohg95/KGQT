@@ -10,59 +10,61 @@
     <li><a href="/Admin/Withdraw/Index">Nạp tiền</a></li>
     <li><a class="active">Thêm</a></li>
 </ul>
+<div class="row justify-content-center py-4">
+    <div class="col-lg-8 col-md-8 cols-sm-8">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+                <h5 class="fw-bold text-danger text-uppercase">Thêm lệnh nạp tiền</h5>
+            </div>
+            <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+                <form method="post" action="Create" id="frmShip">
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtShipID">Tài khoản khách hàng:</label>
+                        <input type="text" class="form-control" id="txtUserName" name="Username" value="@user" placeholder="Nhập tài khoản khách hàng">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="required" for="sltPaymentMethod">Ngân hàng:</label>
+                        <select class="form-control" name="PaymentMethod" id="sltPaymentMethod" onchange="pmtChanged(this)">
+                            <option>----Chọn hình thức nạp tiền----</option>
+                            <option value="1">Tiền mặt</option>
+                            <option value="2">Chuyển khoản</option>
+                        </select>
+                    </div>
 
-<div class="container bg-white py-4">
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <h1 class="fw-bold text-danger text-uppercase">Thêm lệnh nạp tiền</h1>
+                    <div id="transfer" class="d-none">
+                        <div class="form-group mb-2">
+                            <label class="mb-0 text-primary fw-bold">Thông tin chuyển khoản</label>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="required" for="txtBank">Ngân hàng:</label>
+                            <input type="text" class="form-control" id="txtBank" name="BankName" placeholder="Nhập ngân hàng">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="required" for="txtBank">Chủ tài khoản:</label>
+                            <input type="text" class="form-control" id="txtAccountName" name="AccountName" placeholder="Nhập ngân hàng">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="required" for="txtBank">Số tài khoản:</label>
+                            <input type="text" class="form-control" id="txtAccountNumber" name="AccountNumber" placeholder="Nhập ngân hàng">
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtAmount">Số tiền</label>
+                        <input type="text" class="form-control" id="txtAmount" name="Amount" placeholder="Nhập số tiền" onkeyup="format(this)">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtShipID">Nội dung</label>
+                        <textarea class="form-control" id="txtNote" name="Note" placeholder="Nhập số tiền"></textarea>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12 col-lg-12 text-right">
+                        <button type="reset" class="btn btn-sm btn-danger mr-4 w-100px">Nhập lại</button>
+                        <button type="button" class="btn btn-sm btn-success w-100px" onclick="insert()">Duyệt</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <form method="post" action="Create" id="frmShip">
-                <div class="form-group mb-4">
-                    <label class="required" for="txtShipID">Tài khoản khách hàng:</label>
-                    <input type="text" class="form-control" id="txtUserName" name="Username" value="@user" placeholder="Nhập tài khoản khách hàng">
-                </div>
-                <div class="form-group mb-4">
-                    <label class="required" for="sltPaymentMethod">Ngân hàng:</label>
-                    <select class="form-control" name="PaymentMethod" id="sltPaymentMethod" onchange="pmtChanged(this)">
-                        <option>----Chọn hình thức nạp tiền----</option>
-                        <option value="1">Tiền mặt</option>
-                        <option value="2">Chuyển khoản</option>
-                    </select>
-                </div>
 
-                <div id="transfer" class="d-none">
-                    <div class="form-group mb-2">
-                        <label class="mb-0 text-primary fw-bold">Thông tin chuyển khoản</label>
-                    </div>
-                    <div class="form-group mb-4">
-                        <label class="required" for="txtBank">Ngân hàng:</label>
-                        <input type="text" class="form-control" id="txtBank" name="BankName" placeholder="Nhập ngân hàng">
-                    </div>
-                    <div class="form-group mb-4">
-                        <label class="required" for="txtBank">Chủ tài khoản:</label>
-                        <input type="text" class="form-control" id="txtAccountName" name="AccountName" placeholder="Nhập ngân hàng">
-                    </div>
-                    <div class="form-group mb-4">
-                        <label class="required" for="txtBank">Số tài khoản:</label>
-                        <input type="text" class="form-control" id="txtAccountNumber" name="AccountNumber" placeholder="Nhập ngân hàng">
-                    </div>
-                </div>
-                <div class="form-group mb-4">
-                    <label class="required" for="txtAmount">Số tiền</label>
-                    <input type="text" class="form-control" id="txtAmount" name="Amount" placeholder="Nhập số tiền" onkeyup="format(this)">
-                </div>
-                <div class="form-group mb-4">
-                    <label class="required" for="txtShipID">Nội dung</label>
-                    <textarea class="form-control" id="txtNote" name="Note" placeholder="Nhập số tiền"></textarea>
-                </div>
-
-                <div class="col-md-12 col-sm-12 col-lg-12 text-center">
-                    <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
-                    <button type="button" class="btn btn-success" onclick="insert()">Lưu</button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 <script>
@@ -136,18 +138,19 @@
         }
 
         $.ajax({
-            url: '/admin/WithDraw/Insert',
+            url: '/admin/WithDraw/Create',
             type: 'POST',
             data: { model: data },
             // other AJAX options here
-            success: function (result) {
-                if (!result)
-                    helper.showErr('Tạo lệnh lỗi!')
-                else
+            success: function (respone) {
+                if (respone)
                     helper.showSuc('Tạo lệnh thành công!')
+                else
+                    helper.showErr('Tạo lệnh không thành công.')
             },
             error: function (xhr, status, err) {
-                // error handling
+                helper.showErr('Hệ thống thực thi không thành công.')
+
             }
         });
     }

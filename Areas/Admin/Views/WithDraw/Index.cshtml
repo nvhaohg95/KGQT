@@ -64,12 +64,12 @@
                 <p class="fw-bold m-0">Đến ngày:</p>
                 @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-9 mt-2 d-flex align-items-end justify-content-end">
+            <div class="col-lg-2 col-md-4 col-sm-9 mt-2 d-flex align-items-end justify-content-end">
                 <div class="d-flex align-items-center">
                     <a href="Index" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
                         <i class="fas fa-sync fa-xs"></i>
                     </a>
-                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
                 </div>
             </div>
         </form>
@@ -79,11 +79,11 @@
 <!--Start: Danh sách giao dịch-->
 <div class="row bg-white p-2">
     <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
-        <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-6 text-left">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
                 <h5 class="text-danger text-uppercase fw-bold">NẠP TIỀN</h5>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+            <div>
                 <a class="btn btn-sm btn-success w-100px" href="/Admin/Withdraw/Create"><i class="fas fa-plus"></i>&nbspThêm</a>
             </div>
         </div>
@@ -91,15 +91,14 @@
     <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
         <table class="table table-border">
             <thead class="thead-light">
-                <tr class="bg-secondary text-white">
-                    <td class="text-center"><b>Mã GD</b></td>
-                    <td class="text-center"><b>Số tiền</b></td>
-                    <td class="text-center"><b>Loại GD</b></td>
-                    <td class="text-center"><b>Ngày tạo</b></td>
-                    <td class="text-center"><b>Người tạo</b></td>
-                    <td class="text-center"><b>Trạng thái</b></td>
-                    <td class="text-center"><b>Thao tác</b></td>
-
+                <tr class="fw-bold">
+                    <th class="text-center"><b>Mã GD</b></th>
+                    <th class="text-center"><b>Số tiền</b></th>
+                    <th class="text-center"><b>Loại GD</b></th>
+                    <th class="text-center"><b>Ngày tạo</b></th>
+                    <th class="text-center"><b>Người tạo</b></th>
+                    <th class="text-center"><b>Trạng thái</b></th>
+                    <th class="text-center"><b>Thao tác</b></th>
                 </tr>
             </thead>
             <tbody>
@@ -239,18 +238,18 @@
     // approval
     function clickApproval(id) {
         $.ajax({
-            url: '/Admin/Transaction/Recharge',
+            url: '/Admin/WithDraw/Approval',
             type: "POST",
             data: { ID: id },
             success: function (reponse) {
-                if (reponse.isError) {
-                    helper.showErr(reponse.message ?? "Duyệt không thành công!")
-                }
+                if (reponse) 
+                    helper.showSuc('Duyệt thành công!')
                 else
-                    helper.showSuc('Duyệt thành công.')
+                    helper.showErr(reponse.message ?? "Duyệt không thành công.")
+
             },
             error: function (xhr, status, err) {
-                helper.showErr('Phát sinh lỗi.!')
+                helper.showErr('Hệ thống thực thi không thành công.')
             }
         });
     }

@@ -1,0 +1,173 @@
+﻿@using KGQT.Commons;
+@model IEnumerable<KGQT.Models.tbl_HistoryPayWallet>
+
+@{
+    ViewData["Title"] = "Lịch sử giao dịch";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var orderID = ViewData["orderID"];
+    var tradeType = ViewData["tradeType"];
+    var fromDate = ViewData["fromDate"];
+    var toDate = ViewData["toDate"];
+    int page = (int)ViewData["page"];
+    int totalRecord = (int)ViewData["totalRecord"];
+    int totalPage = (int)ViewData["totalRecord"];
+
+}
+
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="#">Giao dịch</a></li>
+    <li><a href="#">Lịch sử giao dịch</a></li>
+</ul>
+<div class="row bg-white p-2">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <form class="row" id="myform">
+            <div class="col-lg-3 col-md-3 col-sm-9 mt-2">
+                <p class="fw-bold m-0">Mã đơn hàng:</p>
+                @Html.TextBoxFor(model => orderID, "", new { @type="search", @class="form-control" })
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-9 mt-2">
+                <p class="fw-bold m-0">Loại giao dịch:</p>
+                <select name="TradeType" id="TradeType" class="form-control">
+                    <option value="0" selected>Tất cả</option>
+                    <option value="1">Thanh toán hóa đơn</option>
+                    <option value="2">Hoàn tiền</option>
+                    <option value="3">Admin nạp tiền</option>
+                    <option value="4">Rút tiền</option>
+                    <option value="5">Hủy rút tiền</option>
+                    <option value="6">Nạp tiền tại kho</option>
+                    <option value="7">Rút tiền tại kho</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-9 mt-2">
+                <p class="fw-bold m-0">Từ ngày:</p>
+                @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control" })
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-9 mt-2">
+                <p class="fw-bold m-0">Đến ngày:</p>
+                @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control" })
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 mt-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="fw-bold text-primary text-uppercase">LỊCH SỬ GIAO DỊCH</h5>
+                    </div>
+                    <div>
+                        <a href="History" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
+                            <i class="fas fa-sync fa-xs"></i>
+                        </a>
+                        <button type="submit" class="btn btn-primary w-100px">Tìm kiếm</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--Start: Danh sách giao dịch-->
+<div class="row bg-white p-2">
+    <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
+        <table class="table table-border">
+            <thead>
+                <tr class="bg-info text-white">
+                    <td class="text-center"><b>Ngày GD</b></td>
+                    <td class="text-center"><b>Loại GD</b></td>
+                    <td class="text-center"><b>Nội dung</b></td>
+                    <td class="text-center"><b>Số tiền</b></td>
+                    <td class="text-center"><b>Số dư</b></td>
+                    <td class="text-center"><b>Tổng</b></td>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center">
+                            @if (item.CreatedDate != null)
+                            {
+                                <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                            }
+                            else
+                            {
+                                <span>dd/mm/yyy</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <b>@(PJUtils.TradeType(item.TradeType))</b>
+                        </td>
+                        <td class="text-left">
+                            @item.HContent
+                        </td>
+                        <td class="text-right">
+                            @if(item.Type == 1)
+                            {
+                                <span class="text-danger">-@string.Format("{0:N0}",item.Amount).Replace(",",".")đ</span>
+                            }
+                            else
+                            {
+                                <span class="text-success">+@string.Format("{0:N0}",item.Amount).Replace(",",".")đ</span>
+                            }
+                        </td>
+                        <td class="text-right">
+                            <span class="text-success">@string.Format("{0:N0}",item.MoneyLeft).Replace(",",".")đ</span>
+                        </td>
+                        <td class="text-right">
+                            <span class="text-success">@string.Format("{0:N0}",item.MoneyLeft + item.Amount).Replace(",",".")đ</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--Start: Phân trang-->
+<div class="row p-2">
+    <div class="col-1">
+        <span>
+            Tổng số:&nbsp
+            <b>@totalRecord</b>
+        </span>
+    </div>
+    <div class="col-11">
+        @if (totalPage > 1)
+        {
+            <nav class="d-flex justify-content-center">
+                <ul class="pagination m-0">
+                    <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
+                        <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" id="pageNumber">
+                            @(page)
+                        </a>
+                    </li>
+                    <li class="@(page >= totalPage ? "page-item disabled" : "page-item cursor-pointer")">
+                        <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+<script>
+    // get page
+    function getPage(pageIndex) {
+        var totalPage = @totalPage;
+        if (pageIndex <= 0 || pageIndex > totalPage)
+            return;
+        if (!location.href.includes("page=")) {
+            if (location.href.charAt(location.href.length - 1) == "=")
+                location.href += `&page=${pageIndex}`;
+            else
+                location.href += `?page=${pageIndex}`;
+        }
+        else
+            location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
+    }
+</script>
