@@ -5,11 +5,11 @@
 @using Newtonsoft.Json;
 @{
     var sUser = Context.Session.GetString("US_LOGIN");
-    UserLogin acc = null;
+    UserLogin user = null;
     if (!string.IsNullOrEmpty(sUser))
     {
-        acc = JsonConvert.DeserializeObject<UserLogin>(sUser);
-        if (acc == null)
+        user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+        if (user == null)
             Context.Response.Redirect("/auth/login");
     }
     else
@@ -75,11 +75,11 @@
 
             <!--Wallet-->
             <li class="nav-item dropdown no-arrow mx-1">
-            @if(acc != null)
+            @if(user != null)
             {
                     <span class="nav-link">
                         <span class="text-dark">Ví cá nhân&nbsp:&nbsp</span>
-                    <span class="fw-bold text-danger">@string.Format("{0:N0}đ",acc.Wallet).Replace(",",".")</span>
+                        <span class="fw-bold text-danger">@string.Format("{0:N0}đ",user.Wallet).Replace(",",".")</span>
                     </span>
             }
             else
@@ -219,15 +219,15 @@
                 <a class="nav-link dropdown-toggle" id="userDropdown" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @{
-                        if (acc != null)
+                        if (user != null)
                         {
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">
-                                @string.Concat(acc.FirstName," ",acc.LastName)
+                                @string.Concat(user.FirstName," ",user.LastName)
                             </span>
-                            if (!string.IsNullOrEmpty(acc.IMG))
+                            if (!string.IsNullOrEmpty(user.IMG))
                             {
                                 <img class="img-profile rounded-circle"
-                                     src="@acc.IMG">
+                                     src="@user.IMG">
                             }
                             else
                             {
@@ -247,7 +247,7 @@
                 <!-- Dropdown - User Information -->
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="userDropdown">
-                    @if (acc?.RoleID < 4)
+                    @if (user?.RoleID < 4)
                     {
                         <a class="dropdown-item" href="/admin/home">
                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -260,7 +260,7 @@
                         Thông tin tài khoản
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item">
+                    <a class="dropdown-item" data-toggle="modal" data-target="#withDrawModal">
                         <i class="fas fa-money-check-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                         Nạp tiền
                     </a>
@@ -347,7 +347,7 @@
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title" id="changePassWordModal">Đổi mật khẩu</h5>
+                    <h5 class="modal-title">ĐỔI MẬT KHẨU</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -360,7 +360,7 @@
                                 <span class="text-danger">(*)</span>
                             </div>
                             <div class="col-9">
-                                <input type="text" name="UserName" value="@acc?.Username" placeholder="Tài khoản" class="form-control form-control-user border-none rounded" readonly="true" />
+                                <input type="text" name="UserName" value="@user?.Username" placeholder="Tài khoản" class="form-control form-control-user border-none rounded" readonly="true" />
                             </div>
                         </div>
                         <div class="row align-items-center my-2 h-50px">
@@ -408,6 +408,80 @@
             </div>
         </div>
     </div>
+    <!-- form add widthdraw -->
+    <div class="modal fade" id="withDrawModal" tabindex="-1" role="dialog" aria-labelledby="withDrawModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title">NẠP TIỀN</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formWithDraw">
+                    <div class="modal-body">
+                        <div class="row px-4">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label class="fw-bold">Tài khoản<span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control" name="Username" value="@user.UserID" placeholder="Tài khoản" readonly>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label class="fw-bold">Hình thức thanh toán<span class="text-danger">(*)</span></label>
+                                    <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this)">
+                                        <option value="1">Tiền mặt</option>
+                                        <option value="2" selected>Chuyển khoản</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- thông tin chuyển khoản -->
+                            <div class="col-lg-12 col-md-12 col-sm-12 d-done" id="extend">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label class="fw-bold">Chủ tài khoản<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" name="AccountName" placeholder="Chủ tài khoản">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label class="fw-bold">Số tài khoản<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" name="AccountNumber" placeholder="Số tài khoản">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label class="fw-bold">Ngân hàng<span class="text-danger">(*)</span></label>
+                                        <input type="text" class="form-control" name="BankName" placeholder="Ngân hàng">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="fw-bold">Số tiền<span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control" name="Amount" placeholder="Số tiền" onkeyup="format(this)">
+
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="fw-bold">Nội dung</label>
+                                    <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary w-100px" onclick="clickAddWithDraw()">Gửi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="~/js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
@@ -415,5 +489,76 @@
     <script src="~/assets/demo/chart-bar-demo.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="~/js/datatables-simple-demo.js"></script>
+    <script>
+
+        function valueCBBChange(e) {
+            var v = $(e).find(":selected").val();
+            if (v == 2)
+                $('#extend').removeClass('d-none');
+            else
+                $('#extend').addClass('d-none');
+        }
+        function format(e) {
+            helper.getChange(e)
+        }
+        function clickAddWithDraw(){
+            var data = helper.form2Object($('#formWithDraw').serializeArray());
+            if (!data) 
+            {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+                return;
+            }
+            if (!data.Username) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+                return;
+            }
+
+            if (!data.PaymentMethod) 
+            {
+                helper.showErr('Vui lòng chọn phương thức thanh toán!');
+                return;
+            }
+
+            if (!data.Amount)
+                data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
+
+            if (data.PaymentMethod == 2) 
+            {
+                if (!data.BankName)
+                {
+                    helper.showErr('Vui lòng chọn ngân hàng!');
+                    return;
+                }
+                if (!data.AccountName)
+                {
+                    helper.showErr('Vui nhập chủ tài khoản!');
+                    return;
+                }
+                if (!data.AccountNumber) {
+                    helper.showErr('Vui nhập số tài khoản!');
+                    return;
+                }
+            }
+            if (!data.Amount) {
+                helper.showErr('Vui lòng nhập số tiền!');
+                return;
+            }
+
+            $.ajax({
+                url: '/WithDraw/Create',
+                type: 'POST',
+                data: { model: data },
+                success: function (respone) {
+                    if (respone)
+                        helper.showSuc('Yêu cầu của bạn đã được gửi!')
+                    else
+                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                },
+                error: function (xhr, status, err) {
+                    helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                }
+            });
+        }
+    </script>
 </body>
 </html>

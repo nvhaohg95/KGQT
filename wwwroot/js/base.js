@@ -6,9 +6,17 @@ function clickChangePass() {
         type: "POST",
         data: data,
         success: function (respone) {
-            if (!respone.isError) {
+            if (!respone.isError)
+            {
+                helper.showSuc('Cập nhật thành công!')
                 $(location).attr('href', '/auth/login');
             }
+            else
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+        },
+        error: function ()
+        {
+            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
         }
     });
 }

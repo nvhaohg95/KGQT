@@ -1,6 +1,7 @@
 ﻿using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.DiaSymReader;
 using Newtonsoft.Json;
 
 namespace KGQT.Business
@@ -37,7 +38,6 @@ namespace KGQT.Business
         #region Add
         public static bool Insert(tbl_Withdraw data,string userLogin)
         {
-            var result = new DataReturnModel();
             using (var db = new nhanshiphangContext())
             {
                 var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
@@ -63,6 +63,48 @@ namespace KGQT.Business
                 }
                 return false;
             }
+        }
+        #endregion
+
+        #region Duyệt lệnh nạp tiền
+        public static DataReturnModel Approval(int ID, string userName)
+        {
+            var result = new DataReturnModel();
+            using (var db = new nhanshiphangContext())
+            {
+                var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                var data = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);
+                if(admin != null && data != null)
+                {
+                    data.Status = 2;
+                    data.ModifiedBy = admin.Username;
+                    data.ModifiedDate = DateTime.Now;
+                    db.Update(data);
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                    var moneyLeft = user.Wallet != null ? user.Wallet : 0;
+                    if (user != null)
+                    {
+                        user.Wallet = moneyLeft + data.Amount;
+                        user.ModifiedBy = admin.Username;
+                        user.ModifiedDate = DateTime.Now;
+                        db.Update(user);
+                        int isSave = db.SaveChanges();
+                        if (isSave > 0)
+                        {
+                            TransactionBusiness.Insert(user.ID, data.Amount, 1, data.Type, admin.Username);
+                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Amount.Value, 2, 3, moneyLeft.Value);
+                            result.IsError = false;
+                            result.Message = "Duyệt thành công!";
+                            result.Data = data;
+                            return result;
+                        }
+                    }
+                       
+                }    
+            }
+            result.IsError = true;
+            result.Message = "Hệ thống thực thi không thành công!";
+            return result;
         }
         #endregion
     }
