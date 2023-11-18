@@ -39,13 +39,15 @@ namespace KGQT
         public ActionResult Dashboard()
         {
             var username = HttpContext.Session.GetString("user");
-            ViewData["pack_st3"] = BusinessBase.GetCount<tbl_Package>(x => x.Status == 3);
-            ViewData["pack_st4"] = BusinessBase.GetCount<tbl_Package>(x => x.Status == 4);
-            ViewData["pack_st5"] = BusinessBase.GetCount<tbl_Package>(x => x.Status == 5) ;
+            var pack = Packages.GetAllStatus(username);
+            ViewData["pack_st3"] = pack[0];
+            ViewData["pack_st4"] = pack[1];
+            ViewData["pack_st5"] = pack[2];
 
-            ViewData["order_st1"] = BusinessBase.GetCount<tbl_ShippingOrder>(x => x.Status == 3) ;
-            ViewData["order_st2"] = BusinessBase.GetCount<tbl_ShippingOrder>(x => x.Status == 4) ;
-            ViewData["ordertotal"] = BusinessBase.GetCount<tbl_ShippingOrder>();
+            var ship = ShippingOrder.GetAllStatus(username);
+            ViewData["order_st1"] = ship[0];
+            ViewData["order_st2"] = ship[1];
+            ViewData["ordertotal"] = ship[2];
             return View();
 
         }
