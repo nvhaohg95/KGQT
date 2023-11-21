@@ -235,7 +235,7 @@
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#changePassWordModal">
-                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
                         Đổi mật khẩu
                     </a>
 
@@ -381,5 +381,55 @@
     <script src="~/js/demo/chart-bar-demo.js"></script>*@
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="~/js/datatables-simple-demo.js"></script>
+    <script>
+        function clickChangePass() {
+            var data = helper.form2Object($('#formChangePass').serializeArray());
+            if (!data) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                return;
+            }
+            if (!data.OldPassword) {
+                helper.showErr('Mật khẩu không được bỏ trống!')
+                return;
+            }
+            if (!data.NewPassword || !data.ConfirmPassword) {
+                helper.showErr('Mật khẩu mới không được bỏ trống!')
+                return;
+            }
+            if (data.ConfirmPassword != data.NewPassword) {
+                helper.showErr('Mật khẩu không chính xác!')
+                return;
+            }
+            $.ajax({
+                url: '/Auth/ChangePassword',
+                type: "POST",
+                data: data,
+                success: function (respone) {
+                    if (!respone.isError) {
+                        helper.showSuc('Cập nhật thành công!');
+                    }
+                    else
+                        helper.showErr(respone.message)
+                },
+                error: function () {
+                    helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                }
+            });
+        }
+        function showHidePass(idIcon, idInput) {
+            let _input = $(idInput);
+            let _icon = $(idIcon);
+            if (_icon.hasClass('fa fa-eye-slash')) {
+                _icon.removeClass('fa fa-eye-slash');
+                _icon.addClass('fa fa-eye');
+                _input.attr('type', 'text');
+            }
+            else {
+                _icon.removeClass('fa fa-eye');
+                _icon.addClass('fa fa-eye-slash');
+                _input.attr('type', 'password');
+            }
+        };
+    </script>
 </body>
 </html>
