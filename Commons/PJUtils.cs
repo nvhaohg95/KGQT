@@ -281,48 +281,93 @@ namespace KGQT.Commons
 
         public static List<ExcelModel> ReadExcelToJson(IFormFile file, string name)
         {
-            Stream FileStream = file.OpenReadStream();
-            List<ExcelModel> oData = new List<ExcelModel>();
-            using (ExcelPackage pack = new ExcelPackage(FileStream))
+            if (file.ContentType == "application/vnd.ms-excel")
+                return ReadXls2Json(file, name);
+            else
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                ExcelWorksheet worksheet = null;
-                if (!string.IsNullOrEmpty(name))
-                    worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
-                else
-                    worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.LastOrDefault();
+                Stream FileStream = file.OpenReadStream();
+                List<ExcelModel> oData = new List<ExcelModel>();
+                using (ExcelPackage pack = new ExcelPackage(FileStream))
+                {
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    ExcelWorksheet worksheet = null;
+                    if (!string.IsNullOrEmpty(name))
+                        worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
+                    else
+                        worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.LastOrDefault();
 
-                if (worksheet == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    var rowCount = worksheet.Dimension.Rows;
-                    var columnCount = worksheet.Dimension.Columns;
-                    for (int column = 1; column < columnCount; column++)
+                    if (worksheet == null)
                     {
-                        for (int row = 2; row < rowCount; row++)
+                        return null;
+                    }
+                    else
+                    {
+                        var rowCount = worksheet.Dimension.Rows;
+                        var columnCount = worksheet.Dimension.Columns;
+                        for (int column = 1; column < columnCount; column++)
                         {
-                            var v = worksheet.Cells[row, column].Value;
-                            if (v != null)
-                                oData.Add(new ExcelModel()
-                                {
-                                    Key = v.ToString()
-                                });
+                            for (int row = 2; row < rowCount; row++)
+                            {
+                                var v = worksheet.Cells[row, column].Value;
+                                if (v != null)
+                                    oData.Add(new ExcelModel()
+                                    {
+                                        Key = v.ToString()
+                                    });
+                            }
                         }
                     }
                 }
+                return oData;
             }
-            return oData;
+        }
+
+        public static List<ExcelModel> ReadXls2Json(IFormFile file, string name)
+        {
+            using (Stream stream = file.OpenReadStream())
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        UseColumnDataType = true,
+                        ConfigureDataTable = (data) => new ExcelDataTableConfiguration()
+                        {
+                            UseHeaderRow = true
+                        }
+                    });
+                    DataTableCollection table = result.Tables;
+                    DataTable dt = table[name];
+                    if (dt == null)
+                        dt = table[table.Count - 1];
+                    if (dt != null)
+                    {
+                        List<ExcelModel> oData = new List<ExcelModel>();
+                        var rowCount = dt.Rows.Count;
+                        var columnCount = dt.Columns.Count;
+                        for (int column = 0; column < columnCount; column++)
+                        {
+                            for (int row = 0; row < rowCount; row++)
+                            {
+                                var v = dt.Rows[row].Field<string>(column);
+                                if (v != null)
+                                    oData.Add(new ExcelModel()
+                                    {
+                                        Key = v.ToString()
+                                    });
+                            }
+                        }
+                        return oData;
+                    }
+                    return null;
+                }
+            }
         }
 
         public static string MarkupValueExcel(IFormFile file, string name, List<string> data)
         {
-
             if (file == null || data == null || data.Count == 0) return "";
             string fileName = file.FileName;
-
             using Stream FileStream = file.OpenReadStream();
             using (ExcelPackage pack = new ExcelPackage(FileStream))
             {
@@ -393,69 +438,6 @@ namespace KGQT.Commons
                     #endregion
                 }
             }
-        }
-
-        public static List<ExcelModel> ExcelToJson(IFormFile file)
-        {
-            try
-            {
-                List<ExcelModel> oData = new List<ExcelModel>();
-
-                #region Variable Declaration
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                DataSet dsexcelRecords = new DataSet();
-                IExcelDataReader excelReader = null;
-                Stream FileStream = null;
-                var json = "";
-
-                FileStream = file.OpenReadStream();
-
-                if (FileStream != null)
-                {
-                    excelReader = ExcelReaderFactory.CreateReader(FileStream);
-                }
-
-                if (excelReader != null)
-                {
-                    DataSet result = excelReader.AsDataSet();
-                    if (result != null && result.Tables.Count > 0)
-                    {
-                        int index = result.Tables.Count - 1;
-
-                        foreach (DataTable dtt in result.Tables)
-                        {
-                            var dt = dtt;
-                            //dt.Columns["Column"].ColumnName = "ID";
-                            dt.Rows.RemoveAt(0);
-
-                            for (int i = 0; i < dt.Rows.Count; i++)
-                            {
-                                var obj = new ExcelModel();
-                                var count = dt.Rows[i].ItemArray.Count();
-                                if (count > 1)
-                                {
-                                    obj.Key = dt.Rows[i][0].ToString();
-                                    obj.Value = dt.Rows[i][1].ToString();
-
-                                }
-                                else
-                                {
-                                    obj.Key = dt.Rows[i][0].ToString();
-                                }
-                                oData.Add(obj);
-                            }
-                        }
-                    }
-                    return oData;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-            #endregion
-            return null;
         }
     }
 }
