@@ -566,6 +566,8 @@ namespace KGQT.Business
                     if (acc.Password == oldPassword)
                     {
                         acc.Password = PJUtils.Encrypt("userpass", data.NewPassword);
+                        acc.ModifiedBy = acc.Username;
+                        acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
                         int isSave = db.SaveChanges();
                         if (isSave > 0)

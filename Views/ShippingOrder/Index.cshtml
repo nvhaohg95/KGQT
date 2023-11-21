@@ -20,76 +20,56 @@
             <li><a>Danh sách ký gửi</a></li>
         </ul>
     </div>
-    <div class="row bg-white px-2 py-2">
-        <div class="col-12">
-            <div class="row">
-                <div class="col-12">
-                    <p class="fw-bold mb-0">Trạng thái:</p>
-                </div>
-                <div class="col-12">
-                    <ul class="nav">
-                        <li class="nav-item py-2 mr-4">
-                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == -1 || status == 0 ? "bg-danger text-white" : "")" onclick="sort(-1)">Tất cả</a>
-                        </li>
-                        <li class="nav-item py-2 mr-4">
-                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 1 ? "bg-danger text-white" : "")" onclick="sort(1)">Đã thanh toán</a>
-                        </li>
-                        <li class="nav-item py-2 mr-4">
-                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 2 ? "bg-danger text-white" : "")" onclick="sort(2)">Đã hủy</a>
-                        </li>
-                        <li class="nav-item py-2 mr-4">
-                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 3 ? "bg-danger text-white" : "")" onclick="sort(3)">Thất lạc</a>
-                        </li>
-                        <li class="nav-item py-2 mr-4">
-                            <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == 4 ? "bg-danger text-white" : "")" onclick="sort(4)">Không nhận hàng</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row py-2">
-                <form class="col" id="myform" method="get">
-                    <div class="row">
-                        <div class="col-lg-5 col-md-5 col-sm-12">
-                            <div>
-                                <span class="fw-bold" id="">Nhập mã đơn:</span>
-                            </div>
-                            <div class="mt-2">
-                                @Html.TextBoxFor(model => ID,new { @type="search",@class="form-control",@placeholder="Nhập mã đơn hàng"})
-                            </div>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-12">
-                            <div class="row">
-                                <span class="fw-bold">Thời gian tạo:</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4 col-md-4 col-sm-12 mt-2">
-                                    @Html.TextBoxFor(model => fromDate,new { @type="date",@class="form-control"})
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 mt-2">
-                                    @Html.TextBoxFor(model => toDate,new { @type="date",@class="form-control"})
-                                </div>
-                                <div class="col-lg-2 col-md-4 col-sm-12 mt-2 d-flex align-items-center justify-content-end">
-                                    <a href="Index?page=1" class="text-decoration-none mr-2" title="Làm mới bộ lọc">
-                                        <i class="fas fa-sync fa-xs"></i>
-                                    </a>
-                                    <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+    <form class="row mb-2 py-2">
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="form-group">
+                <label class="fw-bold mb-0">Mã đơn:</label>
+                @Html.TextBoxFor(model => ID,new { @type="search",@class="form-control",@placeholder="Nhập mã đơn hàng"})
             </div>
         </div>
-    </div>
-    <div class="row bg-white mt-2">
-        <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
-            <div class="d-flex align-items-center justify-content-between border-bottom py-2">
-                <h5 class="text-primary fw-bold text-uppercase m-0">Danh sách đơn ký gửi </h5>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="row form-group">
+                <label class="fw-bold mb-0">Từ ngày</label>
+                @Html.TextBoxFor(model => fromDate,new { @type="date",@class="form-control"})
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="form-group">
+                <label class="fw-bold mb-0">Đến ngày</label>
+                @Html.TextBoxFor(model => toDate,new { @type="date",@class="form-control"})
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="form-group">
+                <label class="fw-bold mb-0">Trạng thái:</label>
+                <select name="status" class="form-control">
+                    <option value="0" selected="@(status == 0)">Tất cả</option>
+                    <option value="1" selected="@(status == 1)">Đã thanh toán</option>
+                    <option value="2" selected="@(status == 2)">Đã hủy</option>
+                    <option value="3" selected="@(status == 3)">Thất lạc</option>
+                    <option value="4" selected="@(status == 4)">Không nhận hàng</option>
+                </select>
             </div>
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="d-flex align-items-end justify-content-between">
+                <div>
+                    <h5 class="text-primary fw-bold text-uppercase m-0">Danh sách đơn ký gửi </h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-end">
+                    <a href="Index" class="text-decoration-none mr-2" title="Làm mới bộ lọc">
+                        <i class="fas fa-sync fa-xs"></i>
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
+                </div>
+            </div>
+            
+        </div>
+    </form>
+    <div class="row bg-white">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-hover">
                     <thead class="thead-light">
                         <tr>
                             <th class="text-center">

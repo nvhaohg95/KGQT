@@ -56,7 +56,7 @@ namespace KGQT.Business
                             db.Update(acc);
                             db.SaveChanges();
                             TransactionBusiness.Insert(acc.ID, data.Amount, 1, data.Type, userLogin);
-                            HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Amount.Value, 2, 3, moneyLeft.Value);
+                            HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userLogin);
                         }
                         return true;
                     }
@@ -92,7 +92,7 @@ namespace KGQT.Business
                         if (isSave > 0)
                         {
                             TransactionBusiness.Insert(user.ID, data.Amount, 1, data.Type, admin.Username);
-                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Amount.Value, 2, 3, moneyLeft.Value);
+                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID,data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
                             result.IsError = false;
                             result.Message = "Duyệt thành công!";
                             result.Data = data;

@@ -6,16 +6,19 @@ namespace KGQT.Business
     public static class HistoryPayWallet
     {
         #region CRUD
-        public static bool Insert(int uid,string username,int orderId,double amount,int type, int tradeType, double moneyleft)
+        public static bool Insert(int uid,string username,int orderId,string content,double amount,int type, int tradeType, double moneyleft,string createdBy)
         {
             tbl_HistoryPayWallet pay = new tbl_HistoryPayWallet();
             pay.UID = uid;
             pay.Username = username;
             pay.OrderID = orderId;
+            pay.HContent = content;
             pay.Amount = amount;
             pay.Type = type;
             pay.TradeType = tradeType;
             pay.MoneyLeft = moneyleft;
+            pay.CreatedDate = DateTime.Now;
+            pay.CreatedBy = createdBy;
             return BusinessBase.Add(pay);
         }
         #endregion

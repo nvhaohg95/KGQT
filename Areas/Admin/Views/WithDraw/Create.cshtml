@@ -14,7 +14,7 @@
 <div class="container bg-white py-4">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <h1 class="fw-bold text-danger text-uppercase">Thêm lệnh nạp tiền</h1>
+            <h5 class="fw-bold text-danger text-uppercase">Thêm lệnh nạp tiền</h5>
         </div>
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
             <form method="post" action="Create" id="frmShip">
@@ -31,40 +31,38 @@
                     </select>
                 </div>
 
-                    <div id="transfer" class="d-none">
-                        <div class="form-group mb-2">
-                            <label class="mb-0 text-primary fw-bold">Thông tin chuyển khoản</label>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="required" for="txtBank">Ngân hàng:</label>
-                            <input type="text" class="form-control" id="txtBank" name="BankName" placeholder="Ngân hàng">
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="required" for="txtBank">Chủ tài khoản:</label>
-                            <input type="text" class="form-control" id="txtAccountName" name="AccountName" placeholder="Chủ tài khoản">
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="required" for="txtBank">Số tài khoản:</label>
-                            <input type="text" class="form-control" id="txtAccountNumber" name="AccountNumber" placeholder="Số tài khoản">
-                        </div>
+                <div id="transfer" class="d-none">
+                    <div class="form-group mb-2">
+                        <label class="mb-0 text-primary fw-bold">Thông tin chuyển khoản</label>
                     </div>
                     <div class="form-group mb-4">
-                        <label class="required" for="txtAmount">Số tiền</label>
-                        <input type="text" class="form-control" id="txtAmount" name="Amount" placeholder="Nhập số tiền" onkeyup="format(this)">
+                        <label class="required" for="txtBank">Ngân hàng:</label>
+                        <input type="text" class="form-control" id="txtBank" name="BankName" placeholder="Ngân hàng">
                     </div>
                     <div class="form-group mb-4">
-                        <label class="required" for="txtShipID">Nội dung</label>
-                        <textarea class="form-control" id="txtNote" name="Note" placeholder="Nhập nội dung"></textarea>
+                        <label class="required" for="txtBank">Chủ tài khoản:</label>
+                        <input type="text" class="form-control" id="txtAccountName" name="AccountName" placeholder="Chủ tài khoản">
                     </div>
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtBank">Số tài khoản:</label>
+                        <input type="text" class="form-control" id="txtAccountNumber" name="AccountNumber" placeholder="Số tài khoản">
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtAmount">Số tiền</label>
+                    <input type="text" class="form-control" id="txtAmount" name="Amount" placeholder="Nhập số tiền" onkeyup="format(this)">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtShipID">Nội dung</label>
+                    <textarea class="form-control" id="txtNote" name="Note" placeholder="Nhập nội dung"></textarea>
+                </div>
 
-                    <div class="col-md-12 col-sm-12 col-lg-12 text-right">
-                        <button type="reset" class="btn btn-sm btn-danger mr-4 w-100px">Nhập lại</button>
-                        <button type="button" class="btn btn-sm btn-success w-100px" onclick="insert()">Duyệt</button>
-                    </div>
-                </form>
-            </div>
+                <div class="col-md-12 col-sm-12 col-lg-12 text-right">
+                    <button type="reset" class="btn btn-sm btn-danger mr-4 w-100px">Nhập lại</button>
+                    <button type="button" class="btn btn-sm btn-success w-100px" onclick="insert()">Duyệt</button>
+                </div>
+            </form>
         </div>
-
     </div>
 </div>
 <script>

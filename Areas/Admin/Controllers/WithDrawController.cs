@@ -41,6 +41,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Insert(tbl_Withdraw model)
         {
             var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
+            var userName = HttpContext.Session.GetString("user");
             if (user != null)
             {
                 model.UID = user.ID;
@@ -48,7 +49,7 @@ namespace KGQT.Areas.Admin.Controllers
             }
             model.Status = 2;
             model.Type = 1;
-            model.CreatedBy = HttpContext.Session.GetString("user");
+            model.CreatedBy = userName;
             model.CreatedDate = DateTime.Now;
             var s = BusinessBase.Add(model);
             if (s)
@@ -58,7 +59,7 @@ namespace KGQT.Areas.Admin.Controllers
                 s = BusinessBase.Update(u);
 
                 #region Logs
-                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Amount.Value, 1, 1, u.Wallet.Value);
+                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount.Value, 1, 1, u.Wallet.Value,userName);
                 #endregion
             }
             return Ok(s);

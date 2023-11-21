@@ -1,0 +1,31 @@
+﻿@using KGQT.Commons;
+@model KGQT.Models.tbl_Transaction
+
+@{
+    ViewData["Title"] = "Chi tiết giao dịch";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var orderID = ViewData["orderID"];
+}
+<div class="row mb-2">
+    <ul id="breadcrumbs">
+        <li><a href="#">Giao dịch</a></li>
+        <li><a href="/Transaction/History">Lịch sử</a></li>
+        <li><a href="#">Chi tiết</a></li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-sm-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="fw-bold text-primary text-uppercase">
+                    @string.Concat("THÔNG TIN GIAO DỊCH")
+                </h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Special title treatment</h5>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+</div>
