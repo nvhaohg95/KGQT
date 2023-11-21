@@ -56,11 +56,11 @@
     </div>
     <div class="col-lg-8 col-md-12 col-sm-12">
         <form class="row" id="myform">
-            <div class="col-lg-3 col-md-4 col-sm-9 mt-2">
+            <div class="col-lg-5 col-md-4 col-sm-12 mt-2">
                 <p class="fw-bold m-0">Từ ngày:</p>
                 @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-9 mt-2">
+            <div class="col-lg-5 col-md-4 col-sm-12 mt-2">
                 <p class="fw-bold m-0">Đến ngày:</p>
                 @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
             </div>
@@ -105,11 +105,11 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="text-center">@item.ID</td>
-                        <td class="text-center">
+                        <td class="text-center align-middle">@item.ID</td>
+                        <td class="text-center align-middle text-danger">
                             @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
                         </td>
-                        <td class="text-center">
+                        <td class="text-center align-middle">
                             @Html.Raw(PJUtils.WithDrawStatusHtml(item.Type.Value))
                         </td>
                         <td class="text-center">
@@ -124,7 +124,7 @@
                                 }
                             }
                         </td>
-                        <td class="text-center">
+                        <td class="text-center align-middle">
                             @{
                                 if (item.Type == 1)
                                 {
@@ -136,7 +136,7 @@
                                 }
                             }
                         </td>
-                        <td class="text-center">
+                        <td class="text-center align-middle">
                             @{
                                 if (item.Status == 1)
                                 {
@@ -148,11 +148,11 @@
                                 }
                             }
                         </td>
-                        <td class="text-center">
-                            <a class="btn btn-sm btn-secondary" href="/Admin/Transaction/Detail?id=@item.ID">
+                        <td class="text-center align-middle">
+                            @*<a class="btn btn-sm btn-secondary" href="/Admin/Transaction/Detail?id=@item.ID">
                                 <i class="far fa-edit"></i>
                                 <span>Xem</span>
-                            </a>
+                            </a>*@
                             @if (item.Status == 1)
                             {
                                 <a class="btn btn-sm btn-success" onclick="clickApproval(@item.ID)">
@@ -180,7 +180,7 @@
     <div class="col-11">
         @if (totalPage > 1)
         {
-            <nav class="d-flex justify-content-center">
+            <nav class="d-flex justify-content-end">
                 <ul class="pagination m-0">
                     <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
                         <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
@@ -245,7 +245,7 @@
                 if (reponse) 
                     helper.showSuc('Duyệt thành công!')
                 else
-                    helper.showErr(reponse.message ?? "Duyệt không thành công.")
+                    helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!")
 
             },
             error: function (xhr, status, err) {

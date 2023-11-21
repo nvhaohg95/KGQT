@@ -47,13 +47,13 @@
                 <p class="fw-bold m-0">Đến ngày:</p>
                 @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control" })
             </div>
-            <div class="col-lg-12 col-md-12 col-sm-12 mt-2">
+            <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <h5 class="fw-bold text-primary text-uppercase">LỊCH SỬ GIAO DỊCH</h5>
                     </div>
                     <div>
-                        <a href="History" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
+                        <a href="Index" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
                             <i class="fas fa-sync fa-xs"></i>
                         </a>
                         <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
@@ -75,7 +75,7 @@
                     <td class="fw-bold text-center">Số tiền</td>
                     <td class="fw-bold text-center">Số dư</td>
                     <td class="fw-bold text-center">Tổng</td>
-                    <td class="fw-bold text-center">Thao tác</td>
+                    @*<td class="fw-bold text-center">Thao tác</td>*@
                 </tr>
             </thead>
             <tbody>
@@ -122,12 +122,12 @@
                         <td class="text-center">
                             <span class="text-success">@string.Format("{0:N0}",item.MoneyLeft + item.Amount).Replace(",",".")đ</span>
                         </td>
-                        <td class="text-center">
+                        @*<td class="text-center">
                             <a class="btn btn-sm btn-secondary" asp-action="Detail" asp-route-id="@item.ID">
                                 <i class="far fa-edit"></i>
                                 <span>Xem</span>
                             </a>
-                        </td>
+                        </td>*@
                     </tr>
                 }
             </tbody>

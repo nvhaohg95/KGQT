@@ -110,7 +110,7 @@ namespace KGQT.Controllers
 
                     #region Logs
                     BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, oOrder.TotalPrice.Value, 1, 1, pay.Value);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID,"", oOrder.TotalPrice.Value, 1, 1, pay.Value, username);
                     #endregion
 
                     var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);

@@ -24,16 +24,12 @@ namespace KGQT.Models.temp
 
     public class ChangePassword
     {
-        [Required(ErrorMessage = "Tên đăng nhập không được bỏ trống")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
         public string OldPassword { get; set; }
 
-        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
         public string NewPassword { get; set; }
 
-        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
         public string ConfirmPassword { get; set; }
     }
     public class Jwt

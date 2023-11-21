@@ -33,7 +33,7 @@ namespace KGQT.Business
         #endregion
 
         #region Duyệt giao dịch nạp tiền
-        public static DataReturnModel ApprovalRecharge(int ID, string userName)
+        public static DataReturnModel ApprovalRecharge(int ID, string createdBy)
         {
             var result = new DataReturnModel();
             using (var db = new nhanshiphangContext())
@@ -41,7 +41,7 @@ namespace KGQT.Business
                 var withDraw = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);
                 if (withDraw != null)
                 {
-                    withDraw.AcceptBy = userName;
+                    withDraw.AcceptBy = createdBy;
                     withDraw.AcceptDate = DateTime.Now;
                     var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == withDraw.UID);
                     if (user != null)
@@ -53,7 +53,7 @@ namespace KGQT.Business
                             UIDReceive = user.ID,
                             Amount = withDraw.Amount,
                             Type = 2,
-                            CreatedBy = userName,
+                            CreatedBy = createdBy,
                             CreatedDate = DateTime.Now
                         };
                         switch (withDraw.Type)
@@ -82,7 +82,7 @@ namespace KGQT.Business
                             result.IsError = false;
                             result.Message = "Duyệt thành công.";
                             #region Logs
-                            HistoryPayWallet.Insert(user.ID, user.Username, withDraw.ID, withDraw.Amount.Value, 1, 1, moneyLeft.Value);
+                            HistoryPayWallet.Insert(user.ID, user.Username, withDraw.ID, withDraw.Note, withDraw.Amount.Value, 1, 1, moneyLeft.Value, createdBy);
                             #endregion
                             return result;
                         }

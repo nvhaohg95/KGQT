@@ -54,25 +54,6 @@ namespace KGQT
 
         #endregion
 
-        #region Change Password
-        [HttpPost]
-        public JsonResult ChangePassword(ChangePassword data)
-        {
-            var result = AccountBusiness.ChangePassword(data);
-            if (result.IsError)
-            {
-                NotificationService.AddErrorToastMessage(result.Message);
-            }
-            else
-            {
-                NotificationService.AddSuccessToastMessage(result.Message);
-                HttpContext.Session.Remove("US_LOGIN");
-            }
-            return Json(result);
-        }
-
-        #endregion
-
         [HttpPost]
         public JsonResult Test(ChangePassword data)
         {

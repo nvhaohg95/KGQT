@@ -114,6 +114,21 @@ namespace KGQT.Controllers
         }
         #endregion
 
+        #region Change Password
+        [HttpPost]
+        public JsonResult ChangePassword(ChangePassword data)
+        {
+            var result = AccountBusiness.ChangePassword(data);
+            if (!result.IsError)
+            {
+                HttpContext.Session.Remove("US_LOGIN");
+                HttpContext.Session.Remove("user");
+            }
+            return Json(result);
+        }
+
+        #endregion
+
         #region Forgot Pasword
         [HttpGet]
         public ActionResult ForgotPassword(string id, string tk)

@@ -41,6 +41,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Insert(tbl_Withdraw model)
         {
             var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
+            var userName = HttpContext.Session.GetString("user");
             if (user != null)
             {
                 model.UID = user.ID;
@@ -48,7 +49,7 @@ namespace KGQT.Areas.Admin.Controllers
             }
             model.Status = 2;
             model.Type = 1;
-            model.CreatedBy = HttpContext.Session.GetString("user");
+            model.CreatedBy = userName;
             model.CreatedDate = DateTime.Now;
             var s = BusinessBase.Add(model);
             if (s)
@@ -58,7 +59,7 @@ namespace KGQT.Areas.Admin.Controllers
                 s = BusinessBase.Update(u);
 
                 #region Logs
-                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Amount.Value, 1, 1, u.Wallet.Value);
+                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount.Value, 1, 1, u.Wallet.Value,userName);
                 #endregion
             }
             return Ok(s);
@@ -85,8 +86,8 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public bool Create(tbl_Withdraw model)
         {
-            var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
             string userLogin = HttpContext.Session.GetString("user");
+            var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
             if (user != null && !string.IsNullOrEmpty(userLogin))
             {
                 model.UID = user.ID;
@@ -95,7 +96,14 @@ namespace KGQT.Areas.Admin.Controllers
                 model.Type = 1;
                 model.CreatedBy = userLogin;
                 model.CreatedDate = DateTime.Now;
-                return WithDrawBusiness.Insert(model, userLogin);
+                var result = WithDrawBusiness.Insert(model, userLogin);
+                if (result)
+                {
+                    var admin = AccountBusiness.GetFullInfo(null, -1, userLogin);
+                    if (model.UID == admin.ID)
+                        HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(admin));
+                    return true;
+                }
             }
             return false;
         }
@@ -104,6 +112,16 @@ namespace KGQT.Areas.Admin.Controllers
         #region Duyệt lệnh nạp tiền
         public bool Approval(int ID)
         {
+            string userLogin = HttpContext.Session.GetString("user");
+            var result = WithDrawBusiness.Approval(ID, userLogin);
+            if(result != null)
+            {
+                var user = AccountBusiness.GetFullInfo(null, -1, userLogin);
+                var data = result.Data as tbl_Withdraw;
+                if(data.UID == user.ID)
+                    HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(user));
+                return true;
+            }
             return false;
         }
         #endregion

@@ -137,7 +137,7 @@ namespace KGQT.Areas.Admin.Controllers
 
                     #region Logs
                     BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 0, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, oOrder.TotalPrice.Value, 1, 1, pay.Value);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice.Value, 1, 1, pay.Value, username);
                     #endregion
 
                     var trade = new tbl_TradeHistory();
