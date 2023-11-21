@@ -85,7 +85,7 @@
             </div>
             <div class="row bg-white mt-2">
                 <div class="col-12">
-                    <div class="d-flex align-items-center justify-content-between border-bottom">
+                    <div class="d-flex align-items-center justify-content-between">
                         <h5 class="fw-bold text-danger text-uppercase m-0">Danh sách đơn ký gửi</h5>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
         <div class="col-11">
             @if(totalPage > 1)
             {
-                <nav class="d-flex justify-content-center">
+                <nav class="d-flex justify-content-end">
                     <ul class="pagination m-0">
                         <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
                             <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">

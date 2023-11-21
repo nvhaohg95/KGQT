@@ -47,16 +47,16 @@
                         {
                             i = i + 1;
                             <tr>
-                                <td class="text-left">
+                                <td class="text-left align-middle">
                                     <span>@(((page - 1) * 10) + i)</span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center align-middle">
                                     <span>@(item.WeightFrom + "-" + item.WeightTo + " kg")</span>
                                 </td>
-                                <td class="text-center text-danger">
+                                <td class="text-center align-middle text-danger">
                                     @string.Format("{0:N0}",item.Amount != null ? item.Amount : 0).Replace(",", ".")đ
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center align-middle">
                                     @switch (item.Type)
                                     {
                                         case 1:
@@ -76,7 +76,7 @@
                                             break;
                                     }
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center align-middle">
                                     <a class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)">
                                         <i class="fas fa-trash-alt"></i>
                                         <span>Xóa</span>
@@ -99,7 +99,7 @@
         <div class ="col-lg-6 col-md-6 col-sm-6">
             @if (totalPage > 1)
             {
-                <nav class="d-flex justify-content-center">
+                <nav class="d-flex justify-content-end">
                     <ul class="pagination m-0">
                         <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
                             <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">

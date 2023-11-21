@@ -100,13 +100,13 @@
                         @foreach (var item in Model)
                         {
                             <tr class="table-light font-weight-normal py-2">
-                                <td class="text-left" style="vertical-align:middle">
+                                <td class="text-left align-middle">
                                     @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                 </td>
-                                <td class="text-center" style="vertical-align:middle">
+                                <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                 </td>
-                                <td class="text-left" style="vertical-align:middle">
+                                <td class="text-left align-middle">
                                     <div class="form-group mb-0">
                                         @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
                                         {
@@ -131,19 +131,19 @@
                                         }
                                     </div>
                                 </td>
-                                <td class="text-center" style="vertical-align:middle">
+                                <td class="text-center align-middle">
                                     @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                 </td>
-                                <td class="text-center" style="vertical-align:middle">
+                                <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.TotalPrice)
                                 </td>
-                                <td class="text-center" style="vertical-align:middle">
+                                <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.CreatedDate)
                                 </td>
-                                <td class="text-center" style="vertical-align:middle">
+                                <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.Username)
                                 </td>
-                                <td class="text-center" style="vertical-align:middle">
+                                <td class="text-center align-middle">
                                     <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.ID">
                                         <i class="far fa-edit"></i>
                                         <span>Xem</span>
@@ -166,7 +166,7 @@
         <div class="col-11">
             @if (totalPage > 1)
             {
-                <nav class="d-flex justify-content-center">
+                <nav class="d-flex justify-content-end">
                     <ul class="pagination m-0">
                         <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
                             <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
