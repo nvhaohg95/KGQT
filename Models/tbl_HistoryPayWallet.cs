@@ -23,7 +23,8 @@ namespace KGQT.Models
         /// 2: Nhận lại tiền hàng
         /// 3: Admin nạp tiền
         /// 4: Rút tiền
-        /// 5: Hủy rút tiền, 6:Nạp tiền tại kho
+        /// 5: Hủy rút tiền,
+        /// 6:Nạp tiền tại kho
         /// 7.Rút tiền tại kho
         /// 
         /// </summary>

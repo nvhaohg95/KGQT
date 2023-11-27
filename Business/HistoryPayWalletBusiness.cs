@@ -1,9 +1,10 @@
 ﻿using KGQT.Business.Base;
 using KGQT.Models;
+using KGQT.Models.temp;
 
 namespace KGQT.Business
 {
-    public static class HistoryPayWallet
+    public static class HistoryPayWalletBusiness
     {
         #region CRUD
         public static bool Insert(int uid,string username,int orderId,string content,double amount,int type, int tradeType, double moneyleft,string createdBy)
@@ -22,7 +23,6 @@ namespace KGQT.Business
             return BusinessBase.Add(pay);
         }
         #endregion
-
 
         #region Get Page
         public static object[] GetPage(string userName, int orderID, int tradeType, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
@@ -49,6 +49,33 @@ namespace KGQT.Business
                 }
                 return new object[] {lstData,totalRecod,totalPage };
             }
+        }
+        #endregion
+
+        #region Get detail
+        public static tmpHistoryPayWallet GetByID(int id)
+        {
+            tmpHistoryPayWallet data = null;
+            using (var db = new nhanshiphangContext())
+            {
+                var history = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.ID == id);
+                if (history != null)
+                {
+                    data = new tmpHistoryPayWallet(history);
+                    var user = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == history.UID);
+                    if (user != null)
+                    {
+                        data.Customer = new AccountInfo();
+                        data.Customer.ID = user.UID;
+                        data.Customer.FirstName = user.FirstName;
+                        data.Customer.LastName = user.LastName;
+                        data.Customer.Email = user.Email;
+                        data.Customer.Phone = user.Phone;
+                        data.Customer.Address = user.Address;
+                    }
+                }
+            }
+            return data;
         }
         #endregion
     }
