@@ -14,6 +14,7 @@ using System.Data;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Xml.Linq;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -77,11 +78,10 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult DownloadFile(string filePath)
+        public IActionResult DownloadFile(string fileName)
         {
-            filePath = "D:\\Src\\KGQT\\bin\\Debug\\net6.0\\ExportExcel\\16112023/T11_1日YT7423331377870.xlsm";
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-            return File(fileBytes, MimeTypes.GetMimeType(filePath), Path.GetFileName(filePath));
+            byte[] fileBytes = System.IO.File.ReadAllBytes(fileName);
+            return File(fileBytes, MimeTypes.GetMimeType(fileName), Path.GetFileName(fileName));
         }
 
         #endregion
@@ -111,7 +111,7 @@ namespace KGQT.Areas.Admin.Controllers
             int s = Int32.Parse(oData[0].ToString());
             if (s > 0)
             {
-                if (oData.Length > 1)
+                if (oData.Length > 1 && file.ContentType != "application/vnd.ms-excel")
                 {
                     string path = PJUtils.MarkupValueExcel(file, sheet, oData[1] as List<string>);
                     return new { status = s, path };

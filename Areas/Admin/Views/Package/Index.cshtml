@@ -405,14 +405,35 @@
                             confirmButtonText: "Tải file"
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                var a = document.createElement('a');
-                                a.href = "/admin/package/downloadfile?filepath=" + res.path;
-                                a.dispatchEvent(new MouseEvent('click'));
-                            }else{
+                                $.ajax({
+                                    url: '/admin/package/DownloadFile?fileName=' + res.path,
+                                    type: 'Get',
+                                    xhrFields: {
+                                        responseType: 'blob'
+                                    },
+                                    contentType: false,
+                                    processData: false,
+                                    success: function (data) {
+                                        let sPath = res.path.split("/");
+                                        let fName = sPath[sPath.length - 1];
+                                        let a = document.createElement('a');
+                                        let url = window.URL.createObjectURL(data);
+                                        a.href = url;
+                                        a.download = fName;
+                                        document.body.append(a);
+                                        a.click();
+                                        a.remove();
+                                        window.URL.revokeObjectURL(url);
+                                    }, error: function (err) {
+                                        console.log(err);
+                                    }
+                                });
+                            }
+                            else{
                                 window.location.reload();
                             }
                         });
-                       
+
                     } else {
                         helper.showSuc('Cập nhật thành công', true);
                         return;
