@@ -82,7 +82,7 @@ namespace KGQT.Business
                             result.IsError = false;
                             result.Message = "Duyệt thành công.";
                             #region Logs
-                            HistoryPayWalletBusiness.Insert(user.ID, user.Username, withDraw.ID, withDraw.Note, withDraw.Amount.Value, 1, 1, moneyLeft.Value, createdBy);
+                            HistoryPayWallet.Insert(user.ID, user.Username, withDraw.ID, withDraw.Note, withDraw.Amount.Value, 1, 1, moneyLeft.Value, createdBy);
                             #endregion
                             return result;
                         }
