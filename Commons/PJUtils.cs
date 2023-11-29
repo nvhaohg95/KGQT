@@ -261,7 +261,7 @@ namespace KGQT.Commons
                     s = "Hoàn tiền";
                     break;
                 case 3:
-                    s = "Admin nạp tiền";
+                    s = "Nạp tiền";
                     break;
                 case 4:
                     s = "Rút tiền";

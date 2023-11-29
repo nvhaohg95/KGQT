@@ -6,7 +6,7 @@
     ViewData["Title"] = "Lịch sử giao dịch";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     var orderID = ViewData["orderID"];
-    int tradeType = (int) ViewData["tradeType"];
+    int tradeType = (int)ViewData["tradeType"];
     var fromDate = ViewData["fromDate"];
     var toDate = ViewData["toDate"];
     int page = (int)ViewData["page"];
@@ -75,7 +75,7 @@
                     <td class="fw-bold text-center">Số tiền</td>
                     <td class="fw-bold text-center">Số dư</td>
                     <td class="fw-bold text-center">Tổng</td>
-                    <td class="fw-bold text-center">Thao tác</td>
+                    @*<td class="fw-bold text-center">Thao tác</td>*@
                 </tr>
             </thead>
             <tbody>
@@ -122,12 +122,12 @@
                         <td class="text-center">
                             <span class="text-success">@string.Format("{0:N0}",item.MoneyLeft + item.Amount).Replace(",",".")đ</span>
                         </td>
-                        <td class="text-center">
+                        @*<td class="text-center">
                             <a class="btn btn-sm btn-secondary" asp-action="Detail" asp-route-id="@item.ID">
                                 <i class="far fa-edit"></i>
                                 <span>Xem</span>
                             </a>
-                        </td>
+                        </td>*@
                     </tr>
                 }
             </tbody>

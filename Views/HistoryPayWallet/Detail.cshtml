@@ -1,0 +1,137 @@
+﻿@using KGQT.Commons;
+@model KGQT.Models.temp.tmpHistoryPayWallet;
+
+@{
+    ViewData["Title"] = "Thông tin giao dịch";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var ID = ViewData["ID"];
+}
+<div class="row mb-2">
+    <ul id="breadcrumbs">
+        <li><a href="#">Giao dịch</a></li>
+        <li><a href="/HistoryPayWallet/Index">Lịch sử</a></li>
+        <li><a href="#">Thông tin giao dịch</a></li>
+    </ul>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-sm-8 col-sm-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h5 class="fw-bold text-center text-white text-uppercase">THÔNG TIN GIAO DỊCH</h5>
+            </div>
+            <div class="card-body">
+                @if(Model.Type == 1)
+                {
+                    <div class="row p-2 mx-0 my-2 border-bottom">
+                        <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 d-flex justify-content-end">
+                            <li class="active-tl">
+                                <span>Kí gửi</span>
+                            </li>
+                            <li>
+                                <span>Hàng về kho TQ</span>
+                            </li>
+                            <li>
+                                <span>Hàng về kho Việt Nam</span>
+                            </li>
+                            <li>
+                                <span>Chờ nhận hàng</span>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                <div class="row p-2 ">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-sm-12">
+                                <h5 class="text-uppercase text-primary">LOẠI GIAO DỊCH</h5>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Loại GD:</span>
+                                    <span class="font-italic">@PJUtils.TradeType(Model.TradeType)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-sm-12">
+                                <h5 class="text-uppercase text-primary">KHÁCH HÀNG</h5>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Khách hàng:</span>
+                                    <span class="font-italic">@string.Concat(Model.Customer.FirstName," ",Model.Customer.LastName)</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">SĐT:</span>
+                                    <span class="font-italic">@Model.Customer.Phone</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Email:</span>
+                                    <span class="font-italic">@Model.Customer.Email</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Địa chỉ:</span>
+                                    <span class="font-italic">@Model.Customer.Address</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-sm-12">
+                                <h5 class="text-uppercase text-primary">ĐƠN HÀNG</h5>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Mã HĐ:</span>
+                                    <span class="font-italic">@Model.OrderID</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Nội dung:</span>
+                                    <span class="font-italic">@Model.HContent</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Ngày tạo:</span>
+                                    <span class="font-italic">@Model.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <span class="fw-bold">Tổng tiền:</span>
+                                    @if (Model.Type == 1)
+                                    {
+                                        <span class="font-italic text-danger">-@Model.Amount</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="font-italic text-success">@Model.Amount</span>
+                                    }
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.Note))
+                            {
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <span class="fw-bold">Ghi chú:</span>
+                                        <span> @Model.Note</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

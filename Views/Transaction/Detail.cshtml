@@ -1,10 +1,10 @@
 ﻿@using KGQT.Commons;
-@model KGQT.Models.tbl_Transaction
+@model KGQT.Models.tbl_HistoryPayWallet
 
 @{
     ViewData["Title"] = "Chi tiết giao dịch";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
-    var orderID = ViewData["orderID"];
+    var ID = ViewData["ID"];
 }
 <div class="row mb-2">
     <ul id="breadcrumbs">
@@ -16,15 +16,38 @@
 <div class="row">
     <div class="col-lg-12 col-sm-12 col-sm-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="fw-bold text-primary text-uppercase">
+            <div class="card-header bg-primary">
+                <h5 class="fw-bold text-center text-white text-white text-uppercase">
                     @string.Concat("THÔNG TIN GIAO DỊCH")
                 </h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <div class="row p-2 mx-0 my-2 border-bottom">
+                    <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 d-flex justify-content-end">
+                        <li class="active-tl">
+                            <span>Kí gửi</span>
+                        </li>
+                        <li>
+                            <span>Hàng về kho TQ</span>
+                        </li>
+                        <li>
+                            <span>Hàng về kho Việt Nam</span>
+                        </li>
+                        <li >
+                            <span>Chờ nhận hàng</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="row p-2 ">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <h5 class="fw-bold text-uppercase text-primary">@(PJUtils.TradeType(Model.TradeType))</h5>
+                    </div>
+                    <div>
+
+                    </div>
+                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
             </div>
         </div>
     </div>

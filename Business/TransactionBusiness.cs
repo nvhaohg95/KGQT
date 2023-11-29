@@ -6,7 +6,7 @@ namespace KGQT.Business
 {
     public static class TransactionBusiness
     {
-        #region Lấy danh sách giao dịch nạp tiền
+        #region Lấy danh sách giao dịch
         public static object[] GetListTransaction(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var lstData = new List<tbl_Transaction>();
@@ -82,7 +82,7 @@ namespace KGQT.Business
                             result.IsError = false;
                             result.Message = "Duyệt thành công.";
                             #region Logs
-                            HistoryPayWallet.Insert(user.ID, user.Username, withDraw.ID, withDraw.Note, withDraw.Amount.Value, 1, 1, moneyLeft.Value, createdBy);
+                            HistoryPayWalletBusiness.Insert(user.ID, user.Username, withDraw.ID, withDraw.Note, withDraw.Amount.Value, 1, 1, moneyLeft.Value, createdBy);
                             #endregion
                             return result;
                         }
