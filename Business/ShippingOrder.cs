@@ -12,10 +12,13 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                var data = db.tbl_ShippingOrders.Where(x => x.Username == username);
-                int st1 = data.Where(x => x.Status == 1).Count();
-                int st2 = data.Where(x => x.Status == 2).Count();
-                int total = data.Count();
+                IQueryable<tbl_ShippingOrder> qry = db.tbl_ShippingOrders;
+                if (!string.IsNullOrEmpty(username))
+                    qry = qry.Where(x => x.Username == username);
+
+                int st1 = qry.Where(x => x.Status == 1).Count();
+                int st2 = qry.Where(x => x.Status == 2).Count();
+                int total = qry.Count();
                 return new object[] { st1, st2, total };
             }
         }

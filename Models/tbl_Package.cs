@@ -53,18 +53,13 @@ namespace KGQT.Models
         public string? Address { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
-        public double? PriceInWareHouse { get; set; }
         public string? Note { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
         public int? SearchBaiduTimes { get; set; }
-        public int? SearchBaiduTimesEdit { get; set; }
         public DateTime? DateExpectation { get; set; }
-        public DateTime? DateExpectationEdit { get; set; }
-        public int? BigPackageID { get; set; }
-        public bool? Imported { get; set; }
         public bool? Exported { get; set; }
     }
 }

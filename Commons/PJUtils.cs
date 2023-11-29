@@ -111,28 +111,28 @@ namespace KGQT.Commons
             {
                 case 0:
                 case 1:
-                    sReturn = "<span class=\"btn-sm btn bg-secondary text-white\">Chưa xác nhận</span>";
+                    sReturn = "<span class=\"btn-sm btn bg-secondary text-white\" style=\"font-size:12px\">Chưa xác nhận</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-warning\">Hàng về kho TQ</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-warning\" style=\"font-size:12px\">Hàng về kho TQ</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-info\">Đang trên đường về HCM</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-info\" style=\"font-size:12px\">Đang về HCM</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-primary\">Hàng về tới HCM</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-primary\" style=\"font-size:12px\">Hàng về tới HCM</span>";
                     break;
                 case 5:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-success\">Đã nhận hàng</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-success\" style=\"font-size:12px\">Đã nhận hàng</span>";
                     break;
                 case 9:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-danger\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-danger\" style=\"font-size:12px\">Đã hủy</span>";
                     break;
                 case 10:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-light\">Thất lạc</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-light\" style=\"font-size:12px\">Thất lạc</span>";
                     break;
                 case 11:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-dark \">Không nhận được hàng</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-dark \" style=\"font-size:12px\">Không nhận được hàng</span>";
                     break;
             }
             return sReturn;

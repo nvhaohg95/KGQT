@@ -1,5 +1,4 @@
-﻿@using KGQT.Models.temp;
-@using Newtonsoft.Json;
+﻿
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
@@ -22,66 +21,73 @@
 </ul>
 
 <div class="row p-4">
-    <div class="col-xl-6 col-md-6">
-        <div class="card bg-primary text-white mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <h2>ĐƠN HÀNG</h2>
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                           Đang chờ thanh toán
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@s1</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-credit-card text-primary fa-2x"></i>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fa-10 text-white stretched-link">Chưa thanh toán</span>
-                    <div class="fa-10 text-white">@s1</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fa-10 text-white stretched-link">Đã thanh toán</span>
-                    <div class="fa-10 text-white">@s2</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fa-10 text-white stretched-link">Tổng số đơn</span>
-                    <div class="fa-10 text-white">@s</div>
-                </div>
-
-            </div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="fa-10 text-primary stretched-link" href="/ShippingOrder/Index">Xem chi tiết</a>
-                <div class="fa-10 text-primary"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
-    <div class="col-xl-6 col-md-6">
-        <div class="card bg-success text-white mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <h2>KIỆN HÀNG</h2>
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                           Kiện đang vận chuyển
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@p3</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-plane fa-2x text-info"></i>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fa-10 text-white stretched-link">Đang trên đường về HCM</span>
-                    <span class="fa-10 text-white">@p3</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fa-10 text-white stretched-link">Hàng về tới HCM</span>
-                    <span class="fa-10 text-white">@p4</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fa-10 text-white stretched-link">Đã nhận hàng</span>
-                    <span class="fa-10 text-white">@p5</span>
-                </div>
-
-            </div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-primary stretched-link" href="/Package/Index">Xem chi tiết</a>
-                <div class="small text-primary"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
-    @*<div class="col-xl-4 col-md-6">
-    <div class="card bg-warning text-white mb-4">
-    <div class="card-body text-uppercase">THÔNG BÁO</div>
-    <div class="card-footer d-flex align-items-center justify-content-between">
-    <a class="fa-10 text-primary stretched-link" href="#">Xem chi tiết</a>
-    <div class="fa-10 text-primary"><i class="fas fa-angle-right"></i></div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Đã thanh toán
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@s2</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-square fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Đã nhận
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@p5</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    </div>*@
 </div>
 

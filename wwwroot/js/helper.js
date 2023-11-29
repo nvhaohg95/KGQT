@@ -41,45 +41,14 @@
     },
 
     getChange: function (e) {
-        // 48 - 57 (0-9)
-        let valueRef = e;
-
-        var str1 = valueRef.value;
-        if (!str1) return;
-
-        if (
-            str1[str1.length - 1].charCodeAt() < 48 ||
-            str1[str1.length - 1].charCodeAt() > 57
-        ) {
-            valueRef.value = str1.substring(0, str1.length - 1);
-            return;
-        }
-
-        let str = valueRef.value.replace(/,/g, "");
-
-        let value = +str;
-        this.getCurrency(value);
-        valueRef.value = value.toLocaleString();
-        valueRef.dataset.value = str;
-        console.log(str)
+        let t = $(e);
+        var regx = /\D+/g;
+        var number = t.val().replace(regx, "");
+        t.attr('data-value', number);
+        t.val(number.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
     },
 
-    getCurrency: function (value) {
-        var map = new Map();
-        let i = 0;
-        //loop unitll value 0
-        while (value) {
-            //if divide in non-zero add in map
-            if (Math.floor(value / currency[i]) != 0) {
-                map.set(currency[i], Math.floor(value / currency[i]));
-                //update value using mod
-                value = value % currency[i];
-            }
-            i++;
-        }
-    },
-
-    copy: function (e,input) {
+    copy: function (e, input) {
         input.select();
         document.execCommand("copy");
         e.classList.add("active");
@@ -92,7 +61,7 @@
 const currency = [2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
 
-function formatVND() {
+window["formatVND"] = function formatVND() {
     //add attribute data-type="currency" for input to set input type currency format
     var inputMoney = document.querySelectorAll('[data-type="formatvnd"]');
     function inputNumberTest() {
@@ -103,5 +72,7 @@ function formatVND() {
     }
     inputMoney.forEach(function (input, index) {
         input.addEventListener("input", inputNumberTest);
+        if (input.value)
+            helper.getChange(input)
     });
 }
