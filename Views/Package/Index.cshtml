@@ -16,7 +16,7 @@
 
 <ul id="breadcrumbs" class="mb-2">
     <li><a href="#">Trang chủ</a></li>
-    <li><a class="active">Danh sách ký gửi</a></li>
+    <li><a class="active">Danh sách kiện ký gửi</a></li>
 </ul>
 <div class="row bg-white px-2 py-2">
     <div class="col-lg-12 col-md-12 col-sm-12">
@@ -75,17 +75,18 @@
                             <span class="fw-bold">Thời gian tạo:</span>
                         </div>
                         <div class="row">
-                            <div class="col-lg-5 col-md-12 col-sm-12 mt-2">
+                            <div class="col-lg-4 col-md-4 col-sm-12 mt-2">
                                 @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
                             </div>
-                            <div class="col-lg-5 col-md-12 col-sm-12 mt-2">
+                            <div class="col-lg-4 col-md-4 col-sm-12 mt-2">
                                 @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
                             </div>
-                            <div class="col-lg-2 col-md-12 col-sm-12 mt-2 d-flex align-items-center justify-content-end">
-                                <a href="Index" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
-                                    <i class="fas fa-sync fa-xs"></i>
+                            <div class="col-lg-4 col-md-4 col-sm-12 mt-2 d-flex align-items-center justify-content-end">
+                                <a href="Index" class="text-decoration-none mx-2">
+                                    <i class="fas fa-sync fa-xs mr-2"></i>
+                                    Làm mới bộ lọc
                                 </a>
-                                <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
+                                <button type="submit" class="btn btn-sm btn-primary"> <i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
                             </div>
                         </div>
                     </div>
@@ -97,9 +98,13 @@
 <div class="card" style="border-radius: 10px;">
     <div class="card-body p-4">
         <!--Start::Thông tin kiện-->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách ký gửi</h3>
-            <a href="/package/create" class="btn-success btn-sm pointer-event">Thêm đơn</a>
+        <div class="row">
+            <div class="col-md-6 col-sm-12 mb-2">
+                <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách kiện ký gửi</h3>
+            </div>
+            <div class="col-md-6 col-sm-12 mb-2 text-md-right text-center">
+                <a href="/package/create" class="btn-success btn-sm pointer-event">Thêm đơn</a>
+            </div>
         </div>
         @foreach (var item in Model)
         {
@@ -109,7 +114,7 @@
                         <div class="col-md-6 my-auto">
                             <span class="cursor-pointer">
                                 <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
-                                <span class=" btn-copy" data-value="@item.PackageCode">
+                                <span class="btn-copy" data-value="@item.PackageCode">
                                     <i class="fa fa-copy"></i>
                                 </span>
                             </span>
@@ -120,9 +125,13 @@
                             <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                         </div>
                         <div class="col-md-3 text-right">
-                            @if (item.Status <= 1)
+                            @if (item.Status < 2)
                             {
-                                <button class="btn-sm btn bg-orange text-white mb-sm-1 mr-md-2">Kiểm tra hàng kho TQ</button>
+                                <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
+                            }
+                            else
+                            {
+                                @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                             }
                         </div>
                     </div>
@@ -252,13 +261,13 @@
 </div>
 <!--Start: Phân trang-->
 <div class="row p-2">
-    <div class="col-1">
+    <div class="col-4 align-self-center">
         <span>
             Tổng số:&nbsp
             <b>@totalRecord</b>
         </span>
     </div>
-    <div class="col-11">
+    <div class="col-7">
         @if (totalPage > 1)
         {
             <nav class="d-flex justify-content-end">
@@ -296,6 +305,7 @@
             setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
         })
     })
+
     function getPage(pageIndex) {
         var totalPage = @totalPage;
         if (pageIndex <= 0 || pageIndex > totalPage)
@@ -309,8 +319,24 @@
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
-
+    function checkStatus(code, times) {
+        if (!times) {
+            Swal.fire({
+                title: "Chú ý",
+                text: "Sử dụng chức năng này sẽ tốn phí 500đ/kiện (Chỉ tốn phí lần đầu). Bạn có chắc muốn sử dụng?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Đồng ý",
+                cancelButtonText: "Từ chối"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.href = "/package/QueryOrderStatus?code=" + code;
+                }
+            });
+        } else
+            location.href = "/package/QueryOrderStatus?code=" + code;
+    }
 </script>
-</div>
-
 <div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>

@@ -135,6 +135,7 @@ namespace KGQT.Business
                         us = new UserLogin()
                         {
                             ID = acc.ID,
+                            UserID = acc.UserID,
                             Username = acc.Username,
                             Status = acc.Status,
                             Wallet = acc.Wallet,
@@ -154,7 +155,6 @@ namespace KGQT.Business
                             IsOutCityCustomer = acc.IsOutCityCustomer,
                             IsNotReceiveMail = acc.IsNotReceiveMail,
                             CreateDate = acc.CreatedDate,
-                            UserID = acc.UserID,
                         };
                         return us;
                     }

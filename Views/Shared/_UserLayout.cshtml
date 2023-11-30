@@ -62,7 +62,7 @@
             <img class="logo_img" src="/img/logoshipping.png" alt="Nhận Ship Hàng – Một chữ tín, vạn niềm tin" title="Nhận Ship Hàng – Một chữ tín, vạn niềm tin">
         </a>
         <!-- Sidebar Toggle-->
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
         <!-- Navbar Search-->
         <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
             <div class="input-group d-none">
@@ -71,10 +71,10 @@
             </div>
         </form>
         <!-- Navbar-->
-        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <ul class="navbar-nav ms-auto ms-md-0 me-lg-4">
 
             <!--Wallet-->
-            <li class="nav-item dropdown no-arrow mx-1">
+            <li class="nav-item dropdown no-arrow mx-1 d-none d-md-block">
             @if(user != null)
             {
                     <span class="nav-link">
@@ -88,7 +88,7 @@
             }
             </li>
             <!-- Nav Item - Alerts -->
-            <li class="nav-item dropdown no-arrow mx-1">
+            <li class="nav-item dropdown no-arrow mx-1 d-none d-md-block">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Thông báo">
                     <i class="fas fa-bell fa-fw"></i>
@@ -213,7 +213,7 @@
                 </div>
             </li>*@
 
-            <div class="topbar-divider d-none d-sm-block"></div>
+            <li class="topbar-divider d-none d-sm-block"></li>
 
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
@@ -244,22 +244,33 @@
                         <div class="dropdown-divider"></div>
                     }
                     <a class="dropdown-item" href="/Account/Info">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-user fa-sm fa-fw mr-2"></i>
                         Thông tin tài khoản
+                    </a>
+                    <div class="dropdown-divider d-block d-md-none"></div>
+                    <a class="dropdown-item d-block d-md-none" href="/Account/Info">
+                        <i class="fas fa-wallet fa-sm fa-fw mr-2"></i>
+                        <span>Số dư ví: <span class="fw-bold text-danger">@string.Format("{0:N0}đ",user?.Wallet).Replace(",",".")</span></span>
+                    </a>
+                    <div class="dropdown-divider d-block d-md-none"></div>
+                    <a class="dropdown-item d-block d-md-none" href="#">
+                        <i class="fas fa-bell fa-fw"></i>
+                        <!-- Counter - Alerts -->
+                        Thông báo<span class="badge badge-danger badge-counter">3+</span>
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" data-toggle="modal" data-target="#withDrawModal">
-                        <i class="fas fa-money-check-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-money-check-alt fa-sm fa-fw mr-2"></i>
                         Nạp tiền
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" data-toggle="modal" data-target="#changePassWordModal">
-                        <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-key fa-sm fa-fw mr-2"></i>
                         Đổi mật khẩu
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="/Auth/Logout">
-                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
                         Đăng xuất
                     </a>
                 </div>
@@ -415,7 +426,7 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <div class="form-group">
                                         <label class="fw-bold">Tài khoản<span class="text-danger">(*)</span></label>
-                                        <input type="text" class="form-control" name="Username" value="@user.UserID" placeholder="Tài khoản" readonly>
+                                        <input type="text" class="form-control" name="Username" value="@user.Username" placeholder="Tài khoản" readonly>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12">

@@ -68,14 +68,6 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult PackagePartial(/*DateTime date, int method,M*/ string code)
         {
             var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
-            //if (!string.IsNullOrEmpty(code))
-            //{
-            //    DateTime start = date;
-            //    DateTime end = start.AddDays(1).AddTicks(-1);
-            //    packages = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.EndsWith(code)
-            //    && x.MovingMethod == method
-            //    && x.ExportedCNWH >= start && x.ExportedCNWH < end).ToList();
-            //}
             return PartialView("_Package", package);
         }
 
@@ -128,6 +120,7 @@ namespace KGQT.Areas.Admin.Controllers
                 }
 
                 oPack.SearchBaiduTimes++;
+                BusinessBase.Update(oPack);
             }
             else
             {
