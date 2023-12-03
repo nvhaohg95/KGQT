@@ -54,20 +54,5 @@ namespace KGQT
 
         #endregion
 
-        [HttpPost]
-        public JsonResult Test(ChangePassword data)
-        {
-            if (ModelState.IsValid)
-            {
-                NotificationService.AddSuccessToastMessage("Success");
-            }
-            else
-                NotificationService.AddErrorToastMessage("Error");
-
-            return Json(data);
-        }
-
-
-
     }
 }
