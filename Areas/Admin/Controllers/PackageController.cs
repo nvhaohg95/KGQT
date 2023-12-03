@@ -6,6 +6,7 @@ using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using MimeKit;
@@ -62,18 +63,11 @@ namespace KGQT.Areas.Admin.Controllers
             var model = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.Contains(str)).ToList();
             return View(model);
         }
+
         [HttpGet]
         public IActionResult PackagePartial(/*DateTime date, int method,M*/ string code)
         {
             var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
-            //if (!string.IsNullOrEmpty(code))
-            //{
-            //    DateTime start = date;
-            //    DateTime end = start.AddDays(1).AddTicks(-1);
-            //    packages = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.EndsWith(code)
-            //    && x.MovingMethod == method
-            //    && x.ExportedCNWH >= start && x.ExportedCNWH < end).ToList();
-            //}
             return PartialView("_Package", package);
         }
 
@@ -82,6 +76,58 @@ namespace KGQT.Areas.Admin.Controllers
         {
             byte[] fileBytes = System.IO.File.ReadAllBytes(fileName);
             return File(fileBytes, MimeTypes.GetMimeType(fileName), Path.GetFileName(fileName));
+        }
+
+        [HttpGet]
+        public IActionResult QueryOrderStatus(string code)
+        {
+            tmpChinaOrderStatus data = new tmpChinaOrderStatus();
+            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
+            if (oPack != null)
+            {
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == oPack.UID);
+
+                if (oPack.SearchBaiduTimes == null)
+                {
+                    oPack.SearchBaiduTimes = 0;
+                    var wallet = user.Wallet - 500;
+                    BusinessBase.Update(user);
+
+                    #region Logs
+                    HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "", 500, 1, 1, wallet.Value, HttpContext.Session.GetString("user"));
+                    #endregion
+                }
+                if (oPack.SearchBaiduTimes > 5)
+                {
+                    data.success = false;
+                    data.reason = "Bạn đã vượt quá số lần tìm kiếm cho phép";
+                    return View(data);
+                }
+                using (HttpClient client = new HttpClient())
+                {
+                    string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, code);
+                    var response = client.GetAsync(url).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string sData = response.Content.ReadAsStringAsync().Result;
+                        data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
+                    }
+                    else
+                    {
+                        data.success = false;
+                        data.reason = "Không thể kết nối đến server!";
+                    }
+                }
+
+                oPack.SearchBaiduTimes++;
+                BusinessBase.Update(oPack);
+            }
+            else
+            {
+                data.reason = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
+            }
+            data.nu = code;
+            return View(data);
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using KGQT.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -7,9 +8,7 @@ namespace KGQT.Models
 {
     public partial class nhanshiphangContext : DbContext
     {
-        IConfiguration _configuration = new ConfigurationBuilder()
-                           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                           .Build();
+     
         public nhanshiphangContext()
         {
         }
@@ -50,7 +49,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("KGQT"));
+                optionsBuilder.UseSqlServer(Config.Connections["KGQT"]);
             }
         }
 
@@ -217,8 +216,7 @@ namespace KGQT.Models
 
                 entity.Property(e => e.DateExpectation).HasColumnType("datetime");
 
-                entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
-
+             
                 entity.Property(e => e.Email).HasMaxLength(100);
 
                 entity.Property(e => e.Exported).HasDefaultValueSql("((0))");
@@ -226,8 +224,6 @@ namespace KGQT.Models
                 entity.Property(e => e.ExportedCNWH)
                     .HasColumnType("datetime")
                     .HasComment("Chờ giao");
-
-                entity.Property(e => e.Imported).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ImportedSGWH)
                     .HasColumnType("datetime")

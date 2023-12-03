@@ -51,5 +51,8 @@ namespace KGQT.Base
     public class Settings
     {
         public string LogPath { get; set; }
+        public string ApiKey { get; set; }
+
+        public string ApiUrl { get; set; }
     }
 }

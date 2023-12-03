@@ -4,7 +4,7 @@ using KGQT.Models.temp;
 
 namespace KGQT.Business
 {
-    public static class HistoryPayWalletBusiness
+    public static class HistoryPayWallet
     {
         #region CRUD
         public static bool Insert(int uid,string username,int orderId,string content,double amount,int type, int tradeType, double moneyleft,string createdBy)
