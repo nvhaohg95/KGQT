@@ -6,15 +6,24 @@
 @{
     var sUser = Context.Session.GetString("user");
     UserLogin user = null;
+    int page = 1;
+    int totalPage = 1;
+    var lstNoti = new List<tbl_Notification>();
     if (!string.IsNullOrEmpty(sUser))
     {
         user = AccountBusiness.GetFullInfo(null, -1, sUser);
         if (user == null)
             Context.Response.Redirect("/Auth/Login");
+        else
+        {
+            var oData = NotificationBusiness.GetPage(user.ID, page);
+            lstNoti = oData[0] as List<tbl_Notification>;
+            page = (int)oData[1];
+            totalPage = (int)oData[2];
+        }
     }
     else
         Context.Response.Redirect("/Auth/Login");
-    
 }
 <!DOCTYPE html>
 <html>
@@ -96,12 +105,57 @@
                     @*<span class="badge badge-danger badge-counter">3+</span>*@
                 </a>
                 <!-- Dropdown - Alerts -->
-                @*<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="alertsDropdown">
                     <h6 class="dropdown-header">
-                        Alerts Center
+                        THÔNG BÁO
                     </h6>
-                    <a class="dropdown-item d-flex align-items-center" href="#">
+                    @{
+                        if (lstNoti != null)
+                        {
+                            foreach (var item in lstNoti)
+                            {
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        @if(item.NotifType == 1)
+                                        {
+                                            <div class="icon-circle bg-primary">
+                                                <i class="fas fa-file-alt text-white"></i>
+                                            </div>
+                                        }
+                                        else if(item.NotifType == 2)
+                                        {
+                                             <div class="icon-circle bg-success">
+                                                <i class="fas fa-donate text-white"></i>
+                                            </div>                                            
+                                        }
+                                        else 
+                                        {
+                                            <div class="icon-circle bg-warning">
+                                                <i class="fas fa-exclamation-triangle text-white"></i>
+                                            </div>
+                                        }
+
+                                    </div>
+                                    <div>
+                                        <div>
+                                            @Html.Raw(item.Message)
+                                        </div>
+
+                                        <div class="small text-gray-500">@item.CreatedDate.Value.ToString("dd/MM/yyyy")</div>
+                                    </div>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                Không có dữ liệu
+                            </a>
+                        }
+                    }
+
+                    @*<a class="dropdown-item d-flex align-items-center" href="#">
                         <div class="mr-3">
                             <div class="icon-circle bg-primary">
                                 <i class="fas fa-file-alt text-white"></i>
@@ -134,8 +188,8 @@
                             Spending Alert: We've noticed unusually high spending for your account.
                         </div>
                     </a>
-                    <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                </div>*@
+                    <a class="dropdown-item text-center small text-gray-500" href="#">Xem tất cả</a>*@
+                </div>
             </li>
 
             <!-- Nav Item - Messages -->
@@ -476,7 +530,7 @@
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 d-none" id="extendNote">
                                     <div class="alert alert-warning d-flex" role="alert">
-                                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                                        <i class="fas fa-exclamation-triangle icon-16 mr-2"></i>
                                         <div>
                                             <p class="mb-0"><b>Lưu ý:</b></p>
                                             <p class="mb-0">Với những giao dịch nạp tiền chuyển khoản ngoài giờ hành chính. Thời gian hệ thống xử lý có thể chậm hơn bình thường. Mong quý khách hàng thông cảm!</p>
