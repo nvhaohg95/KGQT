@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     var p3 = ViewData["pack_st3"];
@@ -21,13 +20,13 @@
 </ul>
 
 <div class="row p-4">
-    <div class="col-xl-3 col-md-6 mb-4">
+    <div class="col-xl-3 col-md-6 mb-4 cls-watting">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                           Đang chờ thanh toán
+                            Đang chờ thanh toán
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@s1</div>
                     </div>
@@ -38,13 +37,13 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
+    <div class="col-xl-3 col-md-6 mb-4 cls-done">
         <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                           Kiện đang vận chuyển
+                            Kiện đang vận chuyển
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@p3</div>
                     </div>
@@ -91,3 +90,44 @@
     </div>
 </div>
 
+<script>
+    //$(document).ready(function () {
+    //    $('.cls-watting').on('click', function () {
+    //        let c = new Date();
+    //        $.ajax({
+    //            url: '@Url.Action("TestGet", "Home")',
+    //            type: 'GET',
+    //            data: { a: 1, b: 'ssss', c },
+    //            // other AJAX options here
+    //            success: function (result) {
+    //                alert(result)
+    //            },
+    //            error: function (xhr, status, err) {
+    //                // error handling
+    //            }
+    //        });
+    //    });
+
+    //    $('.cls-done').on('click', function () {
+    //        let data = {
+    //            A: 1,
+    //            B: true,
+    //            C: new Date()
+    //        };
+
+    //        $.ajax({
+    //            url: '@Url.Action("TestPost", "Home")',
+    //            type: 'POST',
+    //            data: {data:JSON.stringify(data)},
+    //            dataType: 'json',
+    //            contentType: 'application/json',
+    //            success: function (result) {
+    //                alert(result)
+    //            },
+    //            error: function (xhr, status, err) {
+    //                // error handling
+    //            }
+    //        });
+    //    })
+    //})
+</script>
