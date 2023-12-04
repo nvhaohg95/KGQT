@@ -32,8 +32,24 @@ namespace KGQT
         }
         #endregion
 
-
         #region Home
+
+        [HttpGet]
+        public ActionResult TestGet([FromQuery] int a, [FromQuery] string b, [FromQuery] DateTime c)
+        {
+            return Ok(new { a, b, c });
+        }
+        public class ABC
+        {
+            public int A { get; set; }
+            public string B { get; set; }
+            public DateTime C { get; set; }
+        }
+        [HttpPost]
+        public ActionResult TestPost(string data)
+        {
+            return Ok(data);
+        }
 
         [HttpGet]
         public ActionResult Dashboard()
@@ -54,5 +70,19 @@ namespace KGQT
 
         #endregion
 
+        [HttpPost]
+        public JsonResult Test(ChangePassword data)
+        {
+            if (ModelState.IsValid)
+            {
+                NotificationService.AddSuccessToastMessage("Success");
+            }
+            else
+                NotificationService.AddErrorToastMessage("Error");
+
+            return Json(data);
+        }
     }
+
+
 }
