@@ -11,6 +11,7 @@
         user = AccountBusiness.GetFullInfo(null, -1, sUser);
         if (user == null)
             Context.Response.Redirect("/Auth/Login");
+
     }
     else
         Context.Response.Redirect("/Auth/Login");

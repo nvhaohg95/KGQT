@@ -1,8 +1,5 @@
-﻿using KGQT.Business.Base;
-using KGQT.Models;
+﻿using KGQT.Models;
 using KGQT.Models.temp;
-using Microsoft.DiaSymReader;
-using Newtonsoft.Json;
 
 namespace KGQT.Business
 {
@@ -27,7 +24,7 @@ namespace KGQT.Business
                 if (count > 0)
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)count / pageSize));
-                    lstData = query.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(x => x.CreatedDate).ToList();
+                    lstData = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
                 }
             }
             return new object[] { lstData, count, totalPage };
@@ -36,27 +33,38 @@ namespace KGQT.Business
         #endregion
 
         #region Add
-        public static bool Insert(tbl_Withdraw data,string userLogin)
+        public static bool Insert(tbl_Withdraw data,string createdBy)
         {
             using (var db = new nhanshiphangContext())
             {
                 var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
                 if (acc != null)
                 {
+                    var user = AccountBusiness.GetFullInfo(null, 0, acc.Username);
+                    var admin = AccountBusiness.GetFullInfo(null, 0, createdBy);
                     db.Add(data);
                     int kq1 = db.SaveChanges();
                     if(kq1 > 0)
                     {
+                        string notiMessage = "";
                         if (data.Status == 2)
                         {
                             var moneyLeft = acc.Wallet != null ? acc.Wallet : 0;
                             acc.Wallet = moneyLeft + data.Amount;
-                            acc.ModifiedBy = userLogin;
+                            acc.ModifiedBy = createdBy;
                             acc.ModifiedDate = DateTime.Now;
                             db.Update(acc);
                             db.SaveChanges();
-                            TransactionBusiness.Insert(acc.ID, data.Amount, 1, data.Type, userLogin);
-                            HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userLogin);
+                            notiMessage = string.Format("Nạp tiền thành công. Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount);
+                            TransactionBusiness.Insert(acc.ID, data.Amount, 1, data.Type, createdBy);
+                            HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, createdBy);
+                            NotificationBusiness.Insert(admin.ID, string.Concat(admin.FirstName," ", admin.LastName), user.ID, string.Concat(user.FirstName," ",user.LastName), data.ID, "", notiMessage, 2, admin.Username);
+
+                        }
+                        else
+                        {
+                            notiMessage = string.Format("Yêu cầu nạp tiền. Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", string.Concat(user.FirstName, " ", user.LastName), data.Amount);
+                            NotificationBusiness.Insert(user.ID, string.Concat(user.FirstName, " ", user.LastName), 0, "Admin", data.ID, "", notiMessage, 2, acc.Username, true);
                         }
                         return true;
                     }
@@ -93,6 +101,7 @@ namespace KGQT.Business
                         {
                             TransactionBusiness.Insert(user.ID, data.Amount, 1, data.Type, admin.Username);
                             HistoryPayWallet.Insert(user.ID, user.Username, data.ID,data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", string.Format("Nạp tiền thành công. Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount), 2, admin.Username);
                             result.IsError = false;
                             result.Message = "Duyệt thành công!";
                             result.Data = data;
