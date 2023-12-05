@@ -1,5 +1,6 @@
 ﻿using KGQT.Business;
 using KGQT.Commons;
+using KGQT.Mobility;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace KGQT.Controllers
         private IToastNotification _toastNotification;
         private readonly IHostingEnvironment _hostingEnvironment;
         private MailSettings _mailSettings;
-
+        static AuthencationController _auth;
         public IToastNotification NotificationService
         {
             get { return _toastNotification; }
@@ -29,6 +30,7 @@ namespace KGQT.Controllers
             _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
             _mailSettings = mailSettings.Value;
+            _auth = new AuthencationController();
         }
 
 
@@ -42,7 +44,7 @@ namespace KGQT.Controllers
                 var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
                 if (user != null)
                 {
-                    if(user.RoleID == 1)
+                    if (user.RoleID == 1)
                         return RedirectToAction("admin", "home");
                     return RedirectToAction("dashboard", "home");
                 }
@@ -52,17 +54,17 @@ namespace KGQT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(UserModel data)
+        public ActionResult Login(UserModel model)
         {
-            var result = AccountBusiness.Login(data.UserName, data.PassWord);
+            var result = _auth.Login(model.UserName,model.PassWord);
             if (result.IsError)
             {
                 ModelState.AddModelError(result.Key, result.Message);
-                return View(data);
+                return View(model);
             }
-            HttpContext.Session.SetString("user", data.UserName);
+            HttpContext.Session.SetString("user", model.UserName);
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
-            if(result.Data != null)
+            if (result.Data != null)
             {
                 var user = result.Data as UserLogin;
                 if (user.RoleID == 1)
@@ -93,11 +95,7 @@ namespace KGQT.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (data.File != null)
-                {
-                    data.Path = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", "avatars");
-                }
-                var result = AccountBusiness.RegisterAccount(data);
+                var result = _auth.RegisterAccount(data);
                 if (result.IsError)
                 {
                     if (result.Type == 1)

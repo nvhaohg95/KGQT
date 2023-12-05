@@ -48,6 +48,13 @@ namespace KGQT.Areas.Admin.Controllers
             }
         }
 
+
+        // GET: ShippingOrderController/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
         // GET: ShippingOrderController/Details/5
         public ActionResult Details(int id)
         {
@@ -173,6 +180,79 @@ namespace KGQT.Areas.Admin.Controllers
                 return new { error = true, mssg = string.Format("{0:N0}đ", pay).Replace(",", ".") };
             }
             return false;
+        }
+
+        // POST: ShippingOrderController/Create
+        /// <summary>
+        /// Status: 1: chưa xác nhận,2:Hàng về kho TQ, 3:Đang trên đường về HCM,
+        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,9:Đã hủy, 10: Thất lạc, 11: không nhận dc hàng
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="package"></param>
+        /// <param name="declares"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public bool Create(tbl_ShippingOrder form, string package, string declares)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(package)) return false;
+
+                var userLogin = HttpContext.Session.GetString("user");
+                var user = AccountBusiness.GetInfo(-1, form.Username);
+                form.Status = 1;
+                form.CreatedDate = DateTime.Now;
+                form.CreatedBy = userLogin;
+                form.Username = user.Username;
+                form.Email = user.Email;
+                form.LastName = user.LastName;
+                form.FirstName = user.FirstName;
+                form.Phone = user.Phone;
+                form.Address = user.Address;
+                form.Weight = 0;
+                form.WeightPrice = 0;
+                form.InsurancePrice = 0;
+                form.AirPackagePrice = 0;
+                form.WoodPackagePrice = 0;
+                form.TotalPrice = 0;
+                form.ShippingMethodName = PJUtils.ShippingMethodName(form.ShippingMethod.Value);
+                var sPacks = package.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                var oPacks = BusinessBase.GetList<tbl_Package>(x => sPacks.Contains(x.PackageCode));
+
+                foreach (var item in oPacks)
+                {
+                    if (item.IsInsurance != null && item.IsInsurance == true)
+                    {
+                        form.IsInsurance = true;
+                        form.InsurancePrice += item.IsInsurancePrice;
+                    }
+
+                    if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                    {
+                        form.IsWoodPackage = true;
+                        form.WoodPackagePrice += item.WoodPackagePrice;
+                    }
+
+                    if (item.IsAirPackage != null && item.IsAirPackage == true)
+                    {
+                        form.IsAirPackage = true;
+                        form.AirPackagePrice += item.AirPackagePrice;
+                    }
+
+                    form.WeightPrice += item.WeightPrice;
+                    form.Weight += item.Weight;
+
+                }
+
+                var totalPrice = form.WeightPrice + form.AirPackagePrice + form.AirPackagePrice + form.InsurancePrice;
+                form.TotalPrice = totalPrice;
+                var s = BusinessBase.Add(form);
+                return s;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
         #endregion
     }

@@ -204,19 +204,6 @@ namespace KGQT.Areas.Admin.Controllers
                 }
             }
             return BusinessBase.Update(p);
-            //foreach(PropertyInfo propertyInfo in form.GetType().GetProperties())
-            //{
-            //    if(propertyInfo.GetValue(form, null) != null)
-            //    {
-            //        PropertyInfo p = p.GetType().GetProperty(propertyInfo.Name);
-            //        var pValue = p.GetValue(p, null);
-            //        var value = propertyInfo.GetValue(form, null);
-            //        if (pValue != value)
-            //        {
-            //            p.SetValue(p, Convert.ChangeType(value, propertyInfo.PropertyType));
-            //        }
-            //    }
-            //}
         }
 
         [HttpPost]
