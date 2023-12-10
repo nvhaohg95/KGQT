@@ -103,8 +103,9 @@
                     <h3 class="lead fw-bold mb-0 text-danger text-uppercase">DANH SÁCH KIỆN</h3>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12 text-md-right text-center">
-                    <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#exportModal"><i class="fas fa-import fa-xs mr-2"></i>Cập nhật Excel</button>
                     <a href="/Admin/Package/Create" class="btn btn-sm btn-success pointer-event w-100px"><i class="fas fa-plus"></i>&nbspThêm</a>
+                    <button class="btn btn-sm btn-success pointer-event" data-toggle="modal" data-target="#import"><i class="fas fa-plus fa-xs mr-2"></i>Tạo bằng file</button>
+                    <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#exportTQ"><i class="fas fa-import fa-xs mr-2"></i>Xuất kho TQ</button>
                 </div>
             </div>
             @foreach (var item in Model)
@@ -303,8 +304,40 @@
 </div>
 
 
+
+<!--Modal import file-->
+<div class="modal fade" id="import" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white text-uppercase fw-bold" id="exampleModalLongTitle"><i class="fas fa-file-excel mr-2"></i>Tạo mã vận đơn bằng file CSV</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadExcel">
+                    <div class="form-group mb-4">
+                        <label class="required">File Excel:</label>
+                        <input type="file" class="form-control" id="importcsv">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtShipID">Tên Sheet:</label>
+                        <input type="text" class="form-control" id="sheetImport" name="txtSheet" placeholder="Nhập tên sheet cần đọc dữ liệu (cần nhập chính xác tên)">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="importCsv()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal import file-->
+
 <!--Modal upload file-->
-<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="exportTQ" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
@@ -349,10 +382,28 @@
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
-
-    function importFile(type) {
-        $('#exportCNWH').click();
+    
+    function importCsv(){
+        let file = $("#importcsv")[0].files;
+        let sheet = $("#sheetImport").val();
+        let form = new FormData();
+        form.append("file", file[0]);
+        form.append("sheet", sheet);
+        $.ajax({
+            url: '/admin/package/CreateWithFile',
+            type: 'POST',
+            dataType: 'json',
+            data: form,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                console.log(res)
+            }, error: function (e) {
+                console.log(e);
+            }
+        });
     }
+
 
     function exportCNWH() {
         let file = $("#exportCNWH")[0].files;

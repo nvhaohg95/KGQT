@@ -132,6 +132,50 @@ namespace KGQT.Areas.Admin.Controllers
 
         #endregion
         #region Function
+
+        [HttpPost]
+        public JsonResult Create(string sData)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
+            var user = AccountBusiness.GetInfo(-1, form.Username);
+            form.Status = 0;
+            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
+            form.UID = user.ID;
+            form.Username = user.Username;
+            form.FullName = user.FirstName + " " + user.LastName;
+            form.Phone = user.Phone;
+            form.Email = user.Email;
+            form.Address = user.Address;
+            form.CreatedDate = DateTime.Now;
+            form.CreatedBy = userLogin;
+            if (form.IsInsurance.HasValue && form.IsInsurance == true)
+            {
+                form.IsInsurancePrice = form.DeclarePrice * 0.05;
+            }
+
+            var s = BusinessBase.Add(form);
+            if (s)
+            {
+                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
+            }
+            return Json(s);
+        }
+
+        [HttpPost]
+        public object CreateWithFile(IFormFile file,string sheet)
+        {
+            if (file == null)
+            {
+                Log.Error("Tạo file với excel,Csv", "Không có file dc chọn");
+                return new { status = -1 };
+            }
+            var userLogin = HttpContext.Session.GetString("user");
+
+            var oData = Packages.CreateWithFileExcel2(file, sheet, userLogin);
+            return oData;
+        }
+
         [HttpGet]
         public bool CheckPackage(string package)
         {
@@ -199,40 +243,11 @@ namespace KGQT.Areas.Admin.Controllers
                 if (p.Status == 3)
                 {
                     p.ExportedCNWH = DateTime.Now;
-                    p.DateExpectation = Packages.UpdateExp(p);
+                    p.DateExpectation = Packages.CaclDateExpectation(p);
                     p.Exported = true;
                 }
             }
             return BusinessBase.Update(p);
-        }
-
-        [HttpPost]
-        public JsonResult Create(string sData)
-        {
-            var userLogin = HttpContext.Session.GetString("user");
-            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
-            var user = AccountBusiness.GetInfo(-1, form.Username);
-            form.Status = 0;
-            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            form.UID = user.ID;
-            form.Username = user.Username;
-            form.FullName = user.FirstName + " " + user.LastName;
-            form.Phone = user.Phone;
-            form.Email = user.Email;
-            form.Address = user.Address;
-            form.CreatedDate = DateTime.Now;
-            form.CreatedBy = userLogin;
-            if (form.IsInsurance.HasValue && form.IsInsurance == true)
-            {
-                form.IsInsurancePrice = form.DeclarePrice * 0.05;
-            }
-
-            var s = BusinessBase.Add(form);
-            if (s)
-            {
-                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
-            }
-            return Json(s);
         }
 
         [HttpGet]
@@ -283,8 +298,8 @@ namespace KGQT.Areas.Admin.Controllers
                     BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + woodPrice + "đ", 0, crrUse);
                 }
 
-                //Ktra xem hom nay khach da co don chua.
-                DateTime startDate = DateTime.Now.Date; //One day 
+                //Ktra xem khach da co don chua.
+                DateTime startDate = pack.ExportedCNWH.Value.Date; //One day 
                 DateTime endDate = startDate.AddDays(1).AddTicks(-1);
                 var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && x.CreatedDate >= startDate && x.CreatedDate <= endDate && x.ShippingMethod == pack.MovingMethod);
                 if (check != null)
