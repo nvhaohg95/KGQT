@@ -1,7 +1,17 @@
-﻿using KGQT.Base;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using ExcelDataReader;
+using Fasterflect;
+using KGQT.Base;
+using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using System.Data;
+using System.Globalization;
 
 namespace KGQT.Business
 {
@@ -72,7 +82,7 @@ namespace KGQT.Business
                         var dt = DateTime.Now;
                         item.Status = status;
                         item.ExportedCNWH = dt;
-                        item.DateExpectation = UpdateExp(item);
+                        item.DateExpectation = CaclDateExpectation(item);
                         item.Exported = true;
                         item.ModifiedBy = userName;
                         item.ModifiedDate = DateTime.Now;
@@ -88,7 +98,7 @@ namespace KGQT.Business
             }
         }
 
-        public static DateTime UpdateExp(tbl_Package item)
+        public static DateTime CaclDateExpectation(tbl_Package item)
         {
             var dt = DateTime.Now;
 
@@ -107,6 +117,172 @@ namespace KGQT.Business
                 return dt.AddDays(15);
             }
             return dt;
+        }
+
+        public static DataReturnModel CreateWithFileExcel(IFormFile file, string name, string accesser)
+        {
+            var data = new DataReturnModel();
+            Stream FileStream = file.OpenReadStream();
+            List<ExcelModel> oData = new List<ExcelModel>();
+            using (ExcelPackage pack = new ExcelPackage(FileStream))
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelWorksheet worksheet = null;
+                if (!string.IsNullOrEmpty(name))
+                    worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
+                else
+                    worksheet = pack.Workbook.Worksheets.LastOrDefault();
+
+                if (worksheet == null)
+                {
+                    data.IsError = true;
+                    data.Message = "Không tìm thấy sheet";
+                    return data;
+                }
+                else
+                {
+                    var rowCount = worksheet.Dimension.Rows;
+                    var columnCount = worksheet.Dimension.Columns;
+                    for (int row = 1; row < rowCount; row++)
+                    {
+                        var p = new tbl_Package();
+                        for (int col = 0; col < columnCount; col++)
+                        {
+                            var v = worksheet.Cells[row, col].Value;
+                            if (v != null)
+                            {
+                                switch (row)
+                                {
+                                    case 0:
+                                        p.CreatedDate = DateTime.Parse(v.ToString());
+                                        break;
+                                    case 1:
+                                        var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == v.ToString());
+                                        if (user != null)
+                                        {
+                                            p.Username = user.Username;
+                                            p.UID = user.ID;
+                                        }
+                                        break;
+                                    case 2:
+                                        if (Converted.ToInt(v.ToString()) == 3)
+                                            p.MovingMethod = 1;
+                                        else
+                                            p.MovingMethod = 2;
+                                        break;
+                                    case 3:
+                                        p.PackageCode = v.ToString();
+                                        break;
+                                    case 4:
+                                        break;
+                                    case 5:
+                                        p.Note = v.ToString();
+                                        break;
+                                }
+                            }
+
+                            if (string.IsNullOrEmpty(p.PackageCode)) continue;
+                            p.CreatedBy = accesser;
+                            BusinessBase.Add(p);
+                        }
+                    }
+                }
+                return data;
+            }
+        }
+        public static DataReturnModel CreateWithFileExcel2(IFormFile file, string name, string accesser)
+        {
+            var data = new DataReturnModel();
+            List<string> err = new List<string>();
+            List<string> exist = new List<string>();
+            using (Stream stream = file.OpenReadStream())
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        UseColumnDataType = true,
+                        ConfigureDataTable = (data) => new ExcelDataTableConfiguration()
+                        {
+                            UseHeaderRow = true
+                        }
+                    });
+                    DataTableCollection table = result.Tables;
+                    DataTable dt = table[name];
+                    if (dt == null)
+                        dt = table[table.Count - 1];
+                    if (dt != null)
+                    {
+
+                        var rowCount = dt.Rows.Count;
+                        for (int row = 0; row < rowCount; row++)
+                        {
+                            var p = new tbl_Package();
+                            var date = Converted.ToDate(dt.Rows[row][0].ToString());
+                            string customer = dt.Rows[row][1].ToString();
+                            int type = Converted.ToInt(dt.Rows[row][2].ToString());
+                            string code = dt.Rows[row][3].ToString();
+                            string note = dt.Rows[row][5].ToString();
+
+                            if (string.IsNullOrEmpty(code)) continue;
+
+                            if (BusinessBase.Exist<tbl_Package>(x => x.PackageCode == code))
+                            {
+                                exist.Add(code);
+                                continue;
+
+                            }
+
+                            var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == customer);
+                            if (user != null)
+                            {
+                                p.Username = user.Username;
+                                p.UID = user.ID;
+                            }
+
+                            if (type == 3)
+                                p.MovingMethod = 1;
+                            else if (type == 5)
+                                p.MovingMethod = 2;
+
+                            p.PackageCode = code;
+                            p.Note = note;
+                            p.CreatedDate = date;
+                            p.CreatedBy = accesser;
+                            if (!BusinessBase.Add(p))
+                            {
+                                err.Add(code);
+                            }
+                        }
+
+                    }
+                    return data;
+                }
+            }
+        }
+
+        public static DataReturnModel CreateWithFileCsv(IFormFile file)
+        {
+            var data = new DataReturnModel();
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                PrepareHeaderForMatch = args => args.Header.ToLower(),
+            };
+
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                using (var csv = new CsvReader(reader, config))
+                {
+                    csv.Context.RegisterClassMap<CsvPackageImportMap>();
+                    try
+                    {
+                        var dt = csv.GetRecords<CsvPackageImport>().ToList();
+                    }
+                    catch (Exception ex) { }
+                }
+            };
+            return data;
         }
         #endregion
     }
