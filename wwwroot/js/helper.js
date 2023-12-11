@@ -13,12 +13,15 @@
         return obj;
     },
 
-    showErr: function (message, title = "Lỗi") {
+    showErr: function (message, refresh = true, title = "Lỗi") {
         return Swal.fire(
             title,
             message,
             'error'
-        );
+        ).then((result) => {
+            if (refresh)
+                location.reload();
+        });
     },
 
     showWarn: function (message, title = "Cảnh báo") {

@@ -84,9 +84,9 @@ namespace KGQT.Business
         #endregion
 
         #region Add User
-        public static DataReturnModel AddUser(AccountInfo data,string createdBy)
+        public static DataReturnModel<AccountInfo> AddUser(AccountInfo data,string createdBy)
         {
-            var reponse = new DataReturnModel();
+            var reponse = new DataReturnModel<AccountInfo>();
             if (string.IsNullOrEmpty(data.UserID))
             {
                 reponse.IsError = true;
@@ -285,9 +285,9 @@ namespace KGQT.Business
         #endregion
 
         #region Update User
-        public static DataReturnModel Update(AccountInfo data,string userModifiedBy)
+        public static DataReturnModel<AccountInfo> Update(AccountInfo data,string userModifiedBy)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<AccountInfo>();
             if(data != null)
             {
                 using (var db = new nhanshiphangContext())
@@ -348,9 +348,9 @@ namespace KGQT.Business
         #endregion
 
         #region Update User
-        public static DataReturnModel UpdateInfo(AccountInfo data)
+        public static DataReturnModel<AccountInfo> UpdateInfo(AccountInfo data)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<AccountInfo>();
             if (data != null)
             {
                 using (var db = new nhanshiphangContext())

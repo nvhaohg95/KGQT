@@ -81,7 +81,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
-            tmpChinaOrderStatus data = new tmpChinaOrderStatus();
+            DataReturnModel<tmpChinaOrderStatus> data = new DataReturnModel<tmpChinaOrderStatus>();
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
             if (oPack != null)
             {
@@ -90,6 +90,12 @@ namespace KGQT.Areas.Admin.Controllers
                 if (oPack.SearchBaiduTimes == null)
                 {
                     oPack.SearchBaiduTimes = 0;
+                    if (user == null || user.Wallet == null || user.Wallet < 500)
+                    {
+                        data.IsError = false;
+                        data.Message = "Tài khoản khách không đủ tiền";
+                        return View(data);
+                    }
                     var wallet = user.Wallet - 500;
                     BusinessBase.Update(user);
 
@@ -97,12 +103,7 @@ namespace KGQT.Areas.Admin.Controllers
                     HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "", 500, 1, 1, wallet.Value, HttpContext.Session.GetString("user"));
                     #endregion
                 }
-                if (oPack.SearchBaiduTimes > 5)
-                {
-                    data.success = false;
-                    data.reason = "Bạn đã vượt quá số lần tìm kiếm cho phép";
-                    return View(data);
-                }
+
                 using (HttpClient client = new HttpClient())
                 {
                     string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, code);
@@ -110,12 +111,13 @@ namespace KGQT.Areas.Admin.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         string sData = response.Content.ReadAsStringAsync().Result;
-                        data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
+                        data.Data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
                     }
                     else
                     {
-                        data.success = false;
-                        data.reason = "Không thể kết nối đến server!";
+                        data.IsError = false;
+                        data.Message = "Không thể kết nối đến server!";
+                        return View(data);
                     }
                 }
 
@@ -124,9 +126,11 @@ namespace KGQT.Areas.Admin.Controllers
             }
             else
             {
-                data.reason = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
+                data.IsError = false;
+                data.Message = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
+                return View(data);
             }
-            data.nu = code;
+            data.Key = code;
             return View(data);
         }
 
@@ -163,7 +167,7 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public object CreateWithFile(IFormFile file,string sheet)
+        public object CreateWithFile(IFormFile file, string sheet)
         {
             if (file == null)
             {
@@ -172,7 +176,7 @@ namespace KGQT.Areas.Admin.Controllers
             }
             var userLogin = HttpContext.Session.GetString("user");
 
-            var oData = Packages.CreateWithFileExcel2(file, sheet, userLogin);
+            var oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
         }
 
@@ -190,25 +194,9 @@ namespace KGQT.Areas.Admin.Controllers
                 Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
                 return new { status = -1 };
             }
-
-            List<ExcelModel> content = PJUtils.ReadExcelToJson(file, sheet);
-            if (content == null)
-                return new { status = -2 };
-
-            Log.Info("Cập nhật xuất kho China", "File content:" + JsonConvert.SerializeObject(content));
             var userLogin = HttpContext.Session.GetString("user");
-            object[] oData = Packages.UpdateStatusCNWH(content, 3, userLogin);
-            int s = Int32.Parse(oData[0].ToString());
-            if (s > 0)
-            {
-                if (oData.Length > 1 && file.ContentType != "application/vnd.ms-excel")
-                {
-                    string path = PJUtils.MarkupValueExcel(file, sheet, oData[1] as List<string>);
-                    return new { status = s, path };
-                }
-                return new { status = s };
-            }
-            return new { status = s };
+            var oData = Packages.ExportChinaWareHouse(file, sheet, userLogin);
+            return oData;
         }
 
         [HttpPost]

@@ -33,9 +33,9 @@ namespace KGQT.Business
         #endregion
 
         #region Duyệt giao dịch nạp tiền
-        public static DataReturnModel ApprovalRecharge(int ID, string createdBy)
+        public static DataReturnModel<object> ApprovalRecharge(int ID, string createdBy)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<object>();
             using (var db = new nhanshiphangContext())
             {
                 var withDraw = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);

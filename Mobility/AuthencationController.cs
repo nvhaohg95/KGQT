@@ -1,4 +1,5 @@
 ﻿using KGQT.Business;
+using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,7 @@ namespace KGQT.Mobility
     {
         [HttpGet]
         [Route("login")]
-        public DataReturnModel Login(string username, string password)
+        public DataReturnModel<UserLogin> Login(string username, string password)
         {
             var result = AccountBusiness.Login(username, password);
             return result;
@@ -17,7 +18,7 @@ namespace KGQT.Mobility
 
         [HttpPost]
         [Route("Register")]
-        public DataReturnModel RegisterAccount([FromBody] SignUpModel model)
+        public DataReturnModel<tbl_Account> RegisterAccount([FromBody] SignUpModel model)
         {
             if (model.File != null)
             {

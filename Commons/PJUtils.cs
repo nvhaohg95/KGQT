@@ -364,7 +364,7 @@ namespace KGQT.Commons
             }
         }
 
-        public static string MarkupValueExcel(IFormFile file, string name, List<string> data)
+        public static string MarkupValueExcel(IFormFile file, string name, List<tempExportChina> data)
         {
             if (file == null || data == null || data.Count == 0) return "";
             string fileName = file.FileName;
@@ -385,22 +385,9 @@ namespace KGQT.Commons
                 else
                 {
                     #region Read value
-                    var rowCount = worksheet.Dimension.Rows;
-                    var columnCount = worksheet.Dimension.Columns;
-                    for (int column = 1; column < columnCount; column++)
+                    foreach(var item in data)
                     {
-                        for (int row = 2; row < rowCount; row++)
-                        {
-                            var v = worksheet.Cells[row, column].Value;
-                            if (v != null)
-                            {
-                                v = v.ToString().Trim().Replace("\'", "").Replace(" ", "");
-                                if (data.Contains(v))
-                                {
-                                    worksheet.Cells[row, column].Style.Fill.SetBackground(Color.Green);
-                                }
-                            }
-                        }
+                        worksheet.Cells[item.Row+2,item.Column + 1].Style.Fill.SetBackground(Color.Green);
                     }
                     #endregion
 
