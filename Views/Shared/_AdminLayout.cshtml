@@ -6,9 +6,9 @@
 @{
     var sUser = Context.Session.GetString("user");
     UserLogin user = null;
-    int page = 1;
-    int totalPage = 1;
     var lstNoti = new List<tbl_Notification>();
+    int pageNoti = 1;
+    int toalPageNoti = 0;
     if (!string.IsNullOrEmpty(sUser))
     {
         user = AccountBusiness.GetFullInfo(null, -1, sUser);
@@ -16,10 +16,9 @@
             Context.Response.Redirect("/Auth/Login");
         else
         {
-            var oData = NotificationBusiness.GetPageForAdmin(page);
+            var oData = NotificationBusiness.GetPage(user.ID, 0, null, null, pageNoti, 20,true);
             lstNoti = oData[0] as List<tbl_Notification>;
-            page = (int)oData[1];
-            totalPage = (int)oData[2];
+            toalPageNoti = (int)oData[2];
         }
     }
     else
@@ -34,31 +33,27 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>@ViewBag.Title</title>
-    <link href="~/css/styles.css" rel="stylesheet" />
     @*<script src="https:use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>*@
     <!-- Custom fonts for this template-->
+    <link href="~/css/styles.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
     <link href="~/styles/admin.css" rel="stylesheet" type="text/css">
     <link href="~/styles/custom.css" rel="stylesheet" type="text/css">
     <link href="~/vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
-    <link href="~/css/sweetalert2.css" rel="stylesheet" />
-    <link href="~/vendor/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/css/sweetalert2.css" rel="stylesheet" type="text/css" />
+    <link href="~/vendor/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
     <!-- Bootstrap core JavaScript-->
     <script src="~/vendor/jquery/jquery.min.js"></script>
     <script src="~/vendor/jquery-ui/jquery-ui.min.js"></script>
     <script src="~/_framework/aspnetcore-browser-refresh.js"></script>
-
     <script src="~/vendor/bootstrap/js/bootstrap.bundle.js"></script>
-
     <!-- Core plugin JavaScript-->
     <script src="~/vendor/jquery-easing/jquery.easing.js"></script>
-
     <!-- Custom scripts for all pages-->
     <script src="~/js/sb-admin-2.min.js"></script>
-
     <script src="~/js/base.js" type="text/javascript"></script>
     <!-- NToastNotify  -->
     @await RenderSectionAsync("Scripts", required: false)
@@ -66,12 +61,6 @@
     <script src="~/js/sweetalert2.min.js"></script>
     <script src="~/js/base.js"></script>
     <script src="~/js/helper.js" type="text/javascript"></script>
-    <style>
-        .mh-300{
-            overflow:auto;
-            max-height:300px;
-        }
-    </style>
 </head>
 <body class="sb-nav-fixed" id="page-top">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark navbar-light bg-white topbar shadow">
@@ -105,12 +94,12 @@
                     <h6 class="dropdown-header">
                         THÔNG BÁO
                     </h6>
-                    @{
-                        if (lstNoti != null)
+                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user.ID,@pageNoti)" data-id="@user.ID" data-page="@pageNoti">
+                        @if (lstNoti != null)
                         {
                             foreach (var item in lstNoti)
                             {
-                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                <a class="dropdown-item d-flex align-items-center h-100px" href="#">
                                     <div class="mr-3">
                                         @if (item.NotifType == 1)
                                         {
@@ -148,7 +137,8 @@
                                 Không có dữ liệu
                             </a>
                         }
-                    }
+                    </div>
+                    <a class="dropdown-item text-center small text-gray-500" href="/Admin/Notification/Index">Xem tất cả</a>
                 </div>
             </li>
 
@@ -336,8 +326,23 @@
     <script src="~/js/demo/chart-bar-demo.js"></script>*@
     <script src="~/js/datatables-simple-demo.js"></script>
     <script>
-        function onScroll(e){
-            debugger
+        function onScroll(e, id) {
+            if (e.scrollHeight - (e.clientHeight + e.scrollTop) == 0) {
+                let page = parseInt($("#notifications")[0].dataset.page) + 1;
+                if (page <= @toalPageNoti) {
+                    $.ajax({
+                        url: '/Admin/Notification/GetList',
+                        type: "GET",
+                        data: { id: id, page: page, pageSize: 20 },
+                        success: function (respone) {
+                            if (respone) {
+                                $("#notifications")[0].dataset.page = parseInt($("#notifications")[0].dataset.page) + 1 + "";
+                                $("#notifications").append(respone);
+                            }
+                        }
+                    });
+                }
+            }
         }
         function clickChangePass() {
             var data = helper.form2Object($('#formChangePass').serializeArray());
