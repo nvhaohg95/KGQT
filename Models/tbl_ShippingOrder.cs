@@ -26,9 +26,10 @@ namespace KGQT.Models
         public int Status { get; set; }
         public int? PaymentMethod { get; set; }
         public double? TotalPrice { get; set; }
+        public double? Currency { get; set; }
         public DateTime? DateExpectation { get; set; }
         public DateTime? DateExpectationEdit { get; set; }
-        public double? Currency { get; set; }
+        public DateTime? ChinaExportDate { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }

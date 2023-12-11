@@ -287,12 +287,14 @@ namespace KGQT.Areas.Admin.Controllers
                 }
 
                 //Ktra xem khach da co don chua.
-                DateTime startDate = pack.ExportedCNWH.Value.Date; //One day 
+                DateTime cnExportDateFrom = pack.ExportedCNWH.Value.Date;
+                DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
+                DateTime startDate = DateTime.Now.Date; //One day 
                 DateTime endDate = startDate.AddDays(1).AddTicks(-1);
-                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && x.CreatedDate >= startDate && x.CreatedDate <= endDate && x.ShippingMethod == pack.MovingMethod);
+                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && (x.CreatedDate >= startDate && x.CreatedDate <= endDate)
+                                                                   && (x.ChinaExportDate >= cnExportDateFrom && x.ChinaExportDate <= cnExportDateEnd) && x.ShippingMethod == pack.MovingMethod);
                 if (check != null)
                 {
-
                     //Cap nhat lai tranid cho p
                     pack.TransID = check.ID;
                     pack.ModifiedBy = crrUse;
@@ -349,6 +351,7 @@ namespace KGQT.Areas.Admin.Controllers
                     ship.InsurancePrice = pack.IsInsurancePrice ?? 0;
                     ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice;
                     ship.Status = 1;
+                    ship.ChinaExportDate = pack.ExportedCNWH;
                     ship.CreatedDate = DateTime.Now;
                     ship.CreatedBy = crrUse;
                     var oAdd = BusinessBase.Add(ship);
