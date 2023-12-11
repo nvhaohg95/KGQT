@@ -3,9 +3,12 @@
     ViewData["Title"] = "Đăng nhập";
     Layout = "~/Views/Shared/_PartialView.cshtml";    
 }
-<script type="text/javascript">
-    
-</script>
+<script src="~/js/helper.js" type="text/javascript"></script>
+<script src="~/js/base.js" type="text/javascript"></script>
+<script src="~/vendor/jquery-easing/jquery.easing.js"></script>
+<script src="~/js/sb-admin-2.min.js"></script>
+<script src="~/js/sweetalert2.min.js"></script>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10 col-md-8">
@@ -116,8 +119,16 @@
             data: { email: email },
             success: function (respone) {
                 if (!respone.isError) {
+                    helper.showSuc('Yêu cầu của bạn đã được gửi!');
                     $(".close").click();
                 }
+                else
+                {
+                    helper.showErr(respone.message)
+                }
+            },
+            error: function () {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
             }
         });
     }
