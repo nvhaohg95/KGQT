@@ -65,10 +65,17 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult PackagePartial(/*DateTime date, int method,M*/ string code)
+        public IActionResult PackagePartial(string code)
         {
             var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
             return PartialView("_Package", package);
+        }
+
+        [HttpGet]
+        public IActionResult InStockPartial( string code)
+        {
+            var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
+            return PartialView("_InStock", package);
         }
 
         [HttpGet]

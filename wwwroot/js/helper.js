@@ -13,7 +13,7 @@
         return obj;
     },
 
-    showErr: function (message, refresh = true, title = "Lỗi") {
+    showErr: function (message, refresh = false, title = "Lỗi") {
         return Swal.fire(
             title,
             message,
