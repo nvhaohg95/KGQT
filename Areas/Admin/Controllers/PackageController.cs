@@ -81,7 +81,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
-            tmpChinaOrderStatus data = new tmpChinaOrderStatus();
+            DataReturnModel<tmpChinaOrderStatus> data = new DataReturnModel<tmpChinaOrderStatus>();
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
             if (oPack != null)
             {
@@ -90,6 +90,12 @@ namespace KGQT.Areas.Admin.Controllers
                 if (oPack.SearchBaiduTimes == null)
                 {
                     oPack.SearchBaiduTimes = 0;
+                    if (user == null || user.Wallet == null || user.Wallet < 500)
+                    {
+                        data.IsError = false;
+                        data.Message = "Tài khoản khách không đủ tiền";
+                        return View(data);
+                    }
                     var wallet = user.Wallet - 500;
                     BusinessBase.Update(user);
 
@@ -97,12 +103,7 @@ namespace KGQT.Areas.Admin.Controllers
                     HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "", 500, 1, 1, wallet.Value, HttpContext.Session.GetString("user"));
                     #endregion
                 }
-                if (oPack.SearchBaiduTimes > 5)
-                {
-                    data.success = false;
-                    data.reason = "Bạn đã vượt quá số lần tìm kiếm cho phép";
-                    return View(data);
-                }
+
                 using (HttpClient client = new HttpClient())
                 {
                     string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, code);
@@ -110,12 +111,13 @@ namespace KGQT.Areas.Admin.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         string sData = response.Content.ReadAsStringAsync().Result;
-                        data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
+                        data.Data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
                     }
                     else
                     {
-                        data.success = false;
-                        data.reason = "Không thể kết nối đến server!";
+                        data.IsError = false;
+                        data.Message = "Không thể kết nối đến server!";
+                        return View(data);
                     }
                 }
 
@@ -124,14 +126,60 @@ namespace KGQT.Areas.Admin.Controllers
             }
             else
             {
-                data.reason = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
+                data.IsError = false;
+                data.Message = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
+                return View(data);
             }
-            data.nu = code;
+            data.Key = code;
             return View(data);
         }
 
         #endregion
         #region Function
+
+        [HttpPost]
+        public JsonResult Create(string sData)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
+            var user = AccountBusiness.GetInfo(-1, form.Username);
+            form.Status = 0;
+            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
+            form.UID = user.ID;
+            form.Username = user.Username;
+            form.FullName = user.FirstName + " " + user.LastName;
+            form.Phone = user.Phone;
+            form.Email = user.Email;
+            form.Address = user.Address;
+            form.CreatedDate = DateTime.Now;
+            form.CreatedBy = userLogin;
+            if (form.IsInsurance.HasValue && form.IsInsurance == true)
+            {
+                form.IsInsurancePrice = form.DeclarePrice * 0.05;
+            }
+
+            var s = BusinessBase.Add(form);
+            if (s)
+            {
+                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
+            }
+            return Json(s);
+        }
+
+        [HttpPost]
+        public object CreateWithFile(IFormFile file, string sheet)
+        {
+            if (file == null)
+            {
+                Log.Error("Tạo file với excel,Csv", "Không có file dc chọn");
+                return new { status = -1 };
+            }
+            var userLogin = HttpContext.Session.GetString("user");
+
+            var oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
+            return oData;
+        }
+
         [HttpGet]
         public bool CheckPackage(string package)
         {
@@ -146,25 +194,9 @@ namespace KGQT.Areas.Admin.Controllers
                 Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
                 return new { status = -1 };
             }
-
-            List<ExcelModel> content = PJUtils.ReadExcelToJson(file, sheet);
-            if (content == null)
-                return new { status = -2 };
-
-            Log.Info("Cập nhật xuất kho China", "File content:" + JsonConvert.SerializeObject(content));
             var userLogin = HttpContext.Session.GetString("user");
-            object[] oData = Packages.UpdateStatusCNWH(content, 3, userLogin);
-            int s = Int32.Parse(oData[0].ToString());
-            if (s > 0)
-            {
-                if (oData.Length > 1 && file.ContentType != "application/vnd.ms-excel")
-                {
-                    string path = PJUtils.MarkupValueExcel(file, sheet, oData[1] as List<string>);
-                    return new { status = s, path };
-                }
-                return new { status = s };
-            }
-            return new { status = s };
+            var oData = Packages.ExportChinaWareHouse(file, sheet, userLogin);
+            return oData;
         }
 
         [HttpPost]
@@ -199,40 +231,11 @@ namespace KGQT.Areas.Admin.Controllers
                 if (p.Status == 3)
                 {
                     p.ExportedCNWH = DateTime.Now;
-                    p.DateExpectation = Packages.UpdateExp(p);
+                    p.DateExpectation = Packages.CaclDateExpectation(p);
                     p.Exported = true;
                 }
             }
             return BusinessBase.Update(p);
-        }
-
-        [HttpPost]
-        public JsonResult Create(string sData)
-        {
-            var userLogin = HttpContext.Session.GetString("user");
-            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
-            var user = AccountBusiness.GetInfo(-1, form.Username);
-            form.Status = 0;
-            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            form.UID = user.ID;
-            form.Username = user.Username;
-            form.FullName = user.FirstName + " " + user.LastName;
-            form.Phone = user.Phone;
-            form.Email = user.Email;
-            form.Address = user.Address;
-            form.CreatedDate = DateTime.Now;
-            form.CreatedBy = userLogin;
-            if (form.IsInsurance.HasValue && form.IsInsurance == true)
-            {
-                form.IsInsurancePrice = form.DeclarePrice * 0.05;
-            }
-
-            var s = BusinessBase.Add(form);
-            if (s)
-            {
-                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
-            }
-            return Json(s);
         }
 
         [HttpGet]
@@ -283,13 +286,15 @@ namespace KGQT.Areas.Admin.Controllers
                     BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + woodPrice + "đ", 0, crrUse);
                 }
 
-                //Ktra xem hom nay khach da co don chua.
+                //Ktra xem khach da co don chua.
+                DateTime cnExportDateFrom = pack.ExportedCNWH.Value.Date;
+                DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
                 DateTime startDate = DateTime.Now.Date; //One day 
                 DateTime endDate = startDate.AddDays(1).AddTicks(-1);
-                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && x.CreatedDate >= startDate && x.CreatedDate <= endDate && x.ShippingMethod == pack.MovingMethod);
+                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && (x.CreatedDate >= startDate && x.CreatedDate <= endDate)
+                                                                   && (x.ChinaExportDate >= cnExportDateFrom && x.ChinaExportDate <= cnExportDateEnd) && x.ShippingMethod == pack.MovingMethod);
                 if (check != null)
                 {
-
                     //Cap nhat lai tranid cho p
                     pack.TransID = check.ID;
                     pack.ModifiedBy = crrUse;
@@ -346,6 +351,7 @@ namespace KGQT.Areas.Admin.Controllers
                     ship.InsurancePrice = pack.IsInsurancePrice ?? 0;
                     ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice;
                     ship.Status = 1;
+                    ship.ChinaExportDate = pack.ExportedCNWH;
                     ship.CreatedDate = DateTime.Now;
                     ship.CreatedBy = crrUse;
                     var oAdd = BusinessBase.Add(ship);

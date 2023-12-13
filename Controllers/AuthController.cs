@@ -179,10 +179,6 @@ namespace KGQT.Controllers
         public async Task<JsonResult> SendMailForgetPassword(string email)
         {
             var result = await AccountBusiness.SendMailForgetPassword(_mailSettings, email);
-            if (result.IsError)
-                NotificationService.AddWarningToastMessage(result.Message);
-            else
-                NotificationService.AddSuccessToastMessage(result.Message);
             return Json(result);
         }
 

@@ -65,6 +65,10 @@ namespace KGQT.Business
         #endregion
 
         #region CRUD
+        public static bool Add(tbl_ShippingOrder model)
+        {
+            return BusinessBase.Add(model);
+        }
         public static bool UpdateFeeIsurance(int id)
         {
             using (var db = new nhanshiphangContext())

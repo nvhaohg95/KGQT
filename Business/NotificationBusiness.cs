@@ -7,18 +7,31 @@ namespace KGQT.Business
     public static class NotificationBusiness
     {
 
-        public static object[] GetPage(int userID, int page , int pageSize = 20)
+        public static object[] GetPage(int id,int status, DateTime? fromDate, DateTime? toDate, int page = 1 , int pageSize = 20,bool isAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
-                var query = db.tbl_Notifications.Where(x => x.ReceivedID == userID);
-                var count = query.Count();
-                var totalPage = 0;
                 var datas = new List<tbl_Notification>();
-                if(count > 0)
+                int count = 0;
+                int totalPage = 0;
+                var query = db.tbl_Notifications.AsQueryable();
+                if(isAdmin)
+                    query = db.tbl_Notifications.Where(x => x.IsForAdmin == true);
+                else 
+                    query = query.Where(x => x.ReceivedID == id);
+
+                if(status > 0)
+                    query = query.Where(x => x.Status == status);
+                if (fromDate != null)
+                    query = query.Where(x => x.CreatedDate >= fromDate);
+                if (toDate != null)
+                    query = query.Where(x => x.CreatedDate <= toDate);
+
+                count = query.Count();
+                if (count > 0)
                 {
-                    totalPage = count / pageSize;
-                    datas = query.Skip((page - 1) * pageSize).Take(pageSize).OrderByDescending(x => x.CreatedDate).ToList();
+                    totalPage = Convert.ToInt32(Math.Ceiling((decimal)count / pageSize));
+                    datas = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
                 }
                 return new object[] { datas, count, totalPage };
             }
@@ -38,6 +51,7 @@ namespace KGQT.Business
                     Message = message,
                     IsForAdmin = isForAdmin,
                     NotifType = notiType,
+                    Status = 1,
                     CreatedBy = createdBy,
                     CreatedDate = DateTime.Now
                 };

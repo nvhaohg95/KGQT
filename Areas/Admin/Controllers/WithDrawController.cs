@@ -54,26 +54,26 @@ namespace KGQT.Areas.Admin.Controllers
             var s = BusinessBase.Add(model);
             if (s)
             {
-                var u = BusinessBase.GetOne<tbl_Account>(x=>x.ID== user.ID);
+                var u = BusinessBase.GetOne<tbl_Account>(x => x.ID == user.ID);
                 u.Wallet += model.Amount;
                 s = BusinessBase.Update(u);
 
                 #region Logs
-                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount.Value, 1, 1, u.Wallet.Value,userName);
+                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount.Value, 1, 1, u.Wallet.Value, userName);
                 #endregion
             }
             return Ok(s);
         }
 
 
-        
+
         [HttpPost]
-        public DataReturnModel Arppoval(int id)
+        public object Arppoval(int id)
         {
             var userLogin = HttpContext.Session.GetString("user");
             var result = TransactionBusiness.ApprovalRecharge(id, userLogin);
             return result;
-        } 
+        }
         [HttpGet]
         public IActionResult AutoComplete(string s)
         {
@@ -114,11 +114,11 @@ namespace KGQT.Areas.Admin.Controllers
         {
             string userLogin = HttpContext.Session.GetString("user");
             var result = WithDrawBusiness.Approval(ID, userLogin);
-            if(result != null)
+            if (result != null)
             {
                 var user = AccountBusiness.GetFullInfo(null, -1, userLogin);
                 var data = result.Data as tbl_Withdraw;
-                if(data.UID == user.ID)
+                if (data.UID == user.ID)
                     HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(user));
                 return true;
             }

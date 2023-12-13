@@ -40,77 +40,16 @@
                 <div class="form-group mb-2">
                     <label class="mb-0">Dịch vụ</label>
                 </div>
-               @* <div class="form-group mb-4">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="IsWoodPackage" id="cbPack">
-                        <label class="form-check-label" for="cbPack">Đóng gỗ</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="IsAirPackage" id="cbAirbag">
-                        <label class="form-check-label" for="cbAirbag">Túi khí</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance" onchange="showhideDeclare(this)">
-                        <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
-                    </div>
-                </div>*@
                 <div class="form-group mb-2">
                     <label class="mb-0" for="txtPackage">Kiện</label>
                 </div>
                 <div class="input-group mb-4">
                     <input class="form-control" id="txtPackage" placeholder="Nhập mã kiện" />
-                    <input class="form-control" id="hdPackage" name="packages" placeholder="Nhập mã kiện" hidden />
                     <div class="input-group-append">
                         <button type="button" class="btn btn-success" id="addpackage" onclick="addPackage()">+</button>
                     </div>
                 </div>
                 <div class="form-group mb-4" id="renderPackages"></div>
-             @*   <div id="frmDeclare" style="display:none">
-                    <div class="form-group mb-2">
-                        <label class="mb-0" for="txtPackage">Kê khai</label>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="txtLink">Link sản phẩm</label>
-                            <input type="text" class="form-control" id="txtLink">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="txtQty">Số lượng</label>
-                            <input type="text" class="form-control" id="txtQty">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="txtAmount">Giá</label>
-                            <input type="text" class="form-control" id="txtAmount">
-                        </div>
-                        <div class="form-group col-md-1 align-self-end">
-                            <div class="d-flex justify-content-end">
-                                <button type="button" onclick="addDeclare()" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="renderDeclare"></div>
-                    <!--Start:: Declare item-->
-                    <div class="d-none" id="hdDeclareHTML">
-                        <div class="form-row declare-item">
-                            <div class="form-group col-md-6">
-                                <input type="text" class="form-control txtLink" readonly>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <input type="text" class="form-control txtQty" readonly>
-                            </div>
-                            <div class="form-group col-md-2">
-                                <input type="text" class="form-control txtAmount" readonly>
-                            </div>
-                            <div class="form-group col-md-1 align-self-end">
-                                <div class="d-flex justify-content-end">
-                                    <button type="button" onclick="subDeclare(this)" class="btn btn-danger btn-add-declare"><i class="fa fa-times" aria-hidden="true"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--End:: Declare item-->
-                </div>*@
                 <div class="col-md-12 col-sm-12 col-lg-12 text-center">
                     <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
                     <button type="button" class="btn btn-success" onclick="insert()">Lưu</button>
@@ -125,7 +64,43 @@
             if (e.which == 13)
                 addPackage();
         });
+
+        $('#txtPackage').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/ShippingOrder/AutoCompletePackage',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 3,
+            delay: 500,
+            select: function (event, ui) {
+                //   $(this).val(ui.item.packageCode);
+                renderPackage(ui.item)
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.packageCode + "</div>")
+                .appendTo(ul);
+        };;
     });
+    function renderPackage(data) {
+        console.log(data);
+    }
+
     var lstDeclare = [];
     function addPackage() {
         const ip = $('#txtPackage').val();
@@ -144,9 +119,9 @@
                 success: function (result) {
                     if (!result) {
                         const html = `<div class="form-check form-check-inline package-item">
-                                                                        <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
-                                                                        <span class="form-check-label">${ip}</span>
-                                                                    </div>`;
+                                                                                    <i class="fa fa-times mr-2" onclick="delPackage(this)" data-id="${ip}" aria-hidden="true"></i>
+                                                                                    <span class="form-check-label">${ip}</span>
+                                                                                </div>`;
                         $('#renderPackages').append(html);
                         $('#txtPackage').val('');
                         //Set gia tri cho package field
@@ -208,7 +183,7 @@
             $amount.val('');
         }
     }
-    
+
     function subDeclare(o) {
         let parent = $(o).closest('.declare-item');
         if (parent.length) {

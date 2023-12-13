@@ -75,9 +75,9 @@ namespace KGQT.Business
         #endregion
 
         #region Duyệt lệnh nạp tiền
-        public static DataReturnModel Approval(int ID, string userName)
+        public static DataReturnModel<tbl_Withdraw> Approval(int ID, string userName)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<tbl_Withdraw>();
             using (var db = new nhanshiphangContext())
             {
                 var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);

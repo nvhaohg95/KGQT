@@ -9,7 +9,9 @@
                 <div class="col-md-6 my-auto">
                     <span class="cursor-pointer">
                         <a href="/admin/package/details?id=@Model.ID">@Model.PackageCode</a>
-                        <i class="fa fa-copy"></i>
+                        <span class="btn-copy" data-value="@Model.PackageCode">
+                            <i class="fa fa-copy"></i>
+                        </span>
                     </span>
                     <span class="mx-2"> - </span>
                     <span>Kho nhận: @PJUtils.WareHouse(Model.WareHouse)</span>
@@ -176,10 +178,20 @@ else
 {
     <h2 class="text-danger">Không tìm thấy kiện</h2>
 }
+<div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>
+
 <script>
     $(document).ready(function () {
         formatVND();
-    });
+
+        $('.btn-copy').off('click').on('click', function () {
+            let text = $(this).data('value');
+            $(this).select();
+            navigator.clipboard.writeText(text);
+            $('#copied-success').css('opacity', '1');
+            setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
+        })
+    })
 
     function submitFn(id) {
         let weight = $('#txtWeight').val(), wood = 0, air = 0;

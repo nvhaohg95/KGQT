@@ -66,6 +66,14 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Functions
+        [HttpGet]
+        public IActionResult AutoCompletePackage(string s)
+        {
+            var data = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.Contains(s)).ToList();
+            return Json(data);
+        }
+
+
         [HttpPost]
         public bool Confirm(int id)
         {
@@ -111,7 +119,6 @@ namespace KGQT.Areas.Admin.Controllers
             }
             return false;
         }
-
 
         [HttpPost]
         public object Payment(int id)
