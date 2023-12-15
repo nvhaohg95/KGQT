@@ -53,14 +53,13 @@
         </div>
     </div>
     <div class="col-12">
-        <table class="table table-border">
+        <table class="table table-bordered">
             <thead class="thead-light">
                 <tr class="fw-bold">
+                    <th class="text-left">Họ tên</th>
                     <th class="text-center">MĐD</th>
-                    <th class="text-center">Họ tên</th>
-                    <th class="text-center">Ngày sinh</th>
-                    <th class="text-center">Email</th>
-                    <th class="text-center">SĐT</th>
+                    <th class="text-center">Tài khoản</th>
+                    <th class="text-center">Số dư ví</th>
                     <th class="text-center">Thao tác</th>
                 </tr>
             </thead>
@@ -68,30 +67,28 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="text-left">
-                            <span>@item.UserID</span>
-                        </td>
+                        
                         <td class="text-left text-truncate">
                             <div class="d-flex align-items-center">
                                 <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@(string.Concat(item.FirstName," ", item.LastName))" width="40" height="40" class="rounded-circle" />
                                 <span class="ml-2" title="@string.Concat(item.FirstName," ", item.LastName)">@string.Concat(item.FirstName," ", item.LastName)</span>
                             </div>
                         </td>
-                        <td class="text-center">
-                            <span>@(item.BirthDay != null ? item.BirthDay.Value.ToString("dd/MM/yyyy") : "dd/mm/yyyy")</span>
-                        </td>
-                        <td class="text-center text-truncate">
-                            <span title="@item.Email">@item.Email</span>
-                        </td>
-                        <td class="text-center text-truncate">
-                            <span>@item.Phone</span>
+                        <td class="text-left">
+                            <span title="@item.UserID">@item.UserID</span>
                         </td>
                         <td class="text-center">
-                            <a class="btn btn-sm btn-primary" href="/Admin/withdraw/create?user=@item.UserName">
-                                <i class="far fa-wallet"></i>
+                            <span title="@item.UserName">@item.UserName</span>
+                        </td>
+                        <td class="text-center text-truncate">
+                            <span title="@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ" class="text-danger">@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ</span>
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.UserName">
+                                <i class="fas fa-wallet"></i>
                                 <span>Nạp tiền</span>
                             </a>
-                            <a class="btn btn-sm btn-secondary" href="/Admin/User/Detail?id=@item.ID">
+                            <a class="btn btn-sm btn-secondary" href="/Admin/Account/Detail?id=@item.ID">
                                 <i class="far fa-edit"></i>
                                 <span>Xem</span>
                             </a>

@@ -372,13 +372,13 @@
                                     <div class="form-group">
                                         <label class="fw-bold">Hình thức thanh toán<span class="text-danger">(*)</span></label>
                                         <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this)">
-                                            <option value="1" selected>Tiền mặt</option>
-                                            <option value="2">Chuyển khoản</option>
+                                            <option value="2" selected>Chuyển khoản</option>
+                                            <option value="1">Tiền mặt</option>
                                         </select>
                                     </div>
                                 </div>
                                 <!-- thông tin chuyển khoản -->
-                                <div class="col-lg-12 col-md-12 col-sm-12 d-done" id="extendBank">
+                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendBank">
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">
@@ -413,7 +413,7 @@
                                         <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 d-none" id="extendNote">
+                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendNote">
                                     <div class="alert alert-warning d-flex" role="alert">
                                         <i class="fas fa-exclamation-triangle icon-16 mr-2"></i>
                                         <div>
@@ -547,23 +547,26 @@
 
             if (data.PaymentMethod == 2) 
             {
-                if (!data.BankName)
-                {
-                    helper.showErr('Vui lòng chọn ngân hàng!');
-                    return;
-                }
-                if (!data.AccountName)
-                {
-                    helper.showErr('Vui nhập chủ tài khoản!');
+                if (!data.AccountName) {
+                    helper.showErr('Chủ tài khoản không được bỏ trống!');
                     return;
                 }
                 if (!data.AccountNumber) {
-                    helper.showErr('Vui nhập số tài khoản!');
+                    helper.showErr('Số tài khoản không được bỏ trống!');
+                    return;
+                }
+                if (!data.BankName)
+                {
+                    helper.showErr('Ngân hàng không được bỏ trống!');
                     return;
                 }
             }
             if (!data.Amount) {
                 helper.showErr('Vui lòng nhập số tiền!');
+                return;
+            }
+            if (Number(data.Amount.replaceAll(",", "")) < 50000) {
+                helper.showErr('Số tiền nạp tối thiếu phải lớn hơn 50,000đ!');
                 return;
             }
 

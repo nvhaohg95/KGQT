@@ -69,20 +69,20 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="text-left align-middle">
-                            <span>@item.UserID</span>
-                        </td>
                         <td class="text-left text-truncate align-middle">
                             <div class="d-flex align-items-center">
                                 <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@(string.Concat(item.FirstName," ", item.LastName))" width="40" height="40" class="rounded-circle" />
                                 <span class="ml-2" title="@string.Concat(item.FirstName," ", item.LastName)">@string.Concat(item.FirstName," ", item.LastName)</span>
                             </div>
                         </td>
+                        <td class="text-left align-middle">
+                            <span title="Mã định danh">@item.UserID</span>
+                        </td>
                         <td class="text-center align-middle">
-                            <span>@(item.BirthDay != null ? item.BirthDay.Value.ToString("dd/MM/yyyy") : "dd/mm/yyyy")</span>
+                            <span title="Tài khoản">@item.UserName</span>
                         </td>
                         <td class="text-center text-truncate align-middle">
-                            <span title="@item.Email">@item.Email</span>
+                            <span title="Số dư ví">@item.Wallet</span>
                         </td>
                         <td class="text-center text-truncate align-middle">
                             <span>@item.Phone</span>
