@@ -1,5 +1,7 @@
 ﻿using KGQT.Models;
 using KGQT.Models.temp;
+using Org.BouncyCastle.Pqc.Crypto.Falcon;
+using System;
 
 namespace KGQT.Business
 {
@@ -63,7 +65,8 @@ namespace KGQT.Business
                         }
                         else
                         {
-                            notiMessage = string.Format("Yêu cầu nạp tiền. Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", string.Concat(user.FirstName, " ", user.LastName), data.Amount);
+                            string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
+                            notiMessage = string.Format("Yêu cầu nạp tiền. Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", string.Concat(user.FirstName, " ", user.LastName), strHTML);
                             NotificationBusiness.Insert(user.ID, string.Concat(user.FirstName, " ", user.LastName), 0, "Admin", data.ID, "", notiMessage, 2, acc.Username, true);
                         }
                         return true;

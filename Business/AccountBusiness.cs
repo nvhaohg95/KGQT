@@ -907,7 +907,7 @@ namespace KGQT.Business
                     user.ID = acc.ID;
                     user.UserID = acc.UserID;
                     user.UserName = acc.Username;
-                    user.Password = PJUtils.Encrypt("userpass", acc.Password);
+                    user.Password = PJUtils.Decrypt("userpass", acc.Password);
                     user.RoleID = acc.RoleID;
                     user.Wallet = acc.Wallet;
                     var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
