@@ -199,16 +199,24 @@ namespace KGQT.Business
             var username = pack.Username;
 
             //Update tien p
+            var config = BusinessBase.GetFirst<tbl_Configuration>();
+            double minPackage = 0.3;
+            double minOrder = 1;
+            if(config != null)
+            {
+                minPackage = config.MinPackage ?? 0.3;
+                minOrder = config.MinOrder ?? 1;
+            }
             var lstFee = BusinessBase.GetList<tbl_FeeWeight>(x => x.Type == pack.MovingMethod);
             if (lstFee == null || lstFee.Count == 0) return false;
 
             var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= weight && weight <= x.WeightTo);
 
             if (lstFee == null || lstFee.Count == 0) return false;
-            if (weight > fee.MinWeight)
+            if (weight > minPackage)
                 pack.Weight = weight;
             else
-                pack.Weight = fee.MinWeight;
+                pack.Weight = minPackage;
             pack.WeightReal = weight;
             pack.WoodPackagePrice = woodPrice;
             pack.AirPackagePrice = airPrice;
@@ -253,7 +261,10 @@ namespace KGQT.Business
                     var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= totalWeight && totalWeight <= x.WeightTo);
                     if (finalfee != null)
                     {
-                        totalWeightPrice = totalWeight * finalfee.Amount.Value;
+                        double weightRound = totalWeight;
+                        if (totalWeight < minOrder)
+                            weightRound = minOrder;
+                        totalWeightPrice = weightRound * finalfee.Amount.Value;
                     }
 
                     double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => x.WoodPackagePrice.Value);
@@ -274,7 +285,12 @@ namespace KGQT.Business
                 }
                 else
                 {
-
+                    var weightRound = pack.Weight;
+                    double feeWeight = 0;
+                    if (weightRound < 1)
+                    {
+                        feeWeight = (weightRound * fee.Amount).Value;
+                    }
                     var ship = new tbl_ShippingOrder();
                     ship.ShippingOrderCode = pack.PackageCode;
                     ship.Username = pack.Username;
@@ -286,7 +302,7 @@ namespace KGQT.Business
                     ship.ShippingMethod = pack.MovingMethod;
                     ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
                     ship.Weight = pack.Weight;
-                    ship.WeightPrice = pack.Weight * fee.Amount;
+                    ship.WeightPrice = feeWeight;
                     ship.IsAirPackage = pack.IsAirPackage;
                     ship.AirPackagePrice = pack.AirPackagePrice ?? 0;
                     ship.IsWoodPackage = pack.IsWoodPackage;
