@@ -14,11 +14,11 @@ namespace KGQT.Mobility
         {
             var result = AccountBusiness.Login(username, password);
             return result;
-        }
+        }    
 
         [HttpPost]
-        [Route("Register")]
-        public DataReturnModel<tbl_Account> RegisterAccount([FromBody] SignUpModel model)
+        [Route("register")]
+        public DataReturnModel RegisterAccount([FromBody] SignUpModel model)
         {
             if (model.File != null)
             {
