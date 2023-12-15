@@ -394,7 +394,7 @@ namespace KGQT.Business
                             }
 
                             int type = Converted.ToInt(dt.Rows[row][2].ToString());
-                            string note = dt.Rows[row][5].ToString();
+                            string note = dt.Rows[row][4].ToString();
                             var date = Converted.ToDate(dt.Rows[row][0].ToString());
                             var p = new tbl_Package();
                             var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == customer);

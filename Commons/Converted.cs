@@ -1,4 +1,8 @@
-﻿namespace KGQT.Commons
+﻿using KGQT.Base;
+using Newtonsoft.Json;
+using System.Globalization;
+
+namespace KGQT.Commons
 {
     public static class Converted
     {
@@ -44,7 +48,30 @@
         public static DateTime ToDate(string s)
         {
             if (string.IsNullOrEmpty(s)) return DateTime.Now;
-            return Convert.ToDateTime(s);
+            DateTime dt = DateTime.Now;
+            try
+            {
+                dt = Convert.ToDateTime(s);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Parse Datetime", JsonConvert.SerializeObject(ex));
+                //var arr = s.Split("/", StringSplitOptions.RemoveEmptyEntries);
+                //if (arr.Length == 3)
+                //{
+                //    int d = Convert.ToInt32(arr[0]);
+                //    int m = Convert.ToInt32(arr[1]);
+                //    var arrY = arr[3].Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                //    int y = Convert.ToInt32(arrY[0]);
+                //    if (CultureInfo.CurrentCulture.Name.ToLower() == "en-US")
+                //    {
+
+                //    }
+
+
+                //}
+            }
+            return dt;
         }
 
         public static DateTime ToDate(object s)
