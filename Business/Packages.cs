@@ -36,11 +36,13 @@ namespace KGQT.Business
                 return new object[] { st1, st2, st3 };
             }
         }
+
         public static bool CheckExist(string package)
         {
             using (var db = new nhanshiphangContext())
                 return db.tbl_Packages.Any(x => x.PackageCode == package);
         }
+
         public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2, string userName = "")
         {
             using (var db = new nhanshiphangContext())
@@ -68,40 +70,253 @@ namespace KGQT.Business
                 return new object[] { lstData, count, totalPage };
             }
         }
+
+        public static DataReturnModel<tmpChinaOrderStatus> GetStatusOrder(string code, string uslogin)
+        {
+            DataReturnModel<tmpChinaOrderStatus> data = new DataReturnModel<tmpChinaOrderStatus>();
+            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
+            if (oPack != null)
+            {
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == oPack.UID);
+
+                if (oPack.SearchBaiduTimes == null)
+                {
+                    oPack.SearchBaiduTimes = 0;
+                    if (user == null || user.Wallet == null || user.Wallet < 500)
+                    {
+                        data.IsError = false;
+                        data.Message = "Tài khoản khách không đủ tiền";
+                        return data;
+                    }
+                    var wallet = user.Wallet - 500;
+                    BusinessBase.Update(user);
+
+                    #region Logs
+                    HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "", 500, 1, 1, wallet.Value, uslogin);
+                    #endregion
+                }
+
+                using (HttpClient client = new HttpClient())
+                {
+                    string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, code);
+                    var response = client.GetAsync(url).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string sData = response.Content.ReadAsStringAsync().Result;
+                        data.Data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
+                    }
+                    else
+                    {
+                        data.IsError = false;
+                        data.Message = "Không thể kết nối đến server!";
+                        return data;
+                    }
+                }
+
+                oPack.SearchBaiduTimes++;
+                BusinessBase.Update(oPack);
+            }
+            else
+            {
+                data.IsError = false;
+                data.Message = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
+                return data;
+            }
+            data.Key = code;
+            return data;
+        }
         #endregion
 
         #region CRUD
-        public static object[] UpdateStatusCNWH(List<ExcelModel> model, int status, string userName)
+        public static bool Add(string sData, string userLogin)
         {
-            if (model.Count == 0) return new object[] { -1 };
-            using (var db = new nhanshiphangContext())
+            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
+            var user = AccountBusiness.GetInfo(-1, form.Username);
+            form.Status = 0;
+            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
+            form.UID = user.ID;
+            form.Username = user.Username;
+            form.FullName = user.FirstName + " " + user.LastName;
+            form.Phone = user.Phone;
+            form.Email = user.Email;
+            form.Address = user.Address;
+            form.CreatedDate = DateTime.Now;
+            form.CreatedBy = userLogin;
+            if (form.IsInsurance.HasValue && form.IsInsurance == true)
             {
-                List<string> ids = model.Select(x => x.Key).ToList();
-                List<tbl_Package> lst = db.tbl_Packages.Where(x => ids.Contains(x.PackageCode) && x.Exported == false).ToList();
-                Log.Info("Cập nhật xuất kho China", "Danh sách kiện khớp với file :" + JsonConvert.SerializeObject(lst));
-                if (lst.Count > 0)
-                {
-                    foreach (var item in lst)
-                    {
-                        var dt = DateTime.Now;
-                        item.Status = status;
-                        item.ExportedCNWH = dt;
-                        item.DateExpectation = CaclDateExpectation(item);
-                        item.Exported = true;
-                        item.ModifiedBy = userName;
-                        item.ModifiedDate = DateTime.Now;
-                        db.Update(item);
-                    }
-                    var s = db.SaveChanges() > 0;
-                    if (s)
-                    {
-                        return new object[] { 1, lst.Select(x => x.PackageCode).ToList() };
-                    }
-                }
-                return new object[] { 0 };
+                form.IsInsurancePrice = form.DeclarePrice * 0.05;
             }
+
+            var s = BusinessBase.Add(form);
+            if (s)
+                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
+            return s;
         }
 
+        public static bool Update(tempPackage form, string userLogin)
+        {
+            var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
+            if (p == null) return false;
+            int oldStt = p.Status;
+            if (form.Username != p.Username)
+            {
+                var user = AccountBusiness.GetInfo(form.Username);
+                if (user == null) return false;
+
+                p.Username = user.UserName;
+                p.UID = user.ID;
+                p.FullName = user.FirstName + " " + user.LastName;
+            }
+            p.PackageCode = form.PackageCode;
+            p.MovingMethod = form.MovingMethod;
+            p.IsAirPackage = form.IsAirPackage;
+            p.AirPackagePrice = form.AirPackagePrice;
+            p.IsInsurancePrice = form.IsInsurancePrice;
+            p.Declaration = form.Declaration;
+            p.DeclarePrice = form.DeclarePrice;
+            p.IsWoodPackage = form.IsWoodPackage;
+            p.WoodPackagePrice = form.WoodPackagePrice;
+            p.WareHouse = form.WareHouse;
+            p.Status = form.Status;
+            p.ModifiedBy = userLogin;
+            p.ModifiedDate = DateTime.Now;
+            if (oldStt != p.Status)
+            {
+                if (p.Status == 3)
+                {
+                    p.ExportedCNWH = DateTime.Now;
+                    p.DateExpectation = Packages.CaclDateExpectation(p);
+                    p.Exported = true;
+                }
+            }
+            return BusinessBase.Update(form);
+        }
+
+        public static bool InStockHCMWareHouse(int id, double weight, double woodPrice, double airPrice, string accessor)
+        {
+            var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            if (pack == null) return false;
+            var username = pack.Username;
+
+            //Update tien p
+            var lstFee = BusinessBase.GetList<tbl_FeeWeight>(x => x.Type == pack.MovingMethod);
+            if (lstFee == null || lstFee.Count == 0) return false;
+
+            var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= weight && weight <= x.WeightTo);
+
+            if (lstFee == null || lstFee.Count == 0) return false;
+            if (weight > fee.MinWeight)
+                pack.Weight = weight;
+            else
+                pack.Weight = fee.MinWeight;
+            pack.WeightReal = weight;
+            pack.WoodPackagePrice = woodPrice;
+            pack.AirPackagePrice = airPrice;
+            pack.Status = 4;
+            pack.ModifiedBy = accessor;
+            pack.ModifiedDate = DateTime.Now;
+            pack.ImportedSGWH = DateTime.Now;
+            var p = BusinessBase.Update(pack);
+            if (p)
+            {
+                BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với cân năng " + weight + "kg", 0, accessor);
+
+                if (pack.IsAirPackage.HasValue && pack.IsAirPackage == true)
+                {
+                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + airPrice + "đ", 0, accessor);
+                }
+                if (pack.IsWoodPackage.HasValue && pack.IsWoodPackage == true)
+                {
+                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + woodPrice + "đ", 0, accessor);
+                }
+
+                //Ktra xem khach da co don chua.
+                DateTime cnExportDateFrom = pack.ExportedCNWH.Value.Date;
+                DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
+                DateTime startDate = DateTime.Now.Date; //One day 
+                DateTime endDate = startDate.AddDays(1).AddTicks(-1);
+                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && (x.CreatedDate >= startDate && x.CreatedDate <= endDate)
+                                                                   && (x.ChinaExportDate >= cnExportDateFrom && x.ChinaExportDate <= cnExportDateEnd) && x.ShippingMethod == pack.MovingMethod);
+                if (check != null)
+                {
+                    //Cap nhat lai tranid cho p
+                    pack.TransID = check.ID;
+                    pack.ModifiedBy = accessor;
+                    pack.ModifiedDate = DateTime.Now;
+                    BusinessBase.Update(pack);
+                    BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã cập nhật mã vận đơn " + check.ID + " vào kiện", 0, accessor);
+
+                    var lstPack = BusinessBase.GetList<tbl_Package>(x => x.TransID == check.ID);
+                    double totalWeight = lstPack.Where(x => x.Weight != null).Sum(x => x.Weight.Value);
+                    double totalWeightPrice = 0;
+
+                    var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= totalWeight && totalWeight <= x.WeightTo);
+                    if (finalfee != null)
+                    {
+                        totalWeightPrice = totalWeight * finalfee.Amount.Value;
+                    }
+
+                    double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => x.WoodPackagePrice.Value);
+                    double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => x.AirPackagePrice.Value);
+                    double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => x.IsInsurancePrice.Value);
+
+                    var totalPrice = totalWeightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice;
+                    check.Weight = totalWeight;
+                    check.WeightPrice = totalWeightPrice;
+                    check.WoodPackagePrice = totalWoodPrice;
+                    check.AirPackagePrice = totalAirPrice;
+                    check.InsurancePrice = totalInsurPrice;
+                    check.TotalPrice = totalPrice;
+                    check.ModifiedBy = accessor;
+                    check.ModifiedDate = DateTime.Now;
+                    var oUpdate = BusinessBase.Update(check);
+                    BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã thêm kiện " + pack.PackageCode + " vào đơn", 0, accessor);
+                }
+                else
+                {
+
+                    var ship = new tbl_ShippingOrder();
+                    ship.ShippingOrderCode = pack.PackageCode;
+                    ship.Username = pack.Username;
+                    ship.FirstName = pack.FullName;
+                    ship.LastName = pack.FullName;
+                    ship.Email = pack.Email;
+                    ship.Address = pack.Address;
+                    ship.Phone = pack.Phone;
+                    ship.ShippingMethod = pack.MovingMethod;
+                    ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
+                    ship.Weight = pack.Weight;
+                    ship.WeightPrice = pack.Weight * fee.Amount;
+                    ship.IsAirPackage = pack.IsAirPackage;
+                    ship.AirPackagePrice = pack.AirPackagePrice ?? 0;
+                    ship.IsWoodPackage = pack.IsWoodPackage;
+                    ship.WoodPackagePrice = pack.WoodPackagePrice ?? 0;
+                    ship.IsInsurance = pack.IsInsurance;
+                    ship.InsurancePrice = pack.IsInsurancePrice ?? 0;
+                    ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice;
+                    ship.Status = 1;
+                    ship.ChinaExportDate = pack.ExportedCNWH;
+                    ship.CreatedDate = DateTime.Now;
+                    ship.CreatedBy = accessor;
+                    var oAdd = BusinessBase.Add(ship);
+                    if (p)
+                    {
+                        var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == pack.ID);
+                        if (oPack != null)
+                        {
+                            oPack.TransID = ship.ID;
+                            oPack.ModifiedBy = accessor;
+                            oPack.ModifiedDate = DateTime.Now;
+                            BusinessBase.Update(oPack);
+                            BusinessBase.TrackLog(oPack.UID.Value, oPack.ID, "{0} đã cập nhật mã vận đơn " + ship.ID + " vào kiện", 0, accessor);
+
+                        }
+                        BusinessBase.TrackLog(pack.UID.Value, ship.ID, "{0} đã tạo đơn " + ship.ID + " với kiện " + pack.PackageCode + " vào đơn", 0, accessor);
+                    }
+                }
+            }
+            return p;
+        }
         public static DateTime CaclDateExpectation(tbl_Package item)
         {
             var dt = DateTime.Now;
@@ -151,22 +366,21 @@ namespace KGQT.Business
                         int success = 0;
                         for (int row = 0; row < rowCount; row++)
                         {
-                            var p = new tbl_Package();
-                            var date = Converted.ToDate(dt.Rows[row][0].ToString());
                             string customer = dt.Rows[row][1].ToString();
-                            int type = Converted.ToInt(dt.Rows[row][2].ToString());
+                            if (customer.IndexOf("-") > 0) continue;
+
                             string code = dt.Rows[row][3].ToString();
-                            string note = dt.Rows[row][5].ToString();
-
                             if (string.IsNullOrEmpty(code)) continue;
-
-                            if (code.IndexOf("-") > 0) continue;
                             if (BusinessBase.Exist<tbl_Package>(x => x.PackageCode == code))
                             {
                                 exist.Add(code);
                                 continue;
                             }
 
+                            int type = Converted.ToInt(dt.Rows[row][2].ToString());
+                            string note = dt.Rows[row][5].ToString();
+                            var date = Converted.ToDate(dt.Rows[row][0].ToString());
+                            var p = new tbl_Package();
                             var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == customer);
                             if (user != null)
                             {
@@ -211,6 +425,7 @@ namespace KGQT.Business
                 }
             }
         }
+
         public static DataReturnModel<string> ExportChinaWareHouse(IFormFile file, string name, string accesser)
         {
             var data = new DataReturnModel<string>();
