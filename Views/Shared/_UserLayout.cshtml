@@ -547,13 +547,7 @@
 
             if (data.PaymentMethod == 2) 
             {
-                if (!data.BankName)
-                {
-                    helper.showErr('Ngân hàng không được bỏ trống!');
-                    return;
-                }
-                if (!data.AccountName)
-                {
+                if (!data.AccountName) {
                     helper.showErr('Chủ tài khoản không được bỏ trống!');
                     return;
                 }
@@ -561,12 +555,17 @@
                     helper.showErr('Số tài khoản không được bỏ trống!');
                     return;
                 }
+                if (!data.BankName)
+                {
+                    helper.showErr('Ngân hàng không được bỏ trống!');
+                    return;
+                }
             }
             if (!data.Amount) {
                 helper.showErr('Vui lòng nhập số tiền!');
                 return;
             }
-            if (data.Amount < "50000") {
+            if (Number(data.Amount.replaceAll(",", "")) < 50000) {
                 helper.showErr('Số tiền nạp tối thiếu phải lớn hơn 50,000đ!');
                 return;
             }
