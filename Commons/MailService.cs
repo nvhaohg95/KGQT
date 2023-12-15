@@ -13,7 +13,7 @@ namespace KGQT.Commons
 
         public static async Task<bool> SendMailAsync(MailSettings mailSettings,string to, string subject, string body)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<object>();
             var email = new MimeMessage();
             email.Sender = new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail);
             email.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));

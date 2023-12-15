@@ -8,9 +8,9 @@ namespace KGQT.Business
     public class AccountBusiness
     {
         #region Login
-        public static DataReturnModel Login(string userName, string password)
+        public static DataReturnModel<UserLogin> Login(string userName, string password)
         {
-            var dtReturn = new DataReturnModel();
+            var dtReturn = new DataReturnModel<UserLogin>();
             if (string.IsNullOrEmpty(userName))
             {
                 dtReturn.IsError = true;
@@ -209,9 +209,9 @@ namespace KGQT.Business
         #endregion
 
         #region Register Account
-        public static DataReturnModel RegisterAccount(SignUpModel data)
+        public static DataReturnModel<tbl_Account> RegisterAccount(SignUpModel data)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<tbl_Account>();
             try
             {
                 var regex = new Regex("^[a-zA-Z0-9 ]*$");
@@ -357,9 +357,9 @@ namespace KGQT.Business
         #endregion
 
         #region Send Mail Forget Password
-        public static async Task<DataReturnModel> SendMailForgetPassword(MailSettings mailSetting, string email)
+        public static async Task<DataReturnModel<object>> SendMailForgetPassword(MailSettings mailSetting, string email)
         {
-            DataReturnModel result = new DataReturnModel();
+            DataReturnModel<object> result = new DataReturnModel<object>();
             try
             {
                 if (string.IsNullOrEmpty(email))
@@ -441,9 +441,9 @@ namespace KGQT.Business
         #endregion
 
         #region Forgot Password
-        public static DataReturnModel ForgotPassword(ForgotPassWord data)
+        public static DataReturnModel<object> ForgotPassword(ForgotPassWord data)
         {
-            DataReturnModel result = new DataReturnModel();
+            DataReturnModel<object> result = new DataReturnModel<object>();
             var regex = new Regex("^[a-zA-Z0-9 ]*$");
             if (string.IsNullOrEmpty(data.PassWord))
             {
@@ -524,9 +524,9 @@ namespace KGQT.Business
         #endregion
 
         #region Change Password
-        public static DataReturnModel ChangePassword(ChangePassword data)
+        public static DataReturnModel<object> ChangePassword(ChangePassword data)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<object>();
             if (string.IsNullOrEmpty(data.UserName))
             {
                 result.IsError = true;
@@ -638,9 +638,9 @@ namespace KGQT.Business
         #endregion
 
         #region Create
-        public static DataReturnModel Create(AccountInfo data, string createdBy)
+        public static DataReturnModel<AccountInfo> Create(AccountInfo data, string createdBy)
         {
-            var reponse = new DataReturnModel();
+            var reponse = new DataReturnModel<AccountInfo>();
             if (string.IsNullOrEmpty(data.UserID))
             {
                 reponse.IsError = true;
@@ -814,9 +814,9 @@ namespace KGQT.Business
         #endregion
 
         #region Update
-        public static DataReturnModel Update(AccountInfo data, string userModifiedBy)
+        public static DataReturnModel<AccountInfo> Update(AccountInfo data, string userModifiedBy)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<AccountInfo>();
             if (data != null)
             {
                 using (var db = new nhanshiphangContext())
@@ -930,9 +930,9 @@ namespace KGQT.Business
         #endregion
 
         #region Update Info
-        public static DataReturnModel UpdateInfo(AccountInfo data)
+        public static DataReturnModel<AccountInfo> UpdateInfo(AccountInfo data)
         {
-            var result = new DataReturnModel();
+            var result = new DataReturnModel<AccountInfo>();
             if (data != null)
             {
                 if(string.IsNullOrEmpty(data.FirstName))

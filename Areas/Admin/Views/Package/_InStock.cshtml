@@ -1,0 +1,28 @@
+﻿@model KGQT.Models.tbl_Package;
+
+<form id="uploadExcel">
+    <div class="form-group mb-4">
+        <label class="required">Cân nặng:</label>
+        <input type="number" class="form-control" id="txtWeight">
+    </div>
+    @if (Model.IsWoodPackage == true)
+    {
+        <div class="form-group mb-4">
+            <label class="required" for="txtWoodPackage">Phí đóng gỗ:</label>
+            <input type="text" data-type="formatvnd" class="form-control" id="txtFeePack" value="@Model.WoodPackagePrice">
+        </div>
+    }
+    @if (Model.IsAirPackage == true)
+    {
+        <div class="form-group mb-4">
+            <label class="required" for="txtAirPackage">Phí bọt khí:</label>
+            <input type="text" data-type="formatvnd" class="form-control" id="txtAirPackage" value="@Model.AirPackagePrice">
+        </div>
+    }
+</form>
+
+<script>
+    $(document).ready(function(){
+        formatVND();
+    })
+</script>

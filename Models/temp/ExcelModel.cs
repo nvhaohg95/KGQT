@@ -4,9 +4,19 @@
     {
         public string Key { get; set; }
         public string Value { get; set; }
-        public string Value2 { get; set; }
-        public string Value3 { get; set; }
-        public string Value4 { get; set; }
+        public int Column { get; set; }
+        public int Row { get; set; }
+
+    }
+
+    public class tempExportChina
+    {
+        public int MovingMethod { get; set; }
+        public string Value { get; set; }
+        public int Column { get; set; }
+        public int Date { get; set; }
+        public int Row { get; set; }
+        public bool Mapped { get; set; }
 
     }
 }

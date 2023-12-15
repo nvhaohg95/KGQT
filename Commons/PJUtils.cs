@@ -38,7 +38,23 @@ namespace KGQT.Commons
             encStream.Close();
             return Convert.ToBase64String(cryptoByte, 0, cryptoByte.GetLength(0)).Trim();
         }
-
+        public static string Decrypt(string key, string data)
+        {
+            byte[] keydata = System.Text.Encoding.ASCII.GetBytes(key);
+            string md5String = BitConverter.ToString(new
+            MD5CryptoServiceProvider().ComputeHash(keydata)).Replace("-", "").ToLower();
+            byte[] tripleDesKey = Encoding.ASCII.GetBytes(md5String.Substring(0, 24));
+            TripleDES tripdes = TripleDESCryptoServiceProvider.Create();
+            tripdes.Mode = CipherMode.ECB;
+            tripdes.Key = tripleDesKey;
+            byte[] cryptByte = Convert.FromBase64String(data);
+            MemoryStream ms = new MemoryStream(cryptByte, 0, cryptByte.Length);
+            ICryptoTransform cryptoTransform = tripdes.CreateDecryptor();
+            CryptoStream decStream = new CryptoStream(ms, cryptoTransform,
+            CryptoStreamMode.Read);
+            StreamReader read = new StreamReader(decStream);
+            return (read.ReadToEnd());
+        }
         public static bool ConvertStringToBool(string i)
         {
             i = i.ToLower();
@@ -364,7 +380,7 @@ namespace KGQT.Commons
             }
         }
 
-        public static string MarkupValueExcel(IFormFile file, string name, List<string> data)
+        public static string MarkupValueExcel(IFormFile file, string name, List<tempExportChina> data)
         {
             if (file == null || data == null || data.Count == 0) return "";
             string fileName = file.FileName;
@@ -385,22 +401,9 @@ namespace KGQT.Commons
                 else
                 {
                     #region Read value
-                    var rowCount = worksheet.Dimension.Rows;
-                    var columnCount = worksheet.Dimension.Columns;
-                    for (int column = 1; column < columnCount; column++)
+                    foreach(var item in data)
                     {
-                        for (int row = 2; row < rowCount; row++)
-                        {
-                            var v = worksheet.Cells[row, column].Value;
-                            if (v != null)
-                            {
-                                v = v.ToString().Trim().Replace("\'", "").Replace(" ", "");
-                                if (data.Contains(v))
-                                {
-                                    worksheet.Cells[row, column].Style.Fill.SetBackground(Color.Green);
-                                }
-                            }
-                        }
+                        worksheet.Cells[item.Row+2,item.Column + 1].Style.Fill.SetBackground(Color.Green);
                     }
                     #endregion
 
