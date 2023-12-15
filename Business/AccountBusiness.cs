@@ -628,9 +628,7 @@ namespace KGQT.Business
                                UserName = acc.Username,
                                FirstName = accInfo.FirstName,
                                LastName = accInfo.LastName,
-                               BirthDay = accInfo.BirthDay,
-                               Email = accInfo.Email,
-                               Phone = accInfo.Phone,
+                               Wallet = acc.Wallet,
                                IMG = accInfo.IMG
                            }).ToList();
                 }

@@ -63,7 +63,7 @@ namespace KGQT.Business
                     user.ID = acc.ID;
                     user.UserID = acc.UserID;
                     user.UserName = acc.Username;
-                    user.Password = acc.Password;
+                    user.Password = PJUtils.Encrypt("", acc.Password); 
                     user.RoleID = acc.RoleID;
                     user.Wallet = acc.Wallet;
                 }
