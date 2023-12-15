@@ -18,7 +18,7 @@ namespace KGQT.Mobility
 
         [HttpPost]
         [Route("register")]
-        public DataReturnModel RegisterAccount([FromBody] SignUpModel model)
+        public DataReturnModel<tbl_Account> RegisterAccount([FromBody] SignUpModel model)
         {
             if (model.File != null)
             {

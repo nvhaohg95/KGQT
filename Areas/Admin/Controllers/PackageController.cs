@@ -158,7 +158,8 @@ namespace KGQT.Areas.Admin.Controllers
         public bool SubmitPack(int id, double weight, double woodPrice, double airPrice)
         {
             var crrUse = HttpContext.Session.GetString("user");
-            var oSave = Packages.InStockHCMWareHouse(id, weight, woodPrice, airPrice,crrUse);
+            var oSave = Packages.InStockHCMWareHouse(id, weight, woodPrice, airPrice, crrUse);
+            return oSave;
         }
 
         [HttpPost]
