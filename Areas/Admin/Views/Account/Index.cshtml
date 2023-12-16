@@ -70,8 +70,8 @@
                         
                         <td class="text-left text-truncate">
                             <div class="d-flex align-items-center">
-                                <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@(string.Concat(item.FirstName," ", item.LastName))" width="40" height="40" class="rounded-circle" />
-                                <span class="ml-2" title="@string.Concat(item.FirstName," ", item.LastName)">@string.Concat(item.FirstName," ", item.LastName)</span>
+                                <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@item.FullName" width="40" height="40" class="rounded-circle" />
+                                <span class="ml-2" title="@item.FullName">@item.FullName</span>
                             </div>
                         </td>
                         <td class="text-left">

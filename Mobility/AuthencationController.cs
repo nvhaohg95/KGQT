@@ -10,7 +10,7 @@ namespace KGQT.Mobility
     {
         [HttpGet]
         [Route("login")]
-        public DataReturnModel<UserLogin> Login(string username, string password)
+        public DataReturnModel<tbl_Account> Login(string username, string password)
         {
             var result = AccountBusiness.Login(username, password);
             return result;
@@ -18,7 +18,7 @@ namespace KGQT.Mobility
 
         [HttpPost]
         [Route("register")]
-        public DataReturnModel<tbl_Account> RegisterAccount([FromBody] SignUpModel model)
+        public DataReturnModel<tbl_Account> RegisterAccount(SignUpModel model)
         {
             if (model.File != null)
             {

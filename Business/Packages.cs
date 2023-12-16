@@ -201,7 +201,7 @@ namespace KGQT.Business
             form.FullName = user.FullName;
             form.Phone = user.Phone;
             form.Email = user.Email;
-            form.Address = user.Address;
+            //form.Address = user.Address;
             form.OrderDate = DateTime.Now;
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = user.Username;
@@ -226,10 +226,10 @@ namespace KGQT.Business
             int oldStt = p.Status;
             if (form.Username != p.Username)
             {
-                var user = AccountBusiness.GetInfo(form.Username);
+                var user = AccountBusiness.GetInfo(0,form.Username);
                 if (user == null) return false;
 
-                p.Username = user.UserName;
+                p.Username = user.Username;
                 p.UID = user.ID;
                 p.FullName = user.FullName;
             }

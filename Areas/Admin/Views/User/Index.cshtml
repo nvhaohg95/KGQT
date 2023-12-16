@@ -1,5 +1,5 @@
 ﻿@using KGQT.Models.temp;
-@model List<KGQT.Models.temp.AccountInfo>;
+@model List<KGQT.Models.tbl_Account>;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Danh sách người dùng";
@@ -71,15 +71,15 @@
                     <tr>
                         <td class="text-left text-truncate align-middle">
                             <div class="d-flex align-items-center">
-                                <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@(string.Concat(item.FirstName," ", item.LastName))" width="40" height="40" class="rounded-circle" />
-                                <span class="ml-2" title="@string.Concat(item.FirstName," ", item.LastName)">@string.Concat(item.FirstName," ", item.LastName)</span>
+                                <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@item.FullName" width="40" height="40" class="rounded-circle" />
+                                <span class="ml-2" title="@item.FullName">@@item.FullName</span>
                             </div>
                         </td>
                         <td class="text-left align-middle">
                             <span title="Mã định danh">@item.UserID</span>
                         </td>
                         <td class="text-center align-middle">
-                            <span title="Tài khoản">@item.UserName</span>
+                            <span title="Tài khoản">@item.Username</span>
                         </td>
                         <td class="text-center text-truncate align-middle">
                             <span title="Số dư ví">@item.Wallet</span>
@@ -88,7 +88,7 @@
                             <span>@item.Phone</span>
                         </td>
                         <td class="text-center align-middle">
-                            <a class="btn btn-sm btn-primary" href="/Admin/withdraw/create?user=@item.UserName">
+                            <a class="btn btn-sm btn-primary" href="/Admin/withdraw/create?user=@item.Username">
                                 <i class="far fa-wallet"></i>
                                 <span>Nạp tiền</span>
                             </a> 

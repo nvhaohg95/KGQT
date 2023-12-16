@@ -66,7 +66,7 @@ namespace KGQT.Controllers
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
             if (result.Data != null)
             {
-                var user = result.Data as UserLogin;
+                var user = result.Data as tbl_Account;
                 if (user.RoleID == 1)
                     return RedirectToAction("home", "admin");
             }

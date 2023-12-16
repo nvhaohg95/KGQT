@@ -11,22 +11,6 @@
     int totalRecord = (int)ViewData["totalRecord"];
     int totalPage = (int)ViewData["totalPage"];
 }
-
-@{
-    string getUserName(int uID)
-    {
-        string userName = uID + ""; ;
-        using (var db = new nhanshiphangContext())
-        {
-            var user = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == uID);
-            if (user != null)
-            {
-                userName = string.Concat(user.FirstName, " ", user.LastName);
-            }
-        }
-        return userName;
-    }
-}
 <div class="row mb-2">
     <ul id="breadcrumbs">
         <li><a>Quản lý giao dịch</a></li>

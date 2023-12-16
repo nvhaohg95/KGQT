@@ -9,11 +9,11 @@ namespace KGQT.Controllers
         public bool Create(tbl_Withdraw model)
         {
             string userLogin = HttpContext.Session.GetString("user");
-            var user = AccountBusiness.GetFullInfo(null, -1, userLogin);
+            var user = AccountBusiness.GetInfo(-1, userLogin);
             if (user != null && model != null)
             {
                 model.UID = user.ID;
-                model.Fullname = user.FirstName + " " + user.LastName;
+                model.Fullname = user.FullName;
                 model.Status = 1;
                 model.Type = 1;
                 model.CreatedBy = userLogin;
