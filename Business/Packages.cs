@@ -128,29 +128,28 @@ namespace KGQT.Business
         #endregion
 
         #region CRUD
-        public static bool Add(string sData, string userLogin)
+        public static bool Add(tbl_Package model, string userLogin)
         {
-            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
-            var user = AccountBusiness.GetInfo(-1, form.Username);
-            form.Status = 0;
-            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            form.UID = user.ID;
-            form.Username = user.Username;
-            form.FullName = user.FirstName + " " + user.LastName;
-            form.Phone = user.Phone;
-            form.Email = user.Email;
-            form.Address = user.Address;
-            form.OrderDate = DateTime.Now;
-            form.CreatedDate = DateTime.Now;
-            form.CreatedBy = userLogin;
-            if (form.IsInsurance.HasValue && form.IsInsurance == true)
+            var user = AccountBusiness.GetInfo(-1, model.Username);
+            model.Status = 0;
+            model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
+            model.UID = user.ID;
+            model.Username = user.Username;
+            model.FullName = user.FirstName + " " + user.LastName;
+            model.Phone = user.Phone;
+            model.Email = user.Email;
+            model.Address = user.Address;
+            model.OrderDate = DateTime.Now;
+            model.CreatedDate = DateTime.Now;
+            model.CreatedBy = userLogin;
+            if (model.IsInsurance.HasValue && model.IsInsurance == true)
             {
-                form.IsInsurancePrice = form.DeclarePrice * 0.05;
+                model.IsInsurancePrice = model.DeclarePrice * 0.05;
             }
 
-            var s = BusinessBase.Add(form);
+            var s = BusinessBase.Add(model);
             if (s)
-                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
+                BusinessBase.TrackLog(user.ID, model.ID, "{0} đã tạo kiện", 0, user.Username);
             return s;
         }
         public static DataReturnModel<bool> CustomerAdd(string sData, string userLogin)
@@ -232,7 +231,7 @@ namespace KGQT.Business
 
                 p.Username = user.UserName;
                 p.UID = user.ID;
-                p.FullName = user.FirstName + " " + user.LastName;
+                p.FullName = user.FullName;
             }
             p.PackageCode = form.PackageCode;
             p.MovingMethod = form.MovingMethod;
