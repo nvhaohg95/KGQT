@@ -18,7 +18,7 @@
             <form method="post" action="Create" id="frmShip">
                 <div class="form-group mb-4">
                     <label class="required" for="txtShipID">Mã vận đơn</label>
-                    <input type="text" class="form-control" id="txtPackage" name="PackageCode" placeholder="Nhập mã vận đơn" onblur="addPackage()">
+                    <input type="text" class="form-control" id="txtPackage" name="PackageCode" placeholder="Nhập mã vận đơn">
                 </div>
                 <div class="form-group mb-2">
                     <label class="required mb-0 text-primary fw-bold">Phương thức vận chuyển</label>
@@ -79,41 +79,13 @@
                 </div>
                 <div class="col-md-12 col-sm-12 col-lg-12 text-center">
                     <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
-                    <button type="button" class="btn btn-success" onclick="insert()">Lưu</button>
+                    <button type="button" class="btn btn-success" onclick="add()">Lưu</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 <script>
-    $(document).ready(function () {
-        $('#txtPackage').off('keypress').on('keypress', function (e) {
-            if (e.which == 13)
-                addPackage();
-        });
-    });
-
-    function addPackage() {
-        const ip = $('#txtPackage').val();
-        if (ip) {
-            $.ajax({
-                url: '@Url.Action("CheckPackage", "Package")',
-                type: 'GET',
-                data: { package: ip },
-                // other AJAX options here
-                success: function (result) {
-                    if (result) {
-                        helper.showErr('Kiện đã tồn tại!');
-                    }
-                },
-                error: function (xhr, status, err) {
-                    // error handling
-                }
-            });
-        } else {
-            helper.showErr('Vui lòng nhập mã kiện!');
-        }
-    }
 
     function showhideDeclare(o) {
         if (!$(o).is(':checked'))
@@ -122,7 +94,7 @@
             $('#frmDeclare').css('display', 'block');
     }
 
-    function insert() {
+    function add() {
         var data = helper.form2Object($('#frmShip').serializeArray());
         if (!data.PackageCode) {
             helper.showErr('Vui lòng nhập mã kiện!');

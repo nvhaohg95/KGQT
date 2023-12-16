@@ -53,7 +53,6 @@ namespace KGQT.Controllers
         public bool Create(tbl_Package form)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var user = AccountBusiness.GetInfo(-1, userLogin);
             form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             form.Status = 0;
             form.UID = user.ID;
@@ -81,12 +80,5 @@ namespace KGQT.Controllers
 
         #endregion
 
-        #region Function
-        [HttpGet]
-        public bool CheckPackage(string package)
-        {
-            return Packages.CheckExist(package);
-        }
-        #endregion
     }
 }

@@ -61,8 +61,11 @@
                     </div>
                     <div class="row px-2 mx-0 mb-2">
                         <div class="col-md-6">
-                            <div>
-                                <span>Khách hàng: @Model.FullName</span>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Email</label>
+                                <div class="col-sm-8">
+                                    <input id="txtUserName" class="form-control mb-0" value="@Model.Username" @(!string.IsNullOrEmpty(Model.Username) ? "disabled" : "") />
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -183,7 +186,6 @@ else
 <script>
     $(document).ready(function () {
         formatVND();
-
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
             $(this).select();
@@ -197,7 +199,7 @@ else
         let weight = $('#txtWeight').val(), wood = 0, air = 0;
         let $wood = $('#txtWoodPackage');
         let $air = $('#txtAirPackage');
-        debugger;
+        let username = $('#txtUserName');
         if (!weight) {
             helper.showErr('Vui lòng nhập cân nặng!');
             return;
@@ -216,7 +218,11 @@ else
                 return;
             }
         }
-
+        if(!username)
+        {
+            helper.showErr('Vui lòng khai báo khách hàng!');
+            return;
+        }
         $.ajax({
             url: '/admin/Package/SubmitPack',
             method: 'POST',
