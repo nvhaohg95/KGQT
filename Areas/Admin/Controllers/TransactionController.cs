@@ -18,21 +18,21 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Recharge
-        [HttpGet]
-        public IActionResult Recharge(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
-        {
-            var oData = TransactionBusiness.GetListTransaction(status, fromDate, toDate, page, pageSize);
-            var lstData = oData[0] as List<tbl_Transaction>;
-            var totalRecord = (int)oData[1];
-            var totalPage = (int)oData[2];
-            ViewData["status"] = status;
-            ViewData["fromDate"] = fromDate;
-            ViewData["toDate"] = toDate;
-            ViewData["page"] = page;
-            ViewData["totalRecord"] = totalRecord;
-            ViewData["totalPage"] = totalPage;
-            return View(lstData);
-        }
+        //[HttpGet]
+        //public IActionResult Recharge(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        //{
+        //    var oData = TransactionBusiness.GetListTransaction(status, fromDate, toDate, page, pageSize);
+        //    var lstData = oData[0] as List<tbl_Transaction>;
+        //    var totalRecord = (int)oData[1];
+        //    var totalPage = (int)oData[2];
+        //    ViewData["status"] = status;
+        //    ViewData["fromDate"] = fromDate;
+        //    ViewData["toDate"] = toDate;
+        //    ViewData["page"] = page;
+        //    ViewData["totalRecord"] = totalRecord;
+        //    ViewData["totalPage"] = totalPage;
+        //    return View(lstData);
+        //}
 
 
         [HttpPost]

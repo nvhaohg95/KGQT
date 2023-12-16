@@ -8,8 +8,12 @@ namespace KGQT.Models
         public int ID { get; set; }
         public string? UserID { get; set; }
         public string? Username { get; set; }
-        public string? Email { get; set; }
         public string? Password { get; set; }
+        public string? FullName { get; set; }
+        public bool? Gender { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public string? IMG { get; set; }
         /// <summary>
         /// 0. Admin
         /// 1. User
@@ -38,15 +42,15 @@ namespace KGQT.Models
         /// </summary>
         public int? Status { get; set; }
         public double? Wallet { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
-        public string? ModifiedBy { get; set; }
         public bool? IsNotReceiveMail { get; set; }
         public bool? IsOutCityCustomer { get; set; }
         public bool? IsActive { get; set; }
         public int? SaleID { get; set; }
         public string? SaleUsername { get; set; }
         public string? Token { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public string? ModifiedBy { get; set; }
     }
 }

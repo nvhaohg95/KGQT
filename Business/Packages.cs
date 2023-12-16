@@ -92,7 +92,7 @@ namespace KGQT.Business
                     BusinessBase.Update(user);
 
                     #region Logs
-                    HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "", 500, 1, 1, wallet.Value, uslogin);
+                    HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + oPack.PackageCode, 500, 1, 1, wallet.Value, uslogin);
                     #endregion
                 }
 
@@ -140,6 +140,7 @@ namespace KGQT.Business
             form.Phone = user.Phone;
             form.Email = user.Email;
             form.Address = user.Address;
+            form.OrderDate = DateTime.Now;
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = userLogin;
             if (form.IsInsurance.HasValue && form.IsInsurance == true)
@@ -202,7 +203,7 @@ namespace KGQT.Business
             var config = BusinessBase.GetFirst<tbl_Configuration>();
             double minPackage = 0.3;
             double minOrder = 1;
-            if(config != null)
+            if (config != null)
             {
                 minPackage = config.MinPackage ?? 0.3;
                 minOrder = config.MinOrder ?? 1;
@@ -397,11 +398,12 @@ namespace KGQT.Business
                             string note = dt.Rows[row][4].ToString();
                             var date = Converted.ToDate(dt.Rows[row][0].ToString());
                             var p = new tbl_Package();
-                            var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == customer);
+                            var user = AccountBusiness.GetFullInfo(null, 0, customer);
                             if (user != null)
                             {
                                 p.Username = user.Username;
                                 p.UID = user.ID;
+                                p.FullName = user.FirstName + " " + user.LastName;
                             }
 
                             if (type == 3)
@@ -411,7 +413,8 @@ namespace KGQT.Business
 
                             p.PackageCode = code;
                             p.Note = note;
-                            p.CreatedDate = date;
+                            p.OrderDate = date;
+                            p.CreatedDate = DateTime.Now;
                             p.CreatedBy = accesser;
                             if (!BusinessBase.Add(p))
                             {

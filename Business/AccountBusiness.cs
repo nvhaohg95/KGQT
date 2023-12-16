@@ -2,6 +2,7 @@
 using KGQT.Models;
 using KGQT.Models.temp;
 using System.Text.RegularExpressions;
+using static KGQT.HomeController;
 
 namespace KGQT.Business
 {
@@ -68,7 +69,7 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                var acc =  db.tbl_Accounts.Where(a => a.Username == Username).FirstOrDefault();
+                var acc = db.tbl_Accounts.Where(a => a.Username == Username).FirstOrDefault();
                 if (acc != null)
                     return acc;
                 else
@@ -123,14 +124,14 @@ namespace KGQT.Business
             if (acc == null && !string.IsNullOrEmpty(userName))
                 acc = GetByUserName(userName);
 
-            if(acc != null)
+            if (acc != null)
             {
                 using (var db = new nhanshiphangContext())
                 {
                     UserLogin us = new UserLogin();
 
-                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                    if (accInfo != null)
+                    var x. = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                    if (x. != null)
                     {
                         us = new UserLogin()
                         {
@@ -140,16 +141,16 @@ namespace KGQT.Business
                             Status = acc.Status,
                             Wallet = acc.Wallet,
                             UserLevel = acc.UserLevel,
-                            BirthDay = accInfo.BirthDay,
-                            LastName = accInfo.LastName,
-                            FirstName = accInfo.FirstName,
-                            Longitude = accInfo.Longitude,
+                            BirthDay = x.BirthDay,
+                            LastName = x.LastName,
+                            FirstName = x.FirstName,
+                            Longitude = x.Longitude,
                             Email = acc.Email,
-                            Address = accInfo.Address,
-                            Phone = accInfo.Phone,
-                            Latitude = accInfo.Latitude,
-                            Gender = accInfo.Gender,
-                            IMG = accInfo.IMG,
+                            Address = x.Address,
+                            Phone = x.Phone,
+                            Latitude = x.Latitude,
+                            Gender = x.Gender,
+                            IMG = x.IMG,
                             RoleID = acc.RoleID,
                             IsActive = acc.IsActive,
                             IsOutCityCustomer = acc.IsOutCityCustomer,
@@ -159,7 +160,7 @@ namespace KGQT.Business
                         return us;
                     }
                 }
-            }    
+            }
             return null;
         }
 
@@ -187,18 +188,18 @@ namespace KGQT.Business
                         IsNotReceiveMail = acc.IsNotReceiveMail,
                         CreateDate = acc.CreatedDate
                     };
-                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                    if (accInfo != null)
+                    var x. = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                    if (x. != null)
                     {
-                        user.BirthDay = accInfo.BirthDay;
-                        user.LastName = accInfo.LastName;
-                        user.FirstName = accInfo.FirstName;
-                        user.Longitude = accInfo.Longitude;
-                        user.Address = accInfo.Address;
-                        user.Phone = accInfo.Phone;
-                        user.Latitude = accInfo.Latitude;
-                        user.Gender = accInfo.Gender;
-                        user.IMG = accInfo.IMG;
+                        user.BirthDay = x.BirthDay;
+                        user.LastName = x.LastName;
+                        user.FirstName = x.FirstName;
+                        user.Longitude = x.Longitude;
+                        user.Address = x.Address;
+                        user.Phone = x.Phone;
+                        user.Latitude = x.Latitude;
+                        user.Gender = x.Gender;
+                        user.IMG = x.IMG;
                     }
                     return user;
                 }
@@ -302,7 +303,7 @@ namespace KGQT.Business
                             File.WriteAllBytes(path, bytes);
                             data.IMG = "/uploads/avatars/" + fileName;
                         }
-                        var accInfor = new tbl_AccountInfo()
+                        var x.r = new tbl_AccountInfo()
                         {
                             UID = acc.ID,
                             FirstName = data.FirstName,
@@ -316,7 +317,7 @@ namespace KGQT.Business
                             CreatedDate = acc.CreatedDate,
                             CreatedBy = acc.CreatedBy
                         };
-                        db.Add(accInfor);
+                        db.Add(x.r);
                         int kq2 = db.SaveChanges();
                         if (kq2 > 0)
                         {
@@ -381,7 +382,7 @@ namespace KGQT.Business
                     if (acc != null)
                     {
                         acc.Token = Guid.NewGuid().ToString();
-                        var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                        var x. = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
                         var name = acc.Username;
                         string sToken = acc.Token + "|" + DateTime.Now.ToString();
                         string link = "https://localhost:44330/auth/forgotpassword?id=&tk=";
@@ -389,8 +390,8 @@ namespace KGQT.Business
                         string token = Helper.Base64Encode(sToken);
                         string subject = "YÊU CẦU CẤP PHÁT LẠI MẬT KHẨU";
                         string body = "<div>Xin chào <b>{0}</b>.</div><br><div>Yêu cầu cấp phát lại mật khẩu của bạn đã được xác nhận, vui lòng truy cập đường link bên dưới để tiếp tục thay đổi mật khẩu của bạn. <span><a href='{1}'>link</a></span></div><div></div><br><div>Cám ơn.</div>";
-                        if (accInfo != null)
-                            name = accInfo.FirstName + " " + accInfo.LastName;
+                        if (x. != null)
+                            name = x.FirstName + " " + x.LastName;
                         link = $"https://localhost:44330/auth/forgotpassword?id={id}&tk={token}";
                         body = string.Format(body, name, link);
 
@@ -496,7 +497,7 @@ namespace KGQT.Business
                     acc.ModifiedDate = DateTime.Now;
                     db.Update(acc);
                     int isSave = db.SaveChanges();
-                    if(isSave > 0)
+                    if (isSave > 0)
                     {
                         result.IsError = false;
                         result.Type = 2;
@@ -509,7 +510,7 @@ namespace KGQT.Business
                         result.Type = 2;
                         result.Message = "Hệ thống thực thi không thành công.";
                         return result;
-                    }    
+                    }
                 }
                 else
                 {
@@ -595,7 +596,7 @@ namespace KGQT.Business
                 }
                 return result;
             }
-                
+
         }
 
         #endregion
@@ -608,30 +609,23 @@ namespace KGQT.Business
                 var lst = new List<AccountInfo>();
                 int total = 0;
                 int totalPage = 0;
-                var query = db.tbl_AccountInfos.AsQueryable();
+                var query = db.tbl_Accounts.AsQueryable();
                 if (!string.IsNullOrEmpty(searchText))
-                    query = query.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText));
+                    query = query.Where(x => x.Username.Contains(searchText) || x.FullName.Contains(searchText) || x.Email.Contains(searchText));
                 total = query.Count();
                 totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                 query = query.Skip((page - 1) * pageSize).Take(pageSize);
-                var accInfos = query.ToList();
-                if (accInfos.Count > 0)
-                {
-                    lst = (from accInfo in accInfos
-                           join acc in db.tbl_Accounts.ToList()
-                           on accInfo.UID equals acc.ID
-                           orderby acc.CreatedDate descending
-                           select new AccountInfo()
-                           {
-                               ID = acc.ID,
-                               UserID = acc.UserID,
-                               UserName = acc.Username,
-                               FirstName = accInfo.FirstName,
-                               LastName = accInfo.LastName,
-                               Wallet = acc.Wallet,
-                               IMG = accInfo.IMG
-                           }).ToList();
-                }
+                var data = query.Select(x=> new AccountInfo {
+                    ID = x.ID,
+                    UserID = x.UserID,
+                    UserName = x.Username,
+                    FullName = x.FullName,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    Wallet = x.Wallet,
+                    Gender = x.Gender.Value,
+                    IMG = x.IMG
+                }).ToList();
                 return new object[] { lst, total, totalPage };
             }
         }
@@ -749,7 +743,7 @@ namespace KGQT.Business
                 var kq1 = db.SaveChanges();
                 if (kq1 > 0)
                 {
-                    var accInfo = new tbl_AccountInfo()
+                    var x. = new tbl_AccountInfo()
                     {
                         UID = acc.ID,
                         FirstName = data.FirstName,
@@ -761,7 +755,7 @@ namespace KGQT.Business
                         CreatedBy = createdBy,
                         CreatedDate = DateTime.Now
                     };
-                    db.Add(accInfo);
+                    db.Add(x.);
                     var kq2 = db.SaveChanges();
                     if (kq2 > 0)
                     {
@@ -775,7 +769,7 @@ namespace KGQT.Business
                         reponse.IsError = true;
                         reponse.Message = "Hệ thông thực thi không thành công.";
                         return reponse;
-                    }    
+                    }
                 }
                 else
                 {
@@ -796,9 +790,9 @@ namespace KGQT.Business
                 try
                 {
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
-                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == id);
+                    var x. = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == id);
                     db.Remove(acc);
-                    db.Remove(accInfo);
+                    db.Remove(x.);
                     var isSave = db.SaveChanges();
                     if (isSave > 0)
                         return true;
@@ -829,20 +823,20 @@ namespace KGQT.Business
                         acc.ModifiedBy = userModifiedBy;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
-                        var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                        var x. = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
                         if (acc != null)
                         {
-                            accInfo.FirstName = data.FirstName;
-                            accInfo.LastName = data.LastName;
-                            accInfo.Gender = data.Gender;
-                            accInfo.BirthDay = data.BirthDay;
-                            accInfo.Email = data.Email;
-                            accInfo.Phone = data.Phone;
-                            accInfo.Address = data.Address;
-                            accInfo.Phone = data.Phone;
-                            accInfo.ModifiedBy = userModifiedBy;
-                            accInfo.ModifiedDate = DateTime.Now;
-                            db.Update(accInfo);
+                            x.FirstName = data.FirstName;
+                            x.LastName = data.LastName;
+                            x.Gender = data.Gender;
+                            x.BirthDay = data.BirthDay;
+                            x.Email = data.Email;
+                            x.Phone = data.Phone;
+                            x.Address = data.Address;
+                            x.Phone = data.Phone;
+                            x.ModifiedBy = userModifiedBy;
+                            x.ModifiedDate = DateTime.Now;
+                            db.Update(x.);
                         }
                         var isSave = db.SaveChanges();
                         if (isSave > 0)
@@ -910,17 +904,17 @@ namespace KGQT.Business
                     user.Password = PJUtils.Decrypt("userpass", acc.Password);
                     user.RoleID = acc.RoleID;
                     user.Wallet = acc.Wallet;
-                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                    if (accInfo != null)
+                    var x. = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                    if (x. != null)
                     {
-                        user.IMG = accInfo.IMG;
-                        user.BirthDay = accInfo.BirthDay;
-                        user.Gender = accInfo.Gender;
-                        user.Phone = accInfo.Phone;
-                        user.Email = accInfo.Email;
-                        user.Address = accInfo.Address;
-                        user.FirstName = accInfo.FirstName;
-                        user.LastName = accInfo.LastName;
+                        user.IMG = x.IMG;
+                        user.BirthDay = x.BirthDay;
+                        user.Gender = x.Gender;
+                        user.Phone = x.Phone;
+                        user.Email = x.Email;
+                        user.Address = x.Address;
+                        user.FirstName = x.FirstName;
+                        user.LastName = x.LastName;
                     }
                 }
             }
@@ -935,7 +929,7 @@ namespace KGQT.Business
             var result = new DataReturnModel<AccountInfo>();
             if (data != null)
             {
-                if(string.IsNullOrEmpty(data.FirstName))
+                if (string.IsNullOrEmpty(data.FirstName))
                 {
                     result.IsError = true;
                     result.Message = "Họ không được để trống";
@@ -976,12 +970,12 @@ namespace KGQT.Business
                 using (var db = new nhanshiphangContext())
                 {
                     var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email);
-                    if(isEmail)
+                    if (isEmail)
                     {
                         result.IsError = true;
                         result.Message = "Địa chỉ email này đã được sử dụng.";
                         return result;
-                    }    
+                    }
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
                     if (acc != null)
                     {
@@ -989,20 +983,20 @@ namespace KGQT.Business
                         acc.ModifiedBy = data.UserName;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
-                        var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
+                        var x. = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
                         if (acc != null)
                         {
-                            accInfo.FirstName = data.FirstName;
-                            accInfo.LastName = data.LastName;
-                            accInfo.Gender = data.Gender;
-                            accInfo.BirthDay = data.BirthDay;
-                            accInfo.Email = data.Email;
-                            accInfo.Phone = data.Phone;
-                            accInfo.Address = data.Address;
-                            accInfo.Phone = data.Phone;
-                            accInfo.ModifiedBy = data.UserName;
-                            accInfo.ModifiedDate = DateTime.Now;
-                            db.Update(accInfo);
+                            x.FirstName = data.FirstName;
+                            x.LastName = data.LastName;
+                            x.Gender = data.Gender;
+                            x.BirthDay = data.BirthDay;
+                            x.Email = data.Email;
+                            x.Phone = data.Phone;
+                            x.Address = data.Address;
+                            x.Phone = data.Phone;
+                            x.ModifiedBy = data.UserName;
+                            x.ModifiedDate = DateTime.Now;
+                            db.Update(x.);
                         }
                         var isSave = db.SaveChanges();
                         if (isSave > 0)

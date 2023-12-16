@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using KGQT.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -8,7 +7,6 @@ namespace KGQT.Models
 {
     public partial class nhanshiphangContext : DbContext
     {
-     
         public nhanshiphangContext()
         {
         }
@@ -19,28 +17,18 @@ namespace KGQT.Models
         }
 
         public virtual DbSet<tbl_Account> tbl_Accounts { get; set; } = null!;
-        public virtual DbSet<tbl_AccountInfo> tbl_AccountInfos { get; set; } = null!;
         public virtual DbSet<tbl_BigPackage> tbl_BigPackages { get; set; } = null!;
-        public virtual DbSet<tbl_CheckSmallPackage> tbl_CheckSmallPackages { get; set; } = null!;
         public virtual DbSet<tbl_Comment> tbl_Comments { get; set; } = null!;
         public virtual DbSet<tbl_Complain> tbl_Complains { get; set; } = null!;
-        public virtual DbSet<tbl_ComplainComment> tbl_ComplainComments { get; set; } = null!;
         public virtual DbSet<tbl_Configuration> tbl_Configurations { get; set; } = null!;
-        public virtual DbSet<tbl_FeePackage> tbl_FeePackages { get; set; } = null!;
         public virtual DbSet<tbl_FeeWeight> tbl_FeeWeights { get; set; } = null!;
-        public virtual DbSet<tbl_HistoryExport> tbl_HistoryExports { get; set; } = null!;
         public virtual DbSet<tbl_HistoryPayWallet> tbl_HistoryPayWallets { get; set; } = null!;
         public virtual DbSet<tbl_Notification> tbl_Notifications { get; set; } = null!;
         public virtual DbSet<tbl_Package> tbl_Packages { get; set; } = null!;
         public virtual DbSet<tbl_Role> tbl_Roles { get; set; } = null!;
-        public virtual DbSet<tbl_ShippingMethodAddDate> tbl_ShippingMethodAddDates { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
-        public virtual DbSet<tbl_ShippingOrderDeclaration> tbl_ShippingOrderDeclarations { get; set; } = null!;
-        public virtual DbSet<tbl_ShippingOrderStatusHistory> tbl_ShippingOrderStatusHistories { get; set; } = null!;
         public virtual DbSet<tbl_SystemLog> tbl_SystemLogs { get; set; } = null!;
         public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
-        public virtual DbSet<tbl_TradeHistory> tbl_TradeHistories { get; set; } = null!;
-        public virtual DbSet<tbl_Transaction> tbl_Transactions { get; set; } = null!;
         public virtual DbSet<tbl_Withdraw> tbl_Withdraws { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
 
@@ -49,7 +37,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(Config.Connections["KGQT"]);
+                optionsBuilder.UseSqlServer("Server=LAPTOP-EOMC9SID;Database=nhanshiphang;User Id=sa;Password=abc123;Integrated Security=True; Trusted_Connection=True;");
             }
         }
 
@@ -61,7 +49,13 @@ namespace KGQT.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.Email).HasMaxLength(100);
+
+                entity.Property(e => e.FullName).HasMaxLength(50);
+
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Password).HasMaxLength(50);
 
                 entity.Property(e => e.RoleID).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
@@ -70,17 +64,8 @@ namespace KGQT.Models
                 entity.Property(e => e.UserID).HasMaxLength(50);
 
                 entity.Property(e => e.UserLevel).HasComment("1. thành viên\r\n2. dịch vụ order\r\n3. shop đồng\r\n4. shop bạc\r\n5. shop vàng\r\n6. shop kim cương\r\n7. shop vip 1\r\n8. shop vip 2\r\n9. shop vip 3\r\n10. shop vip 4");
-            });
 
-            modelBuilder.Entity<tbl_AccountInfo>(entity =>
-            {
-                entity.ToTable("tbl_AccountInfo");
-
-                entity.Property(e => e.BirthDay).HasColumnType("datetime");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+                entity.Property(e => e.Username).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbl_BigPackage>(entity =>
@@ -92,19 +77,6 @@ namespace KGQT.Models
                 entity.Property(e => e.BigPackageDateExport).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<tbl_CheckSmallPackage>(entity =>
-            {
-                entity.ToTable("tbl_CheckSmallPackage");
-
-                entity.Property(e => e.CreatedBy).HasMaxLength(250);
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedBy).HasMaxLength(250);
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
@@ -131,27 +103,9 @@ namespace KGQT.Models
                 entity.Property(e => e.Type).HasComment("0. Khiếu nại thiếu hàng\r\n1. Khiếu nại sai mẫu (bồi thường)\r\n2. Khiếu nại sai mẫu (trả hàng)");
             });
 
-            modelBuilder.Entity<tbl_ComplainComment>(entity =>
-            {
-                entity.ToTable("tbl_ComplainComment");
-
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<tbl_Configuration>(entity =>
             {
                 entity.ToTable("tbl_Configuration");
-            });
-
-            modelBuilder.Entity<tbl_FeePackage>(entity =>
-            {
-                entity.ToTable("tbl_FeePackage");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<tbl_FeeWeight>(entity =>
@@ -167,19 +121,6 @@ namespace KGQT.Models
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Type).HasComment("1. Vận chuyển nhanh\r\n2. Vận chuyển tiết kiệm");
-            });
-
-            modelBuilder.Entity<tbl_HistoryExport>(entity =>
-            {
-                entity.ToTable("tbl_HistoryExport");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.DateInSG).HasColumnType("date");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Status).HasComment("1. Chờ xử lý\r\n2. Đã xử lý\r\n");
             });
 
             modelBuilder.Entity<tbl_HistoryPayWallet>(entity =>
@@ -216,7 +157,6 @@ namespace KGQT.Models
 
                 entity.Property(e => e.DateExpectation).HasColumnType("datetime");
 
-             
                 entity.Property(e => e.Email).HasMaxLength(100);
 
                 entity.Property(e => e.Exported).HasDefaultValueSql("((0))");
@@ -230,6 +170,8 @@ namespace KGQT.Models
                     .HasComment("Ngày bắt đầu vận chuyển");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.OrderDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Phone).HasMaxLength(12);
 
@@ -261,18 +203,11 @@ namespace KGQT.Models
                 entity.Property(e => e.RoleName).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<tbl_ShippingMethodAddDate>(entity =>
-            {
-                entity.ToTable("tbl_ShippingMethodAddDate");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<tbl_ShippingOrder>(entity =>
             {
                 entity.ToTable("tbl_ShippingOrder");
+
+                entity.Property(e => e.ChinaExportDate).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -283,24 +218,6 @@ namespace KGQT.Models
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ShippingMethodName).HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<tbl_ShippingOrderDeclaration>(entity =>
-            {
-                entity.ToTable("tbl_ShippingOrderDeclaration");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<tbl_ShippingOrderStatusHistory>(entity =>
-            {
-                entity.ToTable("tbl_ShippingOrderStatusHistory");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<tbl_SystemLog>(entity =>
@@ -327,42 +244,6 @@ namespace KGQT.Models
                 entity.Property(e => e.Type)
                     .HasDefaultValueSql("((0))")
                     .HasComment("0: admin, 1: khách");
-            });
-
-            modelBuilder.Entity<tbl_TradeHistory>(entity =>
-            {
-                entity.ToTable("tbl_TradeHistory");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.PayCode).HasComment("Mã thanh toán");
-
-                entity.Property(e => e.PayType).HasComment("1. Nạp tiền\r\n");
-
-                entity.Property(e => e.PaymentMethod).HasComment("1. Tiền măt\r\n2. Chuyển khoản\r\n3. Chọn tài khoản thanh toán\r\n4. Khác");
-
-                entity.Property(e => e.Status).HasComment("1. Chưa duyệt\r\n2. Đã duyệt");
-
-                entity.Property(e => e.TradeType).HasComment("1. Tiền hóa đơn\r\n2. Nạp tiền\r\n3. Tiền khiếu nại\r\n4. Rút tiền");
-
-                entity.Property(e => e.Type).HasComment("1. Admin Tạo\r\n2. User Tạo\r\n3. Đơn hàng đã duyệt tạo");
-            });
-
-            modelBuilder.Entity<tbl_Transaction>(entity =>
-            {
-                entity.ToTable("tbl_Transaction");
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.INOUT).HasComment("1. Tiền vào\r\n2. Tiền ra");
-
-                entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Status).HasComment("1. Chờ duyệt\r\n2. Đã duyệt");
-
-                entity.Property(e => e.Type).HasComment("1. User gửi yêu cầu\r\n2. Admin tạo");
             });
 
             modelBuilder.Entity<tbl_Withdraw>(entity =>

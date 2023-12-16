@@ -30,6 +30,7 @@ namespace KGQT.Models
         public string? Declaration { get; set; }
         public double? DeclarePrice { get; set; }
         public string? WareHouse { get; set; }
+        public DateTime? OrderDate { get; set; }
         public DateTime? ComfirmDate { get; set; }
         /// <summary>
         /// Chờ giao
