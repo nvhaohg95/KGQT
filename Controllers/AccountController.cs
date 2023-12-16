@@ -1,4 +1,5 @@
 ﻿using KGQT.Business;
+using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace KGQT.Controllers
         public IActionResult Info()
         {
             var userName = HttpContext.Session.GetString("user");
-            var accInfo = AccountBusiness.GetInfo(userName);
+            var accInfo = AccountBusiness.GetInfo(-1,userName);
             ViewData["userName"] = userName;
             ViewData["lstRoles"] = AccountBusiness.GetListUserRole();
             return View(accInfo);
@@ -20,7 +21,7 @@ namespace KGQT.Controllers
 
         #region Update Info
         [HttpPost]
-        public object UpdateInfo(AccountInfo data)
+        public object UpdateInfo(tbl_Account data)
         {
             var reponse = AccountBusiness.UpdateInfo(data);
             return reponse;

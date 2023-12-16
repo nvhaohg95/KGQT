@@ -62,16 +62,14 @@ namespace KGQT.Business
                 if (history != null)
                 {
                     data = new tmpHistoryPayWallet(history);
-                    var user = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == history.UID);
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == history.UID);
                     if (user != null)
                     {
                         data.Customer = new AccountInfo();
-                        data.Customer.ID = user.UID;
-                        data.Customer.FirstName = user.FirstName;
-                        data.Customer.LastName = user.LastName;
+                        data.Customer.ID = user.ID;
+                        data.Customer.FullName = user.FullName;
                         data.Customer.Email = user.Email;
                         data.Customer.Phone = user.Phone;
-                        data.Customer.Address = user.Address;
                     }
                 }
             }

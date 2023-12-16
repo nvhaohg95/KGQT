@@ -136,10 +136,10 @@ namespace KGQT.Business
             form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             form.UID = user.ID;
             form.Username = user.Username;
-            form.FullName = user.FirstName + " " + user.LastName;
+            form.FullName = user.FullName;
             form.Phone = user.Phone;
             form.Email = user.Email;
-            form.Address = user.Address;
+            //form.Address = user.Address;
             form.OrderDate = DateTime.Now;
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = userLogin;
@@ -161,12 +161,12 @@ namespace KGQT.Business
             int oldStt = p.Status;
             if (form.Username != p.Username)
             {
-                var user = AccountBusiness.GetInfo(form.Username);
+                var user = AccountBusiness.GetInfo(0,form.Username);
                 if (user == null) return false;
 
-                p.Username = user.UserName;
+                p.Username = user.Username;
                 p.UID = user.ID;
-                p.FullName = user.FirstName + " " + user.LastName;
+                p.FullName = user.FullName;
             }
             p.PackageCode = form.PackageCode;
             p.MovingMethod = form.MovingMethod;
@@ -398,12 +398,12 @@ namespace KGQT.Business
                             string note = dt.Rows[row][4].ToString();
                             var date = Converted.ToDate(dt.Rows[row][0].ToString());
                             var p = new tbl_Package();
-                            var user = AccountBusiness.GetFullInfo(null, 0, customer);
+                            var user = AccountBusiness.GetInfo(-1, customer);
                             if (user != null)
                             {
                                 p.Username = user.Username;
                                 p.UID = user.ID;
-                                p.FullName = user.FirstName + " " + user.LastName;
+                                p.FullName = user.FullName;
                             }
 
                             if (type == 3)

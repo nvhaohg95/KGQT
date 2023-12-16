@@ -12,7 +12,7 @@ namespace KGQT.Controllers
         public ActionResult Index(int status , DateTime? fromDate, DateTime? toDate, int page = 1)
         {
             var userName = HttpContext.Session.GetString("user");
-            var user = AccountBusiness.GetFullInfo(null, 0, userName);
+            var user = AccountBusiness.GetInfo(-1, userName);
             var lstData = new List<tbl_Notification>();
             var totalRecord = 0;
             var totalPage = 0;

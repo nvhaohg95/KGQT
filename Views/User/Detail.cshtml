@@ -31,7 +31,7 @@
                             }
                         </div>
                         <div class="text-center mb-2">
-                            <p title="@(string.Concat(Model.FirstName, " ", Model.LastName))" class="fw-bold text-truncate text-uppercase text-danger m-0">@(string.Concat(Model.FirstName, " ", Model.LastName))</p>
+                            <p title="@Model.FullName" class="fw-bold text-truncate text-uppercase text-danger m-0">@Model.FullName</p>
                         </div>
                     </div>
                 </div>
@@ -45,13 +45,13 @@
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="FirstName">Họ</label>
-                            <input name="FirstName" id="FirstName" value="@Model.FirstName" type="text" class="form-control" placeholder="Họ"/>
+                            <input name="FirstName" id="FirstName" value="" type="text" class="form-control" placeholder="Họ"/>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="LastName">Tên</label>
-                            <input name="LastName" id="LastName" value="@Model.LastName" type="text" class="form-control" placeholder="Tên"/>
+                            <input name="LastName" id="LastName" value="" type="text" class="form-control" placeholder="Tên"/>
                         </div>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
                             <label for="Gender">Giới tính</label>
                             @if (Model.Gender != null)
                             {
-                                <input name="Gender" id="Gender" value="@(Model.Gender == 1 ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính"/>
+                                <input name="Gender" id="Gender" value="@(Model.Gender ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính"/>
                             }
                             else
                             {

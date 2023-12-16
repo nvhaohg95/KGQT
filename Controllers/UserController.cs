@@ -47,15 +47,15 @@ namespace KGQT.Controllers
         {
             var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == ID);
             if (user == null) return new { error = true, mssg = "Không tìm thấy thông tin tài khoản" };
-            var accInfo = BusinessBase.GetOne<tbl_AccountInfo>(x => x.UID == ID);
+            var accInfo = BusinessBase.GetOne<tbl_Account>(x => x.ID == ID);
             if(accInfo == null) return new { error = true, mssg = "Không tìm thấy thông tin tài khoản" };
-            accInfo.FirstName = form.FirstName;
-            accInfo.LastName = form.LastName;
+            //accInfo.FirstName = form.FirstName;
+            //accInfo.LastName = form.LastName;
             accInfo.Gender = form.Gender;
-            accInfo.BirthDay = form.BirthDay;
+            //accInfo.BirthDay = form.BirthDay;
             accInfo.Email = form.Email;
             accInfo.Phone = form.Phone;
-            accInfo.Address = form.Address;
+            //accInfo.Address = form.Address;
             accInfo.ModifiedBy = HttpContext.Session.GetString("user");
             accInfo.ModifiedDate = DateTime.Now;
             user.ModifiedBy = HttpContext.Session.GetString("user");

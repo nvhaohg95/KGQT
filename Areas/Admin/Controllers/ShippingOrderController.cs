@@ -212,10 +212,10 @@ namespace KGQT.Areas.Admin.Controllers
                 form.CreatedBy = userLogin;
                 form.Username = user.Username;
                 form.Email = user.Email;
-                form.LastName = user.LastName;
-                form.FirstName = user.FirstName;
+                //form.LastName = user.LastName;
+                //form.FirstName = user.FirstName;
                 form.Phone = user.Phone;
-                form.Address = user.Address;
+                //form.Address = user.Address;
                 form.Weight = 0;
                 form.WeightPrice = 0;
                 form.InsurancePrice = 0;

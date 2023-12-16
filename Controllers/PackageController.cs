@@ -58,10 +58,10 @@ namespace KGQT.Controllers
             form.Status = 0;
             form.UID = user.ID;
             form.Username = user.Username;
-            form.FullName = user.FirstName + " " + user.LastName;
+            form.FullName = user.FullName;
             form.Phone = user.Phone;
             form.Email = user.Email;
-            form.Address = user.Address;
+            //form.Address = user.Address;
             form.OrderDate = DateTime.Now;
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = user.Username;
