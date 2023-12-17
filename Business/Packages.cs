@@ -128,12 +128,74 @@ namespace KGQT.Business
         #endregion
 
         #region CRUD
-        public static bool Add(string sData, string userLogin)
+        public static bool Add(tbl_Package model, string userLogin)
         {
+            var user = AccountBusiness.GetInfo(-1, model.Username);
+            model.Status = 0;
+            model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
+            model.UID = user.ID;
+            model.Username = user.Username;
+            model.FullName = user.FirstName + " " + user.LastName;
+            model.Phone = user.Phone;
+            model.Email = user.Email;
+            model.Address = user.Address;
+            model.OrderDate = DateTime.Now;
+            model.CreatedDate = DateTime.Now;
+            model.CreatedBy = userLogin;
+            if (model.IsInsurance.HasValue && model.IsInsurance == true)
+            {
+                model.IsInsurancePrice = model.DeclarePrice * 0.05;
+            }
+
+            var s = BusinessBase.Add(model);
+            if (s)
+                BusinessBase.TrackLog(user.ID, model.ID, "{0} đã tạo kiện", 0, user.Username);
+            return s;
+        }
+        public static DataReturnModel<bool> CustomerAdd(string sData, string userLogin)
+        {
+            var data = new DataReturnModel<bool>();
             var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
-            var user = AccountBusiness.GetInfo(-1, form.Username);
-            form.Status = 0;
+            var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
             form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
+
+            var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == form.PackageCode && (x.UID == null || x.UID == user.ID));
+
+            if (exist != null)
+            {
+                if (exist.UID == user.ID)
+                {
+                    exist.UID = user.ID;
+                    exist.Username = user.Username;
+                    exist.FullName = user.FullName;
+                    exist.Address = user.Address;
+                    exist.Phone = user.Phone;
+                    exist.Email = user.Email;
+                }
+                if (exist.MovingMethod != form.MovingMethod)
+                    exist.MovingMethod = form.MovingMethod;
+
+                exist.IsAirPackage = form.IsAirPackage;
+                exist.IsWoodPackage = form.IsWoodPackage;
+                exist.IsInsurance = form.IsInsurance;
+                if (form.IsInsurance.HasValue && form.IsInsurance == true)
+                {
+                    exist.Declaration = form.Declaration;
+                    exist.DeclarePrice = form.DeclarePrice;
+                    form.IsInsurancePrice = form.DeclarePrice * 0.05;
+                }
+
+                exist.ModifiedBy = user.Username;
+                exist.ModifiedDate = DateTime.Now;
+                var update = BusinessBase.Update(exist);
+                if (update)
+                    BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
+                data.IsError = update;
+                data.Message = "Mã vận đơn đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin !";
+                return data;
+            }
+
+            form.Status = 0;
             form.UID = user.ID;
             form.Username = user.Username;
             form.FullName = user.FullName;
@@ -142,7 +204,8 @@ namespace KGQT.Business
             //form.Address = user.Address;
             form.OrderDate = DateTime.Now;
             form.CreatedDate = DateTime.Now;
-            form.CreatedBy = userLogin;
+            form.CreatedBy = user.Username;
+
             if (form.IsInsurance.HasValue && form.IsInsurance == true)
             {
                 form.IsInsurancePrice = form.DeclarePrice * 0.05;
@@ -150,7 +213,9 @@ namespace KGQT.Business
 
             var s = BusinessBase.Add(form);
             if (s)
+            {
                 BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
+            }
             return s;
         }
 
@@ -193,12 +258,17 @@ namespace KGQT.Business
             return BusinessBase.Update(form);
         }
 
-        public static bool InStockHCMWareHouse(int id, double weight, double woodPrice, double airPrice, string accessor)
+        public static bool InStockHCMWareHouse(int id, string username, double weight, double woodPrice, double airPrice, string accessor)
         {
             var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
             if (pack == null) return false;
-            var username = pack.Username;
-
+            if (pack.Username != username)
+            {
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == username);
+                pack.Username = username;
+                pack.UID = user.ID;
+                pack.FullName = user.FullName;
+            }
             //Update tien p
             var config = BusinessBase.GetFirst<tbl_Configuration>();
             double minPackage = 0.3;
@@ -398,7 +468,7 @@ namespace KGQT.Business
                             string note = dt.Rows[row][4].ToString();
                             var date = Converted.ToDate(dt.Rows[row][0].ToString());
                             var p = new tbl_Package();
-                            var user = AccountBusiness.GetInfo(-1, customer);
+                            var user = AccountBusiness.GetByUserName(customer);
                             if (user != null)
                             {
                                 p.Username = user.Username;
@@ -413,7 +483,9 @@ namespace KGQT.Business
 
                             p.PackageCode = code;
                             p.Note = note;
+                            p.Status = 3;
                             p.OrderDate = date;
+                            p.ExportedCNWH = date;
                             p.CreatedDate = DateTime.Now;
                             p.CreatedBy = accesser;
                             if (!BusinessBase.Add(p))

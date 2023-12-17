@@ -96,6 +96,11 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Function
+        /// <summary>
+        /// Tạo Mã vận đơn - 1 mã
+        /// </summary>
+        /// <param name="sData"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Create(string sData)
         {
@@ -104,26 +109,48 @@ namespace KGQT.Areas.Admin.Controllers
             return Json(oSave);
         }
 
+
+        /// <summary>
+        /// Tạo mã vận đơn theo file excel
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="sheet"></param>
+        /// <returns></returns>
         [HttpPost]
         public object CreateWithFile(IFormFile file, string sheet)
         {
+            var oData = new DataReturnModel<object>();
             if (file == null)
             {
                 Log.Error("Tạo file với excel,Csv", "Không có file dc chọn");
-                return new { status = -1 };
+                oData.IsError = true;
+                oData.Message = "Không có file nào được chọn!";
+                return oData;
             }
             var userLogin = HttpContext.Session.GetString("user");
 
-            var oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
+            oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
         }
 
+
+        /// <summary>
+        /// Kiểm tra kiện có tồn tại không
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns></returns>
         [HttpGet]
         public bool CheckPackage(string package)
         {
             return Packages.CheckExist(package);
         }
 
+        /// <summary>
+        /// Cập nhật trạng thái của kiện theo file excel (tạm thời k sử dụng nữa)
+        /// </summary>
+        /// <param name="sheet"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         [HttpPost]
         public object ExportChinaWareHouse(string sheet, IFormFile file)
         {
@@ -137,6 +164,12 @@ namespace KGQT.Areas.Admin.Controllers
             return oData;
         }
 
+
+        /// <summary>
+        /// Cập nhật trạng thái của kiện
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost]
         public bool Update(tempPackage form)
         {
@@ -146,6 +179,11 @@ namespace KGQT.Areas.Admin.Controllers
             return oSave;
         }
 
+        /// <summary>
+        /// Gợi ý tên khách hàng
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult AutoComplete(string s)
         {
@@ -153,15 +191,28 @@ namespace KGQT.Areas.Admin.Controllers
             return Json(data);
         }
 
-
+        /// <summary>
+        /// Nhập kho
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="weight"></param>
+        /// <param name="woodPrice"></param>
+        /// <param name="airPrice"></param>
+        /// <returns></returns>
         [HttpPost]
-        public bool SubmitPack(int id, double weight, double woodPrice, double airPrice)
+        public bool InStockPackage(int id, double weight, double woodPrice, double airPrice)
         {
             var crrUse = HttpContext.Session.GetString("user");
-            var oSave = Packages.InStockHCMWareHouse(id, weight, woodPrice, airPrice, crrUse);
+            var oSave = Packages.InStockHCMWareHouse(id, crrUse, weight, woodPrice, airPrice, crrUse);
             return oSave;
         }
 
+
+        /// <summary>
+        /// Hủy bỏ đơn
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         public bool Cancel(int id)
         {

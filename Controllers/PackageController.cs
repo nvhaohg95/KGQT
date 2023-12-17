@@ -53,40 +53,11 @@ namespace KGQT.Controllers
         public bool Create(tbl_Package form)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var user = AccountBusiness.GetInfo(-1, userLogin);
-            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            form.Status = 0;
-            form.UID = user.ID;
-            form.Username = user.Username;
-            form.FullName = user.FullName;
-            form.Phone = user.Phone;
-            form.Email = user.Email;
-            //form.Address = user.Address;
-            form.OrderDate = DateTime.Now;
-            form.CreatedDate = DateTime.Now;
-            form.CreatedBy = user.Username;
-
-            if (form.IsInsurance.HasValue && form.IsInsurance == true)
-            {
-                form.IsInsurancePrice = form.DeclarePrice * 0.05;
-            }
-
-            var s = BusinessBase.Add(form);
-            if (s)
-            {
-                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
-            }
-            return s;
+            var data = Packages.Add(form,userLogin);
+            return data;
         }
 
         #endregion
 
-        #region Function
-        [HttpGet]
-        public bool CheckPackage(string package)
-        {
-            return Packages.CheckExist(package);
-        }
-        #endregion
     }
 }
