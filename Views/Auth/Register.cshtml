@@ -70,14 +70,7 @@
                                         @Html.TextBoxFor(model => model.FullName,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Họ" })
                                         @Html.ValidationMessageFor(model => model.FullName,"",new { @class="text-danger" })
                                     </div>
-                                    <div class="form-group col-6">
-                                        <div>
-                                            <span class="fw-bold">Tên</span>
-                                            <span class="text-danger">(*)</span>
-                                        </div>
-                                        @Html.TextBoxFor(model => model.FullName,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Tên" })
-                                        @Html.ValidationMessageFor(model => model.FullName,"",new { @class="text-danger" })
-                                    </div>
+                                    
                                     <div class="form-group col-6">
                                         <div>
                                             <span class="fw-bold">Số điện thoại</span>
