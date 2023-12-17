@@ -43,6 +43,7 @@ namespace KGQT.Business
                     {
                         dtReturn.IsError = true;
                         dtReturn.Type = 1;
+                        dtReturn.Message = Messages.PasswordNotCorrect;
                         return dtReturn;
                     }
 

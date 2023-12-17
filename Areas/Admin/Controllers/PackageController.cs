@@ -105,7 +105,8 @@ namespace KGQT.Areas.Admin.Controllers
         public JsonResult Create(string sData)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var oSave = Packages.Add(sData, userLogin);
+            var data = JsonConvert.DeserializeObject<tbl_Package>(sData);
+            var oSave = Packages.Add(data, userLogin);
             return Json(oSave);
         }
 
@@ -200,10 +201,10 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="airPrice"></param>
         /// <returns></returns>
         [HttpPost]
-        public bool InStockPackage(int id, double weight, double woodPrice, double airPrice)
+        public bool InStockPackage(int id, string username, int moving, double weight, double woodPrice, double airPrice)
         {
             var crrUse = HttpContext.Session.GetString("user");
-            var oSave = Packages.InStockHCMWareHouse(id, crrUse, weight, woodPrice, airPrice, crrUse);
+            var oSave = Packages.InStockHCMWareHouse(id, username, moving, weight, woodPrice, airPrice, crrUse);
             return oSave;
         }
 

@@ -129,10 +129,10 @@
             data: data,
             // other AJAX options here
             success: function (result) {
-                if (!result)
-                    helper.showErr('Tạo đơn lỗi!')
+                if (result.isError)
+                    helper.showErr(result.message)
                 else
-                    helper.showSuc('Tạo đơn thành công!')
+                    helper.showSuc(result.message)
             },
             error: function (xhr, status, err) {
                 // error handling

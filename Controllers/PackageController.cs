@@ -50,10 +50,10 @@ namespace KGQT.Controllers
 
         #region CRUD
         [HttpPost]
-        public bool Create(tbl_Package form)
+        public DataReturnModel<bool> Create(tbl_Package form)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var data = Packages.Add(form,userLogin);
+            var data = Packages.CustomerAdd(form,userLogin);
             return data;
         }
 

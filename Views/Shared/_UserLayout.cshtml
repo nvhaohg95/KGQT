@@ -104,7 +104,7 @@
                     <h6 class="dropdown-header">
                         THÔNG BÁO
                     </h6>
-                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user.ID,@pageNoti)" data-id="@user.ID" data-page="@pageNoti">
+                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user?.ID,@pageNoti)" data-id="@user?.ID" data-page="@pageNoti">
                         @if (lstNoti != null)
                         {
                             foreach (var item in lstNoti)
@@ -161,7 +161,7 @@
                     @if (user != null)
                     {
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">
-                            @user.FullName
+                           @user.FullName
                         </span>
                         <img class="img-profile rounded-circle" src="@(!string.IsNullOrEmpty(user.IMG) ? user.IMG : "/img/undraw_profile.svg") ">
                     }

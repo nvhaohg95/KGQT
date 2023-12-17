@@ -94,7 +94,7 @@
                     <h6 class="dropdown-header">
                         THÔNG BÁO
                     </h6>
-                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user.ID,@pageNoti)" data-id="@user.ID" data-page="@pageNoti">
+                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user?.ID,@pageNoti)" data-id="@user?.ID" data-page="@pageNoti">
                         @if (lstNoti != null)
                         {
                             foreach (var item in lstNoti)
