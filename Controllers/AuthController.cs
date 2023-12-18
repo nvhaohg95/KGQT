@@ -19,7 +19,6 @@ namespace KGQT.Controllers
         private IToastNotification _toastNotification;
         private readonly IHostingEnvironment _hostingEnvironment;
         private MailSettings _mailSettings;
-        static AuthencationController _auth;
         public IToastNotification NotificationService
         {
             get { return _toastNotification; }
@@ -30,7 +29,6 @@ namespace KGQT.Controllers
             _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
             _mailSettings = mailSettings.Value;
-            _auth = new AuthencationController();
         }
 
 
@@ -56,7 +54,7 @@ namespace KGQT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(UserModel model)
         {
-            var result = _auth.Login(model.UserName,model.PassWord);
+            var result = AccountBusiness.Login(model.UserName,model.PassWord);
             if (result.IsError)
             {
                 ModelState.AddModelError(result.Key, result.Message);
@@ -95,7 +93,7 @@ namespace KGQT.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = _auth.RegisterAccount(data);
+                var result = AccountBusiness.RegisterAccount(data);
                 if (result.IsError)
                 {
                     if (result.Type == 1)
