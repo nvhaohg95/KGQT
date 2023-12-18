@@ -65,10 +65,17 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult PackagePartial(/*DateTime date, int method,M*/ string code)
+        public IActionResult PackagePartial(string code)
         {
             var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
             return PartialView("_Package", package);
+        }
+
+        [HttpGet]
+        public IActionResult InStockPartial(string code)
+        {
+            var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
+            return PartialView("_InStock", package);
         }
 
         [HttpGet]
@@ -81,111 +88,70 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
-            DataReturnModel<tmpChinaOrderStatus> data = new DataReturnModel<tmpChinaOrderStatus>();
-            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
-            if (oPack != null)
-            {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == oPack.UID);
-
-                if (oPack.SearchBaiduTimes == null)
-                {
-                    oPack.SearchBaiduTimes = 0;
-                    if (user == null || user.Wallet == null || user.Wallet < 500)
-                    {
-                        data.IsError = false;
-                        data.Message = "Tài khoản khách không đủ tiền";
-                        return View(data);
-                    }
-                    var wallet = user.Wallet - 500;
-                    BusinessBase.Update(user);
-
-                    #region Logs
-                    HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "", 500, 1, 1, wallet.Value, HttpContext.Session.GetString("user"));
-                    #endregion
-                }
-
-                using (HttpClient client = new HttpClient())
-                {
-                    string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, code);
-                    var response = client.GetAsync(url).Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string sData = response.Content.ReadAsStringAsync().Result;
-                        data.Data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
-                    }
-                    else
-                    {
-                        data.IsError = false;
-                        data.Message = "Không thể kết nối đến server!";
-                        return View(data);
-                    }
-                }
-
-                oPack.SearchBaiduTimes++;
-                BusinessBase.Update(oPack);
-            }
-            else
-            {
-                data.IsError = false;
-                data.Message = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
-                return View(data);
-            }
-            data.Key = code;
+            var user = HttpContext.Session.GetString("user");
+            var data = Packages.GetStatusOrder(code, user);
             return View(data);
         }
 
         #endregion
-        #region Function
 
+        #region Function
+        /// <summary>
+        /// Tạo Mã vận đơn - 1 mã
+        /// </summary>
+        /// <param name="sData"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Create(string sData)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var form = JsonConvert.DeserializeObject<tbl_Package>(sData);
-            var user = AccountBusiness.GetInfo(-1, form.Username);
-            form.Status = 0;
-            form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            form.UID = user.ID;
-            form.Username = user.Username;
-            form.FullName = user.FirstName + " " + user.LastName;
-            form.Phone = user.Phone;
-            form.Email = user.Email;
-            form.Address = user.Address;
-            form.CreatedDate = DateTime.Now;
-            form.CreatedBy = userLogin;
-            if (form.IsInsurance.HasValue && form.IsInsurance == true)
-            {
-                form.IsInsurancePrice = form.DeclarePrice * 0.05;
-            }
-
-            var s = BusinessBase.Add(form);
-            if (s)
-            {
-                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
-            }
-            return Json(s);
+            var data = JsonConvert.DeserializeObject<tbl_Package>(sData);
+            var oSave = Packages.Add(data, userLogin);
+            return Json(oSave);
         }
 
+
+        /// <summary>
+        /// Tạo mã vận đơn theo file excel
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="sheet"></param>
+        /// <returns></returns>
         [HttpPost]
         public object CreateWithFile(IFormFile file, string sheet)
         {
+            var oData = new DataReturnModel<object>();
             if (file == null)
             {
                 Log.Error("Tạo file với excel,Csv", "Không có file dc chọn");
-                return new { status = -1 };
+                oData.IsError = true;
+                oData.Message = "Không có file nào được chọn!";
+                return oData;
             }
             var userLogin = HttpContext.Session.GetString("user");
 
-            var oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
+            oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
         }
 
+
+        /// <summary>
+        /// Kiểm tra kiện có tồn tại không
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns></returns>
         [HttpGet]
         public bool CheckPackage(string package)
         {
             return Packages.CheckExist(package);
         }
 
+        /// <summary>
+        /// Cập nhật trạng thái của kiện theo file excel (tạm thời k sử dụng nữa)
+        /// </summary>
+        /// <param name="sheet"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         [HttpPost]
         public object ExportChinaWareHouse(string sheet, IFormFile file)
         {
@@ -199,45 +165,26 @@ namespace KGQT.Areas.Admin.Controllers
             return oData;
         }
 
+
+        /// <summary>
+        /// Cập nhật trạng thái của kiện
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost]
         public bool Update(tempPackage form)
         {
-            var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
-            if (p == null) return false;
-            int oldStt = p.Status;
-            if (form.Username != p.Username)
-            {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == form.Username);
-                if (user == null) return false;
+            var crrUse = HttpContext.Session.GetString("user");
 
-                p.Username = user.Username;
-                p.UID = user.ID;
-            }
-            p.PackageCode = form.PackageCode;
-            p.MovingMethod = form.MovingMethod;
-            p.IsAirPackage = form.IsAirPackage;
-            p.AirPackagePrice = form.AirPackagePrice;
-            p.IsInsurancePrice = form.IsInsurancePrice;
-            p.Declaration = form.Declaration;
-            p.DeclarePrice = form.DeclarePrice;
-            p.IsWoodPackage = form.IsWoodPackage;
-            p.WoodPackagePrice = form.WoodPackagePrice;
-            p.WareHouse = form.WareHouse;
-            p.Status = form.Status;
-            p.ModifiedBy = HttpContext.Session.GetString("user");
-            p.ModifiedDate = DateTime.Now;
-            if (oldStt != p.Status)
-            {
-                if (p.Status == 3)
-                {
-                    p.ExportedCNWH = DateTime.Now;
-                    p.DateExpectation = Packages.CaclDateExpectation(p);
-                    p.Exported = true;
-                }
-            }
-            return BusinessBase.Update(p);
+            var oSave = Packages.Update(form, crrUse);
+            return oSave;
         }
 
+        /// <summary>
+        /// Gợi ý tên khách hàng
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult AutoComplete(string s)
         {
@@ -245,136 +192,28 @@ namespace KGQT.Areas.Admin.Controllers
             return Json(data);
         }
 
-
+        /// <summary>
+        /// Nhập kho
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="weight"></param>
+        /// <param name="woodPrice"></param>
+        /// <param name="airPrice"></param>
+        /// <returns></returns>
         [HttpPost]
-        public bool SubmitPack(int id, double weight, double woodPrice, double airPrice)
+        public bool InStockPackage(int id, string username, int moving, double weight, double woodPrice, double airPrice)
         {
             var crrUse = HttpContext.Session.GetString("user");
-            var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
-            if (pack == null) return false;
-            var username = pack.Username;
-
-            //Update tien p
-            var lstFee = BusinessBase.GetList<tbl_FeeWeight>(x => x.Type == pack.MovingMethod);
-            if (lstFee == null || lstFee.Count == 0) return false;
-
-            var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= weight && weight <= x.WeightTo);
-
-            if (lstFee == null || lstFee.Count == 0) return false;
-            if (weight > fee.MinWeight)
-                pack.Weight = weight;
-            else
-                pack.Weight = fee.MinWeight;
-            pack.WeightReal = weight;
-            pack.WoodPackagePrice = woodPrice;
-            pack.AirPackagePrice = airPrice;
-            pack.Status = 4;
-            pack.ModifiedBy = crrUse;
-            pack.ModifiedDate = DateTime.Now;
-            pack.ImportedSGWH = DateTime.Now;
-            var p = BusinessBase.Update(pack);
-            if (p)
-            {
-                BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với cân năng " + weight + "kg", 0, crrUse);
-
-                if (pack.IsAirPackage.HasValue && pack.IsAirPackage == true)
-                {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + airPrice + "đ", 0, crrUse);
-                }
-                if (pack.IsWoodPackage.HasValue && pack.IsWoodPackage == true)
-                {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + woodPrice + "đ", 0, crrUse);
-                }
-
-                //Ktra xem khach da co don chua.
-                DateTime cnExportDateFrom = pack.ExportedCNWH.Value.Date;
-                DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
-                DateTime startDate = DateTime.Now.Date; //One day 
-                DateTime endDate = startDate.AddDays(1).AddTicks(-1);
-                var check = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.Username == username && (x.CreatedDate >= startDate && x.CreatedDate <= endDate)
-                                                                   && (x.ChinaExportDate >= cnExportDateFrom && x.ChinaExportDate <= cnExportDateEnd) && x.ShippingMethod == pack.MovingMethod);
-                if (check != null)
-                {
-                    //Cap nhat lai tranid cho p
-                    pack.TransID = check.ID;
-                    pack.ModifiedBy = crrUse;
-                    pack.ModifiedDate = DateTime.Now;
-                    BusinessBase.Update(pack);
-                    BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã cập nhật mã vận đơn " + check.ID + " vào kiện", 0, crrUse);
-
-                    var lstPack = BusinessBase.GetList<tbl_Package>(x => x.TransID == check.ID);
-                    double totalWeight = lstPack.Where(x => x.Weight != null).Sum(x => x.Weight.Value);
-                    double totalWeightPrice = 0;
-
-                    var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= totalWeight && totalWeight <= x.WeightTo);
-                    if (finalfee != null)
-                    {
-                        totalWeightPrice = totalWeight * finalfee.Amount.Value;
-                    }
-
-                    double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => x.WoodPackagePrice.Value);
-                    double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => x.AirPackagePrice.Value);
-                    double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => x.IsInsurancePrice.Value);
-
-                    var totalPrice = totalWeightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice;
-                    check.Weight = totalWeight;
-                    check.WeightPrice = totalWeightPrice;
-                    check.WoodPackagePrice = totalWoodPrice;
-                    check.AirPackagePrice = totalAirPrice;
-                    check.InsurancePrice = totalInsurPrice;
-                    check.TotalPrice = totalPrice;
-                    check.ModifiedBy = crrUse;
-                    check.ModifiedDate = DateTime.Now;
-                    var oUpdate = BusinessBase.Update(check);
-                    BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã thêm kiện " + pack.PackageCode + " vào đơn", 0, crrUse);
-                }
-                else
-                {
-
-                    var ship = new tbl_ShippingOrder();
-                    ship.ShippingOrderCode = pack.PackageCode;
-                    ship.Username = pack.Username;
-                    ship.FirstName = pack.FullName;
-                    ship.LastName = pack.FullName;
-                    ship.Email = pack.Email;
-                    ship.Address = pack.Address;
-                    ship.Phone = pack.Phone;
-                    ship.ShippingMethod = pack.MovingMethod;
-                    ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
-                    ship.Weight = pack.Weight;
-                    ship.WeightPrice = pack.Weight * fee.Amount;
-                    ship.IsAirPackage = pack.IsAirPackage;
-                    ship.AirPackagePrice = pack.AirPackagePrice ?? 0;
-                    ship.IsWoodPackage = pack.IsWoodPackage;
-                    ship.WoodPackagePrice = pack.WoodPackagePrice ?? 0;
-                    ship.IsInsurance = pack.IsInsurance;
-                    ship.InsurancePrice = pack.IsInsurancePrice ?? 0;
-                    ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice;
-                    ship.Status = 1;
-                    ship.ChinaExportDate = pack.ExportedCNWH;
-                    ship.CreatedDate = DateTime.Now;
-                    ship.CreatedBy = crrUse;
-                    var oAdd = BusinessBase.Add(ship);
-                    if (p)
-                    {
-                        var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == pack.ID);
-                        if (oPack != null)
-                        {
-                            oPack.TransID = ship.ID;
-                            oPack.ModifiedBy = crrUse;
-                            oPack.ModifiedDate = DateTime.Now;
-                            BusinessBase.Update(oPack);
-                            BusinessBase.TrackLog(oPack.UID.Value, oPack.ID, "{0} đã cập nhật mã vận đơn " + ship.ID + " vào kiện", 0, crrUse);
-
-                        }
-                        BusinessBase.TrackLog(pack.UID.Value, ship.ID, "{0} đã tạo đơn " + ship.ID + " với kiện " + pack.PackageCode + " vào đơn", 0, crrUse);
-                    }
-
-                }
-            }
-            return p;
+            var oSave = Packages.InStockHCMWareHouse(id, username, moving, weight, woodPrice, airPrice, crrUse);
+            return oSave;
         }
 
+
+        /// <summary>
+        /// Hủy bỏ đơn
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         public bool Cancel(int id)
         {

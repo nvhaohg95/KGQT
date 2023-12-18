@@ -5,13 +5,13 @@
 @using Newtonsoft.Json;
 @{
     var sUser = Context.Session.GetString("user");
-    UserLogin user = null;
+    tbl_Account user = null;
     var lstNoti = new List<tbl_Notification>();
     int pageNoti = 1;
     int toalPageNoti = 0;
     if (!string.IsNullOrEmpty(sUser))
     {
-        user = AccountBusiness.GetFullInfo(null, -1, sUser);
+        user = AccountBusiness.GetInfo(-1, sUser);
         if (user == null)
             Context.Response.Redirect("/Auth/Login");
         else
@@ -104,7 +104,7 @@
                     <h6 class="dropdown-header">
                         THÔNG BÁO
                     </h6>
-                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user.ID,@pageNoti)" data-id="@user.ID" data-page="@pageNoti">
+                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user?.ID,@pageNoti)" data-id="@user?.ID" data-page="@pageNoti">
                         @if (lstNoti != null)
                         {
                             foreach (var item in lstNoti)
@@ -161,7 +161,7 @@
                     @if (user != null)
                     {
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">
-                            @string.Concat(user.FirstName," ",user.LastName)
+                           @user.FullName
                         </span>
                         <img class="img-profile rounded-circle" src="@(!string.IsNullOrEmpty(user.IMG) ? user.IMG : "/img/undraw_profile.svg") ">
                     }
@@ -372,13 +372,13 @@
                                     <div class="form-group">
                                         <label class="fw-bold">Hình thức thanh toán<span class="text-danger">(*)</span></label>
                                         <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this)">
-                                            <option value="1" selected>Tiền mặt</option>
-                                            <option value="2">Chuyển khoản</option>
+                                            <option value="2" selected>Chuyển khoản</option>
+                                            <option value="1">Tiền mặt</option>
                                         </select>
                                     </div>
                                 </div>
                                 <!-- thông tin chuyển khoản -->
-                                <div class="col-lg-12 col-md-12 col-sm-12 d-done" id="extendBank">
+                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendBank">
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">
@@ -413,7 +413,7 @@
                                         <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 d-none" id="extendNote">
+                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendNote">
                                     <div class="alert alert-warning d-flex" role="alert">
                                         <i class="fas fa-exclamation-triangle icon-16 mr-2"></i>
                                         <div>
@@ -547,23 +547,26 @@
 
             if (data.PaymentMethod == 2) 
             {
-                if (!data.BankName)
-                {
-                    helper.showErr('Vui lòng chọn ngân hàng!');
-                    return;
-                }
-                if (!data.AccountName)
-                {
-                    helper.showErr('Vui nhập chủ tài khoản!');
+                if (!data.AccountName) {
+                    helper.showErr('Chủ tài khoản không được bỏ trống!');
                     return;
                 }
                 if (!data.AccountNumber) {
-                    helper.showErr('Vui nhập số tài khoản!');
+                    helper.showErr('Số tài khoản không được bỏ trống!');
+                    return;
+                }
+                if (!data.BankName)
+                {
+                    helper.showErr('Ngân hàng không được bỏ trống!');
                     return;
                 }
             }
             if (!data.Amount) {
                 helper.showErr('Vui lòng nhập số tiền!');
+                return;
+            }
+            if (Number(data.Amount.replaceAll(",", "")) < 50000) {
+                helper.showErr('Số tiền nạp tối thiếu phải lớn hơn 50,000đ!');
                 return;
             }
 

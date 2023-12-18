@@ -28,10 +28,10 @@
             <div class="mb-3 row">
                 <label class="col-md-4 col-sm-12 col-form-label">Kết quả truy vấn</label>
                 <div class="col-md-8">
-                    <label class="form-control-plaintext @(Model.IsError ? "text-success" : "text-danger" )">@(Model.IsError ? "Thành công" : "Thất bại")</label>
+                    <label class="form-control-plaintext @(!Model.IsError ? "text-success" : "text-danger" )">@(!Model.IsError ? "Thành công" : "Thất bại")</label>
                 </div>
             </div>
-            @if (Model.IsError)
+            @if (!Model.IsError)
             {
                 <div class="mb-3 row">
                     <label class="col-md-4 col-sm-12 col-form-label">Công ty vận chuyển:</label>
@@ -65,7 +65,7 @@
             }
         </div>
         <div class="col-md-12 col-sm-12 col-lg-12 text-right">
-            <a class="btn btn-sm btn-success w-100px" href="/admin/package">Duyệt</a>
+            <a class="btn btn-sm btn-success w-100px" href="/admin/package">Quay lại</a>
         </div>
     </div>
 </div>

@@ -17,8 +17,8 @@ namespace KGQT.Models
         public string? Skype { get; set; }
         public string? TimeWork { get; set; }
         public double? Currency { get; set; }
-        public double? WeightRound { get; set; }
-        public double? WeightExchange { get; set; }
+        public double? MinPackage { get; set; }
+        public double? MinOrder { get; set; }
         public string? InfoContent { get; set; }
         public string? WeightPrice { get; set; }
         public string? PercentOrder { get; set; }

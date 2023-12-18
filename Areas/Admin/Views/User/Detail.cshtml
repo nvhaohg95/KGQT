@@ -32,7 +32,7 @@
                             }
                         </div>
                         <div class="text-center mb-2">
-                            <p title="@(string.Concat(Model.FirstName, " ", Model.LastName))" class="fw-bold text-truncate text-uppercase text-danger m-0">@(string.Concat(Model.FirstName, " ", Model.LastName))</p>
+                            <p title="@Model.FullName" class="fw-bold text-truncate text-uppercase text-danger m-0">@Model.FullName</p>
                         </div>
                         <div class="text-center mb-2">
                             <span title="Mã định danh">MĐD:</span>
@@ -51,13 +51,13 @@
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="FirstName">Họ</label>
-                            <input name="FirstName" id="FirstName" value="@Model.FirstName" type="text" class="form-control" placeholder="Họ" readonly/>
+                            <input name="FirstName" id="FirstName" value="" type="text" class="form-control" placeholder="Họ" readonly/>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="LastName">Tên</label>
-                            <input name="LastName" id="LastName" value="@Model.LastName" type="text" class="form-control" placeholder="Tên" readonly/>
+                            <input name="LastName" id="LastName" value="" type="text" class="form-control" placeholder="Tên" readonly/>
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                             <label for="Gender">Giới tính</label>
                             @if(Model.Gender != null)
                             {
-                                <input name="Gender" id="Gender" value="@(Model.Gender == 1 ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính" readonly />
+                                <input name="Gender" id="Gender" value="@(Model.Gender ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính" readonly />
                             }
                             else
                             {
@@ -151,7 +151,7 @@
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="Password">Mật khẩu</label>
-                            <input name="Password" id="Password" value="@Model.Password" type="Password" class="form-control" placeholder="Mật khẩu" disabled/>
+                            <input name="Password" id="Password" value="@Model.Password" type="text" class="form-control" placeholder="Mật khẩu" disabled/>
                         </div>
                     </div>
                 </div>

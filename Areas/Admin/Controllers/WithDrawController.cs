@@ -40,12 +40,12 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Insert(tbl_Withdraw model)
         {
-            var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
+            var user = AccountBusiness.GetInfo(-1, model.Username);
             var userName = HttpContext.Session.GetString("user");
             if (user != null)
             {
                 model.UID = user.ID;
-                model.Fullname = user.FirstName + " " + user.LastName;
+                model.Fullname = user.FullName;
             }
             model.Status = 2;
             model.Type = 1;
@@ -87,11 +87,11 @@ namespace KGQT.Areas.Admin.Controllers
         public bool Create(tbl_Withdraw model)
         {
             string userLogin = HttpContext.Session.GetString("user");
-            var user = AccountBusiness.GetFullInfo(null, -1, model.Username);
+            var user = AccountBusiness.GetInfo(-1, model.Username);
             if (user != null && !string.IsNullOrEmpty(userLogin))
             {
                 model.UID = user.ID;
-                model.Fullname = user.FirstName + " " + user.LastName;
+                model.Fullname = user.FullName;
                 model.Status = 2;
                 model.Type = 1;
                 model.CreatedBy = userLogin;
@@ -99,7 +99,7 @@ namespace KGQT.Areas.Admin.Controllers
                 var result = WithDrawBusiness.Insert(model, userLogin);
                 if (result)
                 {
-                    var admin = AccountBusiness.GetFullInfo(null, -1, userLogin);
+                    var admin = AccountBusiness.GetInfo(-1, userLogin);
                     if (model.UID == admin.ID)
                         HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(admin));
                     return true;
@@ -116,7 +116,7 @@ namespace KGQT.Areas.Admin.Controllers
             var result = WithDrawBusiness.Approval(ID, userLogin);
             if (result != null)
             {
-                var user = AccountBusiness.GetFullInfo(null, -1, userLogin);
+                var user = AccountBusiness.GetInfo(-1, userLogin);
                 var data = result.Data as tbl_Withdraw;
                 if (data.UID == user.ID)
                     HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(user));

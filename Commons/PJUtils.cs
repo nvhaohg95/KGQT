@@ -38,7 +38,23 @@ namespace KGQT.Commons
             encStream.Close();
             return Convert.ToBase64String(cryptoByte, 0, cryptoByte.GetLength(0)).Trim();
         }
-
+        public static string Decrypt(string key, string data)
+        {
+            byte[] keydata = System.Text.Encoding.ASCII.GetBytes(key);
+            string md5String = BitConverter.ToString(new
+            MD5CryptoServiceProvider().ComputeHash(keydata)).Replace("-", "").ToLower();
+            byte[] tripleDesKey = Encoding.ASCII.GetBytes(md5String.Substring(0, 24));
+            TripleDES tripdes = TripleDESCryptoServiceProvider.Create();
+            tripdes.Mode = CipherMode.ECB;
+            tripdes.Key = tripleDesKey;
+            byte[] cryptByte = Convert.FromBase64String(data);
+            MemoryStream ms = new MemoryStream(cryptByte, 0, cryptByte.Length);
+            ICryptoTransform cryptoTransform = tripdes.CreateDecryptor();
+            CryptoStream decStream = new CryptoStream(ms, cryptoTransform,
+            CryptoStreamMode.Read);
+            StreamReader read = new StreamReader(decStream);
+            return (read.ReadToEnd());
+        }
         public static bool ConvertStringToBool(string i)
         {
             i = i.ToLower();

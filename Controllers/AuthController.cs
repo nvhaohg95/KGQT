@@ -57,14 +57,14 @@ namespace KGQT.Controllers
             var result = AccountBusiness.Login(model.UserName,model.PassWord);
             if (result.IsError)
             {
-                ModelState.AddModelError(result.Key, result.Message);
+                ModelState.AddModelError(Guid.NewGuid().ToString("N"), result.Message);
                 return View(model);
             }
             HttpContext.Session.SetString("user", model.UserName);
             HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
             if (result.Data != null)
             {
-                var user = result.Data as UserLogin;
+                var user = result.Data as tbl_Account;
                 if (user.RoleID == 1)
                     return RedirectToAction("home", "admin");
             }

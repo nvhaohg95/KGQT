@@ -67,17 +67,10 @@
                                             <span class="text-danger">(*)</span>
                                         </div>
 
-                                        @Html.TextBoxFor(model => model.FirstName,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Họ" })
-                                        @Html.ValidationMessageFor(model => model.FirstName,"",new { @class="text-danger" })
+                                        @Html.TextBoxFor(model => model.FullName,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Họ" })
+                                        @Html.ValidationMessageFor(model => model.FullName,"",new { @class="text-danger" })
                                     </div>
-                                    <div class="form-group col-6">
-                                        <div>
-                                            <span class="fw-bold">Tên</span>
-                                            <span class="text-danger">(*)</span>
-                                        </div>
-                                        @Html.TextBoxFor(model => model.LastName,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Tên" })
-                                        @Html.ValidationMessageFor(model => model.LastName,"",new { @class="text-danger" })
-                                    </div>
+                                    
                                     <div class="form-group col-6">
                                         <div>
                                             <span class="fw-bold">Số điện thoại</span>
@@ -86,12 +79,12 @@
                                         @Html.TextBoxFor(model => model.Phone,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Số điện thoại"})
                                         @Html.ValidationMessageFor(model => model.Phone,"",new { @class="text-danger" })
                                     </div>
-                                    <div class="form-group col-6">
+                                    @*<div class="form-group col-6">
                                         <div>
                                             <span class="fw-bold">Ngày sinh</span>
                                         </div>
                                         @Html.TextBoxFor(model => model.BirthDay,"",new { @class="form-control form-control-user border-none rounded", @type="date"})
-                                    </div>
+                                    </div>*@
                                     <div class="form-group col-12">
                                         <div>
                                             <span class="fw-bold">Email</span>
@@ -100,29 +93,29 @@
                                         @Html.TextBoxFor(model => model.Email,"",new { @class="form-control form-control-user border-none rounded", @type="email", @placeholder="Email"})
                                         @Html.ValidationMessageFor(model => model.Email,"",new { @class="text-danger" })
                                     </div>
-                                    <div class="form-group col-12">
+                                   @* <div class="form-group col-12">
                                         <div>
                                             <span class="fw-bold">Địa chỉ</span>
                                             <span class="text-danger">(*)</span>
                                         </div>
                                         @Html.TextBoxFor(model => model.Address,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Địa chỉ"})
                                         @Html.ValidationMessageFor(model => model.Address,"",new { @class="text-danger" })
-                                    </div>
+                                    </div>*@
                                     <div class="form-group col-6">
                                         <div>
                                             <span class="fw-bold">Tài khoản</span>
                                             <span class="text-danger">(*)</span>
                                         </div>
-                                        @Html.TextBoxFor(model => model.UserName,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Tài khoản"})
-                                        @Html.ValidationMessageFor(model => model.UserName,"",new{ @class="text-danger"})
+                                        @Html.TextBoxFor(model => model.Username,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Tài khoản"})
+                                        @Html.ValidationMessageFor(model => model.Username,"",new{ @class="text-danger"})
                                     </div>
                                     <div class="form-group col-6">
                                         <div>
                                             <span class="fw-bold">Mật khẩu</span>
                                             <span class="text-danger">(*)</span>
                                         </div>
-                                        @Html.TextBoxFor(model => model.PassWord,"",new { @class="form-control form-control-user border-none rounded", @type="password", @placeholder="Mật khẩu" })
-                                        @Html.ValidationMessageFor(model => model.PassWord,"",new { @class="text-danger" })
+                                        @Html.TextBoxFor(model => model.Password,"",new { @class="form-control form-control-user border-none rounded", @type="password", @placeholder="Mật khẩu" })
+                                        @Html.ValidationMessageFor(model => model.Password,"",new { @class="text-danger" })
                                     </div>
 
                                     @Html.ValidationMessage("error",new { @class="text-danger" })

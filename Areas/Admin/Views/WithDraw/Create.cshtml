@@ -112,7 +112,7 @@
         var data = helper.form2Object($('#frmShip').serializeArray());
 
         if (!data.Username) {
-            helper.showErr('Vui lòng nhập tài khoản khách hàng!');
+            helper.showErr('Tài khoản khách hàng không được bỏ trống!');
             return
         }
 
@@ -120,13 +120,17 @@
             helper.showErr('Vui lòng nhập số tiền!');
             return;
         }
+        //if (data.Amount < "50000") {
+        //    helper.showErr('Số tiền nạp tối thiếu phải lớn hơn 50,000đ!');
+        //    return;
+        //}
 
         if (!data.Amount)
             data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
 
-        //  data.PaymentMethod = $('#pmtChanged').find(":selected").val();
+
         if (!data.PaymentMethod) {
-            helper.showErr('Vui lòng nhập hình thức nạp!');
+            helper.showErr('Vui lòng chọn hình thức nạp!');
             return
         }
 
@@ -136,19 +140,22 @@
             return;
         }
 
+        if (Number(data.Amount.replaceAll(",", "")) < 50000) {
+            helper.showErr('Số tiền nạp tối thiếu phải lớn hơn 50,000đ!');
+            return;
+        }
         $.ajax({
             url: '/admin/WithDraw/Create',
             type: 'POST',
             data: { model: data },
-            // other AJAX options here
             success: function (respone) {
                 if (respone)
-                    helper.showSuc('Tạo lệnh thành công!')
+                    helper.showSuc('Tạo thành công!')
                 else
-                    helper.showErr('Tạo lệnh không thành công.')
+                    helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
             },
             error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công.')
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
 
             }
         });

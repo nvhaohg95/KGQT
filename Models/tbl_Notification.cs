@@ -14,8 +14,8 @@ namespace KGQT.Models
         public string? OrderCode { get; set; }
         public string? Message { get; set; }
         /// <summary>
-        /// 1. chưa đọc
-        /// 2. đã xem
+        /// 0. chưa đọc
+        /// 1. đã xem
         /// </summary>
         public int? Status { get; set; }
         public bool? IsForAdmin { get; set; }

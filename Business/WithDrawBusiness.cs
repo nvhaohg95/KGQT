@@ -1,5 +1,7 @@
 ﻿using KGQT.Models;
 using KGQT.Models.temp;
+using Org.BouncyCastle.Pqc.Crypto.Falcon;
+using System;
 
 namespace KGQT.Business
 {
@@ -40,8 +42,8 @@ namespace KGQT.Business
                 var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
                 if (acc != null)
                 {
-                    var user = AccountBusiness.GetFullInfo(null, 0, acc.Username);
-                    var admin = AccountBusiness.GetFullInfo(null, 0, createdBy);
+                    var user = AccountBusiness.GetInfo(-1, acc.Username);
+                    var admin = AccountBusiness.GetInfo(-1, createdBy);
                     db.Add(data);
                     int kq1 = db.SaveChanges();
                     if(kq1 > 0)
@@ -56,15 +58,15 @@ namespace KGQT.Business
                             db.Update(acc);
                             db.SaveChanges();
                             notiMessage = string.Format("Nạp tiền thành công. Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount);
-                            TransactionBusiness.Insert(acc.ID, data.Amount, 1, data.Type, createdBy);
                             HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, createdBy);
-                            NotificationBusiness.Insert(admin.ID, string.Concat(admin.FirstName," ", admin.LastName), user.ID, string.Concat(user.FirstName," ",user.LastName), data.ID, "", notiMessage, 2, admin.Username);
+                            NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, 2, admin.Username);
 
                         }
                         else
                         {
-                            notiMessage = string.Format("Yêu cầu nạp tiền. Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", string.Concat(user.FirstName, " ", user.LastName), data.Amount);
-                            NotificationBusiness.Insert(user.ID, string.Concat(user.FirstName, " ", user.LastName), 0, "Admin", data.ID, "", notiMessage, 2, acc.Username, true);
+                            string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
+                            notiMessage = string.Format("Yêu cầu nạp tiền. Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", user.FullName, strHTML);
+                            NotificationBusiness.Insert(user.ID, user.FullName, 0, "Admin", data.ID, "", notiMessage, 2, acc.Username, true);
                         }
                         return true;
                     }
@@ -96,10 +98,9 @@ namespace KGQT.Business
                         user.ModifiedBy = admin.Username;
                         user.ModifiedDate = DateTime.Now;
                         db.Update(user);
-                        int isSave = db.SaveChanges();
-                        if (isSave > 0)
+                        int kq = db.SaveChanges();
+                        if (kq > 0)
                         {
-                            TransactionBusiness.Insert(user.ID, data.Amount, 1, data.Type, admin.Username);
                             HistoryPayWallet.Insert(user.ID, user.Username, data.ID,data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
                             NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", string.Format("Nạp tiền thành công. Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount), 2, admin.Username);
                             result.IsError = false;

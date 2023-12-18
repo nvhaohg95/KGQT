@@ -13,33 +13,18 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                var lst = new List<AccountInfo>();
+                var lst = new List<tbl_Account>();
                 int total = 0;
                 int totalPage = 0;
-                var query = from acc in db.tbl_Accounts.ToList().DefaultIfEmpty()
-                            join accInfo in db.tbl_AccountInfos.ToList().DefaultIfEmpty()
-                            on acc.ID equals accInfo.UID
-                            select new AccountInfo()
-                            {
-                                ID = acc.ID,
-                                UserID = acc.UserID,
-                                UserName = acc.Username,
-                                FirstName = accInfo.FirstName,
-                                LastName = accInfo.LastName,
-                                BirthDay = accInfo.BirthDay,
-                                Gender = accInfo.Gender,
-                                Email = accInfo.Email,
-                                Phone = accInfo.Phone,
-                                IMG = accInfo.IMG
-                            };
+                var query = db.tbl_Accounts.AsQueryable();
                 if (!string.IsNullOrEmpty(searchText))
-                    query = query.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText));
+                    query = query.Where(x => x.FullName.Contains(searchText) || x.Username.Contains(searchText));
 
                 total = query.Count();
                 if (total > 0)
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
-                    lst = query.OrderByDescending(x => x.UserName)
+                    lst = query.OrderByDescending(x => x.CreatedDate)
                         .Skip((page - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
@@ -51,34 +36,11 @@ namespace KGQT.Business
         #endregion
 
         #region Get User By ID
-        public static AccountInfo GetUserByID(int id)
+        public static tbl_Account GetUserByID(int id)
         {
             using(var db = new nhanshiphangContext())
             {
-                var user = new AccountInfo();
-                var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
-                var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == id);
-                if (acc != null)
-                {
-                    user.ID = acc.ID;
-                    user.UserID = acc.UserID;
-                    user.UserName = acc.Username;
-                    user.Password = acc.Password;
-                    user.RoleID = acc.RoleID;
-                    user.Wallet = acc.Wallet;
-                }
-                if(accInfo != null)
-                {
-                    user.FirstName = accInfo.FirstName;
-                    user.LastName = accInfo.LastName;
-                    user.BirthDay = accInfo.BirthDay;
-                    user.Gender = accInfo.Gender;
-                    user.Email = accInfo.Email;
-                    user.Phone = accInfo.Phone;
-                    user.Address = accInfo.Address;
-                    user.IMG = accInfo.IMG;
-                }
-                return user;
+                return db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
             }
         }
         #endregion
@@ -93,18 +55,13 @@ namespace KGQT.Business
                 reponse.Message = "Mã người dùng không được bỏ trống!";
                 return reponse;
             }
-            if (string.IsNullOrEmpty(data.FirstName))
+            if (string.IsNullOrEmpty(data.FullName))
             {
                 reponse.IsError = true;
-                reponse.Message = "Họ và tên người dùng không được bỏ trống!";
+                reponse.Message = "Họ tên người dùng không được bỏ trống!";
                 return reponse;
             }
-            if (string.IsNullOrEmpty(data.LastName))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Họ và tên người dùng không được bỏ trống!";
-                return reponse;
-            }
+            
             if (string.IsNullOrEmpty(data.Email))
             {
                 reponse.IsError = true;
@@ -178,34 +135,17 @@ namespace KGQT.Business
                     CreatedBy = createdBy
                 };
                 db.Add(acc);
-                var kq1 = db.SaveChanges();
-                if(kq1 > 0)
+                var kq = db.SaveChanges();
+                if(kq > 0)
                 {
-                    var accInfo = new tbl_AccountInfo()
-                    {
-                        UID = acc.ID,
-                        FirstName = data.FirstName,
-                        LastName = data.LastName,
-                        BirthDay = data.BirthDay,
-                        Gender = data.Gender,
-                        Email = data.Email,
-                        Phone = data.Phone,
-                        CreatedBy = createdBy,
-                        CreatedDate = DateTime.Now
-                    };
-                    db.Add(accInfo);
-                    var kq2 = db.SaveChanges();
-                    if(kq2 > 0)
-                    {
-                        reponse.IsError = false;
-                        reponse.Message = "Thêm thành công!";
-                        reponse.Data = data;
-                        return reponse;
-                    }
+                    reponse.IsError = false;
+                    reponse.Message = "Thêm thành công!";
+                    reponse.Data = data;
+                    return reponse;
                 }
             }
             reponse.IsError = true;
-            reponse.Message = "Thêm không thành công!";
+            reponse.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
             return reponse;
         }
         #endregion
@@ -215,21 +155,14 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                try
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
+                if (acc != null)
                 {
-                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
-                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == id);
                     db.Remove(acc);
-                    db.Remove(accInfo);
-                    var isSave = db.SaveChanges();
-                    if (isSave > 0)
-                        return true;
-                    return false;
+                    var kq = db.SaveChanges();
+                    return kq > 0;
                 }
-                catch (Exception ex)
-                {
-                    return false;
-                }
+                return false;
             }
         }
         #endregion
@@ -251,9 +184,9 @@ namespace KGQT.Business
         #endregion
 
         #region Get User By User Name
-        public static AccountInfo GetUserByUserName(string username)
+        public static tbl_Account GetUserByUserName(string username)
         {
-            var user = new AccountInfo();
+            var user = new tbl_Account();
 
             using (var db = new nhanshiphangContext())
             {
@@ -262,22 +195,10 @@ namespace KGQT.Business
                 {
                     user.ID = acc.ID;
                     user.UserID = acc.UserID;
-                    user.UserName = acc.Username;
+                    user.Username = acc.Username;
                     user.Password = PJUtils.Encrypt("userpass", acc.Password);
                     user.RoleID = acc.RoleID;
                     user.Wallet = acc.Wallet;
-                    var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                    if (accInfo != null)
-                    {
-                        user.IMG = accInfo.IMG;
-                        user.BirthDay = accInfo.BirthDay;
-                        user.Gender = accInfo.Gender;
-                        user.Phone = accInfo.Phone;
-                        user.Email = accInfo.Email;
-                        user.Address = accInfo.Address;
-                        user.FirstName = accInfo.FirstName;
-                        user.LastName = accInfo.LastName;
-                    }
                 }
             }
             return user;
@@ -299,23 +220,9 @@ namespace KGQT.Business
                         acc.ModifiedBy = userModifiedBy;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
-                        var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                        if (acc != null)
-                        {
-                            accInfo.FirstName = data.FirstName;
-                            accInfo.LastName = data.LastName;
-                            accInfo.Gender = data.Gender;
-                            accInfo.BirthDay = data.BirthDay;
-                            accInfo.Email = data.Email;
-                            accInfo.Phone = data.Phone;
-                            accInfo.Address = data.Address;
-                            accInfo.Phone = data.Phone;
-                            accInfo.ModifiedBy = userModifiedBy;
-                            accInfo.ModifiedDate = DateTime.Now;
-                            db.Update(accInfo);
-                        }
-                        var isSave = db.SaveChanges();
-                        if (isSave > 0)
+                        
+                        var kq = db.SaveChanges();
+                        if (kq > 0)
                         {
                             result.IsError = false;
                             result.Data = data;
@@ -325,7 +232,7 @@ namespace KGQT.Business
                         else
                         {
                             result.IsError = true;
-                            result.Message = "Cập nhật không thành công";
+                            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
                             return result;
                         }
                     }
@@ -340,7 +247,7 @@ namespace KGQT.Business
             else
             {
                 result.IsError = true;
-                result.Message = "Cập nhật không thành công";
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
                 return result;
             }
         }
@@ -362,23 +269,8 @@ namespace KGQT.Business
                         acc.ModifiedBy = data.UserName;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
-                        var accInfo = db.tbl_AccountInfos.FirstOrDefault(x => x.UID == acc.ID);
-                        if (acc != null)
-                        {
-                            accInfo.FirstName = data.FirstName;
-                            accInfo.LastName = data.LastName;
-                            accInfo.Gender = data.Gender;
-                            accInfo.BirthDay = data.BirthDay;
-                            accInfo.Email = data.Email;
-                            accInfo.Phone = data.Phone;
-                            accInfo.Address = data.Address;
-                            accInfo.Phone = data.Phone;
-                            accInfo.ModifiedBy = data.UserName;
-                            accInfo.ModifiedDate = DateTime.Now;
-                            db.Update(accInfo);
-                        }
-                        var isSave = db.SaveChanges();
-                        if (isSave > 0)
+                        var kq = db.SaveChanges();
+                        if (kq > 0)
                         {
                             result.IsError = false;
                             result.Data = data;
@@ -388,7 +280,7 @@ namespace KGQT.Business
                         else
                         {
                             result.IsError = true;
-                            result.Message = "Cập nhật không thành công";
+                            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
                             return result;
                         }
                     }
@@ -403,7 +295,7 @@ namespace KGQT.Business
             else
             {
                 result.IsError = true;
-                result.Message = "Cập nhật không thành công";
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
                 return result;
             }
         }
