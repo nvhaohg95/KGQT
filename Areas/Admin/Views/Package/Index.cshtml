@@ -543,14 +543,14 @@
         let $wood = $('#txtFeePack');
         let $air = $('#txtAirPackage');
 
-        if ($username.lenght) {
+        if ($username.length) {
             username = $username.val()
             if (!username) {
                 helper.showErr('Vui lòng nhập khách hàng!');
                 return;
             }
         }
-        if ($moving.lenght) {
+        if ($moving.length) {
             moving = $('input[name="MovingMethod"]:checked').val();
             if (!moving) {
                 helper.showErr('Vui lòng chọn hình thức vận chuyển!');
@@ -625,5 +625,4 @@
             setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
         })
     })
-
 </script>

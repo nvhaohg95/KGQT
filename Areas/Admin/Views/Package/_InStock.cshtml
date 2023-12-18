@@ -3,8 +3,8 @@
 <form id="uploadExcel">
     @if (string.IsNullOrEmpty(Model.Username))
     {
-        <div class="form-group mb-4">
-            <label class="required">Cân nặng:</label>
+        <div class="form-group mb-4 @(!string.IsNullOrEmpty(Model.Username) ? "invisible" : "visible")">
+            <label class="required">Khách hàng:</label>
             <input type="text" class="form-control" id="txtUsername">
         </div>
     }
@@ -51,7 +51,6 @@
 <script>
     $(document).ready(function () {
         formatVND();
-
         $('#txtUsername').autocomplete({
             source: function (request, response) {
                 $.ajax({

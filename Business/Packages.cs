@@ -170,11 +170,11 @@ namespace KGQT.Business
             var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
             form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
 
-            var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == form.PackageCode && (x.UID == null || x.UID == user.ID));
+            var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == form.PackageCode);
 
             if (exist != null)
             {
-                if (string.IsNullOrEmpty(exist.Username))
+                if (exist.Username == userLogin || string.IsNullOrEmpty(exist.Username))
                 {
                     exist.UID = user.ID;
                     exist.Username = user.Username;
@@ -182,6 +182,12 @@ namespace KGQT.Business
                     exist.Address = user.Address;
                     exist.Phone = user.Phone;
                     exist.Email = user.Email;
+                }
+                else if(!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
+                {
+                    data.IsError = true;
+                    data.Message = "Mã vận đơn đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin!";
+                    return data;
                 }
                 if (exist.MovingMethod != form.MovingMethod)
                     exist.MovingMethod = form.MovingMethod;
@@ -202,7 +208,7 @@ namespace KGQT.Business
                 if (update)
                     BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
                 data.IsError = update;
-                data.Message = "Mã vận đơn đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin !";
+                data.Message = "Mã vận đơn đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin!";
                 return data;
             }
 
@@ -237,47 +243,55 @@ namespace KGQT.Business
 
         public static bool Update(tempPackage form, string userLogin)
         {
-            var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
-            if (p == null) return false;
-            int oldStt = p.Status;
-            if (form.Username.ToLower() != p.Username.ToLower())
+            try
             {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == p.Username.ToLower());
-                if (user == null) return false;
-
-                p.Username = user.Username;
-                p.UID = user.ID;
-                p.FullName = user.FullName;
-            }
-            p.PackageCode = form.PackageCode;
-            p.MovingMethod = form.MovingMethod;
-            p.IsAirPackage = form.IsAirPackage;
-            p.AirPackagePrice = form.AirPackagePrice;
-            p.IsInsurancePrice = form.IsInsurancePrice;
-            p.Declaration = form.Declaration;
-            p.DeclarePrice = form.DeclarePrice;
-            p.IsWoodPackage = form.IsWoodPackage;
-            p.WoodPackagePrice = form.WoodPackagePrice;
-            p.WareHouse = form.WareHouse;
-            p.Status = form.Status;
-            p.ModifiedBy = userLogin;
-            p.ModifiedDate = DateTime.Now;
-            if (oldStt != p.Status)
-            {
-                if (p.Status == 3)
+                var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
+                if (p == null) return false;
+                int oldStt = p.Status;
+                if (!string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
                 {
-                    p.ExportedCNWH = DateTime.Now;
-                    p.DateExpectation = Packages.CaclDateExpectation(p);
-                    p.Exported = true;
+                    var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == form.Username.ToLower());
+                    if (user == null) return false;
+
+                    p.Username = user.Username;
+                    p.UID = user.ID;
+                    p.FullName = user.FullName;
                 }
+                p.PackageCode = form.PackageCode;
+                p.MovingMethod = form.MovingMethod;
+                p.IsAirPackage = form.IsAirPackage;
+                p.AirPackagePrice = form.AirPackagePrice;
+                p.IsInsurancePrice = form.IsInsurancePrice;
+                p.Declaration = form.Declaration;
+                p.DeclarePrice = form.DeclarePrice;
+                p.IsWoodPackage = form.IsWoodPackage;
+                p.WoodPackagePrice = form.WoodPackagePrice;
+                p.WareHouse = form.WareHouse;
+                p.Status = form.Status;
+                p.ModifiedBy = userLogin;
+                p.ModifiedDate = DateTime.Now;
+                if (oldStt != p.Status)
+                {
+                    if (p.Status == 3)
+                    {
+                        p.ExportedCNWH = DateTime.Now;
+                        p.DateExpectation = Packages.CaclDateExpectation(p);
+                        p.Exported = true;
+                    }
+                }
+                var update = BusinessBase.Update(p);
+                if (update)
+                {
+                    var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
+                    BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
+                }
+                return update;
             }
-            var update = BusinessBase.Update(p);
-            if (update)
+            catch (Exception ex)
             {
-                var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
-                BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
+                Log.Error("Lỗi cập nhật package", JsonConvert.SerializeObject(ex));
+                return false;
             }
-            return update;
         }
 
         public static bool InStockHCMWareHouse(int id, string username, int moving, double weight, double woodPrice, double airPrice, string accessor)
