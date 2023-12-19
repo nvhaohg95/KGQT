@@ -5,6 +5,7 @@
         #region Error
         public const string RequiredLogin = "Vui lòng đăng nhập trước khi thực hiện hành động này";
         public const string CannotFindUser = "Không tìm thấy thông tin tài khoản";
+        public const string UsernameNotCorrect = "Tên tài khoản không chính xác";
         public const string PasswordNotCorrect = "Mật khẩu không chính xác";
         public const string CannotFindOrder = "Không tìm thấy thông tin đơn hàng";
         public const string CannotFindItem = "Không tìm thấy thông tin";

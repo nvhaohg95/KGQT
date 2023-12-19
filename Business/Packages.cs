@@ -135,7 +135,7 @@ namespace KGQT.Business
             model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             model.UID = user.ID;
             model.Username = user.Username;
-            model.FullName = user.FirstName + " " + user.LastName;
+            //model.FullName = user.FirstName + " " + user.LastName;
             model.Phone = user.Phone;
             model.Email = user.Email;
             model.Address = user.Address;
@@ -216,7 +216,8 @@ namespace KGQT.Business
             {
                 BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
             }
-            return s;
+            data.Data = s;
+            return data;
         }
 
         public static bool Update(tempPackage form, string userLogin)
@@ -468,7 +469,7 @@ namespace KGQT.Business
                             string note = dt.Rows[row][4].ToString();
                             var date = Converted.ToDate(dt.Rows[row][0].ToString());
                             var p = new tbl_Package();
-                            var user = AccountBusiness.GetByUserName(customer);
+                            var user = AccountBusiness.GetInfo(-1,customer);
                             if (user != null)
                             {
                                 p.Username = user.Username;

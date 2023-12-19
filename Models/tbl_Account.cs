@@ -14,7 +14,6 @@ namespace KGQT.Models
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? IMG { get; set; }
-        public string Address { get; set; }
         /// <summary>
         /// 0. Admin
         /// 1. User
@@ -53,5 +52,6 @@ namespace KGQT.Models
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
+        public string? Address { get; set; }
     }
 }

@@ -15,25 +15,22 @@ namespace KGQT.Business
             if (string.IsNullOrEmpty(userName))
             {
                 dtReturn.IsError = true;
-                dtReturn.Type = 1;
-                dtReturn.Message = "Vui lòng nhập tên tài khoản";
+                dtReturn.Message = "Vui lòng nhập tên tài khoản!";
                 return dtReturn;
             }
             if (string.IsNullOrEmpty(password))
             {
                 dtReturn.IsError = true;
-                dtReturn.Type = 1;
-                dtReturn.Message = "Vui lòng nhập mật khẩu";
+                dtReturn.Message = "Vui lòng nhập mật khẩu!";
                 return dtReturn;
             }
             using (var db = new nhanshiphangContext())
             {
-
                 var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
                 if (acc != null)
                 {
-                    password = PJUtils.Encrypt("userpass", password);
-                    if (acc.Password == password)
+                    var isCorrect = password == PJUtils.Decrypt("userpass", acc.Password);
+                    if (isCorrect)
                     {
                         dtReturn.IsError = false;
                         dtReturn.Data = acc;
@@ -42,7 +39,7 @@ namespace KGQT.Business
                     else
                     {
                         dtReturn.IsError = true;
-                        dtReturn.Type = 1;
+                        dtReturn.Message = Messages.PasswordNotCorrect;
                         return dtReturn;
                     }
 
@@ -50,8 +47,7 @@ namespace KGQT.Business
                 else
                 {
                     dtReturn.IsError = true;
-                    dtReturn.Type = 1;
-                    dtReturn.Message = Messages.CannotFindUser;
+                    dtReturn.Message = Messages.UsernameNotCorrect;
                     return dtReturn;
                 }
             }
@@ -59,64 +55,67 @@ namespace KGQT.Business
 
         #endregion
 
-        #region Get Info By ID || UserName
-        public static tbl_Account? GetInfo(int? id, string? userName)
-        {
-
-            using (var db = new nhanshiphangContext())
-            {
-                if(id != null && id > 0)
-                    return db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
-                if(!string.IsNullOrEmpty(userName))
-                    return db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
-                return null;
-            }
-        }
-
-        #endregion
-
-        #region Register Account
-        public static DataReturnModel<tbl_Account> RegisterAccount(SignUpModel data)
+        #region Register 
+        public static DataReturnModel<tbl_Account> Register(SignUpModel data)
         {
             var result = new DataReturnModel<tbl_Account>();
             try
             {
-                var regex = new Regex("^[a-zA-Z0-9 ]*$");
+                if(data == null)
+                {
+                    result.IsError = true;
+                    result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                    return result;
+                }
                 var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 var regexPhone = new Regex(@"^[0-9]{8,20}$");
-
-                if (!regex.IsMatch(data.Username))
+                if(string.IsNullOrEmpty(data.FullName))
                 {
                     result.IsError = true;
-                    result.Type = 1;
-                    result.Message = "Tài khoản không chứa ký tự đặc biệt.";
+                    result.Message = "Vui lòng nhập họ tên khách hàng!";
                     return result;
                 }
-                if (data.FullName.Contains(" "))
+                if (string.IsNullOrEmpty(data.Phone))
                 {
                     result.IsError = true;
-                    result.Type = 1;
-                    result.Message = "Tài khoản không chứa khoảng trắng.";
-                    return result;
-                }
-                if (data.Password.Contains(" "))
-                {
-                    result.IsError = true;
-                    result.Type = 1;
-                    result.Message = "Mật khẩu không chứa khoảng trắng.";
-                    return result;
-                }
-                if (!regexEmail.IsMatch(data.Email))
-                {
-                    result.IsError = true;
-                    result.Message = "Địa chỉ email không hợp lệ.";
+                    result.Message = "Vui lòng nhập số điện thoại khách hàng!";
                     return result;
                 }
                 if (!regexPhone.IsMatch(data.Phone))
                 {
                     result.IsError = true;
                     result.Type = 1;
-                    result.Message = "Số điện thoại không hợp lệ.";
+                    result.Message = "Số điện thoại không hợp lệ!";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(data.Email))
+                {
+                    result.IsError = true;
+                    result.Message = "Vui lòng nhập Email khách hàng!";
+                    return result;
+                }
+                if (!regexEmail.IsMatch(data.Email))
+                {
+                    result.IsError = true;
+                    result.Message = "Địa chỉ email không hợp lệ!";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(data.Address))
+                {
+                    result.IsError = true;
+                    result.Message = "Vui lòng nhập địa chỉ khách hàng!";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(data.Username))
+                {
+                    result.IsError = true;
+                    result.Message = "Tài khoản không được bỏ trống!";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(data.Password))
+                {
+                    result.IsError = true;
+                    result.Message = "Mật khẩu không được bỏ trống!";
                     return result;
                 }
 
@@ -126,8 +125,7 @@ namespace KGQT.Business
                     if (isUserName != null)
                     {
                         result.IsError = true;
-                        result.Type = 1;
-                        result.Message = "Tên tài khoản đã được sử dụng";
+                        result.Message = "Tên tài khoản đã được sử dụng.";
                         return result;
                     }
                     var acc = new tbl_Account()
@@ -138,9 +136,10 @@ namespace KGQT.Business
                         Gender = data.Gender,
                         Phone = data.Phone,
                         Email = data.Email,
+                        Address = data.Address,
                         Wallet = 0,
                         Status = 2,
-                        RoleID = 1, // user
+                        RoleID = 1,
                         CreatedDate = DateTime.Now,
                         CreatedBy = data.Username
                     };
@@ -175,7 +174,7 @@ namespace KGQT.Business
             {
                 result.IsError = true;
                 result.Type = 2;
-                result.Message = "Hệ thống thực thi không thành công.";
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
                 return result;
             }
         }
@@ -442,6 +441,28 @@ namespace KGQT.Business
                 return new object[] { lst, total, totalPage };
             }
         }
+
+        #endregion
+
+        #region Get Info By ID || UserName
+        public static tbl_Account? GetInfo(int? id, string? userName)
+        {
+
+            using (var db = new nhanshiphangContext())
+            {
+                tbl_Account account = null;
+                if (id != null && id > 0)
+                    account = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
+                if (!string.IsNullOrEmpty(userName))
+                    account = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                if(account != null)
+                {
+                    account.Password = PJUtils.Decrypt("userpass", account.Password);
+                }    
+                return account;
+            }
+        }
+
         #endregion
 
         #region Create

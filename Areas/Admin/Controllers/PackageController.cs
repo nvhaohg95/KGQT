@@ -105,8 +105,8 @@ namespace KGQT.Areas.Admin.Controllers
         public JsonResult Create(string sData)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var oSave = Packages.Add(sData, userLogin);
-            return Json(oSave);
+            //var oSave = Packages.Add(sData, userLogin);
+            return Json(true);
         }
 
 
