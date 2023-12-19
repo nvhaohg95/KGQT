@@ -4,7 +4,9 @@
     overflow-y: auto;
     /* prevent horizontal scrollbar */
     overflow-x: hidden;
+    z-index: 9999 !important;
 }
+
 /* IE 6 doesn't support max-height
    * we use height instead, but this forces the menu to always be this tall
    */

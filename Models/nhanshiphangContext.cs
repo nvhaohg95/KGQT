@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using KGQT.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -37,7 +38,7 @@ namespace KGQT.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-1TA69L2B;Initial Catalog=nhanshiphang;Integrated Security=True");
+                optionsBuilder.UseSqlServer(Config.Connections["KGQT"]);
             }
         }
 
@@ -47,19 +48,29 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_Account");
 
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Email).HasMaxLength(100);
 
                 entity.Property(e => e.FullName).HasMaxLength(50);
 
+                entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Password).HasMaxLength(50);
 
+                entity.Property(e => e.Phone).HasMaxLength(15);
+
                 entity.Property(e => e.RoleID).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
+                entity.Property(e => e.SaleUsername).HasMaxLength(50);
+
                 entity.Property(e => e.Status).HasComment("1. Not Active\r\n2. Active\r\n3. Banned");
+
+                entity.Property(e => e.Token).HasMaxLength(50);
 
                 entity.Property(e => e.UserID).HasMaxLength(50);
 

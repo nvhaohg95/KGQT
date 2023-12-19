@@ -93,6 +93,8 @@ namespace KGQT.Models.temp
     {
         public IFormFile? File { get; set; }
         public string? Path { get; set; }
+        public string Base64String { get; set; }
+        public string FileName { get; set; }
 
     }
 }

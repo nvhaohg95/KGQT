@@ -21,11 +21,11 @@
                 </div>
                 <div class="col-md-3 text-right">
                     @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
-                    <button class="btn-sm btn bg-orange text-white mr-md-2" onclick="submitFn(@Model.ID)">Cập nhật</button>
+                    <button class="btn-sm btn bg-orange text-white mr-md-2" onclick="submitFn(@Model.ID,@Model.MovingMethod)">Cập nhật</button>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="row p-2 mx-0 mt-2">
                         <div class="col-md-6">
                             <span>Loại vận chuyển: @PJUtils.ShippingMethodName(Model.MovingMethod)</span>
@@ -62,21 +62,21 @@
                     <div class="row px-2 mx-0 mb-2">
                         <div class="col-md-6">
                             <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Email</label>
-                                <div class="col-sm-8">
-                                    <input id="txtUserName" class="form-control mb-0" value="@Model.Username" @(!string.IsNullOrEmpty(Model.Username) ? "disabled" : "") />
+                                <label class="col-md-4 col-sm-4 col-form-label">Khách hàng</label>
+                                <div class="col-md-7 col-sm-8">
+                                    <input id="txtUsername" class="form-control mb-0" value="@Model.Username" @(!string.IsNullOrEmpty(Model.Username) ? "disabled" : "") />
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div>
-                                <span>Số điện thoại: @Model.Phone</span>
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-group">
+                                <i class="fa fa-phone"></i><span>@Model.Phone</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <ul class="my-2 mr-2 my-2 row col-md-7 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                <div class="col-md-4">
+                    <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
                         @if (Model.ReceivedDate != null)
                         {
                             <li class="ml-4 mb-2">
@@ -193,13 +193,48 @@ else
             $('#copied-success').css('opacity', '1');
             setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
         })
+
+        $('#txtUsername').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/package/AutoComplete',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 3,
+            delay: 500,
+            select: function (event, ui) {
+                $(this).val(ui.item.username);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.username + " - " + item.email + "</div>")
+                .appendTo(ul);
+        };
     })
 
-    function submitFn(id) {
-        let weight = $('#txtWeight').val(), wood = 0, air = 0;
+    function submitFn(id, moving) {
+        debugger;
+        let weight = $('#txtWeight').val();
+        let wood = 0;
+        let air = 0;
+        let username = "";
         let $wood = $('#txtWoodPackage');
         let $air = $('#txtAirPackage');
-        let username = $('#txtUserName');
+        let $username = $('#txtUsername');
         if (!weight) {
             helper.showErr('Vui lòng nhập cân nặng!');
             return;
@@ -218,16 +253,18 @@ else
                 return;
             }
         }
-        if(!username)
-        {
-            helper.showErr('Vui lòng khai báo khách hàng!');
-            return;
+        if ($username.length) {
+            username = $username.val();
+            if (!username) {
+                helper.showErr('Vui lòng khai báo khách hàng!');
+                return;
+            }
         }
         $.ajax({
-            url: '/admin/Package/SubmitPack',
+            url: '/admin/Package/InStockPackage',
             method: 'POST',
             dataType: 'json',
-            data: { id, weight, woodPrice: wood, airPrice: air },
+            data: { id, username, moving, weight, woodPrice: wood, airPrice: air },
             success: function (res) {
                 if (res)
                     helper.showSuc("Cập nhật thành công");

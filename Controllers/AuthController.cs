@@ -19,7 +19,6 @@ namespace KGQT.Controllers
         private IToastNotification _toastNotification;
         private readonly IHostingEnvironment _hostingEnvironment;
         private MailSettings _mailSettings;
-        static AuthencationController _auth;
         public IToastNotification NotificationService
         {
             get { return _toastNotification; }
@@ -30,7 +29,6 @@ namespace KGQT.Controllers
             _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
             _mailSettings = mailSettings.Value;
-            _auth = new AuthencationController();
         }
 
 
