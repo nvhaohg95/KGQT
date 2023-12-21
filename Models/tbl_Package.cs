@@ -25,8 +25,8 @@ namespace KGQT.Models
         public double? WoodPackagePrice { get; set; }
         public bool? IsInsurance { get; set; }
         public double? IsInsurancePrice { get; set; }
+        public double? SurCharge { get; set; }
         public double? TotalPrice { get; set; }
-        public int? PaymentMethod { get; set; }
         public string? Declaration { get; set; }
         public double? DeclarePrice { get; set; }
         public string? WareHouse { get; set; }

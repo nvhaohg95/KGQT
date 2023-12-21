@@ -1,6 +1,4 @@
 ﻿// click ChangePass
-
-
 function debounce(func, within = 300, timerId = null) {
     window.callOnceTimers = window.callOnceTimers || {};
     if (timerId == null)

@@ -15,6 +15,8 @@ namespace KGQT.Models
         public string? Address { get; set; }
         public int? ShippingMethod { get; set; }
         public string? ShippingMethodName { get; set; }
+        public int? PaymentMethod { get; set; }
+        public int Status { get; set; }
         public double? Weight { get; set; }
         public double? WeightPrice { get; set; }
         public bool? IsWoodPackage { get; set; }
@@ -23,8 +25,7 @@ namespace KGQT.Models
         public double? AirPackagePrice { get; set; }
         public bool? IsInsurance { get; set; }
         public double? InsurancePrice { get; set; }
-        public int Status { get; set; }
-        public int? PaymentMethod { get; set; }
+        public double? SurCharge { get; set; }
         public double? TotalPrice { get; set; }
         public double? Currency { get; set; }
         public DateTime? DateExpectation { get; set; }
