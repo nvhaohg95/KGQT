@@ -33,7 +33,7 @@ namespace KGQT.Mobility
                     model.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
                 }
             }
-            var data = AccountBusiness.RegisterAccount(model);
+            var data = AccountBusiness.Register(model);
             return data;
         }
     }

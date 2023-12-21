@@ -8,7 +8,6 @@
 <script src="~/vendor/jquery-easing/jquery.easing.js"></script>
 <script src="~/js/sb-admin-2.min.js"></script>
 <script src="~/js/sweetalert2.min.js"></script>
-
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10 col-md-8">
@@ -21,13 +20,10 @@
                                 <div class="text-center">
                                     <h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng nhập</h1>
                                 </div>
-                                @using (Html.BeginForm(FormMethod.Post, new { @class = "user" }))
-                                {
-                                    @Html.AntiForgeryToken()
+                                <form class="user" id="formLogin">
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.UserName,"Tài khoản")
                                         @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus" })
-                                        @Html.ValidationMessageFor(model => model.UserName,"",new { @class="text-danger" })
                                     </div>
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.PassWord,"Mật khẩu")
@@ -37,11 +33,9 @@
                                                 <i class="fa fa-eye-slash" id="icon"></i>
                                             </span>
                                         </div>
-                                        @Html.ValidationMessageFor(model => model.PassWord,"",new { @class="text-danger" })
                                     </div>
-                                    @Html.ValidationMessage("error",new{ @class="text-danger" })
-                                    <button type="submit" class="btn btn-primary btn-user btn-block btn-login">ĐĂNG NHẬP</button>
-                                }
+                                    <button onclick="clickLogin()" type="button" class="btn btn-primary btn-user btn-block btn-login">ĐĂNG NHẬP</button>
+                                </form>
                                 <hr />
                                 <div class="text-center">
                                     <a class="small cursor-pointer"  data-toggle="modal" data-target="#sendMailModal">Quên mật khẩu</a>
@@ -107,7 +101,29 @@
             }
         });
     });
-
+    // Login
+    function clickLogin() {
+        var data = helper.form2Object($('#formLogin').serializeArray());
+        $.ajax({
+            url: '/Auth/Login',
+            type: "POST",
+            data: data,
+            success: function (respone) {
+                if (respone.isError)
+                    helper.showWarn(respone.message);
+                else
+                {
+                    if(respone.data.roleID == 0)
+                        location.href = "/Admin";
+                    else
+                        location.href = "/Home/Dashboard";
+                }
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
     // sendmail foget password
     function sendMailFogetPassword() {
         var email = $("#email").val();

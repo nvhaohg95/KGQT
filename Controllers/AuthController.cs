@@ -39,37 +39,49 @@ namespace KGQT.Controllers
             var sUser = HttpContext.Session.GetString("US_LOGIN");
             if (!string.IsNullOrEmpty(sUser))
             {
-                var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
+                var user = JsonConvert.DeserializeObject<tbl_Account>(sUser);
                 if (user != null)
                 {
-                    if (user.RoleID == 1)
-                        return RedirectToAction("admin", "home");
-                    return RedirectToAction("dashboard", "home");
+                    if (user.RoleID == 0)
+                        return RedirectToAction("Admin");
+                    else
+                        return RedirectToAction("Dashboard", "Home");
                 }
             }
             return View();
         }
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Login(UserModel model)
+        public DataReturnModel<tbl_Account> Login(UserModel model)
         {
-            var result = AccountBusiness.Login(model.UserName,model.PassWord);
-            if (result.IsError)
+            if(model == null)
             {
-                ModelState.AddModelError(Guid.NewGuid().ToString("N"), result.Message);
-                return View(model);
-            }
-            HttpContext.Session.SetString("user", model.UserName);
-            HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
-            if (result.Data != null)
+                return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!" };
+            }    
+            var result = AccountBusiness.Login(model.UserName, model.PassWord);
+            if (!result.IsError)
             {
-                var user = result.Data as tbl_Account;
-                if (user.RoleID == 1)
-                    return RedirectToAction("home", "admin");
+                HttpContext.Session.SetString("user", model.UserName);
+                HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
             }
-            return RedirectToAction("dashboard", "home");
+            return result;
         }
+        //[HttpPost]
+        //public ActionResult Login(UserModel model)
+        //{
+        //    var result = _auth.Login(model.UserName,model.PassWord);
+        //    if (result.IsError)
+        //    {
+        //        return View(model);
+        //    }
+        //    HttpContext.Session.SetString("user", model.UserName);
+        //    HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
+        //    if (result.Data != null)
+        //    {
+        //        if (result.Data.RoleID == 0)
+        //            return RedirectToAction("admin");
+        //    }
+        //    return RedirectToAction("Dashboard", "Home");
+        //}
         #endregion
 
         #region Logout
@@ -88,25 +100,14 @@ namespace KGQT.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Register(SignUpModel data)
+        public DataReturnModel<tbl_Account> Register(SignUpModel data)
         {
-            if (ModelState.IsValid)
+            if (data.File != null)
             {
-                var result = AccountBusiness.RegisterAccount(data);
-                if (result.IsError)
-                {
-                    if (result.Type == 1)
-                        ModelState.AddModelError(result.Key, result.Message);
-                    else
-                        _toastNotification.AddWarningToastMessage(result.Message);
-                    return View();
-                }
-                _toastNotification.AddSuccessToastMessage(result.Message);
-                return Redirect("login");
-
+                data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uploads", "avatars");
             }
-            return View();
+            var result = AccountBusiness.Register(data);
+            return result;
         }
         #endregion
 
