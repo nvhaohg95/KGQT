@@ -34,7 +34,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <button onclick="clickLogin()" type="button" class="btn btn-primary btn-user btn-block btn-login">ĐĂNG NHẬP</button>
+                                    <button onclick="clickLogin()" id="btnLogin" type="button" class="btn btn-primary btn-user btn-block btn-login">ĐĂNG NHẬP</button>
                                 </form>
                                 <hr />
                                 <div class="text-center">
@@ -124,6 +124,13 @@
             }
         });
     }
+    // enter login
+    $("#formLogin").keypress(function (event) {
+        if (event.keyCode == 13) 
+        {
+            clickLogin();
+        }
+    });
     // sendmail foget password
     function sendMailFogetPassword() {
         var email = $("#email").val();
