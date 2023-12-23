@@ -35,7 +35,6 @@
                             @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
                             {
                                 <div class="form-check-inline">
-
                                     <label class="form-check-label">
                                         <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
                                     </label>
@@ -68,11 +67,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 d-flex align-items-center">
-                            <div class="form-group">
-                                <i class="fa fa-phone"></i><span>@Model.Phone</span>
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-group">
+                                    <i class="fa fa-phone"></i><span>@Model.Phone</span>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -112,14 +114,7 @@
                     <div class="row">
                         <div class="form-inline text-left">
                             Cân nặng:  &nbsp;
-                            @if (Model.Status > 4)
-                            {
-                                <p class="form-control mb-0 border-0">@string.Format("{0:N0}",Model.WeightPrice != null ? Model.WeightPrice : 0).Replace(",", ".")đ</p>
-                            }
-                            else
-                            {
-                                <input id="txtWeight" class="form-control mb-0" />
-                            }
+                            <input id="txtWeight" class="form-control mb-0" />
                         </div>
                     </div>
                 </div>
@@ -130,14 +125,7 @@
                         <div class="row">
                             <div class="form-inline text-left">
                                 Đóng gỗ:  &nbsp;
-                                @if (Model.Status > 4)
-                                {
-                                    <p class="form-control mb-0 border-0">@(Model.Weight)kg - @string.Format("{0:N0}",Model.WoodPackagePrice != null ? Model.WoodPackagePrice : 0).Replace(",", ".")đ</p>
-                                }
-                                else
-                                {
-                                    <input data-type="formatvnd" id="txtWoodPackage" class="form-control mb-0" />
-                                }
+                                <input data-type="formatvnd" id="txtWoodPackage" class="form-control mb-0" value="@Model.WoodPackagePrice" />
                             </div>
                         </div>
                     </div>
@@ -149,30 +137,30 @@
                         <div class="row">
                             <div class="form-inline text-left">
                                 Bọt khí:  &nbsp;
-                                @if (Model.Status > 4)
-                                {
-                                    <p class="form-control mb-0 border-0"> @string.Format("{0:N0}",Model.AirPackagePrice != null ? Model.AirPackagePrice : 0).Replace(",", ".")đ</p>
-                                }
-                                else
-                                {
-                                    <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" />
-                                }
-
+                                <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" value="@Model.AirPackagePrice" />
                             </div>
                         </div>
                     </div>
                 }
-                @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
-                {
-                    <div class="col-md-3 align-self-center">
-                        <div class="row">
-                            <div class="form-inline text-left">
-                                Phí bảo hiểm:  &nbsp;
-                                <p class=" mb-0">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")đ</p>
-                            </div>
+                @*                @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+            {
+            <div class="col-md-3 align-self-center">
+            <div class="row">
+            <div class="form-inline text-left">
+            Phí bảo hiểm:  &nbsp;
+            <p class=" mb-0">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")đ</p>
+            </div>
+            </div>
+            </div>
+            }*@
+                <div class="col-md-3 align-self-center">
+                    <div class="row">
+                        <div class="form-inline text-left">
+                            Thu hộ:  &nbsp;
+                            <input data-type="formatvnd" id="txtSurCharge" class="form-control mb-0" value="@Model.SurCharge" />
                         </div>
                     </div>
-                }
+                </div>
             </div>
         </div>
     </div>
@@ -231,9 +219,11 @@ else
         let weight = $('#txtWeight').val();
         let wood = 0;
         let air = 0;
+        let sub = 0;
         let username = "";
         let $wood = $('#txtWoodPackage');
         let $air = $('#txtAirPackage');
+        let $sub = $('#txtSurCharge');
         let $username = $('#txtUsername');
         if (!weight) {
             helper.showErr('Vui lòng nhập cân nặng!');
@@ -264,7 +254,7 @@ else
             url: '/admin/Package/InStockPackage',
             method: 'POST',
             dataType: 'json',
-            data: { id, username, moving, weight, woodPrice: wood, airPrice: air },
+            data: { id, username, moving, weight, woodPrice: wood, airPrice: air, sub },
             success: function (res) {
                 if (res)
                     helper.showSuc("Cập nhật thành công");

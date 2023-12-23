@@ -22,7 +22,7 @@
                 </div>
                 <div class="form-group mb-4">
                     <label class="required" for="txtShipID">Mã vận đơn</label>
-                    <input type="text" class="form-control" id="txtPackage" name="PackageCode" placeholder="Nhập mã vận đơn" onblur="addPackage()">
+                    <input type="text" class="form-control" id="txtPackage" name="PackageCode" placeholder="Nhập mã vận đơn">
                 </div>
                 <div class="form-group mb-2">
                     <label class="required mb-0 text-primary fw-bold">Phương thức vận chuyển</label>
@@ -81,6 +81,10 @@
                         <input type="text" class="form-control" name="DeclarePrice" onkeyup="format(this)">
                     </div>
                 </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtShipID">Thu hộ</label>
+                    <input type="text" class="form-control" id="txtSurCharge" onkeyup="format(this)" name="SurCharge" placeholder="Nhập mã vận đơn">
+                </div>
                 <div class="col-md-12 col-sm-12 col-lg-12 text-center">
                     <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
                     <button type="button" class="btn btn-success" onclick="insert()">Lưu</button>
@@ -91,10 +95,6 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('#txtPackage').off('keypress').on('keypress', function (e) {
-            if (e.which == 13)
-                addPackage();
-        });
         $('#txtUserName').autocomplete({
             source: function (request, response) {
                 $.ajax({
