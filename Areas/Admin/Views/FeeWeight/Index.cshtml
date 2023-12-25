@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Phí vận chuyển";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int type = (int)ViewData["type"];
     int page = (int)ViewData["page"];
     int totalRecord = (int)ViewData["totalRecord"];
     int totalPage = (int)ViewData["totalPage"];
@@ -14,23 +15,45 @@
 <div class="container-fluid h-100">
     <div class="row mb-2">
         <ul id="breadcrumbs">
-            <li><a href="/">Cấu hình</a></li>
+            <li><a href="/">Thiết lập</a></li>
             <li><a>Phí vận chuyển</a></li>
         </ul>
     </div>
     <div class="row bg-white p-2">
         <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <div>
-                    <h5 class="fw-bold text-danger text-uppercase mb-0">PHÍ VẬN CHUYỂN</h5>
+            <div class="row mb-2">
+                <h5 class="fw-bold text-danger text-uppercase mb-0">PHÍ VẬN CHUYỂN</h5>
+            </div>
+            <div class="row mb-2">
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <form class="row text-left" id="myform">
+                        <div class="col-lg-4 col-md-4 col-sm-12">
+                            <select name="Type" id=" Type" class="form-control">
+                                <option value="" @(type == 0 ? "selected" : "")>Tất cả</option>
+                                <option value="" @(type == 1 ? "selected" : "")>Tuyến bay nhanh</option>
+                                <option value="1" @(type == 2 ? "selected" : "")>Tuyến bay thường</option>
+                                <option value="2" @(type == 3 ? "selected" : "")>Tuyến bộ</option>
+                                <option value="2" @(type == 4 ? "selected" : "")>Tuyến lô</option>
+                                <option value="2" @(type == 5 ? "selected" : "")>Tuyến biển</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-12 d-flex align-items-end justify-content-end">
+                            <div class="d-flex align-items-center">
+                                <a href="Index" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
+                                    <i class="fas fa-sync fa-xs"></i>
+                                </a>
+                                <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <button class="btn btn-sm btn-success w-100px" data-toggle="modal" data-target="#exampleModal">Thêm mới</button>
+                <div class="col-lg-6 col-md-6 col-sm-12 text-right">
+                    <button class="btn btn-sm btn-success w-100px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i>&nbspThêm</button>
                 </div>
             </div>
         </div>
         <div class="col-12">
-            <table class="table table-border">
+            <table class="table table-hover">
                 <thead class="thead-light">
                     <tr>
                         <th class="text-left">STT</th>
@@ -102,7 +125,7 @@
                 <nav class="d-flex justify-content-end">
                     <ul class="pagination m-0">
                         <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
-                            <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
+                            <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous" title="Trang trước">
                                 <span aria-hidden="true">&laquo;</span>
                                 <span class="sr-only">Previous</span>
                             </a>
@@ -113,7 +136,7 @@
                             </a>
                         </li>
                         <li class="@(page >= totalPage ? "page-item disabled" : "page-item cursor-pointer")">
-                            <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next">
+                            <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next" title="Trang sau">
                                 <span aria-hidden="true">&raquo;</span>
                                 <span class="sr-only">Next</span>
                             </a>
@@ -179,7 +202,7 @@
                                 <span class="fw-bold">Giá tiền</span>
                                 <span class="text-danger">(*)</span>
                             </div>
-                            <input class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" />
+                            <input class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
                         </div>
                     </div>
                 </form>
@@ -217,13 +240,13 @@
             success: function (reponse) {
                 if (!reponse)
                 {
-                    helper.showErr('Thêm không thành công!')
+                    helper.showErr('Thêm không thành công. Vui lòng thử lại!');
                 }
                 else
                     helper.showSuc('Thêm thành công!')
             },
             error: function (xhr, status, err) {
-                    helper.showErr('Phát sinh lỗi.!')
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
             }
         });
     }
@@ -244,7 +267,7 @@
                     helper.showSuc('Xóa thành công!')
             },
             error: function (xhr, status, err) {
-                helper.showErr('Phát sinh lỗi.!')
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
             }
         });
     }
@@ -262,5 +285,9 @@
         }
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
+    }
+    //
+    function format(e) {
+        helper.getChange(e)
     }
 </script>

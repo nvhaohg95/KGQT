@@ -17,7 +17,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Index(string searchText, int page = 1, int pageSize = 10)
         {
             var oData = AccountBusiness.GetPage(searchText, page, pageSize);
-            var lstData = oData[0] as List<AccountInfo>;
+            var lstData = oData[0] as List<tbl_Account>;
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
             @ViewData["searchText"] = searchText;

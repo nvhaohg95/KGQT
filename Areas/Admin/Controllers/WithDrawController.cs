@@ -97,7 +97,7 @@ namespace KGQT.Areas.Admin.Controllers
                 model.CreatedBy = userLogin;
                 model.CreatedDate = DateTime.Now;
                 var result = WithDrawBusiness.Insert(model, userLogin);
-                if (result)
+                if (result.Data)
                 {
                     var admin = AccountBusiness.GetInfo(-1, userLogin);
                     if (model.UID == admin.ID)

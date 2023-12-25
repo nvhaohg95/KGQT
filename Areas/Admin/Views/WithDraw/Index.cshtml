@@ -18,7 +18,7 @@
     </ul>
 </div>
 <div class="row bg-white p-2">
-    <div class="col-lg-4 col-md-12 col-sm-12">
+    @*<div class="col-lg-4 col-md-12 col-sm-12">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <p class="fw-bold mb-0">Trạng thái:</p>
@@ -37,18 +37,26 @@
                 </ul>
             </div>
         </div>
-    </div>
-    <div class="col-lg-8 col-md-12 col-sm-12">
+    </div>*@
+    <div class="col-lg-12 col-md-12 col-sm-12">
         <form class="row" id="myform">
-            <div class="col-lg-5 col-md-4 col-sm-12 mt-2">
+            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
                 <p class="fw-bold m-0">Từ ngày:</p>
                 @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
             </div>
-            <div class="col-lg-5 col-md-4 col-sm-12 mt-2">
+            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
                 <p class="fw-bold m-0">Đến ngày:</p>
                 @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
             </div>
-            <div class="col-lg-2 col-md-4 col-sm-9 mt-2 d-flex align-items-end justify-content-end">
+            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
+                <p class="fw-bold m-0">Trạng thái:</p>
+                <select name="Status" id="Status" class="form-control">
+                    <option value="" @(status == 0 ? "selected" : "")>Tất cả</option>
+                    <option value="1" @(status == 1 ? "selected" : "")>Chưa duyệt</option>
+                    <option value="2" @(status == 2 ? "selected" : "")>Đã duyệt</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 mt-2 d-flex align-items-end justify-content-end">
                 <div class="d-flex align-items-center">
                     <a href="Index" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
                         <i class="fas fa-sync fa-xs"></i>
@@ -58,7 +66,6 @@
             </div>
         </form>
     </div>
-
 </div>
 <!--Start: Danh sách giao dịch-->
 <div class="row bg-white p-2">
@@ -73,15 +80,15 @@
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
-        <table class="table table-border">
+        <table class="table table-hover">
             <thead class="thead-light">
                 <tr class="fw-normal">
                     <th class="text-left">Ngày tạo</th>
-                    <th class="text-center">Mã GD</th>
+                    <th class="text-center">Khách hàng</th>
                     <th class="text-center">Loại GD</th>
                     <th class="text-center">Số tiền</th>
                     <th class="text-center">Trạng thái</th>
-                    <th class="text-center">Thao tác</th>
+                    <th class="text-center"></th>
                 </tr>
             </thead>
             <tbody>
@@ -101,7 +108,7 @@
                             }
                         </td>
                         <td class="text-center align-middle">
-                            @item.ID
+                            @item.Fullname
                         </td>
                         <td class="text-center align-middle">
                             @Html.Raw(PJUtils.WithDrawStatusHtml(item.Type.Value))
@@ -121,7 +128,7 @@
                                 }
                             }
                         </td>
-                        <td class="text-center align-middle">
+                        <td class="text-right align-middle">
                             @if (item.Status == 1)
                             {
                                 <a class="btn btn-sm btn-success" onclick="clickApproval(@item.ID)">

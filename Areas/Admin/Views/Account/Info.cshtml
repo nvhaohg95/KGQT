@@ -1,5 +1,5 @@
 ﻿@using KGQT.Models.temp;
-@model KGQT.Models.temp.AccountInfo
+@model KGQT.Models.tbl_Account
 
 @{
     ViewData["Title"] = "Thông tin tài khoản";
@@ -64,7 +64,7 @@
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="FirstName">Ngày sinh</label>
-                            <input name="BirthDay" id="BirthDay" value="@(Model.BirthDay != null ? Model.BirthDay.Value.ToString("dd/MM/yyyy") : "")" type="datetime" class="form-control" placeholder="dd/MM/yyy" readonly />
+                            <input name="BirthDay" id="BirthDay" value="" type="datetime" class="form-control" placeholder="dd/MM/yyy" readonly />
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
@@ -72,7 +72,7 @@
                             <label for="Gender">Giới tính</label>
                             @if (Model.Gender != null)
                             {
-                                <input name="Gender" id="Gender" value="@(Model.Gender ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính" readonly />
+                                <input name="Gender" id="Gender" value="@(Model.Gender == true ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính" readonly />
                             }
                             else
                             {
@@ -121,7 +121,7 @@
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="UserName">Tài khoản</label>
-                            <input name="UserName" id="UserName" value="@Model.UserName" type="text" class="form-control" placeholder="Tài khoản" readonly />
+                            <input name="UserName" id="UserName" value="@Model.Username" type="text" class="form-control" placeholder="Tài khoản" readonly />
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
@@ -132,7 +132,7 @@
                     </div>
                 </div>
                 <div class="row justify-content-end mt-2">
-                    <a class="btn btn-success w-100px" onclick="update()" href="#">Cập nhật</a>
+                    <button type="button" class="btn btn-success w-100px" onclick="update()">Cập nhật</button>
                 </div>
             </form>
         </div>
