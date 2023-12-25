@@ -172,7 +172,7 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
-        public bool Update(tempPackage form)
+        public bool Update(tbl_Package form)
         {
             var crrUse = HttpContext.Session.GetString("user");
 

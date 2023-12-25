@@ -241,7 +241,7 @@ namespace KGQT.Business
             return data;
         }
 
-        public static bool Update(tempPackage form, string userLogin)
+        public static bool Update(tbl_Package form, string userLogin)
         {
             try
             {
@@ -268,6 +268,7 @@ namespace KGQT.Business
                 p.WoodPackagePrice = form.WoodPackagePrice;
                 p.WareHouse = form.WareHouse;
                 p.Status = form.Status;
+                p.SurCharge = form.SurCharge;
                 p.ModifiedBy = userLogin;
                 p.ModifiedDate = DateTime.Now;
                 if (oldStt != p.Status)
