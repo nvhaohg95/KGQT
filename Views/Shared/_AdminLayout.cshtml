@@ -113,6 +113,12 @@
                                                 <i class="fas fa-donate text-white"></i>
                                             </div>
                                         }
+                                        else if (item.NotifType == 3)
+                                        {
+                                            <div class="icon-circle bg-danger">
+                                                <i class="fas fa-donate text-white"></i>
+                                            </div>
+                                        }
                                         else
                                         {
                                             <div class="icon-circle bg-warning">
@@ -130,6 +136,10 @@
                                             else if (item.NotifType == 2)
                                             {
                                                 <span>Yêu cầu nạp tiền</span>
+                                            }
+                                            else if (item.NotifType == 3)
+                                            {
+                                                <span>Yêu cầu rút tiền</span>
                                             }
                                             else
                                             {
@@ -243,7 +253,7 @@
                         </a>
                         <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts4" aria-expanded="false" aria-controls="collapseLayouts4">
                             <span><i class="fas fa-cog icon-16"></i></span>
-                            <span class="ml-2">CẤU HÌNH</span>
+                            <span class="ml-2">THIẾT LẬP</span>
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
                         <div class="collapse" id="collapseLayouts4" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">

@@ -1,5 +1,5 @@
 ﻿@using KGQT.Models.temp;
-@model List<KGQT.Models.temp.AccountInfo>;
+@model List<KGQT.Models.tbl_Account>;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Danh sách người dùng";
@@ -11,23 +11,7 @@
     var lstRoles = ViewData["lstRoles"] as List<UserRole>;
 
 }
-<style>
-    .input {
-        height: calc(1.5em + 0.75rem + 2px);
-        padding: 0.375rem 0.75rem;
-        margin-right: 2px;
-        font-size: 1rem;
-        font-weight: 400;
-        line-height: 1.5;
-        color: #6e707e;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #d1d3e2;
-        border-radius: 0.35rem;
-        outline: none;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-</style>
+
 <div class="row mb-2">
     <ul id="breadcrumbs">
         <li><a>Người dùng</a></li>
@@ -53,14 +37,14 @@
         </div>
     </div>
     <div class="col-12">
-        <table class="table table-bordered">
+        <table class="table table-hover">
             <thead class="thead-light">
                 <tr class="fw-bold">
-                    <th class="text-left">Họ tên</th>
+                    <th class="text-left">Khách hàng</th>
                     <th class="text-center">MĐD</th>
                     <th class="text-center">Tài khoản</th>
                     <th class="text-center">Số dư ví</th>
-                    <th class="text-center">Thao tác</th>
+                    <th class="text-center"></th>
                 </tr>
             </thead>
             <tbody>
@@ -74,17 +58,17 @@
                                 <span class="ml-2" title="@item.FullName">@item.FullName</span>
                             </div>
                         </td>
-                        <td class="text-left">
+                        <td class="text-center">
                             <span title="@item.UserID">@item.UserID</span>
                         </td>
                         <td class="text-center">
-                            <span title="@item.UserName">@item.UserName</span>
+                            <span title="@item.Username">@item.Username</span>
                         </td>
                         <td class="text-center text-truncate">
                             <span title="@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ" class="text-danger">@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ</span>
                         </td>
-                        <td class="text-center">
-                            <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.UserName">
+                        <td class="text-right">
+                            <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.Username">
                                 <i class="fas fa-wallet"></i>
                                 <span>Nạp tiền</span>
                             </a>

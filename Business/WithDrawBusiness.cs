@@ -35,8 +35,9 @@ namespace KGQT.Business
         #endregion
 
         #region Add
-        public static bool Insert(tbl_Withdraw data,string createdBy)
+        public static DataReturnModel<bool> Insert(tbl_Withdraw data,string createdBy)
         {
+            DataReturnModel<bool> result = new DataReturnModel<bool>();
             using (var db = new nhanshiphangContext())
             {
                 var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
@@ -60,18 +61,83 @@ namespace KGQT.Business
                             notiMessage = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", data.Amount);
                             HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, createdBy);
                             NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, 2, admin.Username);
-
+                            result.IsError = false;
+                            result.Message = "Tạo thành công!";
+                            result.Data = true;
                         }
                         else
                         {
                             string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
                             notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", user.FullName, strHTML);
                             NotificationBusiness.Insert(user.ID, user.FullName, 0, "Admin", data.ID, "", notiMessage, 2, acc.Username, true);
+                            result.IsError = false;
+                            result.Message = "Yêu cầu của bạn đã được gửi!";
+                            result.Data = true;
                         }
-                        return true;
+                        return result;
                     }
                 }
-                return false;
+                result.IsError = true;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
+                result.Data = false;
+                return result;
+            }
+        }
+        // rút tiền
+        public static DataReturnModel<bool> Insert2(tbl_Withdraw data, string createdBy)
+        {
+            DataReturnModel<bool> result = new DataReturnModel<bool>();
+            using (var db = new nhanshiphangContext())
+            {
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
+                if (acc != null )
+                {
+                    var totalAmount = db.tbl_Withdraws.Where(x => x.UID == acc.ID && x.Status == 1 && x.Type == 2).Sum(x => x.Amount);
+                    if((acc.Wallet - totalAmount) < data.Amount)
+                    {
+                        result.IsError = true;
+                        result.Message = "Số dư trong ví của bạn không đủ.";
+                        result.Data = false;
+                        return result;
+                    }
+                    var admin = AccountBusiness.GetInfo(-1, createdBy);
+                    db.Add(data);
+                    int kq1 = db.SaveChanges();
+                    if (kq1 > 0)
+                    {
+                        string notiMessage = "";
+                        string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
+
+                        if (data.Status == 2)
+                        {
+                            var moneyLeft = acc.Wallet != null ? acc.Wallet : 0;
+                            acc.Wallet = moneyLeft - data.Amount;
+                            acc.ModifiedBy = createdBy;
+                            acc.ModifiedDate = DateTime.Now;
+                            db.Update(acc);
+                            db.SaveChanges();
+                            notiMessage = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> từ tài khoản của bạn đã được duyệt.", strHTML);
+                            HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, createdBy);
+                            NotificationBusiness.Insert(admin.ID, admin.FullName, acc.ID, acc.FullName, data.ID, "", notiMessage, 3, admin.Username);
+                            result.IsError = false;
+                            result.Message = "Tạo thành công!";
+                            result.Data = true;
+                        }
+                        else
+                        {
+                            notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu rút <span class=\"text-danger\">{1}</span> từ tài khoản.", acc.FullName, strHTML);
+                            NotificationBusiness.Insert(acc.ID, acc.FullName, 0, "Admin", data.ID, "", notiMessage, 3, acc.Username, true);
+                            result.IsError = false;
+                            result.Message = "Yêu cầu của bạn đã được gửi!";
+                            result.Data = true;
+                        }
+                        return result;
+                    }
+                }
+                result.IsError = true;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
+                result.Data = false;
+                return result;
             }
         }
         #endregion
@@ -94,15 +160,28 @@ namespace KGQT.Business
                     var moneyLeft = user.Wallet != null ? user.Wallet : 0;
                     if (user != null)
                     {
-                        user.Wallet = moneyLeft + data.Amount;
+                        string message = "";
+                        string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
+                        if (data.Type == 1) //nạp tiền
+                        {
+                            user.Wallet = moneyLeft + data.Amount;
+                            message = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", strHTML);
+                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", message, 2, admin.Username);
+                        }
+                        else if (data.Type == 2)//rút tiền
+                        {
+                            user.Wallet = moneyLeft - data.Amount;
+                            message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> từ tài khoản của bạn đã được duyệt.", strHTML);
+                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, userName);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", message, 3, admin.Username);
+                        }
                         user.ModifiedBy = admin.Username;
                         user.ModifiedDate = DateTime.Now;
                         db.Update(user);
                         int kq = db.SaveChanges();
                         if (kq > 0)
                         {
-                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID,data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
-                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", string.Format("Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount), 2, admin.Username);
                             result.IsError = false;
                             result.Message = "Duyệt thành công!";
                             result.Data = data;

@@ -422,7 +422,7 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                var lst = new List<AccountInfo>();
+                var lst = new List<tbl_Account>();
                 int total = 0;
                 int totalPage = 0;
                 var query = db.tbl_Accounts.AsQueryable();
@@ -431,10 +431,11 @@ namespace KGQT.Business
                 total = query.Count();
                 totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                 query = query.Skip((page - 1) * pageSize).Take(pageSize);
-                var accInfos = query.Select(x=> new AccountInfo {
+                lst = query.Select(x=> new tbl_Account {
                     ID = x.ID,
                     UserID = x.UserID,
-                    UserName = x.Username,
+                    Username = x.Username,
+                    FullName = x.FullName,
                     Wallet = x.Wallet,
                     IMG = x.IMG
                 }).ToList();
@@ -711,7 +712,7 @@ namespace KGQT.Business
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email);
+                    var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email && x.Username != data.Username);
                     if (isEmail)
                     {
                         result.IsError = true;

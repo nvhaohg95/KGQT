@@ -123,6 +123,12 @@
                                                 <i class="fas fa-donate text-white"></i>
                                             </div>
                                         }
+                                        else if (item.NotifType == 3)
+                                        {
+                                            <div class="icon-circle bg-danger">
+                                                <i class="fas fa-donate text-white"></i>
+                                            </div>
+                                        }
                                         else
                                         {
                                             <div class="icon-circle bg-warning">
@@ -141,11 +147,14 @@
                                             {
                                                 <span>Yêu cầu nạp tiền</span>
                                             }
+                                            else if (item.NotifType == 3)
+                                            {
+                                                <span>Yêu cầu rút tiền</span>
+                                            }
                                             else
                                             {
                                                 <span>Thông báo</span>
                                             }
-
                                         </div>
                                         <div>
                                             @Html.Raw(item.Message)
@@ -213,12 +222,17 @@
                         Thông báo<span class="badge badge-danger badge-counter">3+</span>
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" data-toggle="modal" data-target="#withDrawModal">
+                    <a class="dropdown-item" data-toggle="modal" data-target="#withDrawModal" href="#">
                         <i class="fas fa-money-check-alt fa-sm fa-fw mr-2"></i>
                         Nạp tiền
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" data-toggle="modal" data-target="#changePassWordModal">
+                    <a class="dropdown-item" data-toggle="modal" data-target="#withDrawModal2" href="#">
+                        <i class="fas fa-dollar-sign fa-sm fa-fw mr-2"></i>
+                        Rút tiền
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#changePassWordModal" href="#">
                         <i class="fas fa-key fa-sm fa-fw mr-2"></i>
                         Đổi mật khẩu
                     </a>
@@ -366,52 +380,135 @@
     </div>
     <!-- form add widthdraw -->
     <div class="modal fade" id="withDrawModal" tabindex="-1" role="dialog" aria-labelledby="withDrawModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title">NẠP TIỀN</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formWithDraw">
+                    <div class="modal-body">
+                        <div class="row px-4">
+                            <div class="col-lg-12 col-md-12 col-sm-12 d-none">
+                                <div class="form-group">
+                                    <label class="fw-bold">Tài khoản<span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control" name="Username" value="@user.Username" placeholder="Tài khoản" readonly>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="fw-bold">Hình thức thanh toán<span class="text-danger">(*)</span></label>
+                                    <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this,1)">
+                                        <option value="2" selected>Chuyển khoản</option>
+                                        <option value="1">Tiền mặt</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- thông tin chuyển khoản -->
+                            <div class="col-lg-12 col-md-12 col-sm-12" id="extendBank">
+                                <div class="row">
+                                    <div class="col-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="fw-bold">Ngân hàng<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" name="BankName" placeholder="Ngân hàng">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="fw-bold">Số tài khoản<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" name="AccountNumber" placeholder="Số tài khoản">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="fw-bold">Chủ tài khoản<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" name="AccountName" placeholder="Chủ tài khoản">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="fw-bold">Số tiền<span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control" name="Amount" placeholder="Số tiền" onkeyup="format(this)">
+
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="fw-bold">Nội dung</label>
+                                    <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="alert alert-warning d-flex" role="alert">
+                                    <i class="fas fa-exclamation-triangle icon-16 mr-2"></i>
+                                    <div>
+                                        <p class="mb-0"><b>Lưu ý:</b></p>
+                                        <p class="mb-0">Với những giao dịch nạp/rút tiền ngoài giờ hành chính. Thời gian hệ thống xử lý có thể chậm hơn bình thường. Mong quý khách hàng thông cảm!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary w-100px" onclick="clickAddWithDraw()">Gửi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- form add widthdraw -->
+        <div class="modal fade" id="withDrawModal2" tabindex="-1" aria-labelledby="withDrawModal2" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-primary">
-                        <h5 class="modal-title">NẠP TIỀN</h5>
+                        <h5 class="modal-title">RÚT TIỀN</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form id="formWithDraw">
+                    <form id="formWithDraw2">
                         <div class="modal-body">
                             <div class="row px-4">
-                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="col-lg-12 col-md-12 col-sm-12 d-none">
                                     <div class="form-group">
                                         <label class="fw-bold">Tài khoản<span class="text-danger">(*)</span></label>
                                         <input type="text" class="form-control" name="Username" value="@user.Username" placeholder="Tài khoản" readonly>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
                                         <label class="fw-bold">Hình thức thanh toán<span class="text-danger">(*)</span></label>
-                                        <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this)">
+                                        <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this,2)">
                                             <option value="2" selected>Chuyển khoản</option>
                                             <option value="1">Tiền mặt</option>
                                         </select>
                                     </div>
                                 </div>
                                 <!-- thông tin chuyển khoản -->
-                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendBank">
+                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendBank2">
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <label class="fw-bold">Chủ tài khoản<span class="text-danger">(*)</span></label>
-                                                <input type="text" class="form-control" name="AccountName" placeholder="Chủ tài khoản">
+                                                <label class="fw-bold">Ngân hàng<span class="text-danger">(*)</span></label>
+                                                <input type="text" class="form-control" name="BankName" placeholder="Ngân hàng">
                                             </div>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <label class="fw-bold">Số tài khoản<span class="text-danger">(*)</span></label>
                                                 <input type="text" class="form-control" name="AccountNumber" placeholder="Số tài khoản">
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group">
-                                            <label class="fw-bold">Ngân hàng<span class="text-danger">(*)</span></label>
-                                            <input type="text" class="form-control" name="BankName" placeholder="Ngân hàng">
+                                        <div class="col-12 col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="fw-bold">Chủ tài khoản<span class="text-danger">(*)</span></label>
+                                                <input type="text" class="form-control" name="AccountName" placeholder="Chủ tài khoản">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -428,20 +525,20 @@
                                         <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendNote">
+                                <div class="col-lg-12 col-md-12 col-sm-12" >
                                     <div class="alert alert-warning d-flex" role="alert">
                                         <i class="fas fa-exclamation-triangle icon-16 mr-2"></i>
                                         <div>
                                             <p class="mb-0"><b>Lưu ý:</b></p>
-                                            <p class="mb-0">Với những giao dịch nạp tiền chuyển khoản ngoài giờ hành chính. Thời gian hệ thống xử lý có thể chậm hơn bình thường. Mong quý khách hàng thông cảm!</p>
+                                            <p class="mb-0">Với những giao dịch nạp/rút tiền ngoài giờ hành chính. Thời gian hệ thống xử lý có thể chậm hơn bình thường. Mong quý khách hàng thông cảm!</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-primary w-100px" onclick="clickAddWithDraw()">Gửi</button>
+                            <button type="button" class="btn btn-secondary w-100px" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" class="btn btn-primary w-100px" onclick="clickAddWithDraw2()">Gửi</button>
                         </div>
                     </form>
                 </div>
@@ -473,6 +570,7 @@
                 }
             }
         }
+        // change password
         function clickChangePass() {
             var data = helper.form2Object($('#formChangePass').serializeArray());
             if (!data) {
@@ -522,23 +620,42 @@
                 _input.attr('type', 'password');
             }
         };
-        function valueCBBChange(e) {
+        function valueCBBChange(e,type = 1) {
             var v = $(e).find(":selected").val();
             if (v == 2)
             {
-                $('#extendBank')?.removeClass('d-none');
-                $('#extendNote')?.removeClass('d-none');
+                if(type==1)
+                {
+                    $('#extendBank')?.removeClass('d-none');
+                    $('#extendNote')?.removeClass('d-none');
+                }
+                else
+                {
+                    $('#extendBank2')?.removeClass('d-none');
+                    $('#extendNote2')?.removeClass('d-none');
+                }
+                
 
             }
             else
             {
-                $('#extendBank')?.addClass('d-none');
-                $('#extendNote')?.addClass('d-none');
+                if(type==1)
+                {
+                    $('#extendBank')?.addClass('d-none');
+                    $('#extendNote')?.addClass('d-none');
+                }
+                else
+                {
+                    $('#extendBank2')?.addClass('d-none');
+                    $('#extendNote2')?.addClass('d-none');
+                }
+
             }
         }
         function format(e) {
             helper.getChange(e)
         }
+        // gửi yêu cầu nạp tiền
         function clickAddWithDraw(){
             var data = helper.form2Object($('#formWithDraw').serializeArray());
             if (!data) 
@@ -562,17 +679,16 @@
 
             if (data.PaymentMethod == 2) 
             {
-                if (!data.AccountName) {
-                    helper.showWarn('Chủ tài khoản không được bỏ trống!');
+                if (!data.BankName) {
+                    helper.showWarn('Ngân hàng không được bỏ trống!');
                     return;
                 }
                 if (!data.AccountNumber) {
                     helper.showWarn('Số tài khoản không được bỏ trống!');
                     return;
                 }
-                if (!data.BankName)
-                {
-                    helper.showWarn('Ngân hàng không được bỏ trống!');
+                if (!data.AccountName) {
+                    helper.showWarn('Chủ tài khoản không được bỏ trống!');
                     return;
                 }
             }
@@ -590,10 +706,64 @@
                 type: 'POST',
                 data: { model: data },
                 success: function (respone) {
-                    if (respone)
-                        helper.showSuc('Yêu cầu của bạn đã được gửi!')
+                    if (respone.isError)
+                        helper.showErr(respone.message)
                     else
-                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                        helper.showSuc('Yêu cầu của bạn đã được gửi!')
+                },
+                error: function (xhr, status, err) {
+                    helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                }
+            });
+        }
+        // gửi yêu cầu rút tiền
+        function clickAddWithDraw2() {
+            var data = helper.form2Object($('#formWithDraw2').serializeArray());
+            if (!data) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+                return;
+            }
+            if (!data.Username) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+                return;
+            }
+
+            if (!data.PaymentMethod) {
+                helper.showWarn('Vui lòng chọn phương thức thanh toán!');
+                return;
+            }
+
+            if (!data.Amount)
+                data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
+
+            if (data.PaymentMethod == 2) {
+                if (!data.BankName) {
+                    helper.showWarn('Ngân hàng không được bỏ trống!');
+                    return;
+                }
+                if (!data.AccountNumber) {
+                    helper.showWarn('Số tài khoản không được bỏ trống!');
+                    return;
+                }
+                if (!data.AccountName) {
+                    helper.showWarn('Chủ tài khoản không được bỏ trống!');
+                    return;
+                }
+            }
+            if (!data.Amount) {
+                helper.showWarn('Vui lòng nhập số tiền!');
+                return;
+            }
+
+            $.ajax({
+                url: '/WithDraw/Create2',
+                type: 'POST',
+                data: { model: data },
+                success: function (respone) {
+                    if (respone.isError)
+                        helper.showErr(respone.message)
+                    else
+                        helper.showSuc('Yêu cầu của bạn đã được gửi!')
                 },
                 error: function (xhr, status, err) {
                     helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')

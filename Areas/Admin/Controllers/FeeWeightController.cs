@@ -14,12 +14,13 @@ namespace KGQT.Areas.Admin.Controllers
     {
         #region Index
         [HttpGet]
-        public IActionResult Index(int page = 1,int pageSize = 10)
+        public IActionResult Index(int type,int page = 1,int pageSize = 10)
         {
             var oData = FeeWeightBusiness.GetPage(page, pageSize);
             var lstData = oData[0] as List<tbl_FeeWeight>;
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
+            ViewData["type"] = type;
             ViewData["page"] = page;
             ViewData["totalRecord"] = totalRecord;
             ViewData["totalPage"] = totalPage;

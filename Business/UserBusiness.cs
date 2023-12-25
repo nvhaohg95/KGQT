@@ -9,7 +9,7 @@ namespace KGQT.Business
     public static class UserBusiness
     {
         #region Get Page User
-        public static object[] GetPage(string searchText = "", int page = 1, int pageSize = 5)
+        public static object[] GetPage(string searchText = "", int page = 1, int pageSize = 10)
         {
             using (var db = new nhanshiphangContext())
             {
