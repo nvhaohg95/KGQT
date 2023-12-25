@@ -303,7 +303,7 @@
 </div>
 
 <!--Modal import file-->
-<div class="modal fade" id="import" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="import" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
@@ -332,38 +332,8 @@
     </div>
 </div>
 <!--Modal import file-->
-<!--Modal upload file-->
-<div class="modal fade" id="exportTQ" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h5 class="modal-title text-white text-uppercase fw-bold" id="exampleModalLongTitle"><i class="fas fa-file-excel mr-2"></i>Đọc dữ liệu từ file excel</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="uploadExcel">
-                    <div class="form-group mb-4">
-                        <label class="required" for="exportCNWH">File Excel:</label>
-                        <input type="file" class="form-control" id="exportCNWH">
-                    </div>
-                    <div class="form-group mb-4">
-                        <label class="required" for="txtShipID">Tên Sheet:</label>
-                        <input type="text" class="form-control" id="txtSheet" name="txtSheet" placeholder="Nhập tên sheet cần đọc dữ liệu (cần nhập chính xác tên)">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" onclick="exportCNWH()">Cập nhật</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!--Modal upload file-->
 <!--Modal instock pack-->
-<div class="modal fade" id="instock" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="instock" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
@@ -442,73 +412,6 @@
         });
     }
 
-
-    function exportCNWH() {
-        let file = $("#exportCNWH")[0].files;
-        let sheet = $("#txtSheet").val();
-        let form = new FormData();
-        form.append("file", file[0]);
-        form.append("sheet", sheet);
-        $.ajax({
-            url: '/admin/package/ExportChinaWareHouse',
-            type: 'POST',
-            dataType: 'json',
-            data: form,
-            contentType: false,
-            processData: false,
-            success: function (res) {
-                if (res.isError) {
-                    helper.showErr(res.message);
-                } else {
-                    Swal.fire({
-                        title: "Thành công!",
-                        text: res.message,
-                        icon: "success",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        cancelButtonText: "Không tải",
-                        confirmButtonText: "Tải file"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: '/admin/package/DownloadFile?fileName=' + res.data,
-                                type: 'Get',
-                                xhrFields: {
-                                    responseType: 'blob'
-                                },
-                                contentType: false,
-                                processData: false,
-                                success: function (data) {
-                                    let sPath = res.data.split("/");
-                                    let fName = sPath[sPath.length - 1];
-                                    let a = document.createElement('a');
-                                    let url = window.URL.createObjectURL(data);
-                                    a.href = url;
-                                    a.download = fName;
-                                    document.body.append(a);
-                                    a.click();
-                                    a.remove();
-                                    window.URL.revokeObjectURL(url);
-                                    window.location.reload();
-                                }, error: function (err) {
-                                    console.log(err);
-                                }
-                            });
-                        }
-                        else {
-                            window.location.reload();
-                        }
-                    });
-                }
-                $("#uploadExcel")[0].reset();
-
-            }, error: function (e) {
-                console.log(e);
-            }
-        });
-    }
-
     function cancel(id) {
         $.ajax({
             url: '/admin/Package/Cancel',
@@ -536,6 +439,7 @@
             data: { code },
             success: function (resonse) {
                 $('#package-form').html(resonse);
+                $('#instock').modal({ backdrop: 'static', keyboard: false })
                 $('#instock').modal('show');
             }, error: function (e) {
                 console.log(e);
@@ -549,6 +453,7 @@
         let air = 0;
         let username = '';
         let moving = 0;
+        let surCharge = $("#txtSurCharge").data('value');
         let $username = $("#txtUsername");
         let $moving = $('input[name="MovingMethod"]');
         let $wood = $('#txtFeePack');
@@ -586,12 +491,11 @@
                 return;
             }
         }
-
         $.ajax({
             url: '/admin/Package/InStockPackage',
             method: 'POST',
             dataType: 'json',
-            data: { id: this.packId, username, moving, weight, woodPrice: wood, airPrice: air },
+            data: { id: this.packId, username, moving, weight, woodPrice: wood, airPrice: air, surCharge },
             success: function (res) {
                 if (res)
                     helper.showSuc("Cập nhật thành công");

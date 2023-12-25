@@ -86,6 +86,14 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public IActionResult ExportFile(int status, DateTime? fromDate, DateTime? toDate)
+        {
+            var data = Packages.GetListExport(status, fromDate, toDate);
+            return View(data);
+        }
+
+
+        [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
             var user = HttpContext.Session.GetString("user");
@@ -147,26 +155,6 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// Cập nhật trạng thái của kiện theo file excel (tạm thời k sử dụng nữa)
-        /// </summary>
-        /// <param name="sheet"></param>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public object ExportChinaWareHouse(string sheet, IFormFile file)
-        {
-            if (file == null)
-            {
-                Log.Error("Cập nhật xuất kho China", "Không có file dc chọn");
-                return new { status = -1 };
-            }
-            var userLogin = HttpContext.Session.GetString("user");
-            var oData = Packages.ExportChinaWareHouse(file, sheet, userLogin);
-            return oData;
-        }
-
-
-        /// <summary>
         /// Cập nhật trạng thái của kiện
         /// </summary>
         /// <param name="form"></param>
@@ -201,10 +189,10 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="airPrice"></param>
         /// <returns></returns>
         [HttpPost]
-        public bool InStockPackage(int id, string username, int moving, double weight, double woodPrice, double airPrice)
+        public bool InStockPackage(int id, string username, int moving, double weight, double woodPrice, double airPrice, double surCharge)
         {
             var crrUse = HttpContext.Session.GetString("user");
-            var oSave = Packages.InStockHCMWareHouse(id, username, moving, weight, woodPrice, airPrice, crrUse);
+            var oSave = Packages.InStockHCMWareHouse(id, username, moving, weight, woodPrice, airPrice, surCharge, crrUse);
             return oSave;
         }
 

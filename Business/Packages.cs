@@ -137,6 +137,28 @@ namespace KGQT.Business
             data.Key = code;
             return data;
         }
+        public static DataReturnModel<List<tbl_Package>> GetListExport(int status, DateTime? fromDate, DateTime? toDate)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                DataReturnModel<List<tbl_Package>> data = new DataReturnModel<List<tbl_Package>>();
+                var query = db.tbl_Packages.AsQueryable();
+                if (status > 0)
+                    query = query.Where(x => x.Status == status);
+                if (fromDate != null && fromDate != DateTime.MinValue)
+                    query = query.Where(x => x.ExportedCNWH >= fromDate);
+
+                if (toDate != null && toDate != DateTime.MinValue)
+                {
+                    toDate = toDate.Value.AddDays(1).AddTicks(-1);
+                    query = query.Where(x => x.ExportedCNWH <= toDate);
+                }
+                data.IsError = false;
+                data.Data = query.ToList();
+                return data;
+            }
+        }
+
         #endregion
 
         #region CRUD
@@ -183,7 +205,7 @@ namespace KGQT.Business
                     exist.Phone = user.Phone;
                     exist.Email = user.Email;
                 }
-                else if(!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
+                else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
                 {
                     data.IsError = true;
                     data.Message = "Mã vận đơn đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin!";
@@ -207,8 +229,8 @@ namespace KGQT.Business
                 var update = BusinessBase.Update(exist);
                 if (update)
                     BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
-                data.IsError = update;
-                data.Message = "Mã vận đơn đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin!";
+                data.IsError = !update;
+                data.Message = "Tạo Mã vận đơn thành công!";
                 return data;
             }
 
@@ -295,7 +317,7 @@ namespace KGQT.Business
             }
         }
 
-        public static bool InStockHCMWareHouse(int id, string username, int moving, double weight, double woodPrice, double airPrice, string accessor)
+        public static bool InStockHCMWareHouse(int id, string username, int moving, double weight, double woodPrice, double airPrice, double surCharge, string accessor)
         {
             var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
             if (pack == null) return false;
@@ -334,6 +356,7 @@ namespace KGQT.Business
             pack.WeightReal = weight;
             pack.WoodPackagePrice = woodPrice;
             pack.AirPackagePrice = airPrice;
+            pack.SurCharge = surCharge;
             pack.Status = 4;
             pack.ModifiedBy = accessor;
             pack.ModifiedDate = DateTime.Now;
@@ -384,8 +407,9 @@ namespace KGQT.Business
                     double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => x.WoodPackagePrice.Value);
                     double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => x.AirPackagePrice.Value);
                     double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => x.IsInsurancePrice.Value);
+                    double totalCharge = lstPack.Sum(x => Convert.ToDouble(x.SurCharge));
 
-                    var totalPrice = totalWeightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice;
+                    var totalPrice = totalWeightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
                     check.Weight = totalWeight;
                     check.WeightPrice = totalWeightPrice;
                     check.WoodPackagePrice = totalWoodPrice;
@@ -404,8 +428,9 @@ namespace KGQT.Business
                     if (weightRound < minOrder)
                     {
                         weightRound = minOrder;
-                        feeWeight = (weightRound * fee.Amount).Value;
                     }
+                    feeWeight = (weightRound * fee.Amount).Value;
+
                     var ship = new tbl_ShippingOrder();
                     ship.ShippingOrderCode = pack.PackageCode;
                     ship.Username = pack.Username;
@@ -424,7 +449,8 @@ namespace KGQT.Business
                     ship.WoodPackagePrice = pack.WoodPackagePrice ?? 0;
                     ship.IsInsurance = pack.IsInsurance;
                     ship.InsurancePrice = pack.IsInsurancePrice ?? 0;
-                    ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice;
+                    ship.SurCharge = pack.SurCharge ?? 0;
+                    ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice + ship.SurCharge;
                     ship.Status = 1;
                     ship.ChinaExportDate = pack.ExportedCNWH;
                     ship.CreatedDate = DateTime.Now;
@@ -564,103 +590,6 @@ namespace KGQT.Business
             }
         }
 
-        public static DataReturnModel<string> ExportChinaWareHouse(IFormFile file, string name, string accesser)
-        {
-            var data = new DataReturnModel<string>();
-            List<tempExportChina> lstTemp = new List<tempExportChina>();
-            using (Stream stream = file.OpenReadStream())
-            {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
-                    {
-                        UseColumnDataType = true,
-                        ConfigureDataTable = (data) => new ExcelDataTableConfiguration()
-                        {
-                            UseHeaderRow = true
-                        }
-                    });
-                    DataTableCollection table = result.Tables;
-                    DataTable dt = table[name];
-                    if (dt == null)
-                        dt = table[table.Count - 1];
-                    if (dt != null)
-                    {
-                        var rows = dt.Rows.Count;
-                        var colums = 2;
-                        for (int col = 0; col < colums; col++)
-                        {
-                            int date = 1;
-                            if (col == 0)
-                                date = 3;
-                            else
-                                date = 5;
-                            for (int row = 0; row < rows; row++)
-                            {
-                                lstTemp.Add(new tempExportChina
-                                {
-                                    Column = col,
-                                    Row = row,
-                                    MovingMethod = col + 1,
-                                    Date = date,
-                                    Value = dt.Rows[row][col].ToString()
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-            if (lstTemp.Count > 0)
-            {
-                var codes = lstTemp.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).ToList();
-                if (codes.Count > 0)
-                {
-                    using (var db = new nhanshiphangContext())
-                    {
-                        var lstPackage = db.tbl_Packages.Where(x => codes.Contains(x.PackageCode) && x.Exported != true).ToList();
-                        if (lstPackage.Count > 0)
-                        {
-                            int i = 0;
-                            foreach (var item in lstPackage)
-                            {
-                                var temp = lstTemp.FirstOrDefault(x => x.Value == item.PackageCode);
-                                var dt = DateTime.Now;
-                                item.Status = 3;
-                                item.MovingMethod = temp.MovingMethod;
-                                item.ExportedCNWH = dt;
-                                item.DateExpectation = dt.AddDays(temp.MovingMethod);
-                                item.Exported = true;
-                                item.ModifiedBy = accesser;
-                                item.ModifiedDate = DateTime.Now;
-                                db.Update(item);
-
-                                temp.Mapped = true;
-                                lstTemp[i] = temp;
-                                i++;
-                            }
-                        }
-                        var s = db.SaveChanges() > 0;
-                        if (s)
-                        {
-                            string fileName = PJUtils.MarkupValueExcel(file, name, lstTemp.Where(x => x.Mapped).ToList());
-                            data.IsError = false;
-                            data.Message = "Cập nhật thành công, bạn có muốn tải file đối chiếu?";
-                            data.Data = fileName;
-                            return data;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                data.IsError = true;
-                data.Message = "Mã vận đơn đã được cập nhật trước đó !";
-                return data;
-            }
-            data.IsError = true;
-            data.Message = "Không đọc được thông tin file";
-            return data;
-        }
         #endregion
     }
 }

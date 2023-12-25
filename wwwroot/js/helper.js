@@ -38,7 +38,7 @@
             message,
             'success',
         ).then((result) => {
-            if (result.isConfirmed && refresh)
+            if (refresh)
                 window.location.reload();
         });
     },
