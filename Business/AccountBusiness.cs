@@ -726,9 +726,9 @@ namespace KGQT.Business
                         acc.Gender = data.Gender;
                         acc.Email = data.Email;
                         acc.Phone = data.Phone;
-                        data.ModifiedBy = data.Username;
-                        data.ModifiedDate = DateTime.Now;
-                        db.Update(data);
+                        acc.ModifiedBy = data.Username;
+                        acc.ModifiedDate = DateTime.Now;
+                        db.Update(acc);
                         var kq = db.SaveChanges();
                         if (kq > 0)
                         {
