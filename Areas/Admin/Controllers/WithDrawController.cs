@@ -117,8 +117,7 @@ namespace KGQT.Areas.Admin.Controllers
             if (result != null)
             {
                 var user = AccountBusiness.GetInfo(-1, userLogin);
-                var data = result.Data as tbl_Withdraw;
-                if (data.UID == user.ID)
+                if (result.Data.UID == user.ID)
                     HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(user));
                 return true;
             }

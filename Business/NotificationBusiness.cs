@@ -51,7 +51,7 @@ namespace KGQT.Business
                     Message = message,
                     IsForAdmin = isForAdmin,
                     NotifType = notiType,
-                    Status = 1,
+                    Status = 0,
                     CreatedBy = createdBy,
                     CreatedDate = DateTime.Now
                 };

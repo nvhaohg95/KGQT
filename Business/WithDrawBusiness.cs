@@ -57,7 +57,7 @@ namespace KGQT.Business
                             acc.ModifiedDate = DateTime.Now;
                             db.Update(acc);
                             db.SaveChanges();
-                            notiMessage = string.Format("Nạp tiền thành công. Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount);
+                            notiMessage = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", data.Amount);
                             HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, createdBy);
                             NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, 2, admin.Username);
 
@@ -65,7 +65,7 @@ namespace KGQT.Business
                         else
                         {
                             string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
-                            notiMessage = string.Format("Yêu cầu nạp tiền. Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", user.FullName, strHTML);
+                            notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", user.FullName, strHTML);
                             NotificationBusiness.Insert(user.ID, user.FullName, 0, "Admin", data.ID, "", notiMessage, 2, acc.Username, true);
                         }
                         return true;
@@ -90,7 +90,7 @@ namespace KGQT.Business
                     data.ModifiedBy = admin.Username;
                     data.ModifiedDate = DateTime.Now;
                     db.Update(data);
-                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == data.UID);
                     var moneyLeft = user.Wallet != null ? user.Wallet : 0;
                     if (user != null)
                     {
@@ -102,7 +102,7 @@ namespace KGQT.Business
                         if (kq > 0)
                         {
                             HistoryPayWallet.Insert(user.ID, user.Username, data.ID,data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
-                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", string.Format("Nạp tiền thành công. Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount), 2, admin.Username);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", string.Format("Tài khoản của bạn được cộng thêm <span class=\"text-success\">+{0}</span>", data.Amount), 2, admin.Username);
                             result.IsError = false;
                             result.Message = "Duyệt thành công!";
                             result.Data = data;
@@ -113,7 +113,7 @@ namespace KGQT.Business
                 }    
             }
             result.IsError = true;
-            result.Message = "Hệ thống thực thi không thành công!";
+            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
             return result;
         }
         #endregion

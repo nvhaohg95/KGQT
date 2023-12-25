@@ -122,6 +122,21 @@
 
                                     </div>
                                     <div>
+                                        <div class="@(item.Status == 0 ? "fw-bold":"")">
+                                            @if (item.NotifType == 1)
+                                            {
+                                                <span>Thông tin đơn hàng</span>
+                                            }
+                                            else if (item.NotifType == 2)
+                                            {
+                                                <span>Yêu cầu nạp tiền</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Thông báo</span>
+                                            }
+
+                                        </div>
                                         <div>
                                             @Html.Raw(item.Message)
                                         </div>
