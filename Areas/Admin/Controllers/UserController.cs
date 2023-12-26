@@ -62,10 +62,10 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == ID);
             if (user == null) return new { error = true, mssg = "Không tìm thấy thông tin" };
-            if (user.UserID == form.UserID) return new { error = false };
-            var exist = BusinessBase.Exist<tbl_Account>(x => x.UserID == form.UserID && x.ID != user.ID);
-            if (exist)
-                return new { error = true, mssg = "Mã định danh đã tồn tại" };
+            //if (user.UserID == form.UserID) return new { error = false };
+            //var exist = BusinessBase.Exist<tbl_Account>(x => x.UserID == form.UserID && x.ID != user.ID);
+            //if (exist)
+            //    return new { error = true, mssg = "Mã định danh đã tồn tại" };
 
             user.UserID = form.UserID;
             user.RoleID = form.RoleID;

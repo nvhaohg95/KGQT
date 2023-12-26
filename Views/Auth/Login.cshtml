@@ -3,6 +3,7 @@
     ViewData["Title"] = "Đăng nhập";
     Layout = "~/Views/Shared/_PartialView.cshtml";    
 }
+<link href="~/css/sweetalert2.css" rel="stylesheet" />
 <script src="~/js/helper.js" type="text/javascript"></script>
 <script src="~/js/base.js" type="text/javascript"></script>
 <script src="~/vendor/jquery-easing/jquery.easing.js"></script>
@@ -110,7 +111,7 @@
             data: data,
             success: function (respone) {
                 if (respone.isError)
-                    helper.showWarn(respone.message);
+                    helper.showErr(respone.message);
                 else
                 {
                     if(respone.data.roleID == 0)

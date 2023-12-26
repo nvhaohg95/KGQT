@@ -135,7 +135,7 @@
                                     @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                 </td>
                                 <td class="text-center align-middle">
-                                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                                    @Converted.Double2Money(item.TotalPrice)
                                 </td>
                                 <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.CreatedDate)

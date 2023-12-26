@@ -142,7 +142,7 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 DataReturnModel<List<tbl_Package>> data = new DataReturnModel<List<tbl_Package>>();
-                var query = db.tbl_Packages.AsQueryable();
+                var query = db.tbl_Packages.Where(x=>x.ExportedCNWH != null);
                 if (status > 0)
                     query = query.Where(x => x.Status == status);
                 if (fromDate != null && fromDate != DateTime.MinValue)

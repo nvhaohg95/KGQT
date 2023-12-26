@@ -99,39 +99,93 @@
                                         }
                                     </ul>
                                 </div>
-                                <div class="row p-2 mx-0 my-2 border-bottom">
-                                    <div class="col-md-6">
-                                        <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        Dịch vụ phụ:
-                                        @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                        {
-                                            <div class="form-check-inline">
+                                         <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="row p-2 mx-0 mt-2">
+                                                <div class="col-md-3 col-sm-12 col-xs-12">
+                                                    <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                                                </div>
+                                                <div class="col-md-4 col-sm-12 col-xs-12">
+                                                    <span>Trạng thái:</span>
+                                                @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
+                                                </div>
+                                                <div class="col-md-5 col-sm-12 col-xs-12">
+                                                    Dịch vụ phụ:
+                                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                                {
+                                                            <div class="form-check-inline">
 
-                                                <label class="form-check-label">
-                                                    <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
-                                                </label>
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
+                                                                </label>
+                                                            </div>
+                                                }
+                                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                                {
+                                                            <div class="form-check-inline">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
+                                                                </label>
+                                                            </div>
+                                                }
+                                                @if (item.IsInsurance != null && item.IsInsurance == true)
+                                                {
+                                                            <div class="form-check-inline">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                                                </label>
+                                                            </div>
+                                                }
+                                                </div>
                                             </div>
-                                        }
-                                        @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                        {
-                                            <div class="form-check-inline">
-                                                <label class="form-check-label">
-                                                    <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
-                                                </label>
+                                            <div class="row px-2 mx-0 mb-2">
+                                                <div class="col-md-6">
+                                                    <div>
+                                                        <span>Khách hàng: @item.Username</span>
+                                                    </div>
+                                                </div>
+                                            @if (!string.IsNullOrEmpty(item.Phone))
+                                            {
+                                                        <div class="col-md-6 d-flex align-items-center">
+                                                            <div class="form-group">
+                                                                <i class="fa fa-phone"></i><span>@item.Phone</span>
+                                                            </div>
+                                                        </div>
+                                            }
                                             </div>
-                                        }
-                                        @if (item.IsInsurance != null && item.IsInsurance == true)
-                                        {
-                                            <div class="form-check-inline">
-                                                <label class="form-check-label">
-                                                    <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
-                                                </label>
-                                            </div>
-                                        }
+                                        </div>
+                                        <div class="col-md-4">
+                                            <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                                            @if (item.ReceivedDate != null)
+                                            {
+                                                        <li class="ml-4">
+                                                            <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                                        </li>
+                                            }
+
+                                            @if (item.ImportedSGWH != null)
+                                            {
+                                                        <li class="ml-4">
+                                                            <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                                        </li>
+                                            }
+
+                                            @if (item.DateExpectation != null)
+                                            {
+                                                        <li class="ml-4">
+                                                            <span>Đang trên đường về HCM - @item.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                                        </li>
+                                            }
+
+                                            @if (item.ExportedCNWH != null)
+                                            {
+                                                        <li class="ml-4">
+                                                            <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                                        </li>
+                                            }
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
                                 <div class="row p-2 mx-0 my-2">
                                     <div class="col-md-3">
                                         <div class="form-inline text-left">

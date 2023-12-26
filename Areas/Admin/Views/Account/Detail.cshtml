@@ -1,5 +1,5 @@
 ﻿@using KGQT.Models.temp;
-@model KGQT.Models.temp.AccountInfo
+@model KGQT.Models.tbl_Account;
 
 @{
     ViewData["Title"] = "Thông tin tài khoản";
@@ -145,7 +145,7 @@
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="UserName">Tài khoản</label>
-                            <input name="UserName" id="UserName" value="@Model.UserName" type="text" class="form-control" placeholder="Tài khoản" disabled />
+                            <input name="UserName" id="UserName" value="@Model.Username" type="text" class="form-control" placeholder="Tài khoản" disabled />
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">

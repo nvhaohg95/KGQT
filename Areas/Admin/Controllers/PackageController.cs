@@ -1,4 +1,6 @@
-﻿using ExcelDataReader;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using ExcelDataReader;
 using Fasterflect;
 using KGQT.Base;
 using KGQT.Business;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using MimeKit;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 using System.Data;
 using System.Reflection;
 using System.Reflection.Metadata;
@@ -89,9 +92,40 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult ExportFile(int status, DateTime? fromDate, DateTime? toDate)
         {
             var data = Packages.GetListExport(status, fromDate, toDate);
-            return View(data);
+            @ViewData["status"] = status;
+            @ViewData["fromDate"] = fromDate;
+            @ViewData["toDate"] = toDate;
+            return View(data.Data);
         }
 
+        [HttpGet]
+        public FileResult GenerateExcel(int status, DateTime? fromDate, DateTime? toDate)
+        {
+            var data = Packages.GetListExport(status, fromDate, toDate);
+
+            var dt = new DataTable("Excel");
+            dt.Columns.AddRange(new DataColumn[]{
+                new DataColumn("MVĐ"),
+                new DataColumn("Username"),
+                new DataColumn("Cân nặng"),
+                new DataColumn("Ngày xuất kho")
+            });
+
+            foreach (var item in data.Data)
+            {
+                dt.Rows.Add(item.PackageCode, item.Username, item.WeightReal, item.ExportedCNWH);
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dt);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Export" + DateTime.Now.ToString("ddMMyyyy")+".xlsx");
+                }
+            }
+        }
 
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
