@@ -1,5 +1,5 @@
 ﻿@using KGQT.Models.temp;
-@model KGQT.Models.temp.AccountInfo
+@model KGQT.Models.tbl_Account;
 
 @{
     ViewData["Title"] = "Thông tin tài khoản";
@@ -42,58 +42,40 @@
                 </div>
 
             </div>
-            <form class="col-lg-12 col-md-9 col-sm-12" method="post" action="Create" id="formUser">
+            <form class="col-lg-12 col-md-9 col-sm-12" id="formUser">
                 <!--Start:Thông tin cá nhân-->
                 <div class="row">
                     <h6 class="fw-bold text-primary">THÔNG TIN CÁ NHÂN</h6>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="FirstName">Họ</label>
-                            <input name="FirstName" id="FirstName" value="" type="text" class="form-control" placeholder="Họ" readonly />
+                            <label for="FirstName">Họ tên<span class="text-danger">(*)</span></label>
+                            <input name="FullName" id="FullName" value="@Model.FullName" type="text" class="form-control" placeholder="Họ"/>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
-                        <div class="form-group">
-                            <label for="LastName">Tên</label>
-                            <input name="LastName" id="LastName" value="" type="text" class="form-control" placeholder="Tên" readonly />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6 col-md-12 col-sm-12">
-                        <div class="form-group">
-                            <label for="FirstName">Ngày sinh</label>
-                            <input name="BirthDay" id="BirthDay" value="@(Model.BirthDay != null ? Model.BirthDay.Value.ToString("dd/MM/yyyy") : "")" type="datetime" class="form-control" placeholder="dd/MM/yyy" readonly />
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
                             <label for="Gender">Giới tính</label>
-                            @if (Model.Gender != null)
-                            {
-                                <input name="Gender" id="Gender" value="@(Model.Gender == true ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính" readonly />
-                            }
-                            else
-                            {
-                                <input name="Gender" id="Gender" value="" type="text" class="form-control" placeholder="Giới tính" readonly />
-                            }
+                            <select id="Gender" name="Gender" class="form-control">
+                                <option value="" @(Model.Gender == null ? "selected" : "")></option>
+                                <option value="true" @(Model.Gender == true ? "selected" : "")>Nam</option>
+                                <option value="false" @(Model.Gender == false ? "selected" : "")>Nữ</option>
+                            </select>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Email">Email</label>
-                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Email" readonly />
+                            <label for="Email">Email<span class="text-danger">(*)</span></label>
+                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Email"/>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Phone">SDT</label>
-                            <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" readonly />
+                            <label for="Phone">SDT<span class="text-danger">(*)</span></label>
+                            <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
                         </div>
                     </div>
                 </div>
@@ -101,7 +83,7 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="Address">Địa chỉ</label>
-                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" readonly />
+                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ"/>
                         </div>
                     </div>
                 </div>
@@ -134,7 +116,7 @@
                                 {
                                     foreach (var item in lstRoles)
                                     {
-                                        <option value="@item.RoleID" selected="@(Model.RoleID == item.RoleID)">@item.RoleName</option>
+                                        <option value="@item.RoleID" @(Model.RoleID == item.RoleID ? "selected":"")>@item.RoleName</option>
                                     }
                                 }
                             </select>
@@ -144,19 +126,19 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
-                            <label for="UserName">Tài khoản</label>
-                            <input name="UserName" id="UserName" value="@Model.UserName" type="text" class="form-control" placeholder="Tài khoản" disabled />
+                            <label for="Username">Tài khoản</label>
+                            <input name="Username" id="Username" value="@Model.Username" type="text" class="form-control" placeholder="Tài khoản" readonly />
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="Password">Mật khẩu</label>
-                            <input name="Password" id="Password" value="@Model.Password" type="text" class="form-control" placeholder="Mật khẩu" disabled />
+                            <input name="Password" id="Password" value="@Model.Password" type="text" class="form-control" placeholder="Mật khẩu" readonly />
                         </div>
                     </div>
                 </div>
                 <div class="row justify-content-end mt-2">
-                    <a class="btn btn-success w-100px" onclick="update()" href="#">Cập nhật</a>
+                    <button type="button" class="btn btn-success w-100px" onclick="update()">Cập nhật</button>
                 </div>
             </form>
         </div>
@@ -167,10 +149,9 @@
     function update() {
         var data = helper.form2Object($('#formUser').serializeArray());
         $.ajax({
-            url: '/Admin/User/Update',
-            type: 'Post',
-            data: { ID: @ID, form: data },
-            // other AJAX options here
+            url: '/Admin/Account/UpdateInfo',
+            type: 'POST',
+            data: data,
             success: function (result) {
                 if (result.error) {
                     helper.showErr(result.mssg);
@@ -178,7 +159,7 @@
                     helper.showSuc("Cập nhật thành công");
             },
             error: function (xhr, status, err) {
-                helper.showErr("Hệ thống thực thi không thành công!");
+                helper.showErr("Hệ thống thực thi không thành công.Vui lòng thử lại");
             }
         });
     }

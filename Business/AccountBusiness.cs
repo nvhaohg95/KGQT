@@ -681,19 +681,19 @@ namespace KGQT.Business
                 if (string.IsNullOrEmpty(data.FullName))
                 {
                     result.IsError = true;
-                    result.Message = "Họ tên không được để trống";
+                    result.Message = "Họ tên không được bỏ trống";
                     return result;
                 }
                 if (string.IsNullOrEmpty(data.Email))
                 {
                     result.IsError = true;
-                    result.Message = "Địa chỉ Email không được để trống";
+                    result.Message = "Địa chỉ Email không được bỏ trống";
                     return result;
                 }
                 if (string.IsNullOrEmpty(data.Phone))
                 {
                     result.IsError = true;
-                    result.Message = "Số điện thoại không được để trống";
+                    result.Message = "Số điện thoại không được bỏ trống";
                     return result;
                 }
                 var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
@@ -726,6 +726,8 @@ namespace KGQT.Business
                         acc.Gender = data.Gender;
                         acc.Email = data.Email;
                         acc.Phone = data.Phone;
+                        acc.RoleID = data.RoleID;
+                        acc.Address = data.Address;
                         acc.ModifiedBy = data.Username;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
