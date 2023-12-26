@@ -2,6 +2,7 @@ using KGQT.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using Newtonsoft.Json;
+using System;
 using System.Linq.Expressions;
 
 namespace KGQT.Business.Base
@@ -222,6 +223,23 @@ namespace KGQT.Business.Base
             }
         }
 
+        public static IQueryable<T> Get<T>() where T : class
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    return db.Set<T>().AsQueryable();
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    return null;
+                }
+            }
+        }
+
         #region Genarate
         public static string GenQueryStringByPrimaryKey<T>(T entity) where T : class
         {
@@ -282,7 +300,7 @@ namespace KGQT.Business.Base
         #endregion
 
         #region sys_log
-        public static void SysLog(int userId, int type, string content,string old, string userName)
+        public static void SysLog(int userId, int type, string content, string old, string userName)
         {
             using (var db = new nhanshiphangContext())
             {

@@ -46,11 +46,20 @@
             <input type="text" data-type="formatvnd" class="form-control" id="txtAirPackage" value="@Model.AirPackagePrice">
         </div>
     }
+    <div class="form-group mb-4">
+        <label class="required" for="txtAirPackage">Phí thu hộ:</label>
+        <input type="text" data-type="formatvnd" class="form-control" id="txtSurCharge" value="@Model.SurCharge">
+    </div>
 </form>
 
 <script>
     $(document).ready(function () {
         formatVND();
+        let $username = $('#txtUsername');
+        if ($username.length) _autoComplete();
+    })
+
+    function _autoComplete(){
         $('#txtUsername').autocomplete({
             source: function (request, response) {
                 $.ajax({
@@ -81,5 +90,5 @@
                 .append("<div>" + item.username + " - " + item.email + "</div>")
                 .appendTo(ul);
         };
-    })
+    }
 </script>
