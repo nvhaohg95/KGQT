@@ -34,7 +34,11 @@ builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
 });
 #region App
 var app = builder.Build();
-
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

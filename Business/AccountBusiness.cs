@@ -1,6 +1,8 @@
-﻿using KGQT.Commons;
+﻿using KGQT.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using static KGQT.HomeController;
 
@@ -24,32 +26,40 @@ namespace KGQT.Business
                 dtReturn.Message = "Vui lòng nhập mật khẩu!";
                 return dtReturn;
             }
-            using (var db = new nhanshiphangContext())
+            try
             {
-                var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
-                if (acc != null)
+                using (var db = new nhanshiphangContext())
                 {
-                    var isCorrect = password == PJUtils.Decrypt("userpass", acc.Password);
-                    if (isCorrect)
+                    var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);     
+                    if (acc != null)
                     {
-                        dtReturn.IsError = false;
-                        dtReturn.Data = acc;
-                        return dtReturn;
+                        var isCorrect = password == PJUtils.Decrypt("userpass", acc.Password);
+                        if (isCorrect)
+                        {
+                            dtReturn.IsError = false;
+                            dtReturn.Data = acc;
+                            return dtReturn;
+                        }
+                        else
+                        {
+                            dtReturn.IsError = true;
+                            dtReturn.Message = Messages.PasswordNotCorrect;
+                            return dtReturn;
+                        }
+
                     }
                     else
                     {
                         dtReturn.IsError = true;
-                        dtReturn.Message = Messages.PasswordNotCorrect;
+                        dtReturn.Message = Messages.UsernameNotCorrect;
                         return dtReturn;
                     }
-
                 }
-                else
-                {
-                    dtReturn.IsError = true;
-                    dtReturn.Message = Messages.UsernameNotCorrect;
-                    return dtReturn;
-                }
+            }
+            catch(Exception ex)
+            {
+                Log.Info("account base", JsonConvert.SerializeObject(ex));
+                return dtReturn;
             }
         }
 

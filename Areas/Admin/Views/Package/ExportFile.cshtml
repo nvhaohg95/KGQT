@@ -1,0 +1,133 @@
+﻿@model IEnumerable<KGQT.Models.tbl_Package>
+@using KGQT.Commons
+@{
+    ViewData["Title"] = "Xuất file excel";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int status = (int)ViewData["status"];
+    var fromDate = ViewData["fromDate"];
+    var toDate = ViewData["toDate"];
+}
+
+
+<div class="container-fluid h-100">
+    <div class="row">
+        <ul id="breadcrumbs">
+            <li><a href="/admin">Trang chủ</a></li>
+            <li><a href="#">Danh sách ký gửi</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex flex-column p-2">
+            <div class="row bg-white px-2 py-2">
+                <div class="col-12">
+                    <div class="row py-2">
+                        <form class="col-12" id="myform" method="get">
+                            <div class="row">
+                                <div class="col-3 col-md-3 col-sm-12">
+                                    <div>
+                                        <span class="fw-bold">Trạng thái:</span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <select name="Status" id="Status" class="form-control">
+                                            <option value="0" selected="@(status == 0)">Tất cả</option>
+                                            <option value="1" selected="@(status == 1)">Chưa xác nhận</option>
+                                            <option value="2" selected="@(status == 2)">Hàng về kho TQ</option>
+                                            <option value="3" selected="@(status == 3)">Đang trên đường về HCM</option>
+                                            <option value="4" selected="@(status == 4)">Hàng về tới HCM</option>
+                                            <option value="4" selected="@(status == 5)">Đã nhận hàng</option>
+                                            <option value="4" selected="@(status == 9)">Đã hủy</option>
+                                            <option value="4" selected="@(status == 10)">Thất lạc</option>
+                                            <option value="4" selected="@(status == 11)">Không nhận được hàng</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7 col-md-6 col-sm-12">
+                                    <div class="row">
+                                        <span class="fw-bold">Thời gian tạo:</span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 mt-2">
+                                            @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 mt-2">
+                                            @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-12 d-flex align-items-end justify-content-end">
+                                    <a href="/admin/package/exportfile" class="btn btn-sm btn-info mr-2">
+                                        <i class="fas fa-sync fa-xs mr-2"></i>Làm mới bộ lọc
+                                    </a>
+                                    <button type="submit" class="btn btn-sm btn-primary"><i class="mr-2 fas fa-search"></i>Tìm kiếm</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row bg-white mt-2">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="fw-bold text-danger text-uppercase m-0">Danh sách đơn ký gửi</h5>
+                        <button class="btn btn-success btn-sm" onclick="exportExcel()">Xuất file excel</button>
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead class="thead-light">
+                                <tr class="font-weight-normal">
+                                    <th class="text-center" scope="col">
+                                        Mã đơn
+                                    </th>
+                                    <th class="text-center" scope="col">
+                                        Username
+                                    </th>
+                                    <th class="text-center" scope="col">
+                                        Trạng thái
+                                    </th>
+                                    <th class="text-center">
+                                        Cân nặng
+                                    </th>
+                                    <th class="text-center">
+                                        Ngày xuất kho
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="table-light font-weight-normal">
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.PackageCode)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.Username)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
+                                        </td>
+                                        <td class="text-center" style="vertical-align:middle">
+                                            @Html.DisplayFor(modelItem => item.WeightReal)kg
+                                        </td>
+                                        <td class="text-center" style="vertical-align:middle">
+                                            @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function exportExcel() {
+      let url =location.href;
+        url = url.replace('ExportFile', 'GenerateExcel');
+        location.href = url;
+    }
+</script>

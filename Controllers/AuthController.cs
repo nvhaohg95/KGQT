@@ -1,4 +1,5 @@
-﻿using KGQT.Business;
+﻿using KGQT.Base;
+using KGQT.Business;
 using KGQT.Commons;
 using KGQT.Mobility;
 using KGQT.Models;
@@ -56,7 +57,7 @@ namespace KGQT.Controllers
             if(model == null)
             {
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!" };
-            }    
+            }
             var result = AccountBusiness.Login(model.UserName, model.PassWord);
             if (!result.IsError)
             {
@@ -68,12 +69,12 @@ namespace KGQT.Controllers
         //[HttpPost]
         //public ActionResult Login(UserModel model)
         //{
-        //    var result = _auth.Login(model.UserName,model.PassWord);
+        //    var result = _auth.Login(model.Username,model.PassWord);
         //    if (result.IsError)
         //    {
         //        return View(model);
         //    }
-        //    HttpContext.Session.SetString("user", model.UserName);
+        //    HttpContext.Session.SetString("user", model.Username);
         //    HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
         //    if (result.Data != null)
         //    {

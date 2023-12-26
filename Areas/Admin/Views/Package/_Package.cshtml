@@ -17,7 +17,7 @@
                     <span>Kho nhận: @PJUtils.WareHouse(Model.WareHouse)</span>
                 </div>
                 <div class="col-md-3 my-auto">
-                    <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(Model.CreatedDate.Value.ToString("dd/MM/yyyy"))</strong></span>
+                    <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(Model.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                 </div>
                 <div class="col-md-3 text-right">
                     @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
@@ -27,16 +27,21 @@
             <div class="row">
                 <div class="col-md-8">
                     <div class="row p-2 mx-0 mt-2">
-                        <div class="col-md-6">
+                        <div class="col-md-3 col-sm-12 col-xs-12">
                             <span>Loại vận chuyển: @PJUtils.ShippingMethodName(Model.MovingMethod)</span>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4 col-sm-12 col-xs-12">
+                            <span>Trạng thái:</span>
+                            @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
+                        </div>
+                        <div class="col-md-5 col-sm-12 col-xs-12">
                             Dịch vụ phụ:
                             @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
                             {
                                 <div class="form-check-inline">
+
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
                                     </label>
                                 </div>
                             }
@@ -44,7 +49,7 @@
                             {
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
                                     </label>
                                 </div>
                             }
@@ -52,7 +57,7 @@
                             {
                                 <div class="form-check-inline">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
                                     </label>
                                 </div>
                             }
@@ -60,16 +65,13 @@
                     </div>
                     <div class="row px-2 mx-0 mb-2">
                         <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-md-4 col-sm-4 col-form-label">Khách hàng</label>
-                                <div class="col-md-7 col-sm-8">
-                                    <input id="txtUsername" class="form-control mb-0" value="@Model.Username" @(!string.IsNullOrEmpty(Model.Username) ? "disabled" : "") />
-                                </div>
+                            <div>
+                                <span>Khách hàng: @Model.Username</span>
                             </div>
                         </div>
                         @if (!string.IsNullOrEmpty(Model.Phone))
                         {
-                            <div class="col-md-6 d-flex align-items-center">
+                            <div class="col-md-6 d-flex align-Models-center">
                                 <div class="form-group">
                                     <i class="fa fa-phone"></i><span>@Model.Phone</span>
                                 </div>
@@ -81,28 +83,28 @@
                     <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
                         @if (Model.ReceivedDate != null)
                         {
-                            <li class="ml-4 mb-2">
+                            <li class="ml-4">
                                 <span>Đã nhận hàng - @Model.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
                             </li>
                         }
 
                         @if (Model.ImportedSGWH != null)
                         {
-                            <li class="ml-4 mb-2">
+                            <li class="ml-4">
                                 <span>Đã về kho HCM - @Model.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
                             </li>
                         }
 
                         @if (Model.DateExpectation != null)
                         {
-                            <li class="ml-4 mb-2">
+                            <li class="ml-4">
                                 <span>Đang trên đường về HCM - @Model.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
                             </li>
                         }
 
                         @if (Model.ExportedCNWH != null)
                         {
-                            <li class="ml-4 mb-2">
+                            <li class="ml-4">
                                 <span>Xuất kho Trung Quốc - @Model.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
                             </li>
                         }
