@@ -29,13 +29,6 @@
                                 }
                             }
                         </div>
-                        <div class="text-center mb-2">
-                            <p title="@Model.FullName" class="fw-bold text-truncate text-uppercase text-danger m-0">@Model.FullName</p>
-                        </div>
-                        <div class="text-center mb-2">
-                            <span title="Mã định danh">MĐD:</span>
-                            <span title="Mã định danh" class="fw-bold text-uppercase text-danger m-0">@Model.UserID</span>
-                        </div>
                     </div>
                 </div>
 
@@ -46,52 +39,34 @@
                     <h6 class="fw-bold text-primary">THÔNG TIN CÁ NHÂN</h6>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="FirstName">Họ</label>
-                            <input name="FirstName" id="FirstName" value="" type="text" class="form-control" placeholder="Họ" readonly />
+                            <label for="FullName">Họ tên<span class="text-danger">(*)</span></label>
+                            <input name="FullName" id="FullName" value="@Model.FullName" type="text" class="form-control" placeholder="Họ" />
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
-                        <div class="form-group">
-                            <label for="LastName">Tên</label>
-                            <input name="LastName" id="LastName" value="" type="text" class="form-control" placeholder="Tên" readonly />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6 col-md-12 col-sm-12">
-                        <div class="form-group">
-                            <label for="FirstName">Ngày sinh</label>
-                            <input name="BirthDay" id="BirthDay" value="" type="datetime" class="form-control" placeholder="dd/MM/yyy" readonly />
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
                             <label for="Gender">Giới tính</label>
-                            @if (Model.Gender != null)
-                            {
-                                <input name="Gender" id="Gender" value="@(Model.Gender == true ? "Nam" : "Nữ")" type="text" class="form-control" placeholder="Giới tính" readonly />
-                            }
-                            else
-                            {
-                                <input name="Gender" id="Gender" value="" type="text" class="form-control" placeholder="Giới tính" readonly />
-                            }
+                            <select id="Gender" name="Gender" class="form-control">
+                                <option value="" @(Model.Gender == null ? "selected" : "")></option>
+                                <option value="true" @(Model.Gender == true ? "selected" : "")>Nam</option>
+                                <option value="false" @(Model.Gender == false ? "selected" : "")>Nữ</option>
+                            </select>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Email">Email</label>
-                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Email" readonly />
+                            <label for="Email">Email<span class="text-danger">(*)</span></label>
+                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Email" />
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Phone">SDT</label>
-                            <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" readonly />
+                            <label for="Phone">SDT<span class="text-danger">(*)</span></label>
+                            <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
                         </div>
                     </div>
                 </div>
@@ -99,7 +74,7 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="Address">Địa chỉ</label>
-                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" readonly />
+                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
                         </div>
                     </div>
                 </div>
@@ -143,7 +118,7 @@
     function update() {
         var data = helper.form2Object($('#formUser').serializeArray());
         $.ajax({
-            url: '/Admin/User/UpdateInfo',
+            url: '/Admin/Account/UpdateInfo',
             type: 'Post',
             data: data,
             success: function (result) {
@@ -155,7 +130,7 @@
                 }
             },
             error: function (xhr, status, err) {
-                helper.showErr("Hệ thống thực thi không thành công!");
+                helper.showErr("Hệ thống thực thi không thành công.Vui lòng thử lại");
             }
         });
     }

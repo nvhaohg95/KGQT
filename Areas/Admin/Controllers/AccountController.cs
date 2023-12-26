@@ -33,7 +33,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Detail(int id)
         {
-            var user = UserBusiness.GetUserByID(id);
+            var user = AccountBusiness.GetInfo(id,"");
             ViewData["ID"] = id;
             ViewData["lstRoles"] = AccountBusiness.GetListUserRole();
             return View(user);

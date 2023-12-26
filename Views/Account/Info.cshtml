@@ -134,12 +134,13 @@
                 if (result.isError) {
                     helper.showErr(result.message);
                 }
-                else {
+                else 
+                {
                     helper.showSuc("Cập nhật thành công");
                 }
             },
             error: function (xhr, status, err) {
-                helper.showErr("Hệ thống thực thi không thành công!");
+                helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại sau!");
             }
         });
     }
