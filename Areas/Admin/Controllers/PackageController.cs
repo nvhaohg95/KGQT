@@ -1,25 +1,15 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using ExcelDataReader;
-using Fasterflect;
 using KGQT.Base;
 using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using MimeKit;
 using Newtonsoft.Json;
-using OfficeOpenXml;
 using System.Data;
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Text;
-using System.Xml.Linq;
-
 namespace KGQT.Areas.Admin.Controllers
 {
     [Area("admin")]
@@ -107,13 +97,15 @@ namespace KGQT.Areas.Admin.Controllers
             dt.Columns.AddRange(new DataColumn[]{
                 new DataColumn("MVĐ"),
                 new DataColumn("Username"),
-                new DataColumn("Cân nặng"),
+                new DataColumn("Tuyến"),
+                new DataColumn("Cân nặng",Type.GetType("System.Int32")),
                 new DataColumn("Ngày xuất kho")
             });
 
             foreach (var item in data.Data)
             {
-                dt.Rows.Add(item.PackageCode, item.Username, item.WeightReal, item.ExportedCNWH);
+                var type = PJUtils.MovingMethod2Type(item.MovingMethod);
+                dt.Rows.Add(item.PackageCode, item.Username, type, item.WeightReal, item.ExportedCNWH);
             }
 
             using (XLWorkbook wb = new XLWorkbook())
@@ -122,7 +114,7 @@ namespace KGQT.Areas.Admin.Controllers
                 using (MemoryStream stream = new MemoryStream())
                 {
                     wb.SaveAs(stream);
-                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Export" + DateTime.Now.ToString("ddMMyyyy")+".xlsx");
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Export" + DateTime.Now.ToString("ddMMyyyy") + ".xlsx");
                 }
             }
         }

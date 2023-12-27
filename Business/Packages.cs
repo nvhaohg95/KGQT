@@ -142,7 +142,7 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 DataReturnModel<List<tbl_Package>> data = new DataReturnModel<List<tbl_Package>>();
-                var query = db.tbl_Packages.Where(x=>x.ExportedCNWH != null);
+                var query = db.tbl_Packages.Where(x => x.ExportedCNWH != null);
                 if (status > 0)
                     query = query.Where(x => x.Status == status);
                 if (fromDate != null && fromDate != DateTime.MinValue)
@@ -550,9 +550,10 @@ namespace KGQT.Business
 
                             if (type == 3)
                                 p.MovingMethod = 1;
-                            else if (type == 5)
+                            if (type == 5)
                                 p.MovingMethod = 2;
-
+                            if (type == 8)
+                                p.MovingMethod = 3;
                             p.PackageCode = code;
                             p.Note = note;
                             p.Status = 3;
