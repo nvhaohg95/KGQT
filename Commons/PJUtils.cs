@@ -265,6 +265,25 @@ namespace KGQT.Commons
             return sReturn;
         }
 
+        public static string MovingMethod2Type(int method)
+        {
+            string type = "3";
+            switch (method)
+            {
+                case 2:
+                    type = "5";
+                    break;
+                case 3:
+                    type = "8";
+                    break;
+                default:
+                    type = "3";
+                    break;
+            }
+
+            return type;
+        }
+
         public static string TradeType(int type)
         {
             string s = "";
@@ -401,9 +420,9 @@ namespace KGQT.Commons
                 else
                 {
                     #region Read value
-                    foreach(var item in data)
+                    foreach (var item in data)
                     {
-                        worksheet.Cells[item.Row+2,item.Column + 1].Style.Fill.SetBackground(Color.Green);
+                        worksheet.Cells[item.Row + 2, item.Column + 1].Style.Fill.SetBackground(Color.Green);
                     }
                     #endregion
 
