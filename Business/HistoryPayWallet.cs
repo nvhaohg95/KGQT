@@ -7,7 +7,7 @@ namespace KGQT.Business
     public static class HistoryPayWallet
     {
         #region CRUD
-        public static bool Insert(int uid,string username,int orderId,string content,double amount,int type, int tradeType, double moneyleft,string createdBy)
+        public static bool Insert(int uid,string username,int orderId,string content,double amount,int type, int tradeType, double moneyleft,string createdBy,int status = 1)
         {
             tbl_HistoryPayWallet pay = new tbl_HistoryPayWallet();
             pay.UID = uid;
@@ -20,6 +20,7 @@ namespace KGQT.Business
             pay.MoneyLeft = moneyleft;
             pay.CreatedDate = DateTime.Now;
             pay.CreatedBy = createdBy;
+            pay.Status = status;
             return BusinessBase.Add(pay);
         }
         #endregion
@@ -32,7 +33,7 @@ namespace KGQT.Business
                 var lstData = new List<tbl_HistoryPayWallet>();
                 int totalRecod = 0;
                 int totalPage = 0;
-                var query = db.tbl_HistoryPayWallets.Where(x => x.Username == userName);
+                var query = db.tbl_HistoryPayWallets.Where(x => x.Username == userName && x.Status == 1);
                 if (orderID != 0)
                     query = query.Where(x => x.OrderID == orderID);
                 if (tradeType != 0)

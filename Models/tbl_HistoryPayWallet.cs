@@ -28,6 +28,11 @@ namespace KGQT.Models
         /// </summary>
         public int TradeType { get; set; }
         public string? Note { get; set; }
+        /// <summary>
+        /// 0: chưa active
+        /// 1 : active
+        /// </summary>
+        public int? Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
     }
