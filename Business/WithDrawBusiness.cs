@@ -92,8 +92,7 @@ namespace KGQT.Business
                 var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
                 if (acc != null )
                 {
-                    var totalAmount = db.tbl_Withdraws.Where(x => x.UID == acc.ID && x.Status == 1 && x.Type == 2).Sum(x => x.Amount);
-                    if((acc.Wallet - totalAmount) < data.Amount)
+                    if(acc.Wallet < data.Amount)
                     {
                         result.IsError = true;
                         result.Message = "Số dư trong ví của bạn không đủ.";
@@ -101,36 +100,22 @@ namespace KGQT.Business
                         return result;
                     }
                     var admin = AccountBusiness.GetInfo(-1, createdBy);
+                    var moneyLeft = acc.Wallet != null ? acc.Wallet : 0;
+                    acc.Wallet = moneyLeft - data.Amount;
+                    acc.ModifiedBy = createdBy;
+                    acc.ModifiedDate = DateTime.Now;
+                    db.Update(acc);
                     db.Add(data);
-                    int kq1 = db.SaveChanges();
-                    if (kq1 > 0)
+                    int isSave = db.SaveChanges();
+                    if (isSave > 0)
                     {
-                        string notiMessage = "";
                         string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
-
-                        if (data.Status == 2)
-                        {
-                            var moneyLeft = acc.Wallet != null ? acc.Wallet : 0;
-                            acc.Wallet = moneyLeft - data.Amount;
-                            acc.ModifiedBy = createdBy;
-                            acc.ModifiedDate = DateTime.Now;
-                            db.Update(acc);
-                            db.SaveChanges();
-                            notiMessage = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> từ tài khoản của bạn đã được duyệt.", strHTML);
-                            HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, createdBy);
-                            NotificationBusiness.Insert(admin.ID, admin.FullName, acc.ID, acc.FullName, data.ID, "", notiMessage, 3, admin.Username);
-                            result.IsError = false;
-                            result.Message = "Tạo thành công!";
-                            result.Data = true;
-                        }
-                        else
-                        {
-                            notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu rút <span class=\"text-danger\">{1}</span> từ tài khoản.", acc.FullName, strHTML);
-                            NotificationBusiness.Insert(acc.ID, acc.FullName, 0, "Admin", data.ID, "", notiMessage, 3, acc.Username, true);
-                            result.IsError = false;
-                            result.Message = "Yêu cầu của bạn đã được gửi!";
-                            result.Data = true;
-                        }
+                        string notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu rút <span class=\"text-danger\">{1}</span>.", acc.FullName, strHTML); ;
+                        HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, createdBy,0);
+                        NotificationBusiness.Insert(acc.ID, acc.FullName, 0, "Admin", data.ID, "", notiMessage, 3, acc.Username, true);
+                        result.IsError = false;
+                        result.Message = "Yêu cầu của bạn đã được gửi!";
+                        result.Data = true;
                         return result;
                     }
                 }
@@ -150,20 +135,20 @@ namespace KGQT.Business
             {
                 var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
                 var data = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);
-                if(admin != null && data != null)
+                if(data != null)
                 {
                     data.Status = 2;
                     data.ModifiedBy = admin.Username;
                     data.ModifiedDate = DateTime.Now;
                     db.Update(data);
                     var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == data.UID);
-                    var moneyLeft = user.Wallet != null ? user.Wallet : 0;
                     if (user != null)
                     {
-                        string message = "";
                         string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
+                        string message = "";
                         if (data.Type == 1) //nạp tiền
                         {
+                            var moneyLeft = user.Wallet != null ? user.Wallet : 0;
                             user.Wallet = moneyLeft + data.Amount;
                             message = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", strHTML);
                             HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
@@ -171,11 +156,17 @@ namespace KGQT.Business
                         }
                         else if (data.Type == 2)//rút tiền
                         {
-                            user.Wallet = moneyLeft - data.Amount;
                             message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> từ tài khoản của bạn đã được duyệt.", strHTML);
-                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, userName);
+                            //HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, userName);
+                            var history = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.OrderID == data.ID);
+                            if(history != null)
+                            {
+                                history.Status = 1;
+                                db.Update(history);
+                            }
                             NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", message, 3, admin.Username);
                         }
+
                         user.ModifiedBy = admin.Username;
                         user.ModifiedDate = DateTime.Now;
                         db.Update(user);

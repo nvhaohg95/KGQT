@@ -438,7 +438,7 @@
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="fw-bold">Nội dung</label>
+                                        <label class="fw-bold">Nội dung<span class="text-danger">(*)</span></label>
                                     <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
                                 </div>
                             </div>
@@ -521,7 +521,7 @@
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
-                                        <label class="fw-bold">Nội dung</label>
+                                        <label class="fw-bold">Nội dung<span class="text-danger">(*)</span></label>
                                         <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
                                     </div>
                                 </div>
@@ -692,15 +692,20 @@
                     return;
                 }
             }
+
             if (!data.Amount) {
                 helper.showWarn('Vui lòng nhập số tiền!');
                 return;
             }
+
             if (Number(data.Amount.replaceAll(",", "")) < 50000) {
                 helper.showWarn('Số tiền nạp tối thiếu phải lớn hơn 50,000đ!');
                 return;
             }
-
+            if (!data.Note) {
+                helper.showWarn('Vui lòng nhập nội dung!');
+                return;
+            }
             $.ajax({
                 url: '/WithDraw/Create',
                 type: 'POST',
@@ -754,7 +759,15 @@
                 helper.showWarn('Vui lòng nhập số tiền!');
                 return;
             }
+            if (Number(data.Amount.replaceAll(",", "")) < 50000) {
+                helper.showWarn('Số tiền rút tối thiếu phải lớn hơn 50,000đ!');
+                return;
+            }
 
+            if (!data.Note) {
+                helper.showWarn('Vui lòng nhập nội dung!');
+                return;
+            }
             $.ajax({
                 url: '/WithDraw/Create2',
                 type: 'POST',
