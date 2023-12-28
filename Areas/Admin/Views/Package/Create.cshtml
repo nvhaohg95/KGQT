@@ -38,7 +38,15 @@
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="3">
-                        <label class="form-check-label" for="movingofficial">Chính ngạch</label>
+                        <label class="form-check-label" for="movingofficial">Bộ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="4">
+                        <label class="form-check-label" for="movingofficial">Bộ lô</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="5">
+                        <label class="form-check-label" for="movingofficial">Biển</label>
                     </div>
                 </div>
                 <div class="form-group mb-2">
@@ -83,7 +91,7 @@
                 </div>
                 <div class="form-group mb-4">
                     <label class="required" for="txtShipID">Thu hộ</label>
-                    <input type="text" class="form-control"  data-type="formatvnd"  id="txtSurCharge" onkeyup="format(this)" name="SurCharge" placeholder="Nhập mã vận đơn">
+                    <input type="text" class="form-control" data-type="formatvnd" id="txtSurCharge" onkeyup="format(this)" name="SurCharge" placeholder="Nhập mã vận đơn">
                 </div>
                 <div class="col-md-12 col-sm-12 col-lg-12 text-center">
                     <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
@@ -190,7 +198,7 @@
         $.ajax({
             url: '/admin/Package/Create',
             type: 'POST',
-            data: { sData:JSON.stringify(data) },
+            data: { sData: JSON.stringify(data) },
             // other AJAX options here
             success: function (result) {
                 if (!result)

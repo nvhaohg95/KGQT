@@ -114,10 +114,26 @@ namespace KGQT.Commons
 
         public static string ShippingMethodName(int status)
         {
-            if (status == 1) return "Nhanh";
-            if (status == 2) return "Chậm";
-            if (status == 3) return "Chính ngạch";
-            return "";
+            string text = "Nhanh";
+            switch (status)
+            {
+                case 2:
+                    text = "Chậm";
+                    break;
+                case 3:
+                    text = "Bộ";
+                    break;
+                case 4:
+                    text = "Bộ lô";
+                    break;
+                case 5:
+                    text = "Biển";
+                    break;
+                default:
+                    text = "Nhanh";
+                    break;
+            }
+            return text;
         }
 
         public static string PackageStatusHtml(int status)
