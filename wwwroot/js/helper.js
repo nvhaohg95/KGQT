@@ -32,7 +32,7 @@
         );
     },
 
-    showSuc: function (message, refresh = true, title = "Thành công",) {
+    showSuc: function (message, refresh = true, title = "Thành công") {
         return Swal.fire(
             title,
             message,
@@ -42,7 +42,18 @@
                 window.location.reload();
         });
     },
-
+    showAlert: function (message = "Bạn có muốn thực hiện thao tác này?", refresh = false, title = "Chú ý") {
+        return Swal.fire({
+            title: title,
+            text: message,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Có",
+            cancelButtonText: "không"
+        });
+    },
     getChange: function (e) {
         let t = $(e);
         var regx = /\D+/g;

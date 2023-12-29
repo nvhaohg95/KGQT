@@ -223,16 +223,16 @@ namespace KGQT.Commons
             return sReturn;
         }
 
-        public static string WithDrawStatusHtml(int status)
+        public static string WithDrawStatusHtml(int type)
         {
             string sReturn = "";
-            switch (status)
+            switch (type)
             {
                 case 1:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning\">Nạp tiền</span>";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-success\">Nạp tiền</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success\">Rút tiền</span>";
+                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Rút tiền</span>";
                     break;
                 case 3:
                     sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";

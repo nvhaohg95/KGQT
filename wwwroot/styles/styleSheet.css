@@ -163,6 +163,13 @@ html {
     width: calc(100%-100px);
 }
 
+.dot {
+    height: 5px;
+    width: 5px;
+    background-color: #2fd64e;
+    border-radius: 50%;
+    display: inline-block;
+}
 /*custom*/
 
 .modal-header {

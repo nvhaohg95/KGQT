@@ -127,46 +127,45 @@ namespace KGQT.Business
         }
         #endregion
 
-        #region Duyệt lệnh nạp tiền
+        #region Duyệt yêu cầu nạp/rút tiền
         public static DataReturnModel<tbl_Withdraw> Approval(int ID, string userName)
         {
             var result = new DataReturnModel<tbl_Withdraw>();
             using (var db = new nhanshiphangContext())
             {
-                var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
-                var data = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);
-                if(data != null)
+                var widthDraw = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);
+                if(widthDraw != null)
                 {
-                    data.Status = 2;
-                    data.ModifiedBy = admin.Username;
-                    data.ModifiedDate = DateTime.Now;
-                    db.Update(data);
-                    var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == data.UID);
-                    if (user != null)
+                    widthDraw.Status = 2;
+                    widthDraw.ModifiedBy = userName;
+                    widthDraw.ModifiedDate = DateTime.Now;
+                    db.Update(widthDraw);
+                    var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == widthDraw.UID);
+                    if (user != null && admin != null)
                     {
-                        string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
+                        string strHTML = string.Format("{0:N0}đ", widthDraw.Amount).Replace(",", ".");
                         string message = "";
-                        if (data.Type == 1) //nạp tiền
+                        if (widthDraw.Type == 1) //nạp tiền
                         {
                             var moneyLeft = user.Wallet != null ? user.Wallet : 0;
-                            user.Wallet = moneyLeft + data.Amount;
+                            user.Wallet = moneyLeft + widthDraw.Amount;
                             message = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", strHTML);
-                            HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, userName);
-                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", message, 2, admin.Username);
+                            HistoryPayWallet.Insert(user.ID, user.Username, widthDraw.ID, widthDraw.Note, widthDraw.Amount.Value, 2, 3, moneyLeft.Value, userName);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 2, admin.Username);
                         }
-                        else if (data.Type == 2)//rút tiền
+                        else if (widthDraw.Type == 2)//rút tiền
                         {
-                            message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> từ tài khoản của bạn đã được duyệt.", strHTML);
+                            message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã được duyệt.", strHTML);
                             //HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, userName);
-                            var history = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.OrderID == data.ID);
+                            var history = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.OrderID == widthDraw.ID);
                             if(history != null)
                             {
                                 history.Status = 1;
                                 db.Update(history);
                             }
-                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, data.ID, "", message, 3, admin.Username);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 3, admin.Username);
                         }
-
                         user.ModifiedBy = admin.Username;
                         user.ModifiedDate = DateTime.Now;
                         db.Update(user);
@@ -175,15 +174,78 @@ namespace KGQT.Business
                         {
                             result.IsError = false;
                             result.Message = "Duyệt thành công!";
-                            result.Data = data;
+                            result.Data = widthDraw;
                             return result;
                         }
                     }
-                       
                 }    
             }
             result.IsError = true;
-            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+            return result;
+        }
+        #endregion
+
+        #region Từ chối nạp tiền/rút tiền
+        public static DataReturnModel<bool> Refuse(int ID, string userName)
+        {
+            var result = new DataReturnModel<bool>();
+            using (var db = new nhanshiphangContext())
+            {
+                var widthDraw = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);
+                if(widthDraw != null)
+                {
+                    if(widthDraw.Status == 3)
+                    {
+                        result.IsError = false;
+                        result.Data = true;
+                        result.Message = "Từ chối thành công!";
+                        return result;
+                    }    
+                    widthDraw.Status = 3;
+                    widthDraw.ModifiedBy = userName;
+                    widthDraw.ModifiedDate = DateTime.Now;
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == widthDraw.UID);
+                    var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                    if (user != null && admin != null)
+                    {
+                        if(widthDraw.Type == 2)
+                        {
+                            user.Wallet = user.Wallet + widthDraw.Amount;
+                            user.ModifiedBy = userName;
+                            user.ModifiedDate = DateTime.Now;
+                            var historyWallet = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.OrderID == widthDraw.ID);
+                            historyWallet.Status = 2;
+                            db.Update(historyWallet);
+                            db.Update(user);
+                        }
+                        db.Update(widthDraw);
+                        int kq = db.SaveChanges();
+                        if(kq > 0)
+                        {
+                            string money = string.Format("{0:N0}đ", widthDraw.Amount).Replace(",", ".");
+                            var message = "";
+                            if(widthDraw.Type == 1)
+                            {
+                                message = string.Format("Yêu cầu nạp <span class=\"text-success\">{0}</span> của bạn đã bị từ chối.", money);
+                                NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 2, admin.Username);
+                            }
+                            if (widthDraw.Type == 2)
+                            {
+                                message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã bị từ chối.", money);
+                                NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 3, admin.Username);
+                            }    
+                            result.IsError = false;
+                            result.Data = true;
+                            result.Message = "Từ chối thành công!";
+                            return result;
+                        }    
+                    }    
+                }    
+            }
+            result.IsError = true;
+            result.Data = false;
+            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
             return result;
         }
         #endregion

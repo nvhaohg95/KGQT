@@ -110,20 +110,27 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Duyệt lệnh nạp tiền
-        public bool Approval(int ID)
+        public DataReturnModel<tbl_Withdraw> Approval(int ID)
         {
             string userLogin = HttpContext.Session.GetString("user");
             var result = WithDrawBusiness.Approval(ID, userLogin);
-            if (result != null)
+            if (result.Data != null)
             {
                 var user = AccountBusiness.GetInfo(-1, userLogin);
                 if (result.Data.UID == user.ID)
                     HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(user));
-                return true;
             }
-            return false;
+            return result;
         }
         #endregion
 
+        #region Từ chối yêu cầu rút tiền
+        public DataReturnModel<bool> Refuse(int ID)
+        {
+            string userLogin = HttpContext.Session.GetString("user");
+            var result = WithDrawBusiness.Refuse(ID, userLogin);
+            return result;
+        }
+        #endregion
     }
 }

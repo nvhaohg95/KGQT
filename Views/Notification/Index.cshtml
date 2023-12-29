@@ -32,9 +32,9 @@
         <div class="form-group">
             <label class="fw-bold mb-0">Trạng thái:</label>
             <select name="Status" id="Status" class="form-control">
-                <option value="0" selected="@(status == 0)">Tất cả</option>
-                <option value="1" selected="@(status == 1)">Chưa xem</option>
-                <option value="2" selected="@(status == 2)">Đã xem</option>
+                <option value="0" selected="@(status == -1)">Tất cả</option>
+                <option value="1" selected="@(status == 0)">Chưa xem</option>
+                <option value="2" selected="@(status == 1)">Đã xem</option>
             </select>
         </div>
     </div>
@@ -59,7 +59,7 @@
             <table class="table table-bordered table-hover">
                 <thead class="bg-info text-white">
                     <tr>
-                        <th class="text-center">
+                        <th class="text-left">
                             Ngày tạo
                         </th>
                         <th class="text-center">
@@ -75,7 +75,7 @@
                             <td class="text-left align-middle">
                                 @item.CreatedDate.Value.ToString("dd/MM/yyy")
                             </td>
-                            <td class="text-center align-middle">
+                            <td class="text-left align-middle">
                                 @Html.Raw(item.Message)
                             </td>
                             @*<td class="text-center align-middle">

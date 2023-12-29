@@ -111,21 +111,30 @@
                             @item.Fullname
                         </td>
                         <td class="text-center align-middle">
-                            @Html.Raw(PJUtils.WithDrawStatusHtml(item.Type.Value))
+                            @if (item.Type == 1)
+                            {
+                                <span>Nạp tiền</span>
+                            }
+                            else if (item.Type == 2)
+                            {
+                                <span>Rút tiền</span>
+                            }
                         </td>
                         <td class="text-center align-middle text-danger">
                             @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
                         </td>
                         <td class="text-center align-middle">
-                            @{
-                                if (item.Status == 1)
-                                {
-                                    <span class="badge badge-pill badge-danger p-2">Chưa duyệt</span>
-                                }
-                                else if(item.Status == 2)
-                                {
-                                    <span class="badge badge-pill badge-success p-2">Đã duyệt</span>
-                                }
+                            @if (item.Status == 1)
+                            {
+                                <span>Chưa duyệt</span>
+                            }
+                            else if (item.Status == 2)
+                            {
+                                <span>Đã duyệt</span>
+                            }
+                            else if (item.Status == 3)
+                            {
+                                <span>Từ chối</span>
                             }
                         </td>
                         <td class="text-right align-middle">
@@ -134,6 +143,10 @@
                                 <a class="btn btn-sm btn-success" onclick="clickApproval(@item.ID)">
                                     <i class="fas fa-check"></i>
                                     <span>Duyệt</span>
+                                </a>
+                                <a class="btn btn-sm btn-danger" onclick="clickRefuse(@item.ID)">
+                                    <i class="fas fa-minus-circle"></i>
+                                    <span>Từ chối</span>
                                 </a>
                             }
 
@@ -213,22 +226,49 @@
     }
     // approval
     function clickApproval(id) {
-        $.ajax({
-            url: '/Admin/WithDraw/Approval',
-            type: "POST",
-            data: { ID: id },
-            success: function (reponse) {
-                if (reponse) 
-                    helper.showSuc('Duyệt thành công!')
-                else
-                    helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!")
-
-            },
-            error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công.')
+        helper.showAlert("Bạn có muốn thực hiện yêu cầu này?").then((res) => {
+            if (res.isConfirmed)
+            {
+                $.ajax({
+                    url: '/Admin/WithDraw/Approval',
+                    type: "POST",
+                    data: { ID: id },
+                    success: function (reponse) {
+                        if (reponse.isError)
+                            helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
+                        else
+                            helper.showSuc('Duyệt thành công!');
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
+                    }
+                });
             }
         });
+        
     }
-
+    //refuse
+    function clickRefuse(id){
+        helper.showAlert("Bạn có muốn từ chối yêu cầu này?").then((res) => {
+            if (res.isConfirmed)
+            {
+                $.ajax({
+                    url: '/Admin/WithDraw/Refuse',
+                    type: "POST",
+                    data: { ID: id },
+                    success: function (reponse) {
+                        if (reponse.isError)
+                            helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!")
+                        else
+                            helper.showSuc('Từ chối thành công!')
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr('Hệ thống thực thi không thành công.')
+                    }
+                });
+            }
+        });
+        
+    }
 
 </script>

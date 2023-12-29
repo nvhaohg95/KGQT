@@ -88,16 +88,16 @@
     </div>
 </div>
 <div class="row bg-white p-2">
-    <div class="col-lg-1 col-md-1 col-sm-1">
+    <div class="col-lg-6 col-md-1 col-sm-1">
         <span>
             Tổng số:&nbsp
             <b>@totalRecord</b>
         </span>
     </div>
-    <div class="col-lg-11 col-md-11 col-sm-11">
+    <div class="col-lg-6 col-md-11 col-sm-11">
         @if (totalPage > 1)
         {
-            <nav class="d-flex justify-content-center">
+            <nav class="d-flex justify-content-end">
                 <ul class="pagination m-0">
                     <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
                         <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
