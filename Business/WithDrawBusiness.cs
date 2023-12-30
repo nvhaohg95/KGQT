@@ -136,6 +136,17 @@ namespace KGQT.Business
                 var widthDraw = db.tbl_Withdraws.FirstOrDefault(x => x.ID == ID);
                 if(widthDraw != null)
                 {
+                    if(widthDraw.Status == 2)
+                    {
+                        var editer = db.tbl_Accounts.FirstOrDefault(x => x.Username == widthDraw.ModifiedBy);
+                        if(editer != null)
+                            result.Message = string.Format("Yêu cầu đã được {0} duyệt trước đó!",editer.FullName);
+                        else
+                            result.Message = "Yêu cầu đã được duyệt!";
+                        result.IsError = false;
+                        result.Data = widthDraw;
+                        return result;
+                    }
                     widthDraw.Status = 2;
                     widthDraw.ModifiedBy = userName;
                     widthDraw.ModifiedDate = DateTime.Now;
@@ -186,7 +197,7 @@ namespace KGQT.Business
         }
         #endregion
 
-        #region Từ chối nạp tiền/rút tiền
+        #region Từ chối yêu cầu nạp/rút tiền
         public static DataReturnModel<bool> Refuse(int ID, string userName)
         {
             var result = new DataReturnModel<bool>();
@@ -197,9 +208,13 @@ namespace KGQT.Business
                 {
                     if(widthDraw.Status == 3)
                     {
+                        var editer = db.tbl_Accounts.FirstOrDefault(x => x.Username == widthDraw.ModifiedBy);
+                        if (editer != null)
+                            result.Message = string.Format("Yêu cầu đã được {0} từ chối trước đó!", editer.FullName);
+                        else
+                            result.Message = "Yêu cầu đã được từ chối!";
                         result.IsError = false;
                         result.Data = true;
-                        result.Message = "Từ chối thành công!";
                         return result;
                     }    
                     widthDraw.Status = 3;

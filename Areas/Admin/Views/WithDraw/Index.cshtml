@@ -235,9 +235,9 @@
                     data: { ID: id },
                     success: function (reponse) {
                         if (reponse.isError)
-                            helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
+                            helper.showErr(reponse.message);
                         else
-                            helper.showSuc('Duyệt thành công!');
+                            helper.showSuc(reponse.message);
                     },
                     error: function (xhr, status, err) {
                         helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
@@ -258,9 +258,9 @@
                     data: { ID: id },
                     success: function (reponse) {
                         if (reponse.isError)
-                            helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!")
+                            helper.showErr(reponse.message);
                         else
-                            helper.showSuc('Từ chối thành công!')
+                            helper.showSuc(reponse.message);
                     },
                     error: function (xhr, status, err) {
                         helper.showErr('Hệ thống thực thi không thành công.')
