@@ -1,4 +1,5 @@
-﻿@using KGQT.Models.temp;
+﻿@using KGQT.Commons;
+@using KGQT.Models.temp;
 @model List<KGQT.Models.tbl_Account>;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -41,8 +42,8 @@
             <thead class="thead-light">
                 <tr class="fw-bold">
                     <th class="text-left">Khách hàng</th>
-                    <th class="text-center">MĐD</th>
-                    <th class="text-center">Tài khoản</th>
+                    <th class="text-left">Tài khoản</th>
+                    <th class="text-left">Mật khẩu</th>
                     <th class="text-center">Số dư ví</th>
                     <th class="text-center"></th>
                 </tr>
@@ -58,19 +59,23 @@
                                 <span class="ml-2" title="@item.FullName">@item.FullName</span>
                             </div>
                         </td>
-                        <td class="text-center">
-                            <span title="@item.UserID">@item.UserID</span>
+                        <td class="text-left">
+                            <span title="Tài khoản">@item.Username</span>
                         </td>
-                        <td class="text-center">
-                            <span title="@item.Username">@item.Username</span>
+                        <td class="text-left">
+                            <span title="Mật khẩu">@(PJUtils.Decrypt("userpass", item.Password))</span>
                         </td>
                         <td class="text-center text-truncate">
                             <span title="@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ" class="text-danger">@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ</span>
                         </td>
                         <td class="text-right">
-                            <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.Username">
+                            <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.Username&type=1">
                                 <i class="fas fa-wallet"></i>
                                 <span>Nạp tiền</span>
+                            </a>
+                            <a class="btn btn-sm btn-warning" href="/Admin/Withdraw/Create?user=@item.Username&type=2">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>Rút tiền</span>
                             </a>
                             <a class="btn btn-sm btn-secondary" href="/Admin/Account/Detail?id=@item.ID">
                                 <i class="far fa-edit"></i>
@@ -295,15 +300,20 @@
         });
     }
     function clickDelete(id) {
-        $.ajax({
-            url: "/Admin/Account/Delete",
-            type: 'POST',
-            data: { id: id },
-            success: function (reponse) {
-                if (!reponse)
-                    helper.showErr("Xóa không thành công.")
-                else
-                    helper.showSuc('Xóa thành công!')
+        helper.showAlert("Bạn có muốn thực hiện thao tác xóa?").then((res) => {
+            if (res.isConfirmed) 
+            {
+                $.ajax({
+                    url: "/Admin/Account/Delete",
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (reponse) {
+                        if (reponse.isError)
+                            helper.showErr("Xóa không thành công!")
+                        else
+                            helper.showSuc('Xóa thành công!')
+                    }
+                });
             }
         });
     }

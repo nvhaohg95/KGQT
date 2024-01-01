@@ -65,10 +65,10 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Delete
         [HttpPost]
-        public bool Delete(int id)
+        public DataReturnModel<bool> Delete(int id)
         {
-            var isDelete = AccountBusiness.Delete(id);
-            return isDelete;
+            var result = AccountBusiness.Delete(id);
+            return result;
         }
 
         #endregion

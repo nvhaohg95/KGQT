@@ -1,6 +1,5 @@
-﻿@using KGQT.Models;
-@using KGQT.Commons;
-@model List<KGQT.Models.tbl_Withdraw>;
+﻿@model IEnumerable<KGQT.Models.tbl_Withdraw>
+
 @{
     ViewData["Title"] = "Nạp tiền";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -15,7 +14,7 @@
 <div class="row mb-2">
     <ul id="breadcrumbs">
         <li><a>Quản lý giao dịch</a></li>
-        <li><a class="active">Nạp tiền</a></li>
+        <li><a class="active">Rút tiền</a></li>
     </ul>
 </div>
 <div class="row bg-white p-2">
@@ -53,10 +52,10 @@
     <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
         <div class="d-flex align-items-center justify-content-between">
             <div>
-                <h5 class="text-danger text-uppercase fw-bold">NẠP TIỀN</h5>
+                <h5 class="text-danger text-uppercase fw-bold">RÚT TIỀN</h5>
             </div>
             <div>
-                <a class="btn btn-sm btn-success w-100px" href="/Admin/Withdraw/Create?type=1"><i class="fas fa-plus"></i>&nbspThêm</a>
+                <a class="btn btn-sm btn-success w-100px" href="/Admin/Withdraw/Create?type=2"><i class="fas fa-plus"></i>&nbspThêm</a>
             </div>
         </div>
     </div>
@@ -180,25 +179,10 @@
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
-    // serach by status
-    function clickStatus(status) {
-        var fromDate = $('#myform').find('input[name="fromDate"]').val();
-        var toDate = $('#myform').find('input[name="toDate"]').val();
-        var params = `?status=${status}`;
-        if (fromDate != "") {
-            params += `&fromDate=${fromDate}`;
-        }
-        if (toDate != "") {
-            params += `&toDate=${toDate}`;
-        }
-        window.history.replaceState(null, null, params);
-        location.reload()
-    }
     // approval
     function clickApproval(id) {
         helper.showAlert("Bạn có muốn thực hiện yêu cầu này?").then((res) => {
-            if (res.isConfirmed)
-            {
+            if (res.isConfirmed) {
                 $.ajax({
                     url: '/Admin/WithDraw/Approval',
                     type: "POST",
@@ -215,13 +199,12 @@
                 });
             }
         });
-        
+
     }
     //refuse
-    function clickRefuse(id){
+    function clickRefuse(id) {
         helper.showAlert("Bạn có muốn từ chối yêu cầu này?").then((res) => {
-            if (res.isConfirmed)
-            {
+            if (res.isConfirmed) {
                 $.ajax({
                     url: '/Admin/WithDraw/Refuse',
                     type: "POST",
@@ -238,7 +221,9 @@
                 });
             }
         });
-        
+
     }
 
 </script>
+
+

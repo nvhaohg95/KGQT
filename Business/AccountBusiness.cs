@@ -445,6 +445,7 @@ namespace KGQT.Business
                     ID = x.ID,
                     UserID = x.UserID,
                     Username = x.Username,
+                    Password = x.Password,
                     FullName = x.FullName,
                     Wallet = x.Wallet,
                     IMG = x.IMG
@@ -596,18 +597,38 @@ namespace KGQT.Business
         #endregion
 
         #region Delete
-        public static bool Delete(int id)
+        public static DataReturnModel<bool> Delete(int id)
         {
-            using (var db = new nhanshiphangContext())
+            var result = new DataReturnModel<bool>();
+            try
             {
-                var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
-                if (acc != null)
+                using (var db = new nhanshiphangContext())
                 {
-                    db.Remove(acc);
-                    var kq = db.SaveChanges();
-                    return kq > 0;
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
+                    if (acc != null)
+                    {
+                        db.Remove(acc);
+                        var kq = db.SaveChanges();
+                        if(kq > 0)
+                        {
+                            result.IsError = false;
+                            result.Message = "Xóa thành công!";
+                            result.Data = true;
+                            return result;
+                        }    
+                    }
+                    result.IsError = true;
+                    result.Message = "Xóa không thành công!";
+                    result.Data = false;
+                    return result;
                 }
-                return false;
+            }
+            catch (Exception)
+            {
+                result.IsError = true;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Data = false;
+                return result;
             }
         }
 
@@ -657,7 +678,7 @@ namespace KGQT.Business
             else
             {
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
                 return result;
             }
         }

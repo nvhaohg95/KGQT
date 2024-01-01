@@ -40,6 +40,8 @@ namespace KGQT.Commons
         }
         public static string Decrypt(string key, string data)
         {
+            if (string.IsNullOrEmpty(data))
+                return "";
             byte[] keydata = System.Text.Encoding.ASCII.GetBytes(key);
             string md5String = BitConverter.ToString(new
             MD5CryptoServiceProvider().ComputeHash(keydata)).Replace("-", "").ToLower();

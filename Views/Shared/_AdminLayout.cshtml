@@ -228,46 +228,50 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark bg-gradient" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts2">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts2" title="Kiện">
                             <i class="fas fa-shipping-fast"></i>
                             <span class="ml-2">KIỆN</span>
                             <div class="sb-sidenav-collapse-arrow"><i class="fa-solid fa-truck-fast"></i></div>
                         </a>
                         <div class="collapse" id="collapseLayouts2" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/Admin/Package/index">DANH SÁCH KIỆN</a>
-                                <a class="nav-link" href="/Admin/Package/InStock">NHẬP KHO</a>
-                                <a class="nav-link" href="/Admin/Package/ExportFile">XUẤT EXCEL</a>
+                                <a class="nav-link" href="/Admin/Package/index" title="Danh sách kiện">DANH SÁCH KIỆN</a>
+                                <a class="nav-link" href="/Admin/Package/InStock" title="Nhập kho">NHẬP KHO</a>
+                                <a class="nav-link" href="/Admin/Package/ExportFile" title="Xuất excel">XUẤT EXCEL</a>
                             </nav>
                         </div>
-
-                        <a class="nav-link" href="/Admin/ShippingOrder/index">
+                        <a class="nav-link" href="/Admin/ShippingOrder/index" title="Đơn thanh toán">
                             <i class="fas fa-shopping-cart"></i>
                             <span class="ml-2">ĐƠN THANH TOÁN</span>
                         </a>
 
-                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts3" aria-expanded="false" aria-controls="collapseLayouts3">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts3" aria-expanded="false" aria-controls="collapseLayouts3" title="Giao dịch">
                             <i class="fas fa-money-check-alt"></i>
                             <span class="ml-2">GIAO DỊCH</span>
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
                         <div class="collapse" id="collapseLayouts3" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/Admin/Withdraw/Index">NẠP TIỀN</a>
+                                <a class="nav-link" href="/Admin/Withdraw/Index" title="Nạp tiền">NẠP TIỀN</a>
                             </nav>
                         </div>
-                        <a class="nav-link" href="/Admin/Account/Index?page=1">
+                        <div class="collapse" id="collapseLayouts3" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="/Admin/Withdraw/Refuse" title="Rút tiền">RÚT TIỀN</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link" href="/Admin/Account/Index?page=1" title="Người dùng">
                             <span><i class="fas fa-users icon-16"></i></span>
-                            <span class="ml-2">NGƯỜI DÙNG</span>
+                            <span class="ml-2" >NGƯỜI DÙNG</span>
                         </a>
-                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts4" aria-expanded="false" aria-controls="collapseLayouts4">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts4" aria-expanded="false" aria-controls="collapseLayouts4" title="Thiết lập">
                             <span><i class="fas fa-cog icon-16"></i></span>
                             <span class="ml-2">THIẾT LẬP</span>
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
                         <div class="collapse" id="collapseLayouts4" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/Admin/FeeWeight/index?page=1">PHÍ VẬN CHUYỂN</a>
+                                <a class="nav-link" href="/Admin/FeeWeight/index?page=1" title="Phí vận chuyển">PHÍ VẬN CHUYỂN</a>
                             </nav>
                         </div>
                     </div>

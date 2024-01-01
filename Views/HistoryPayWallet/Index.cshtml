@@ -66,8 +66,8 @@
             <thead>
                 <tr class="bg-info text-white">
                     <td class="fw-bold text-left">Ngày GD</td>
-                    <td class="fw-bold text-center">Loại GD</td>
-                    <td class="fw-bold text-center">Nội dung</td>
+                    <td class="fw-bold text-left">Loại GD</td>
+                    <td class="fw-bold text-left">Nội dung</td>
                     <td class="fw-bold text-center">Số tiền</td>
                     <td class="fw-bold text-center">Số dư</td>
                     <td class="fw-bold text-center">Tổng</td>
@@ -88,7 +88,7 @@
                                 <span>dd/mm/yyy</span>
                             }
                         </td>
-                        <td class="text-center " title="@(PJUtils.TradeType(item.TradeType))">
+                        <td class="text-left " title="@(PJUtils.TradeType(item.TradeType))">
                             @(PJUtils.TradeType(item.TradeType))
                         </td>
                         <td class="text-center text-truncate" title="@item.HContent">
@@ -102,7 +102,7 @@
                             }
 
                         </td>
-                        <td class="text-center">
+                        <td class="text-left">
                             @if (item.Type == 1)
                             {
                                 <span class="text-danger">-@string.Format("{0:N0}",item.Amount).Replace(",",".")đ</span>

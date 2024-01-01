@@ -8,14 +8,14 @@ namespace KGQT.Business
     public class WithDrawBusiness
     {
         #region Get page
-        public static object[] GetList(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public static object[] GetList(int type,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var lstData = new List<tbl_Withdraw>();
             int count = 0;
             int totalPage = 0;
             using (var db = new nhanshiphangContext())
             {
-                var query = db.tbl_Withdraws.AsQueryable();
+                var query = db.tbl_Withdraws.Where(x => x.Type == type);
                 if (status != 0)
                     query = query.Where(x => x.Status == status);
                 if (fromDate != null)

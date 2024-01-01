@@ -16,7 +16,7 @@ namespace KGQT.Areas.Admin.Controllers
         #region View
         public IActionResult Index(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = WithDrawBusiness.GetList(status, fromDate, toDate, page, pageSize);
+            var oData = WithDrawBusiness.GetList(1,status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
             var totalRecord = (int)oData[1];
             var totalPage = (int)oData[2];
@@ -29,9 +29,10 @@ namespace KGQT.Areas.Admin.Controllers
             return View(lstData);
         }
         [HttpGet]
-        public IActionResult Create(string user)
+        public IActionResult Create(string user,int type)
         {
             ViewData["user"] = user;
+            ViewData["type"] = type;
             return View();
         }
         #endregion
@@ -124,7 +125,26 @@ namespace KGQT.Areas.Admin.Controllers
         }
         #endregion
 
+        #region Rút tiền
+        [HttpGet]
+        public ActionResult Refuse(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        {
+            var oData = WithDrawBusiness.GetList(2,status, fromDate, toDate, page, pageSize);
+            var lstData = oData[0] as List<tbl_Withdraw>;
+            var totalRecord = (int)oData[1];
+            var totalPage = (int)oData[2];
+            ViewData["status"] = status;
+            ViewData["fromDate"] = fromDate;
+            ViewData["toDate"] = toDate;
+            ViewData["page"] = page;
+            ViewData["totalRecord"] = totalRecord;
+            ViewData["totalPage"] = totalPage;
+            return View(lstData);
+        }
+        #endregion
+
         #region Từ chối yêu cầu rút tiền
+        [HttpPost]
         public DataReturnModel<bool> Refuse(int ID)
         {
             string userLogin = HttpContext.Session.GetString("user");
