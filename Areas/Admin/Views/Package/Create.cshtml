@@ -111,9 +111,15 @@
                     data: {
                         s: request.term
                     },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
                     success: function (data) {
                         response(data);
-                    }
+                    },
+                    complete: function () {
+                        stopLoading(true);
+                    },
                 });
             },
             minLength: 3,
@@ -150,7 +156,7 @@
                 error: function (xhr, status, err) {
                     // error handling
                 }
-            });
+            })
         } else {
             helper.showErr('Vui lòng nhập mã kiện!');
         }
@@ -194,12 +200,14 @@
         if (data.DeclarePrice) {
             data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
         }
-
         $.ajax({
             url: '/admin/Package/Create',
             type: 'POST',
             data: { sData: JSON.stringify(data) },
             // other AJAX options here
+            beforeSend: function () {
+                stopLoading();
+            },
             success: function (result) {
                 if (!result)
                     helper.showErr('Tạo đơn lỗi!')
@@ -208,8 +216,11 @@
             },
             error: function (xhr, status, err) {
                 // error handling
+            },
+            complete: function () {
+                stopLoading(true);
             }
-        });
+        })
     }
 
     function format(e) {

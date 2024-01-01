@@ -90,3 +90,11 @@ window["formatVND"] = function formatVND() {
             helper.getChange(input)
     });
 }
+
+
+window["stopLoading"] = function stopLoading(isStop) {
+    if (!isStop)
+        $("#overlay").fadeIn(300);
+    else
+        $("#overlay").fadeOut(300);
+}
