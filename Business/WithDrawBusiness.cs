@@ -43,6 +43,13 @@ namespace KGQT.Business
                 var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
                 if (acc != null)
                 {
+                    if (data.Type == 2 && acc.Wallet < data.Amount)
+                    {
+                        result.IsError = true;
+                        result.Message = "Số dư trong ví của khách không đủ.";
+                        result.Data = false;
+                        return result;
+                    }
                     var user = AccountBusiness.GetInfo(-1, acc.Username);
                     var admin = AccountBusiness.GetInfo(-1, createdBy);
                     db.Add(data);
@@ -52,15 +59,31 @@ namespace KGQT.Business
                         string notiMessage = "";
                         if (data.Status == 2)
                         {
-                            var moneyLeft = acc.Wallet != null ? acc.Wallet : 0;
-                            acc.Wallet = moneyLeft + data.Amount;
-                            acc.ModifiedBy = createdBy;
-                            acc.ModifiedDate = DateTime.Now;
-                            db.Update(acc);
-                            db.SaveChanges();
-                            notiMessage = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", data.Amount);
-                            HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, createdBy);
-                            NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, 2, admin.Username);
+                            string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
+                            if (data.Type == 1)
+                            {
+                                var moneyLeft = acc.Wallet != null ? acc.Wallet : 0;
+                                acc.Wallet = moneyLeft + data.Amount;
+                                acc.ModifiedBy = createdBy;
+                                acc.ModifiedDate = DateTime.Now;
+                                db.Update(acc);
+                                db.SaveChanges();
+                                notiMessage = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", strHTML);
+                                HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, createdBy);
+                                NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, 2, admin.Username);
+                            }
+                            else if(data.Type == 2)
+                            {
+                                var moneyLeft = acc.Wallet != null ? acc.Wallet : 0;
+                                acc.Wallet = moneyLeft - data.Amount;
+                                acc.ModifiedBy = createdBy;
+                                acc.ModifiedDate = DateTime.Now;
+                                db.Update(acc);
+                                db.SaveChanges();
+                                notiMessage = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã được duyệt.", strHTML);
+                                HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, createdBy);
+                                NotificationBusiness.Insert(acc.ID, acc.FullName, acc.ID, acc.FullName, data.ID, "", notiMessage, 3, acc.Username);
+                            }    
                             result.IsError = false;
                             result.Message = "Tạo thành công!";
                             result.Data = true;

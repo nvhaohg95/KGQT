@@ -43,7 +43,7 @@ namespace KGQT.Controllers
                 model.UID = user.ID;
                 model.Fullname = user.FullName;
                 model.Status = 1;
-                model.Type = 2; // rút tiền
+                model.Type = 2; 
                 model.CreatedBy = userLogin;
                 model.CreatedDate = DateTime.Now;
                 return WithDrawBusiness.Insert2(model, userLogin);

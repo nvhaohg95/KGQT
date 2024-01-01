@@ -94,7 +94,6 @@ namespace KGQT.Areas.Admin.Controllers
                 model.UID = user.ID;
                 model.Fullname = user.FullName;
                 model.Status = 2;
-                model.Type = 1;
                 model.CreatedBy = userLogin;
                 model.CreatedDate = DateTime.Now;
                 var result = WithDrawBusiness.Insert(model, userLogin);
