@@ -85,10 +85,11 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Tạo lệnh nạp tiền
         [HttpPost]
-        public bool Create(tbl_Withdraw model)
+        public DataReturnModel<bool> Create(tbl_Withdraw model)
         {
             string userLogin = HttpContext.Session.GetString("user");
             var user = AccountBusiness.GetInfo(-1, model.Username);
+            var result = new DataReturnModel<bool>();
             if (user != null && !string.IsNullOrEmpty(userLogin))
             {
                 model.UID = user.ID;
@@ -96,16 +97,19 @@ namespace KGQT.Areas.Admin.Controllers
                 model.Status = 2;
                 model.CreatedBy = userLogin;
                 model.CreatedDate = DateTime.Now;
-                var result = WithDrawBusiness.Insert(model, userLogin);
+                result = WithDrawBusiness.Insert(model, userLogin);
                 if (result.Data)
                 {
                     var admin = AccountBusiness.GetInfo(-1, userLogin);
                     if (model.UID == admin.ID)
                         HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(admin));
-                    return true;
                 }
+                return result;
             }
-            return false;
+            result.IsError = true;
+            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
+            result.Data = false;
+            return result;
         }
         #endregion
 

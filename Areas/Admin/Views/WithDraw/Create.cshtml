@@ -175,10 +175,10 @@
             type: 'POST',
             data: { model: data },
             success: function (respone) {
-                if (respone)
-                    helper.showSuc('Tạo thành công!')
+                if (respone.isError)
+                    helper.showErr(respone.message)
                 else
-                    helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                    helper.showSuc('Tạo thành công!')
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
