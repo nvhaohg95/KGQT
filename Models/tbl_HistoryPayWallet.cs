@@ -29,8 +29,9 @@ namespace KGQT.Models
         public int TradeType { get; set; }
         public string? Note { get; set; }
         /// <summary>
-        /// 0: chưa active
-        /// 1 : active
+        /// 0:  chưa duyệt
+        /// 1 : đã duyệt
+        /// 2 : từ chối ( dùng cho nạp/rút tiền )
         /// </summary>
         public int? Status { get; set; }
         public DateTime? CreatedDate { get; set; }

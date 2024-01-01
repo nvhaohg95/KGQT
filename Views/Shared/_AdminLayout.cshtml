@@ -151,7 +151,15 @@
                                             @Html.Raw(item.Message)
                                         </div>
 
-                                        <div class="small text-gray-500">@item.CreatedDate.Value.ToString("dd/MM/yyyy")</div>
+                                        <div class="small text-gray-500">
+                                            <div class="d-flex align-items-center justify-content-between small">
+                                                <span class="text-gray-500">@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                                                @if (item.Status == 0)
+                                                {
+                                                    <span class="dot"></span>
+                                                }
+                                            </div>
+                                        </div>
                                     </div>
                                 </a>
                             }
