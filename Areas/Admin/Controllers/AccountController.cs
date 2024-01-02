@@ -80,7 +80,6 @@ namespace KGQT.Areas.Admin.Controllers
             var userName = HttpContext.Session.GetString("user");
             var accInfo = AccountBusiness.GetInfo(0,userName);
             ViewData["userName"] = userName;
-            ViewData["lstRoles"] = AccountBusiness.GetListUserRole();
             return View(accInfo);
         }
 

@@ -715,6 +715,12 @@ namespace KGQT.Business
                     result.Message = "Họ tên không được bỏ trống";
                     return result;
                 }
+                if (string.IsNullOrEmpty(data.UserID))
+                {
+                    result.IsError = true;
+                    result.Message = "Mã định danh không được bỏ trống";
+                    return result;
+                }
                 if (string.IsNullOrEmpty(data.Email))
                 {
                     result.IsError = true;
@@ -747,7 +753,14 @@ namespace KGQT.Business
                     if (isEmail)
                     {
                         result.IsError = true;
-                        result.Message = "Địa chỉ email này đã được sử dụng";
+                        result.Message = "Địa chỉ email đã được sử dụng";
+                        return result;
+                    }
+                    var isUserID = db.tbl_Accounts.Any(x => x.UserID == data.UserID);
+                    if (isUserID)
+                    {
+                        result.IsError = true;
+                        result.Message = "Mã định danh đã được sử dụng";
                         return result;
                     }
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
@@ -757,8 +770,9 @@ namespace KGQT.Business
                         acc.Gender = data.Gender;
                         acc.Email = data.Email;
                         acc.Phone = data.Phone;
-                        acc.RoleID = data.RoleID;
                         acc.Address = data.Address;
+                        acc.UserID = data.UserID;
+                        acc.RoleID = data.RoleID;
                         acc.ModifiedBy = data.Username;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
