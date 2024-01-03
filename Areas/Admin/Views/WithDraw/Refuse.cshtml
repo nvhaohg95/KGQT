@@ -64,7 +64,8 @@
             <thead class="thead-light">
                 <tr class="fw-normal">
                     <th class="text-left">Ngày tạo</th>
-                    <th class="text-left">Khách hàng</th>
+                    <th class="text-left">Username</th>
+                    <th class="text-left">Tên Khách hàng</th>
                     <th class="text-left">Nội dung</th>
                     <th class="text-center">Số tiền</th>
                     <th class="text-center">Trạng thái</th>
@@ -84,6 +85,9 @@
                             {
                                 <span>dd/mm/yyy</span>
                             }
+                        </td>
+                        <td class="text-left align-middle">
+                            @item.Username
                         </td>
                         <td class="text-left align-middle">
                             @item.Fullname
