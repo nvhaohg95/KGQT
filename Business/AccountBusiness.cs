@@ -159,6 +159,10 @@ namespace KGQT.Business
                     {
                         if (data.File != null)
                         {
+                            if (!Directory.Exists(data.Path))
+                            {
+                                Directory.CreateDirectory(data.Path);
+                            }
                             var bytes = FileService.ResizeImage(data.File);
                             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
                             string path = Path.Combine(data.Path, fileName);

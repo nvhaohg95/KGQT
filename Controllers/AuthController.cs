@@ -101,7 +101,7 @@ namespace KGQT.Controllers
         }
 
         [HttpPost]
-        public DataReturnModel<tbl_Account> Register(SignUpModel data)
+        public DataReturnModel<tbl_Account> Register(SignUpModel data, IFormFile file)
         {
             if (data.File != null)
             {

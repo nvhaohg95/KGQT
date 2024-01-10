@@ -62,5 +62,18 @@ namespace KGQT.Business
             }
             return false ;
         }
+        
+        public static int GetTotal(int id, bool isAdmin = false)
+        {
+            int count = 0;
+            using (var db = new nhanshiphangContext())
+            {
+                if (isAdmin)
+                    count = db.tbl_Notifications.Count(x => x.IsForAdmin == true && x.Status == 0);
+                else
+                    count = db.tbl_Notifications.Count(x => x.ReceivedID == id && x.Status == 0);
+            }
+            return count;
+        }
     }
 }
