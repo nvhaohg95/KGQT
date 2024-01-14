@@ -44,7 +44,7 @@ namespace KGQT.Business
                 return db.tbl_Packages.Any(x => x.PackageCode == package);
         }
 
-        public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 2, string userName = "")
+        public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10, string userName = "")
         {
             using (var db = new nhanshiphangContext())
             {
@@ -66,7 +66,24 @@ namespace KGQT.Business
                 if (count > 0)
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)count / pageSize));
-                    lstData = qry.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                    qry = qry.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize);
+
+                    lstData = qry.GroupJoin(db.tbl_Accounts, x => x.UID, y => y.ID, (x, y) => new { pack = x, acc = y }).SelectMany(x => x.acc.DefaultIfEmpty(), (p, a) => new tbl_Package
+                    {
+                        ID = p.pack.ID,
+                        PackageCode = p.pack.PackageCode,
+                        Status = p.pack.Status,
+                        MovingMethod = p.pack.MovingMethod,
+                        Weight = p.pack.Weight,
+                        Username = p.pack.Username,
+                        Phone = a != null && !string.IsNullOrEmpty(a.Phone) ? a.Phone : "",
+                        OrderDate = p.pack.OrderDate,
+                        ReceivedDate = p.pack.ReceivedDate,
+                        ImportedSGWH = p.pack.ImportedSGWH,
+                        DateExpectation = p.pack.DateExpectation,
+                        ExportedCNWH = p.pack.ExportedCNWH
+                    }).ToList();
+
                 }
                 return new object[] { lstData, count, totalPage };
             }
@@ -501,7 +518,6 @@ namespace KGQT.Business
         {
             var data = new DataReturnModel<object>();
             List<string> err = new List<string>();
-            List<string> exist = new List<string>();
             using (Stream stream = file.OpenReadStream())
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -530,15 +546,32 @@ namespace KGQT.Business
 
                             string code = dt.Rows[row][3].ToString();
                             if (string.IsNullOrEmpty(code)) continue;
-                            if (BusinessBase.Exist<tbl_Package>(x => x.PackageCode == code))
-                            {
-                                exist.Add(code);
-                                continue;
-                            }
 
                             int type = Converted.ToInt(dt.Rows[row][2].ToString());
                             string note = dt.Rows[row][4].ToString();
                             var date = Converted.ToDate(dt.Rows[row][0].ToString());
+
+                            var oExist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
+                            if (oExist != null)
+                            {
+                                if (oExist.Status <= 3)
+                                {
+                                    oExist.Status = 3;
+                                    oExist.Note = note;
+                                    oExist.Status = 3;
+                                    oExist.OrderDate = date;
+                                    oExist.ExportedCNWH = date;
+                                    oExist.DateExpectation = date.AddDays(type);
+                                    oExist.ModifiedDate = DateTime.Now;
+                                    oExist.ModifiedBy = accesser;
+                                    if (BusinessBase.Update(oExist)) success++;
+                                    else
+                                        err.Add(code);
+                                }
+                                continue;
+                            }
+
+
                             var p = new tbl_Package();
                             var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == customer.ToLower());
                             if (user != null)
@@ -574,7 +607,7 @@ namespace KGQT.Business
                         {
                             string sSuccess = string.Format("Đã thêm thành công {0} trong tổng số {1}", success, rowCount);
                             data.IsError = false;
-                            data.Data = new { success = sSuccess, exist = string.Join("; ", exist), error = string.Join("; ", err) };
+                            data.Data = new { success = sSuccess, error = string.Join("; ", err) };
                             return data;
                         }
                         else

@@ -16,11 +16,15 @@
         <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
             <div class="card" style="border-radius: 10px;">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h2>Thông tin đơn: <span class="text-uppercase text-danger">@Model.PackageCode</span></h2>
+                    <div class="row border-bottom border-gray mb-4">
+                        <div class="col-md-5 col-sm-12">
+                            <h3>Mã vận đơn: <span class="text-uppercase text-danger">@Model.PackageCode</span></h3>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3 col-sm-12">
+                            @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
+                        </div>
+
+                        <div class="col-md-4 col-sm-12">
                             @if (Model.Status == 0)
                             {
                                 <button type="button" onclick="confirm(@Model.ID)" class="btn btn-sm btn-primary float-right mx-2">Xác nhận đơn</button>
@@ -35,7 +39,7 @@
                             }
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row border-bottom border-gray mb-4">
                         <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12">
                             @if (Model.ExportedCNWH != null)
                             {
@@ -52,7 +56,7 @@
                             @if (Model.DateExpectation != null)
                             {
                                 <li class="active-tl">
-                                    <span>Đang trên đường về HCM <br> @Model.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                    <span>Đang trên đường về HCM</span>
                                 </li>
                             }
                             else
@@ -87,7 +91,7 @@
                             }
                         </ul>
                     </div>
-                    <div class="panel panel-primary mb-4">
+                    <div class="panel panel-primary border-bottom border-gray mb-4 pb-2">
                         <div class="panel-heading">
                             <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Thông tin khách hàng</h3>
                         </div>
@@ -95,7 +99,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div>
-                                        <span>Khách hàng: @Model.FullName</span>
+                                        <span>Khách hàng: @Model.Username</span>
                                     </div>
                                     <div>
                                         <span>Số điện thoại: @Model.Phone</span>
@@ -113,7 +117,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="panel panel-primary mb-4">
+                    <div class="panel panel-primary border-bottom border-gray mb-4 pb-2">
                         <div class="panel-heading">
                             <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Dịch vụ phụ</h3>
                         </div>
@@ -171,7 +175,7 @@
                         </div>
                     }
                     <!--Start::Thông tin đơn-->
-                    <div class="panel panel-primary mb-4">
+                    <div class="panel panel-primary border-bottom border-gray mb-4 pb-2">
                         <div class="panel-heading">
                             <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Tài chính</h3>
                         </div>
@@ -204,11 +208,6 @@
                             <!--End::Thông tin đơn-->
                         </div>
                     </div>
-                </div>
-                <div class="card-footer border-0 px-4 py-5"  style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                    @*<h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
-                        Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.TotalPrice != null ? Model.TotalPrice : 0).Replace(",", ".")đ</span>
-                    </h5>*@
                 </div>
             </div>
         </div>

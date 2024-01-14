@@ -11,7 +11,7 @@ namespace KGQT.Controllers
     public class PackageController : Controller
     {
         #region View
-        public IActionResult Index(int status, string ID, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 2)
+        public IActionResult Index(int status, string ID, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10)
         {
             var username = HttpContext.Session.GetString("user");
             var oData = Packages.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
@@ -36,6 +36,11 @@ namespace KGQT.Controllers
         public IActionResult Details(int id)
         {
             var model = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == model.UID);
+            model.Username = user.Username;
+            model.Phone = user.Phone;
+            model.Address = user.Address;
+            model.Email = user.Email;
             return View(model);
         }
 
