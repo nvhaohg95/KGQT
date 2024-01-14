@@ -229,7 +229,7 @@ namespace KGQT.Business
                 var update = BusinessBase.Update(exist);
                 if (update)
                     BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
-                data.IsError = !update;
+                data.IsError = false;
                 data.Message = "Tạo Mã vận đơn thành công!";
                 return data;
             }
@@ -253,7 +253,7 @@ namespace KGQT.Business
             var s = BusinessBase.Add(form);
             if (s)
             {
-                data.IsError = s;
+                data.IsError = false;
                 data.Message = "Đã thêm mã vận đơn";
                 BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
                 return data;
