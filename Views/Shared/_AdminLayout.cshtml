@@ -8,6 +8,7 @@
     tbl_Account user = null;
     var lstNoti = new List<tbl_Notification>();
     int pageNoti = 1;
+    int totalNoti = 0;
     int toalPageNoti = 0;
     if (!string.IsNullOrEmpty(sUser))
     {
@@ -16,9 +17,17 @@
             Context.Response.Redirect("/Auth/Login");
         else
         {
-            var oData = NotificationBusiness.GetPage(user.ID, 0, null, null, pageNoti, 20,true);
-            lstNoti = oData[0] as List<tbl_Notification>;
-            toalPageNoti = (int)oData[2];
+            if(user.RoleID != 1)
+            {
+                Context.Response.Redirect("/Home/Dashboard");
+            }
+            else
+            {
+                var oData = NotificationBusiness.GetPage(user.ID, 0, null, null, pageNoti, 20, true);
+                lstNoti = oData[0] as List<tbl_Notification>;
+                toalPageNoti = (int)oData[2];
+                totalNoti = NotificationBusiness.GetTotal(0, true);
+            }
         }
     }
     else
@@ -86,7 +95,10 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-bell fa-fw"></i>
                     <!-- Counter - Alerts -->
-                    @*<span class="badge badge-danger badge-counter">3+</span>*@
+                    @if(totalNoti > 0)
+                    {
+                        <span class="badge badge-danger badge-counter">@totalNoti</span>
+                    }
                 </a>
                 <!-- Dropdown - Alerts -->
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"

@@ -5,11 +5,9 @@ using KGQT.Mobility;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NToastNotify;
-using Org.BouncyCastle.Tls;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace KGQT.Controllers
@@ -43,7 +41,7 @@ namespace KGQT.Controllers
                 var user = JsonConvert.DeserializeObject<tbl_Account>(sUser);
                 if (user != null)
                 {
-                    if (user.RoleID == 0)
+                    if (user.RoleID == 1)
                         return RedirectToAction("Admin");
                     else
                         return RedirectToAction("Dashboard", "Home");
@@ -100,12 +98,29 @@ namespace KGQT.Controllers
             return View();
         }
 
+        //[HttpPost]
+        //public DataReturnModel<tbl_Account> Register(SignUpModel data)
+        //{
+        //    if (data.File != null)
+        //    {
+        //        data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uploads", "avatars");
+        //    }
+        //    var result = AccountBusiness.Register(data);
+        //    return result;
+        //}
+
         [HttpPost]
-        public DataReturnModel<tbl_Account> Register(SignUpModel data, IFormFile file)
+        public DataReturnModel<tbl_Account> Registers(string jsData, IFormFile file)
         {
-            if (data.File != null)
+            var data = JsonConvert.DeserializeObject<SignUpModel>(jsData);
+            if (data == null)
+            {
+                return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!"};
+            }    
+            if (file != null)
             {
                 data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uploads", "avatars");
+                data.File = file;
             }
             var result = AccountBusiness.Register(data);
             return result;
