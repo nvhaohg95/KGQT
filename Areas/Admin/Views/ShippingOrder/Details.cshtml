@@ -19,10 +19,6 @@
                 <div class="card-header">
                     <h2 class="text-muted mb-0">
                         Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span>
-                       @* @if (Model.Order.Status < 3)
-                        {
-                            <button type="button" onclick="cancel(@Model.Order.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
-                        }*@
                     </h2>
                     <div class="px-0 pt-2 col-md-12"><span>Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))</div>
                     <div class="px-0 pt-2 col-md-12 row">
@@ -31,7 +27,7 @@
                         <div class="col-md-4"><i class="fa fa-mail-bulk px-2"></i><strong>@Model.Order.Email</strong></div>
                     </div>
                     <div class="col-md-12 row">
-                        <span class="mr-2">Địa chỉ:</span><span>@Model.Order.Address</span>
+                        <span>Địa chỉ:</span><span>@Model.Order.Address</span>
                     </div>
                 </div>
             </div>
@@ -74,7 +70,7 @@
                                     @if (item.DateExpectation != null)
                                     {
                                         <li class="active-tl">
-                                            <span>Đang trên đường về HCM <br> @item.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                            <span>Đang trên đường về HCM</span>
                                         </li>
                                     }
                                     else

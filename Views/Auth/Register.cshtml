@@ -117,16 +117,26 @@
         reader.onerror = reject;
     });
     function clickRegister(){
-        var data = helper.form2Object($('#formRegister').serializeArray());
+        let data = helper.form2Object($('#formRegister').serializeArray());
+        let files = $("#input_uploader")[0].files;
+        let form = new FormData();
+        form.append("jsData",JSON.stringify(data));
+        if(files != null && files.length > 0)
+        {
+            form.append("file", files[0]);
+        }
         $.ajax({
-            url: '/Auth/Register',
+            url: '/Auth/Registers',
             type: "POST",
-            data: data,
+            data: form,
+            contentType: false,
+            processData: false,
             success: function (respone) {
-                if(respone.isError)
-                    helper.showWarn(respone.message);
-                else
+                if (respone && !respone?.isError)
                     helper.showSuc(respone.message);
+
+                else
+                    helper.showWarn(respone.message);
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');

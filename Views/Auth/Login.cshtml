@@ -42,7 +42,7 @@
                                     <a class="small cursor-pointer"  data-toggle="modal" data-target="#sendMailModal">Quên mật khẩu</a>
                                 </div>
                                 <div class="text-center">
-                                    <a class="small cursor-pointer" href="register">Đăng ký tài khoản</a>
+                                    <a class="small cursor-pointer" href="/auth/Register">Đăng ký tài khoản</a>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +114,7 @@
                     helper.showErr(respone.message);
                 else
                 {
-                    if(respone.data.roleID == 0)
+                    if(respone.data.roleID == 1)
                         location.href = "/Admin";
                     else
                         location.href = "/Home/Dashboard";

@@ -128,7 +128,18 @@ namespace KGQT.Business
                     result.Message = "Mật khẩu không được bỏ trống!";
                     return result;
                 }
-
+                if (data.File != null)
+                {
+                    if (!Directory.Exists(data.Path))
+                    {
+                        Directory.CreateDirectory(data.Path);
+                    }
+                    var bytes = FileService.ResizeImage(data.File);
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
+                    string path = Path.Combine(data.Path, fileName);
+                    File.WriteAllBytes(path, bytes);//loc note
+                    data.IMG = path;
+                }
                 using (var db = new nhanshiphangContext())
                 {
                     var isUserName = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
@@ -138,6 +149,7 @@ namespace KGQT.Business
                         result.Message = "Tên tài khoản đã được sử dụng.";
                         return result;
                     }
+                    
                     var acc = new tbl_Account()
                     {
                         Username = data.Username,
@@ -147,9 +159,10 @@ namespace KGQT.Business
                         Phone = data.Phone,
                         Email = data.Email,
                         Address = data.Address,
+                        IMG = data.IMG,
                         Wallet = 0,
                         Status = 2,
-                        RoleID = 1,
+                        RoleID = 4, //user
                         CreatedDate = DateTime.Now,
                         CreatedBy = data.Username
                     };
@@ -157,18 +170,7 @@ namespace KGQT.Business
                     int kq = db.SaveChanges();
                     if (kq > 0)
                     {
-                        if (data.File != null)
-                        {
-                            if (!Directory.Exists(data.Path))
-                            {
-                                Directory.CreateDirectory(data.Path);
-                            }
-                            var bytes = FileService.ResizeImage(data.File);
-                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
-                            string path = Path.Combine(data.Path, fileName);
-                            File.WriteAllBytes(path, bytes);
-                            data.IMG = "/uploads/avatars/" + fileName;
-                        }
+                        
                         result.IsError = false;
                         result.Type = 2;
                         result.Message = "Tạo tài khoản thành công!";
@@ -719,12 +721,6 @@ namespace KGQT.Business
                     result.Message = "Họ tên không được bỏ trống";
                     return result;
                 }
-                if (string.IsNullOrEmpty(data.UserID))
-                {
-                    result.IsError = true;
-                    result.Message = "Mã định danh không được bỏ trống";
-                    return result;
-                }
                 if (string.IsNullOrEmpty(data.Email))
                 {
                     result.IsError = true;
@@ -758,13 +754,6 @@ namespace KGQT.Business
                     {
                         result.IsError = true;
                         result.Message = "Địa chỉ email đã được sử dụng";
-                        return result;
-                    }
-                    var isUserID = db.tbl_Accounts.Any(x => x.UserID == data.UserID);
-                    if (isUserID)
-                    {
-                        result.IsError = true;
-                        result.Message = "Mã định danh đã được sử dụng";
                         return result;
                     }
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
