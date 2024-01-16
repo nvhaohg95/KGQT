@@ -48,10 +48,13 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var package = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
             var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == package.UID);
-            package.Username = user.Username;
-            package.Phone = user.Phone;
-            package.Address = user.Address;
-            package.Email = user.Email;
+            if (user != null)
+            {
+                package.Username = user.Username;
+                package.Phone = user.Phone;
+                package.Address = user.Address;
+                package.Email = user.Email;
+            }
             return View(package);
         }
 

@@ -205,6 +205,13 @@
                                     <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")đ</span></p>
                                 </div>
                             }
+                            @if (Model.SurCharge != null)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí thu hộ:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.SurCharge).Replace(",", ".")đ</span></p>
+                                </div>
+                            }
                             <!--End::Thông tin đơn-->
                         </div>
                     </div>

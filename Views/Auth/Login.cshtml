@@ -1,7 +1,7 @@
 ﻿@model KGQT.Models.temp.UserModel
 @{
     ViewData["Title"] = "Đăng nhập";
-    Layout = "~/Views/Shared/_PartialView.cshtml";    
+    Layout = "~/Views/Shared/_PartialView.cshtml";
 }
 <link href="~/css/sweetalert2.css" rel="stylesheet" />
 <script src="~/js/helper.js" type="text/javascript"></script>
@@ -39,7 +39,7 @@
                                 </form>
                                 <hr />
                                 <div class="text-center">
-                                    <a class="small cursor-pointer"  data-toggle="modal" data-target="#sendMailModal">Quên mật khẩu</a>
+                                    <a class="small cursor-pointer" data-toggle="modal" data-target="#sendMailModal">Quên mật khẩu</a>
                                 </div>
                                 <div class="text-center">
                                     <a class="small cursor-pointer" href="/auth/Register">Đăng ký tài khoản</a>
@@ -109,12 +109,14 @@
             url: '/Auth/Login',
             type: "POST",
             data: data,
+            beforeSend: function () {
+                stopLoading();
+            },
             success: function (respone) {
                 if (respone.isError)
                     helper.showErr(respone.message);
-                else
-                {
-                    if(respone.data.roleID == 1)
+                else {
+                    if (respone.data.roleID == 1)
                         location.href = "/Admin";
                     else
                         location.href = "/Home/Dashboard";
@@ -122,13 +124,14 @@
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }, complete: function () {
+                stopLoading(true);
             }
         });
     }
     // enter login
     $("#formLogin").keypress(function (event) {
-        if (event.keyCode == 13) 
-        {
+        if (event.keyCode == 13) {
             clickLogin();
         }
     });
@@ -141,18 +144,22 @@
             dataType: 'json',
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             data: { email: email },
+            beforeSend: function () {
+                stopLoading();
+            },
             success: function (respone) {
                 if (!respone.isError) {
                     helper.showSuc('Yêu cầu của bạn đã được gửi!');
                     $(".close").click();
                 }
-                else
-                {
+                else {
                     helper.showErr(respone.message)
                 }
             },
             error: function () {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+            }, complete: function () {
+                stopLoading(true);
             }
         });
     }
