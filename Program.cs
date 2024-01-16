@@ -54,6 +54,9 @@ app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
 
 app.UseSession();
 app.UseStaticFiles();
+if (!Directory.Exists("uploads"))
+    Directory.CreateDirectory("uploads");
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(

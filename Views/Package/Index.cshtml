@@ -107,20 +107,10 @@
                             <span>Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                         </div>
                         <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
-                            <a href="/admin/package/edit?id=@item.ID" class="btn btn-sm bg-warning text-white mr-2">Chỉnh sửa</a>
-                            @if (item.Status != 5 && item.Status != 9)
-                            {
-                                <button class="btn-sm btn bg-danger text-white mr-2" onclick="cancel(@item.ID)">Hủy đơn</button>
-                            }
-                            @if (item.Status < 2)
-                            {
-                                <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
-                            }
-                            @if (item.Status == 3)
-                            {
-                                <button class="btn-sm btn bg-info text-white mr-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
-                            }
-
+                                @if (item.Status < 2)
+                                {
+                                    <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
+                                }
                         </div>
                     </div>
                     <div class="row">
