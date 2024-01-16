@@ -1,4 +1,6 @@
-﻿using KGQT.Business;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
+using KGQT.Business;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
@@ -10,6 +12,7 @@ namespace KGQT.Mobility
     [Route("api/[controller]")]
     public class AuthencationController
     {
+        #region Authencation
         [HttpGet]
         [Route("login")]
         public object Login([FromQuery] string userName, [FromQuery] string passWord) 
@@ -36,5 +39,30 @@ namespace KGQT.Mobility
             var data = AccountBusiness.Register(model);
             return data;
         }
+        #endregion
+
+        #region HomePage
+        [HttpGet]
+        [Route("dashboard")]
+        public object[] GetDashBoard([FromQuery] string userName)
+        {
+            var lstpack = Packages.GetAllStatus(userName);
+            var lstship = ShippingOrder.GetAllStatus(userName);
+            //var result = AccountBusiness.Login(userName, passWord);
+            return new object[] { lstpack, lstship };
+        }
+        #endregion
+
+        #region PackagePage
+        [HttpGet]
+        [Route("package")]
+        public object[] GetPackage([FromQuery] int status, [FromQuery] string ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, 
+            [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+        {
+            var oData = Packages.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
+            
+            return oData;
+        }
+        #endregion
     }
 }
