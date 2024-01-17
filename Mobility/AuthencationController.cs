@@ -60,8 +60,15 @@ namespace KGQT.Mobility
             [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
         {
             var oData = Packages.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
-            
             return oData;
+        }
+
+        [HttpPost]
+        [Route("createpackage")]
+        public object CreatePackage([FromBody] tbl_Package data)
+        {
+            /*var data = Packages.CustomerAdd(form, userName);*/
+            return null;
         }
         #endregion
     }
