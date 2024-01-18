@@ -85,7 +85,9 @@ namespace KGQT.Business
                         IsWoodPackage = p.pack.IsWoodPackage,
                         IsAirPackage = p.pack.IsAirPackage,
                         IsInsurance = p.pack.IsInsurance,
-                        SearchBaiduTimes = p.pack.SearchBaiduTimes
+                        SearchBaiduTimes = p.pack.SearchBaiduTimes,
+                        WareHouse = p.pack.WareHouse,
+                        CreatedDate = p.pack.CreatedDate
                     }).ToList();
 
                 }

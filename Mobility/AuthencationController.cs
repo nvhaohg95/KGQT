@@ -65,10 +65,10 @@ namespace KGQT.Mobility
 
         [HttpPost]
         [Route("createpackage")]
-        public object CreatePackage([FromBody] tbl_Package data)
+        public object CreatePackage([FromBody] tbl_Package model)
         {
-            /*var data = Packages.CustomerAdd(form, userName);*/
-            return null;
+            var data = Packages.CustomerAdd(model, model.Username);
+            return data;
         }
         #endregion
     }
