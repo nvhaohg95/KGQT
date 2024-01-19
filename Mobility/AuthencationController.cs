@@ -70,6 +70,18 @@ namespace KGQT.Mobility
             var data = Packages.CustomerAdd(model, model.Username);
             return data;
         }
-        #endregion
-    }
+		#endregion
+
+		#region OrderPage
+		[HttpGet]
+		[Route("order")]
+		public object[] GetOrder([FromQuery] int status, [FromQuery] string ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+			[FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+		{
+			var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
+			return oData;
+		}
+		#endregion
+
+	}
 }
