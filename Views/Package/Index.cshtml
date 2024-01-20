@@ -59,11 +59,13 @@
                     @Html.TextBoxFor(model => ID ,"",new { @type="search", @class="form-control w-100",@placeholder="Nhập mã đơn hàng" })
                 </div>
                 <div class="row col-lg-8 col-md-12 col-sm-12">
-                    <div class="col-lg-4 col-md-4 col-sm-12">
-                        @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
+                               onblur="(this.type='text')" />
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12">
-                        @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
+                               onblur="(this.type='text')" />
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-12 mt-2 d-flex align-items-center justify-content-end">
                         <a href="Index" class="btn btn-sm btn-info mx-2">
@@ -107,20 +109,11 @@
                             <span>Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                         </div>
                         <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
-                            <a href="/admin/package/edit?id=@item.ID" class="btn btn-sm bg-warning text-white mr-2">Chỉnh sửa</a>
-                            @if (item.Status != 5 && item.Status != 9)
-                            {
-                                <button class="btn-sm btn bg-danger text-white mr-2" onclick="cancel(@item.ID)">Hủy đơn</button>
-                            }
                             @if (item.Status < 2)
                             {
                                 <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
+                                <button type="button" onclick="cancel(@item.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
                             }
-                            @if (item.Status == 3)
-                            {
-                                <button class="btn-sm btn bg-info text-white mr-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
-                            }
-
                         </div>
                     </div>
                     <div class="row">
@@ -284,6 +277,29 @@
             });
         } else
             location.href = "/package/QueryOrderStatus?code=" + code;
+    }
+
+    function cancel(id) {
+        $.ajax({
+            url: '/Package/Cancel',
+            type: 'POST',
+            data: { id },
+            beforeSend: function () {
+                stopLoading();
+            },
+            // other AJAX options here
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message)
+                else
+                    helper.showSuc(result.message)
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }, complete: function () {
+                stopLoading(true);
+            }
+        });
     }
 </script>
 <div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>

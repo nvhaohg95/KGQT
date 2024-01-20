@@ -23,21 +23,12 @@
                         <div class="col-md-3 col-sm-12">
                             @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
                         </div>
-
-                        <div class="col-md-4 col-sm-12">
-                            @if (Model.Status == 0)
-                            {
-                                <button type="button" onclick="confirm(@Model.ID)" class="btn btn-sm btn-primary float-right mx-2">Xác nhận đơn</button>
-                            }
-                            @if (Model.Status < 3)
-                            {
+                        @if (Model.Status < 3)
+                        {
+                            <div class="col-md-4 col-sm-12">
                                 <button type="button" onclick="cancel(@Model.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
-                            }
-                            @if (Model.Status == 1)
-                            {
-                                <button type="button" class="btn-sm btn bg-orange text-white  float-right mx-2">Kiểm tra hàng kho TQ</button>
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
                     <div class="row border-bottom border-gray mb-4">
                         <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12">
@@ -182,7 +173,7 @@
                         <div class="panel-body">
                             <div class="d-flex justify-content-between pt-2">
                                 <p class="text-muted mb-0">Cân nặng:</p>
-                                <p class="text-muted mb-0">@(Model.Weight ?? 0)kg</p>
+                                <p class="text-muted mb-0"><span class="fw-bold">@(Model.Weight ?? 0)kg</span></p>
                             </div>
                             @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
                             {
@@ -203,6 +194,13 @@
                                 <div class="d-flex justify-content-between">
                                     <p class="text-muted mb-0">Phí bảo hiểm:</p>
                                     <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.IsInsurancePrice != null ? Model.IsInsurancePrice : 0).Replace(",", ".")đ</span></p>
+                                </div>
+                            }
+                            @if (Model.SurCharge != null)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí thu hộ:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold">@string.Format("{0:N0}",Model.SurCharge).Replace(",", ".")đ</span></p>
                                 </div>
                             }
                             <!--End::Thông tin đơn-->

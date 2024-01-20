@@ -41,10 +41,12 @@
                     </div>
                     <div class="row col-lg-4 col-md-12 col-sm-12">
                         <div class="col-lg-6 col-md-6 col-sm-12">
-                            @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100", @placeholder="Từ ngày" })
+                            <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
+                                   onblur="(this.type='text')" />
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
-                            @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100",@placeholder="Đến ngày" })
+                            <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
+                                   onblur="(this.type='text')" />
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
@@ -135,6 +137,33 @@
                                             </div>
                                         </div>
                                     }
+                                    <div class="col-md-4 col-sm-12 col-xs-12">
+                                        @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                        {
+                                            <div class="form-check-inline">
+
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
+                                                </label>
+                                            </div>
+                                        }
+                                        @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
+                                                </label>
+                                            </div>
+                                        }
+                                        @if (item.IsInsurance != null && item.IsInsurance == true)
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-4">

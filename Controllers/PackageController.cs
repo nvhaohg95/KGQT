@@ -5,6 +5,7 @@ using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IO.Packaging;
 
 namespace KGQT.Controllers
 {
@@ -37,10 +38,13 @@ namespace KGQT.Controllers
         {
             var model = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
             var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == model.UID);
-            model.Username = user.Username;
-            model.Phone = user.Phone;
-            model.Address = user.Address;
-            model.Email = user.Email;
+            if (user != null)
+            {
+                model.Username = user.Username;
+                model.Phone = user.Phone;
+                model.Address = user.Address;
+                model.Email = user.Email;
+            }
             return View(model);
         }
 
@@ -62,6 +66,12 @@ namespace KGQT.Controllers
             return data;
         }
 
+        public DataReturnModel<bool> Cancel(int id)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var data = Packages.Cancel(id, userLogin);
+            return data;
+        }
         #endregion
 
     }

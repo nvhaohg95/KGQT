@@ -59,7 +59,7 @@ namespace KGQT.Business
                 if (fromDate != null)
                     qry = qry.Where(x => x.CreatedDate >= fromDate);
                 if (toDate != null)
-                    qry = qry.Where(x => x.CreatedDate <= toDate);
+                    qry = qry.Where(x => x.CreatedDate <= toDate.Value.AddDays(1).AddTicks(-1));
                 if (!string.IsNullOrEmpty(userName))
                     qry = qry.Where(x => x.Username == userName);
                 count = qry.Count();
@@ -81,7 +81,13 @@ namespace KGQT.Business
                         ReceivedDate = p.pack.ReceivedDate,
                         ImportedSGWH = p.pack.ImportedSGWH,
                         DateExpectation = p.pack.DateExpectation,
-                        ExportedCNWH = p.pack.ExportedCNWH
+                        ExportedCNWH = p.pack.ExportedCNWH,
+                        IsWoodPackage = p.pack.IsWoodPackage,
+                        IsAirPackage = p.pack.IsAirPackage,
+                        IsInsurance = p.pack.IsInsurance,
+                        SearchBaiduTimes = p.pack.SearchBaiduTimes,
+                        WareHouse = p.pack.WareHouse,
+                        CreatedDate = p.pack.CreatedDate
                     }).ToList();
 
                 }
@@ -92,6 +98,7 @@ namespace KGQT.Business
         public static DataReturnModel<tmpChinaOrderStatus> GetStatusOrder(string code, string uslogin)
         {
             DataReturnModel<tmpChinaOrderStatus> data = new DataReturnModel<tmpChinaOrderStatus>();
+            data.Key = code;
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
             if (oPack != null)
             {
@@ -102,7 +109,7 @@ namespace KGQT.Business
                     oPack.SearchBaiduTimes = 0;
                     if (user == null || user.Wallet == null || user.Wallet < 500)
                     {
-                        data.IsError = false;
+                        data.IsError = true;
                         data.Message = "Tài khoản khách không đủ tiền";
                         return data;
                     }
@@ -182,7 +189,7 @@ namespace KGQT.Business
         public static bool Add(tbl_Package model, string userLogin)
         {
             var user = AccountBusiness.GetInfo(-1, model.Username);
-            model.Status = 0;
+            model.Status = 1;
             model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             model.UID = user.ID;
             model.Username = user.Username;
@@ -203,6 +210,7 @@ namespace KGQT.Business
                 BusinessBase.TrackLog(user.ID, model.ID, "{0} đã tạo kiện", 0, user.Username);
             return s;
         }
+
         public static DataReturnModel<bool> CustomerAdd(tbl_Package form, string userLogin)
         {
             var data = new DataReturnModel<bool>();
@@ -251,7 +259,7 @@ namespace KGQT.Business
                 return data;
             }
 
-            form.Status = 0;
+            form.Status = 1;
             form.UID = user.ID;
             form.Username = user.Username;
             form.FullName = user.FullName;
@@ -624,6 +632,26 @@ namespace KGQT.Business
             }
         }
 
-        #endregion
+        public static DataReturnModel<bool> Cancel(int id, string username)
+        {
+            var data = new DataReturnModel<bool>();
+            var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id && x.Status <= 2);
+            if (pack != null)
+            {
+                pack.Status = 9;
+                pack.ModifiedBy = username;
+                pack.ModifiedDate = DateTime.Now;
+                if (BusinessBase.Update(pack))
+                {
+                    data.IsError = false;
+                    data.Message = "Hủy đơn thành công!";
+                    return data;
+                }
+            }
+            data.IsError = true;
+            data.Message = "Hủy không thành công, vui lòng liên hệ với nhân viên để được giải quyết !";
+            return data;
+        }
     }
+    #endregion
 }
