@@ -9,6 +9,7 @@
     var lstNoti = new List<tbl_Notification>();
     int pageNoti = 1;
     int toalPageNoti = 0;
+    int totalNoti = 0;
     if (!string.IsNullOrEmpty(sUser))
     {
         user = AccountBusiness.GetInfo(-1, sUser);
@@ -19,6 +20,7 @@
             var oData = NotificationBusiness.GetPage(user.ID, 0, null, null, pageNoti, 20);
             lstNoti = oData[0] as List<tbl_Notification>;
             toalPageNoti = (int)oData[2];
+            totalNoti = NotificationBusiness.GetTotal(user.ID);
         }
     }
     else
@@ -97,7 +99,11 @@
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Thông báo">
                     <i class="fas fa-bell fa-fw"></i>
-                    @*<span class="badge badge-danger badge-counter">3+</span>*@
+                    @if(totalNoti > 0)
+                    {
+                        <span class="badge badge-danger badge-counter">@(totalNoti > 9 ? "9+" : totalNoti)</span>
+
+                    }
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                      aria-labelledby="alertsDropdown">
@@ -109,7 +115,7 @@
                         {
                             foreach (var item in lstNoti)
                             {
-                                <a class="dropdown-item d-flex align-items-center h-100px" href="#">
+                                <a class="dropdown-item d-flex align-items-center h-100px" href="/Notification/Detail?id=@item.ID">
                                     <div class="mr-3">
                                         @if (item.NotifType == 1)
                                         {
@@ -173,7 +179,7 @@
                         else
                         {
                             <a class="dropdown-item d-flex align-items-center" href="#">
-                                Không có dữ liệu
+                                Không có thông báo
                             </a>
                         }
                     </div>
@@ -562,6 +568,7 @@
     <script src="~/js/demo/chart-bar-demo.js"></script>*@
     <script src="~/js/datatables-simple-demo.js"></script>
     <script>
+        // scrolling load page noti
         function onScroll(e, id) {
             if (e.scrollHeight - (e.clientHeight + e.scrollTop) == 0) {
                 let page = parseInt($("#notifications")[0].dataset.page) + 1;
@@ -580,6 +587,7 @@
                 }
             }
         }
+
         // change password
         function clickChangePass() {
             var data = helper.form2Object($('#formChangePass').serializeArray());
@@ -615,6 +623,7 @@
                 }
             });
         }
+
         function showHidePass(idIcon, idInput) {
             let _input = $(idInput);
             let _icon = $(idIcon);
@@ -629,6 +638,7 @@
                 _input.attr('type', 'password');
             }
         };
+
         function valueCBBChange(e, type = 1) {
             var v = $(e).find(":selected").val();
             if (v == 2) {
@@ -655,9 +665,11 @@
 
             }
         }
+
         function format(e) {
             helper.getChange(e)
         }
+
         // gửi yêu cầu nạp tiền
         function clickAddWithDraw() {
             var data = helper.form2Object($('#formWithDraw').serializeArray());
@@ -721,6 +733,7 @@
                 }
             });
         }
+
         // gửi yêu cầu rút tiền
         function clickAddWithDraw2() {
             var data = helper.form2Object($('#formWithDraw2').serializeArray());

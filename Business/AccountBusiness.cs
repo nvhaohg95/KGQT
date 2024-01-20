@@ -137,7 +137,7 @@ namespace KGQT.Business
                     var bytes = FileService.ResizeImage(data.File);
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
                     string path = Path.Combine(data.Path, fileName);
-                    File.WriteAllBytes(path, bytes);//loc note
+                    File.WriteAllBytes(path, bytes);
                     data.IMG = path;
                 }
                 using (var db = new nhanshiphangContext())
@@ -451,6 +451,7 @@ namespace KGQT.Business
                     ID = x.ID,
                     UserID = x.UserID,
                     Username = x.Username,
+                    Phone = x.Phone,
                     Password = x.Password,
                     FullName = x.FullName,
                     Wallet = x.Wallet,

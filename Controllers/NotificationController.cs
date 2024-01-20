@@ -1,8 +1,10 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using KGQT.Business;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace KGQT.Controllers
 {
@@ -47,6 +49,30 @@ namespace KGQT.Controllers
         }
         #endregion
 
-        
+        #region Get detail
+        public ActionResult Detail(int id)
+        {
+            var userName = HttpContext.Session.GetString("user");
+            var user = AccountBusiness.GetInfo(-1, userName);
+            var lstData = new List<tbl_Notification>();
+            var totalRecord = 0;
+            var totalPage = 0;
+            ViewData["status"] = 0;
+            ViewData["page"] = 1;
+            ViewData["fromDate"] = null;
+            ViewData["toDate"] = null;
+            if (user != null)
+            {
+                var oData = NotificationBusiness.GetDetail(id, userName);
+                lstData = oData[0] as List<tbl_Notification>;
+                totalRecord = (int)oData[1];
+                totalPage = (int)oData[2];
+            }
+            ViewData["totalRecord"] = totalRecord;
+            ViewData["totalPage"] = totalPage;
+
+            return View("Index", lstData);
+        }
+        #endregion
     }
 }
