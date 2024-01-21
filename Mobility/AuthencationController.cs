@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
 using KGQT.Business;
+using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
@@ -61,6 +62,23 @@ namespace KGQT.Mobility
         {
             var oData = Packages.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
             return oData;
+        }
+
+        [HttpGet]
+        [Route("checkstatus")]
+        public object[] CheckStatusPackage([FromQuery] string ID,[FromQuery] string userName)
+        {
+            var data = Packages.GetStatusOrder(ID, userName);
+            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == ID && x.Status < 2);
+            return new object[] { data, oPack };
+        }
+
+        [HttpGet]
+        [Route("cancel")]
+        public object CancelPackage([FromQuery] int ID, [FromQuery] string userName)
+        {
+            var data = Packages.Cancel(ID, userName);
+            return data;
         }
 
         [HttpPost]
