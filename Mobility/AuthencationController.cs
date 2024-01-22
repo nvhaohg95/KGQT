@@ -75,18 +75,20 @@ namespace KGQT.Mobility
 
         [HttpGet]
         [Route("cancel")]
-        public object CancelPackage([FromQuery] int ID, [FromQuery] string userName)
+        public object[] CancelPackage([FromQuery] int ID, [FromQuery] string userName)
         {
             var data = Packages.Cancel(ID, userName);
-            return data;
+            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == ID);
+            return new object[] { data, oPack };
         }
 
         [HttpPost]
         [Route("createpackage")]
-        public object CreatePackage([FromBody] tbl_Package model)
+        public object[] CreatePackage([FromBody] tbl_Package model)
         {
             var data = Packages.CustomerAdd(model, model.Username);
-            return data;
+            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == model.PackageCode);
+            return new object[] { data, oPack };
         }
 		#endregion
 
