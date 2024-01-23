@@ -101,7 +101,66 @@ namespace KGQT.Mobility
 			var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
 			return oData;
 		}
-		#endregion
 
-	}
+        [HttpGet]
+        [Route("getlistpackage")]
+        public object GetListPackage([FromQuery] int id)
+        {
+            var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+            return lstPacks;
+        }
+
+        public object Payment([FromQuery] int id, [FromQuery] string username)
+        {
+            if (id == 0) return false;
+            var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            if (oOrder == null) return false;
+
+            var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == username);
+
+            if (oUser == null) return false;
+
+            bool check = oUser.Wallet > oOrder.TotalPrice;
+            if (check)
+            {
+                oOrder.Status = 2;
+                oOrder.ModifiedBy = username;
+                oOrder.ModifiedDate = DateTime.Now;
+
+                var s = BusinessBase.Update(oOrder);
+                if (s)
+                {
+                    oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
+                    var pay = oUser.Wallet - oOrder.TotalPrice;
+                    oUser.Wallet = pay;
+                    BusinessBase.Update(oUser);
+
+                    #region Logs
+                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice.Value, 1, 1, pay.Value, username);
+                    #endregion
+
+                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+                    foreach (var pack in packs)
+                    {
+                        pack.Status = 5;
+                        pack.ModifiedBy = username;
+                        pack.ModifiedDate = DateTime.Now;
+                        BusinessBase.Update(pack);
+
+                        BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, username);
+                    }
+                    return new { res = false };
+                }
+            }
+            else
+            {
+                var pay = oOrder.TotalPrice - oUser.Wallet;
+                return new { error = true, mssg = string.Format("{0:N0}đ", pay).Replace(",", ".") };
+            }
+            return false;
+        }
+        #endregion
+
+    }
 }
