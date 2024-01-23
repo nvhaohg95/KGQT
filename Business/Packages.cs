@@ -114,6 +114,7 @@ namespace KGQT.Business
                         return data;
                     }
                     var wallet = user.Wallet - 500;
+                    user.Wallet = wallet;
                     BusinessBase.Update(user);
 
                     #region Logs
