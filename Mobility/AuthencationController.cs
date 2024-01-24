@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
 using KGQT.Business;
 using KGQT.Business.Base;
@@ -110,15 +111,18 @@ namespace KGQT.Mobility
             return lstPacks;
         }
 
+        [HttpGet]
+        [Route("payment")]
         public object Payment([FromQuery] int id, [FromQuery] string username)
         {
-            if (id == 0) return false;
+            var data = new DataReturnModel<object>();
+            if (id == 0) return null;
             var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
-            if (oOrder == null) return false;
+            if (oOrder == null) return null;
 
             var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == username);
 
-            if (oUser == null) return false;
+            if (oUser == null) return null;
 
             bool check = oUser.Wallet > oOrder.TotalPrice;
             if (check)
@@ -150,15 +154,20 @@ namespace KGQT.Mobility
 
                         BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, username);
                     }
-                    return new { res = false };
+                    data.IsError = false;
+                    data.Message = "Thanh toán đơn hàng thành công";
+                    data.Data = oOrder;
+                    return data;
                 }
             }
             else
             {
                 var pay = oOrder.TotalPrice - oUser.Wallet;
-                return new { error = true, mssg = string.Format("{0:N0}đ", pay).Replace(",", ".") };
+                data.IsError = true;
+                data.Message = string.Format("{0:N0}đ", pay).Replace(",", ".");
+                return data;
             }
-            return false;
+            return null;
         }
         #endregion
 
