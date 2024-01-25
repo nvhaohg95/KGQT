@@ -23,7 +23,7 @@
             }
             else
             {
-                var oData = NotificationBusiness.GetPage(user.ID, 0, null, null, pageNoti, 20, true);
+                var oData = NotificationBusiness.GetPage(0, 0, null, null, pageNoti, 20, true);
                 lstNoti = oData[0] as List<tbl_Notification>;
                 toalPageNoti = (int)oData[2];
                 totalNoti = NotificationBusiness.GetTotal(0, true);
@@ -95,9 +95,10 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-bell fa-fw"></i>
                     <!-- Counter - Alerts -->
-                    @if(totalNoti > 0)
+                    @if (totalNoti > 0)
                     {
-                        <span class="badge badge-danger badge-counter">@totalNoti</span>
+                        <span class="badge badge-danger badge-counter">@(totalNoti > 9 ? "9+" : totalNoti)</span>
+
                     }
                 </a>
                 <!-- Dropdown - Alerts -->
@@ -106,12 +107,12 @@
                     <h6 class="dropdown-header">
                         THÔNG BÁO
                     </h6>
-                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user?.ID,@pageNoti)" data-id="@user?.ID" data-page="@pageNoti">
+                    <div id="notifications" class="mh-300" onscroll="onScroll(this)" data-page="@pageNoti">
                         @if (lstNoti != null)
                         {
                             foreach (var item in lstNoti)
                             {
-                                <a class="dropdown-item d-flex align-items-center h-100px" href="#">
+                                <a class="dropdown-item d-flex align-items-center h-100px" href="/Admin/Notification/Detail?id=@item.ID">
                                     <div class="mr-3">
                                         @if (item.NotifType == 1)
                                         {
@@ -383,14 +384,14 @@
     <script src="~/js/demo/chart-bar-demo.js"></script>*@
     <script src="~/js/datatables-simple-demo.js"></script>
     <script>
-        function onScroll(e, id) {
+        function onScroll(e) {
             if (e.scrollHeight - (e.clientHeight + e.scrollTop) == 0) {
                 let page = parseInt($("#notifications")[0].dataset.page) + 1;
                 if (page <= @toalPageNoti) {
                     $.ajax({
                         url: '/Admin/Notification/GetList',
                         type: "GET",
-                        data: { id: id, page: page, pageSize: 20 },
+                        data: { page: page, pageSize: 20 },
                         success: function (respone) {
                             if (respone) {
                                 $("#notifications")[0].dataset.page = parseInt($("#notifications")[0].dataset.page) + 1 + "";

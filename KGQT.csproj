@@ -1895,6 +1895,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="uploads\" />
     <Folder Include="wwwroot\css\images\" />
   </ItemGroup>
 

@@ -43,7 +43,7 @@
                 <tr class="fw-bold">
                     <th class="text-left">Khách hàng</th>
                     <th class="text-left">Tài khoản</th>
-                    <th class="text-left">Mật khẩu</th>
+                    <th class="text-left">SĐT</th>
                     <th class="text-center">Số dư ví</th>
                     <th class="text-center"></th>
                 </tr>
@@ -63,7 +63,7 @@
                             <span title="Tài khoản">@item.Username</span>
                         </td>
                         <td class="text-left">
-                            <span title="Mật khẩu">@(PJUtils.Decrypt("userpass", item.Password))</span>
+                            <span title="Mật khẩu">@item.Phone</span>
                         </td>
                         <td class="text-center text-truncate">
                             <span title="@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ" class="text-danger">@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ</span>

@@ -1,4 +1,5 @@
-﻿using KGQT.Models;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using KGQT.Models;
 using OfficeOpenXml.Table.PivotTable;
 using System.Security.Cryptography.Pkcs;
 
@@ -7,7 +8,7 @@ namespace KGQT.Business
     public static class NotificationBusiness
     {
 
-        public static object[] GetPage(int id,int status, DateTime? fromDate, DateTime? toDate, int page = 1 , int pageSize = 20,bool isAdmin = false)
+        public static object[] GetPage(int receivedID, int status, DateTime? fromDate, DateTime? toDate, int page = 1 , int pageSize = 20,bool isAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -18,10 +19,11 @@ namespace KGQT.Business
                 if(isAdmin)
                     query = db.tbl_Notifications.Where(x => x.IsForAdmin == true);
                 else 
-                    query = query.Where(x => x.ReceivedID == id);
+                    query = query.Where(x => x.ReceivedID == receivedID);
 
-                if(status > 0)
+                if (status > -1)
                     query = query.Where(x => x.Status == status);
+
                 if (fromDate != null)
                     query = query.Where(x => x.CreatedDate >= fromDate);
                 if (toDate != null)
@@ -74,6 +76,25 @@ namespace KGQT.Business
                     count = db.tbl_Notifications.Count(x => x.ReceivedID == id && x.Status == 0);
             }
             return count;
+        }
+
+        public static object[] GetDetail(int id,string userName)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var lstData = new List<tbl_Notification>();
+                var data = db.tbl_Notifications.FirstOrDefault(x => x.ID == id);
+                if (data != null)
+                {
+                    data.Status = 1;
+                    data.ModifiedDate = DateTime.Now;
+                    data.ModifiedBy = userName;
+                    db.Update(data);
+                    db.SaveChanges();
+                    lstData.Add(data);
+                }
+                return new object[] { lstData, lstData.Count, lstData.Count };
+            }
         }
     }
 }
