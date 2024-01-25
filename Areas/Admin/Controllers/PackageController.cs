@@ -37,7 +37,7 @@ namespace KGQT.Areas.Admin.Controllers
             string p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExportExcel");
             List<FileInfoModel> listFile = new List<FileInfoModel>();
             FileService.LoadFiles(p, listFile);
-            return View(listFile);
+            return View(listFile.OrderByDescending(x=>x.CreatedOn).ToList());
         }
         public IActionResult Create()
         {
