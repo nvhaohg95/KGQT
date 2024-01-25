@@ -83,5 +83,34 @@ namespace KGQT.Commons
             }
         }
         #endregion
+
+        public static List<FileInfoModel> LoadFiles(string FolderPath, List<FileInfoModel> lstFile)
+        {
+            string[] Files = System.IO.Directory.GetFiles(FolderPath, "*.xlsx", SearchOption.AllDirectories);
+            string[] Directories = System.IO.Directory.GetDirectories(FolderPath);
+            for (int i = 0; i < Files.Length; i++)
+            {
+                if (Files[i].ToLower().EndsWith(".xlsx".ToLower()))
+                {
+                    var file = new FileInfo(Files[i]);
+                        lstFile.Add(new FileInfoModel
+                        {
+                            FileName = file.Name,
+                            FilePath = file.FullName,
+                            CreatedOn = file.CreationTime,
+                        });
+                }
+            }
+            return lstFile;
+        }
     }
+
+
+    public class FileInfoModel
+    {
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
+        public DateTime CreatedOn { get; set; }
+    }
+
 }
