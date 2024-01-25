@@ -171,5 +171,16 @@ namespace KGQT.Mobility
         }
         #endregion
 
+        #region HistoryWallet
+        [HttpGet]
+        [Route("historywallet")]
+        public object[] GetPackage([FromQuery] int status, [FromQuery] int ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+            [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+        {
+            var oData = HistoryPayWallet.GetPage(userName, ID, status, fromDate, toDate, pageNum, pageSize);
+            return oData;
+        }
+        #endregion
+
     }
 }
