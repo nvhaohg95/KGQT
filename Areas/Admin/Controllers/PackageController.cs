@@ -32,6 +32,13 @@ namespace KGQT.Areas.Admin.Controllers
             return View(lstPackage);
         }
 
+        public IActionResult ViewListFile()
+        {
+            string p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExportExcel");
+            List<FileInfoModel> listFile = new List<FileInfoModel>();
+            FileService.LoadFiles(p, listFile);
+            return View(listFile.OrderByDescending(x=>x.CreatedOn).ToList());
+        }
         public IActionResult Create()
         {
             return View();
@@ -171,7 +178,6 @@ namespace KGQT.Areas.Admin.Controllers
                 return oData;
             }
             var userLogin = HttpContext.Session.GetString("user");
-
             oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
         }
@@ -248,6 +254,11 @@ namespace KGQT.Areas.Admin.Controllers
                 return BusinessBase.Update(p);
             }
             return false;
+        }
+
+        public void ExportFile(IFormFile file, List<tempExport> data)
+        {
+            PJUtils.MarkupValueExcel(file, file.FileName, data);
         }
         #endregion
     }
