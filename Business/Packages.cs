@@ -644,7 +644,7 @@ namespace KGQT.Business
 
         public static string MarkupValueExcel(Stream file, string fileName, string name, List<tempExport> data)
         {
-            if (file == null || data == null || data.Count == 0) return "";
+            if (file == null) return "";
             try
             {
                 using (ExcelPackage pack = new ExcelPackage(file))
