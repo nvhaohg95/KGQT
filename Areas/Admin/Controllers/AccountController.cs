@@ -4,6 +4,7 @@ using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -87,9 +88,14 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Update Info
         [HttpPost]
-        public object UpdateInfo(tbl_Account data)
+        public object UpdateInfo(string jsData, IFormFile file)
         {
-            var reponse = AccountBusiness.UpdateInfo(data);
+            var data = JsonConvert.DeserializeObject<tbl_Account>(jsData);
+            if (data == null)
+            {
+                return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
+            }
+            var reponse = AccountBusiness.UpdateInfo(data,file);
             return reponse;
         }
 

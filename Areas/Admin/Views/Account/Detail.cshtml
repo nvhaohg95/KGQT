@@ -26,7 +26,7 @@
                                 }
                                 else
                                 {
-                                    <img class="rounded-circle mb-2" src="~/img/avt-user-emty.jpg" width="150" height="150" />
+                                    <img class="rounded-circle mb-2" src="/img/undraw_profile.svg" width="150" height="150" />
                                 }
                             }
                         </div>
@@ -106,8 +106,8 @@
                         <div class="form-group">
                             <label for="RoleID">Loại tài khoản<span class="text-danger">(*)</span></label>
                             <select name="RoleID" class="form-control" id="RoleID">
-                                <option value="0" @(Model.RoleID == 0 ? "selected" : "")>Admin</option>
-                                <option value="1" @(Model.RoleID == 1 ? "selected" : "")>Khách hàng</option>
+                                <option value="1" @(Model.RoleID != 1 ? "selected" : "")>Khách hàng</option>
+                                <option value="0" @(Model.RoleID == 1 ? "selected" : "")>Admin</option>
                             </select>
                         </div>
                     </div>

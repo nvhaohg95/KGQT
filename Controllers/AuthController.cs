@@ -64,23 +64,7 @@ namespace KGQT.Controllers
             }
             return result;
         }
-        //[HttpPost]
-        //public ActionResult Login(UserModel model)
-        //{
-        //    var result = _auth.Login(model.Username,model.PassWord);
-        //    if (result.IsError)
-        //    {
-        //        return View(model);
-        //    }
-        //    HttpContext.Session.SetString("user", model.Username);
-        //    HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
-        //    if (result.Data != null)
-        //    {
-        //        if (result.Data.RoleID == 0)
-        //            return RedirectToAction("admin");
-        //    }
-        //    return RedirectToAction("Dashboard", "Home");
-        //}
+       
         #endregion
 
         #region Logout
@@ -98,17 +82,6 @@ namespace KGQT.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public DataReturnModel<tbl_Account> Register(SignUpModel data)
-        //{
-        //    if (data.File != null)
-        //    {
-        //        data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uploads", "avatars");
-        //    }
-        //    var result = AccountBusiness.Register(data);
-        //    return result;
-        //}
-
         [HttpPost]
         public DataReturnModel<tbl_Account> Registers(string jsData, IFormFile file)
         {
@@ -119,7 +92,8 @@ namespace KGQT.Controllers
             }    
             if (file != null)
             {
-                data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uploads", "avatars");
+                //data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uploads", "avatars");
+                data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
                 data.File = file;
             }
             var result = AccountBusiness.Register(data);

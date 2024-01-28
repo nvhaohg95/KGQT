@@ -10,6 +10,7 @@ using System.Security.Policy;
 using System.Drawing;
 using KGQT.Base;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace KGQT.Commons
 {
@@ -486,5 +487,79 @@ namespace KGQT.Commons
                 return "";
             }
         }
+
+        #region Kiểm tra ngày lễ or chủ nhật
+        public static bool IsHoliday(DateTime date)
+        {
+            // 1-1;30-4;1-5;2-9
+            string ddmm = date.Day + "/" + date.Month;
+            switch (ddmm)
+            {
+                case "1/1":
+                case "30/4":
+                case "1/5":
+                case "2/9":
+                    return true;
+            }
+            return false;
+        }
+        public static bool IsSunDay(DateTime date)
+        {
+            if (date.DayOfWeek == DayOfWeek.Sunday)
+                return true;
+            return false;
+        }
+
+        public static DateTime LunnarDay(DateTime date)
+        {
+            DateTime fromDate = new DateTime(date.AddYears(-1).Year, 12, 28, new VietnameseCalendar());
+            DateTime toDate = new DateTime(date.Year, 01, 06, new VietnameseCalendar());
+            if (fromDate <= date && date <= toDate)
+            {
+                var subDays = toDate.Subtract(date).TotalDays;
+                if (subDays > 0)
+                    subDays += 1; // Dự trù thêm 1 ngày
+                date = date.AddDays(subDays);
+            }
+            return date;
+
+        }
+        public static DateTime GetDeliveryDate(DateTime date, int type = 0)
+        {
+            switch (type)
+            {
+                case 1: // nhanh từ 3-6 ngày
+                    date = date.AddDays(4);
+                    break;
+                case 2: // thường từ 5-10 ngày
+                    date = date.AddDays(7);
+                    break;
+                case 3: // bộ
+                    date = date.AddDays(11);
+                    break;
+                case 4: // lô
+                    date = date.AddDays(20);
+                    break;
+            }
+
+            bool isHoliday = IsHoliday(date);
+            while (isHoliday)
+            {
+                date = date.AddDays(1);
+                isHoliday = IsHoliday(date);
+            }
+
+            if (date.DayOfWeek == DayOfWeek.Saturday)
+                date = date.AddDays(1);
+
+
+            if (date.DayOfWeek == DayOfWeek.Sunday)
+                date = date.AddDays(1);
+
+            date = LunnarDay(date);
+
+            return date;
+        }
+        #endregion
     }
 }

@@ -166,8 +166,6 @@ namespace KGQT.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.DateExpectation).HasColumnType("datetime");
-
                 entity.Property(e => e.Email).HasMaxLength(100);
 
                 entity.Property(e => e.Exported).HasDefaultValueSql("((0))");

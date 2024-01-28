@@ -60,7 +60,7 @@ namespace KGQT.Models
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
         public int? SearchBaiduTimes { get; set; }
-        public DateTime? DateExpectation { get; set; }
+        public string DateExpectation { get; set; }
         public bool? Exported { get; set; }
     }
 }

@@ -86,6 +86,7 @@ namespace KGQT.Commons
 
         public static List<FileInfoModel> LoadFiles(string FolderPath, List<FileInfoModel> lstFile)
         {
+            if(!Directory.Exists(FolderPath)) return lstFile;
             string[] Files = System.IO.Directory.GetFiles(FolderPath, "*.xlsx", SearchOption.AllDirectories);
             string[] Directories = System.IO.Directory.GetDirectories(FolderPath);
             for (int i = 0; i < Files.Length; i++)

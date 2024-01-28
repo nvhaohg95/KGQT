@@ -1,4 +1,4 @@
-﻿window.helper = {
+﻿var helper = window["helper"] = {
     form2Object: function (form) {
         const data = JSON.parse(JSON.stringify(form));
         let obj = {};
@@ -71,8 +71,6 @@
         }, 2500);
     }
 };
-
-const currency = [2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
 
 window["formatVND"] = function formatVND() {
