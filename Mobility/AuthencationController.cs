@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using KGQT.Business;
 using KGQT.Business.Base;
@@ -21,7 +22,15 @@ namespace KGQT.Mobility
         {
             var result = AccountBusiness.Login(userName, passWord);
             return result;
-        }    
+        }
+
+        [HttpGet]
+        [Route("getuser")]
+        public object GetUser([FromQuery] string userName)
+        {
+            var result = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+            return result;
+        }
 
         [HttpPost]
         [Route("register")]
@@ -39,6 +48,14 @@ namespace KGQT.Mobility
                 }
             }
             var data = AccountBusiness.Register(model);
+            return data;
+        }
+
+        [HttpPost]
+        [Route("changepassword")]
+        public object ChangePassword([FromBody] ChangePassword model)
+        {
+            var data = AccountBusiness.ChangePassword(model);
             return data;
         }
         #endregion
@@ -174,11 +191,56 @@ namespace KGQT.Mobility
         #region HistoryWallet
         [HttpGet]
         [Route("historywallet")]
-        public object[] GetPackage([FromQuery] int status, [FromQuery] int ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+        public object[] GetHistoryWallet([FromQuery] int status, [FromQuery] int ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
             [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
         {
             var oData = HistoryPayWallet.GetPage(userName, ID, status, fromDate, toDate, pageNum, pageSize);
             return oData;
+        }
+        #endregion
+
+        #region Notification
+        [HttpGet]
+        [Route("notification")]
+        public object GetNotification([FromQuery] int status, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+            [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+        {
+            var user = AccountBusiness.GetInfo(-1, userName);
+            var oData = NotificationBusiness.GetPage(user.ID, status, fromDate, toDate, pageNum, pageSize);
+            return oData;
+        }
+        #endregion
+
+        #region WithDraw
+        [HttpPost]
+        [Route("createwithdraw")]
+        public object CreateWithDraw([FromBody] tbl_Withdraw model)
+        {
+            var user = AccountBusiness.GetInfo(-1, model.Username);
+            if (user != null && model != null)
+            {
+                model.UID = user.ID;
+                model.Fullname = user.FullName;
+                model.Status = 1;
+                model.CreatedBy = model.Username;
+                model.CreatedDate = DateTime.Now;
+                if (model.Type == 1)
+                {
+                    return WithDrawBusiness.Insert(model, model.Username);
+                }
+                else
+                {
+                    return WithDrawBusiness.Insert2(model, model.Username);
+                }
+            }
+            else
+            {
+                var data = new DataReturnModel<object>();
+                data.IsError = true;
+                data.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
+                data.Data = false;
+                return data;
+            }
         }
         #endregion
 
