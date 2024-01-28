@@ -1,4 +1,5 @@
-﻿using KGQT.Base;
+﻿using DocumentFormat.OpenXml.EMMA;
+using KGQT.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
@@ -131,14 +132,12 @@ namespace KGQT.Business
                 if (data.File != null)
                 {
                     if (!Directory.Exists(data.Path))
-                    {
                         Directory.CreateDirectory(data.Path);
-                    }
                     var bytes = FileService.ResizeImage(data.File);
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
                     string path = Path.Combine(data.Path, fileName);
                     File.WriteAllBytes(path, bytes);
-                    data.IMG = path;
+                    data.IMG = "\\" + Path.Combine("uploads", "avatars", fileName); ;
                 }
                 using (var db = new nhanshiphangContext())
                 {
@@ -711,7 +710,7 @@ namespace KGQT.Business
 
 
         #region Update Info
-        public static DataReturnModel<tbl_Account> UpdateInfo(tbl_Account data)
+        public static DataReturnModel<tbl_Account> UpdateInfo(tbl_Account data, IFormFile fileImg)
         {
             var result = new DataReturnModel<tbl_Account>();
             if (data != null)
@@ -760,13 +759,22 @@ namespace KGQT.Business
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
                     if (acc != null)
                     {
+                        if (fileImg != null)
+                        {
+                            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+                            if (!Directory.Exists(path))
+                                Directory.CreateDirectory(path);
+                            var bytes = FileService.ResizeImage(fileImg);
+                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileImg.FileName);
+                            path = Path.Combine(path, fileName);
+                            File.WriteAllBytes(path, bytes);
+                            acc.IMG = "\\" + Path.Combine("uploads", "avatars", fileName);
+                        }
                         acc.FullName = data.FullName;
                         acc.Gender = data.Gender;
                         acc.Email = data.Email;
                         acc.Phone = data.Phone;
                         acc.Address = data.Address;
-                        acc.UserID = data.UserID;
-                        acc.RoleID = data.RoleID;
                         acc.ModifiedBy = data.Username;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
@@ -781,7 +789,7 @@ namespace KGQT.Business
                         else
                         {
                             result.IsError = true;
-                            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
                             return result;
                         }
                     }
@@ -796,7 +804,7 @@ namespace KGQT.Business
             else
             {
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
                 return result;
             }
         }
