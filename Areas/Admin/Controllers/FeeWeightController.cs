@@ -92,16 +92,11 @@ namespace KGQT.Areas.Admin.Controllers
                 ID = 4,
                 Name = "Tuyến lô"
             };
-            var item5 = new FeeweightCategory()
-            {
-                ID = 5,
-                Name = "Tuyến biển"
-            };
+            
             lst.Add(item1);
             lst.Add(item2);
             lst.Add(item3);
             lst.Add(item4);
-            lst.Add(item5);
             return lst;
         }
     }

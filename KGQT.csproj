@@ -1897,6 +1897,7 @@
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="uploads\" />
     <Folder Include="wwwroot\css\images\" />
+    <Folder Include="wwwroot\uploads\avatars\" />
   </ItemGroup>
 
 </Project>
