@@ -355,8 +355,8 @@ namespace KGQT.Commons
                     }
                     else
                     {
-                        var rowCount = worksheet.Dimension.Rows;
-                        var columnCount = worksheet.Dimension.Columns;
+                        var rowCount = worksheet.Dimension.End.Row;
+                        var columnCount = worksheet.Dimension.End.Column;
                         for (int column = 1; column < columnCount; column++)
                         {
                             for (int row = 2; row < rowCount; row++)
@@ -417,66 +417,73 @@ namespace KGQT.Commons
             }
         }
 
-        public static string MarkupValueExcel(IFormFile file, string name, List<tempExportChina> data)
+        public static string MarkupValueExcel(IFormFile file, string name, List<tempExport> data)
         {
             if (file == null || data == null || data.Count == 0) return "";
             string fileName = file.FileName;
-            using Stream FileStream = file.OpenReadStream();
-            using (ExcelPackage pack = new ExcelPackage(FileStream))
+            try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                ExcelWorksheet worksheet = null;
-                if (!string.IsNullOrEmpty(name))
-                    worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
-                else
-                    worksheet = pack.Workbook.Worksheets.LastOrDefault();
-
-                if (worksheet == null)
+                using Stream FileStream = file.OpenReadStream();
+                using (ExcelPackage pack = new ExcelPackage(FileStream))
                 {
-                    return "";
-                }
-                else
-                {
-                    #region Read value
-                    foreach (var item in data)
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    ExcelWorksheet worksheet = null;
+                    if (!string.IsNullOrEmpty(name))
+                        worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
+                    else
+                        worksheet = pack.Workbook.Worksheets.LastOrDefault();
+
+                    if (worksheet == null)
                     {
-                        worksheet.Cells[item.Row + 2, item.Column + 1].Style.Fill.SetBackground(Color.Green);
-                    }
-                    #endregion
-
-                    #region save file was edit
-                    try
-                    {
-                        string pathRoot = AppDomain.CurrentDomain.BaseDirectory;
-                        pathRoot = Path.Combine(pathRoot, "ExportExcel", DateTime.Now.ToString("ddMMyyyy"));
-                        if (!Directory.Exists(pathRoot))
-                            Directory.CreateDirectory(pathRoot);
-
-                        string sheet = worksheet.Name;
-                        if (!string.IsNullOrEmpty(sheet))
-                        {
-                            var splitName = fileName.Split('.');
-
-                            if (splitName.Length > 1)
-                            {
-                                fileName = splitName[0] + "_" + sheet + "." + splitName[1];
-                            }
-                            else
-                                fileName = fileName + "_" + sheet;
-                        }
-                        pathRoot = pathRoot + "/" + fileName;
-
-                        pack.SaveAs(pathRoot);
-                        byte[] fileBytes = System.IO.File.ReadAllBytes(pathRoot);
-                        return pathRoot;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error("Export file excel", JsonConvert.SerializeObject(ex));
                         return "";
                     }
-                    #endregion
+                    else
+                    {
+                        #region Read value
+                        foreach (var item in data)
+                        {
+                            worksheet.Cells[item.Row + 2, item.Column + 1].Style.Fill.SetBackground(Color.Green);
+                        }
+                        #endregion
+
+                        #region save file was edit
+                        try
+                        {
+                            string pathRoot = AppDomain.CurrentDomain.BaseDirectory;
+                            pathRoot = Path.Combine(pathRoot, "ExportExcel", DateTime.Now.ToString("ddMMyyyy"));
+                            if (!Directory.Exists(pathRoot))
+                                Directory.CreateDirectory(pathRoot);
+
+                            string sheet = worksheet.Name;
+                            if (!string.IsNullOrEmpty(sheet))
+                            {
+                                var splitName = fileName.Split('.');
+
+                                if (splitName.Length > 1)
+                                {
+                                    fileName = splitName[0] + "_" + sheet + "." + splitName[1];
+                                }
+                                else
+                                    fileName = fileName + "_" + sheet;
+                            }
+                            pathRoot = pathRoot + "/" + fileName;
+
+                            pack.SaveAs(pathRoot);
+                            byte[] fileBytes = System.IO.File.ReadAllBytes(pathRoot);
+                            return pathRoot;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Export file excel", JsonConvert.SerializeObject(ex));
+                            return "";
+                        }
+                        #endregion
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                return "";
             }
         }
 

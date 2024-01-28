@@ -114,6 +114,7 @@ namespace KGQT.Business
                         return data;
                     }
                     var wallet = user.Wallet - 500;
+                    user.Wallet = wallet;
                     BusinessBase.Update(user);
 
                     #region Logs
@@ -525,6 +526,7 @@ namespace KGQT.Business
         public static DataReturnModel<object> CreateWithFileExcel(IFormFile file, string name, string accesser)
         {
             var data = new DataReturnModel<object>();
+            var lstError = new List<tempExport>();
             List<string> err = new List<string>();
             using (Stream stream = file.OpenReadStream())
             {
@@ -574,7 +576,10 @@ namespace KGQT.Business
                                     oExist.ModifiedBy = accesser;
                                     if (BusinessBase.Update(oExist)) success++;
                                     else
+                                    {
+                                        lstError.Add(new tempExport { Row = row, Column = 3 });
                                         err.Add(code);
+                                    }
                                 }
                                 continue;
                             }
@@ -606,6 +611,7 @@ namespace KGQT.Business
                             if (!BusinessBase.Add(p))
                             {
                                 err.Add(code);
+                                lstError.Add(new tempExport { Row = row, Column = 3 });
                             }
                             else
                                 success++;
@@ -613,22 +619,81 @@ namespace KGQT.Business
 
                         if (success > 0)
                         {
-                            string sSuccess = string.Format("Đã thêm thành công {0} trong tổng số {1}", success, rowCount);
+                            string sSuccess = string.Format("Đã thêm thành công {0} trong tổng số {1}", success, rowCount - 1);
                             data.IsError = false;
+                            string error = string.Join("; ", err);
                             data.Data = new { success = sSuccess, error = string.Join("; ", err) };
+                            MarkupValueExcel(stream, file.FileName, name, lstError);
                             return data;
                         }
                         else
                         {
                             data.IsError = true;
                             data.Message = "Thêm mới không thành công !";
+                            stream.Dispose();
                             return data;
                         }
                     }
                     data.IsError = true;
                     data.Message = "Không đọc được thông tin file";
+                    stream.Dispose();
                     return data;
                 }
+            }
+        }
+
+        public static string MarkupValueExcel(Stream file, string fileName, string name, List<tempExport> data)
+        {
+            if (file == null) return "";
+            try
+            {
+                using (ExcelPackage pack = new ExcelPackage(file))
+                {
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    ExcelWorksheet worksheet = null;
+                    if (!string.IsNullOrEmpty(name))
+                        worksheet = (ExcelWorksheet)pack.Workbook.Worksheets.GetIndexer(new object[] { name });
+                    else
+                        worksheet = pack.Workbook.Worksheets.LastOrDefault();
+
+                    if (worksheet == null)
+                        return "";
+                    else
+                    {
+                        #region Read value
+                        foreach (var item in data)
+                        {
+                            worksheet.Cells[item.Row + 2, item.Column + 1].Style.Fill.SetBackground(Color.Red);
+                        }
+                        #endregion
+
+                        #region save file was edit
+                        try
+                        {
+                            string pathRoot = AppDomain.CurrentDomain.BaseDirectory;
+                            pathRoot = Path.Combine(pathRoot, "ExportExcel", DateTime.Now.ToString("ddMMyyyy"));
+                            if (!Directory.Exists(pathRoot))
+                                Directory.CreateDirectory(pathRoot);
+
+                            string sheet = worksheet.Name;
+                            pathRoot = pathRoot + "/" + fileName;
+
+                            pack.SaveAs(pathRoot);
+                            byte[] fileBytes = System.IO.File.ReadAllBytes(pathRoot);
+                            return pathRoot;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Export file excel", JsonConvert.SerializeObject(ex));
+                            return "";
+                        }
+                        #endregion
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return "";
             }
         }
 
