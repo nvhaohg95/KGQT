@@ -44,10 +44,11 @@
                                     <span>Xuất kho Trung Quốc</span>
                                 </li>
                             }
-                            @if (Model.DateExpectation != null)
+
+                            @if (!string.IsNullOrEmpty(Model.DateExpectation))
                             {
                                 <li class="active-tl">
-                                    <span>Đang trên đường về HCM</span>
+                                    <span>Đang trên đường về HCM - @Model.DateExpectation</span>
                                 </li>
                             }
                             else

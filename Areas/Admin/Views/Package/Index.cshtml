@@ -182,10 +182,10 @@
                                         </li>
                                     }
 
-                                    @if (item.DateExpectation != null)
+                                    @if (!string.IsNullOrEmpty(item.DateExpectation))
                                     {
                                         <li class="ml-4">
-                                            <span>Đang trên đường về HCM</span>
+                                            <span>Đang trên đường về HCM - @item.DateExpectation</span>
                                         </li>
                                     }
 
