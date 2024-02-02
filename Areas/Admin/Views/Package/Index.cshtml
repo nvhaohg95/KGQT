@@ -486,10 +486,7 @@
     $(document).ready(function () {
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
-            $(this).select();
-            navigator.clipboard.writeText(text);
-            $('#copied-success').css('opacity', '1');
-            setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
+            copyClipboard(text);
         })
     })
 </script>

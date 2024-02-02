@@ -404,7 +404,11 @@ namespace KGQT.Business
                 }
 
                 //Ktra xem khach da co don chua.
-                DateTime cnExportDateFrom = pack.ExportedCNWH.Value.Date;
+                DateTime cnExportDateFrom = DateTime.Now;
+                if (pack.ExportedCNWH != null)
+                    cnExportDateFrom = pack.ExportedCNWH.Value.Date;
+                else
+                    pack.ExportedCNWH = cnExportDateFrom;
                 DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
                 DateTime startDate = DateTime.Now.Date; //One day 
                 DateTime endDate = startDate.AddDays(1).AddTicks(-1);

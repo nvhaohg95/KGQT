@@ -65,8 +65,11 @@
                     </div>
                     <div class="row px-2 mx-0 mb-2">
                         <div class="col-md-6">
-                            <div>
-                                <span>Khách hàng: @Model.Username</span>
+                            <div class="d-flex">
+                                <span>Khách hàng:</span>
+                                <div class="col-md-8">
+                                    <input id="txtUsername" class="form-control mb-0" value="@Model.Username" />
+                                </div>
                             </div>
                         </div>
                         @if (!string.IsNullOrEmpty(Model.Phone))
