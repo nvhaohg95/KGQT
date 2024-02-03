@@ -31,7 +31,7 @@ namespace KGQT.Business
             {
                 using (var db = new nhanshiphangContext())
                 {
-                    var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);     
+                    var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
                     if (acc != null)
                     {
                         var isCorrect = password == PJUtils.Decrypt("userpass", acc.Password);
@@ -57,7 +57,7 @@ namespace KGQT.Business
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Info("account base", JsonConvert.SerializeObject(ex));
                 return dtReturn;
@@ -72,7 +72,7 @@ namespace KGQT.Business
             var result = new DataReturnModel<tbl_Account>();
             try
             {
-                if(data == null)
+                if (data == null)
                 {
                     result.IsError = true;
                     result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
@@ -80,7 +80,7 @@ namespace KGQT.Business
                 }
                 var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 var regexPhone = new Regex(@"^[0-9]{8,20}$");
-                if(string.IsNullOrEmpty(data.FullName))
+                if (string.IsNullOrEmpty(data.FullName))
                 {
                     result.IsError = true;
                     result.Message = "Vui lòng nhập họ tên khách hàng!";
@@ -99,13 +99,13 @@ namespace KGQT.Business
                     result.Message = "Số điện thoại không hợp lệ!";
                     return result;
                 }
-                if (string.IsNullOrEmpty(data.Email))
-                {
-                    result.IsError = true;
-                    result.Message = "Vui lòng nhập Email khách hàng!";
-                    return result;
-                }
-                if (!regexEmail.IsMatch(data.Email))
+                //if (string.IsNullOrEmpty(data.Email))
+                //{
+                //    result.IsError = true;
+                //    result.Message = "Vui lòng nhập Email khách hàng!";
+                //    return result;
+                //}
+                if (!string.IsNullOrEmpty(data.Email) && !regexEmail.IsMatch(data.Email))
                 {
                     result.IsError = true;
                     result.Message = "Địa chỉ email không hợp lệ!";
@@ -148,7 +148,7 @@ namespace KGQT.Business
                         result.Message = "Tên tài khoản đã được sử dụng.";
                         return result;
                     }
-                    
+
                     var acc = new tbl_Account()
                     {
                         Username = data.Username,
@@ -169,7 +169,7 @@ namespace KGQT.Business
                     int kq = db.SaveChanges();
                     if (kq > 0)
                     {
-                        
+
                         result.IsError = false;
                         result.Type = 2;
                         result.Message = "Tạo tài khoản thành công!";
@@ -446,7 +446,8 @@ namespace KGQT.Business
                 total = query.Count();
                 totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                 query = query.Skip((page - 1) * pageSize).Take(pageSize);
-                lst = query.Select(x=> new tbl_Account {
+                lst = query.Select(x => new tbl_Account
+                {
                     ID = x.ID,
                     UserID = x.UserID,
                     Username = x.Username,
@@ -473,10 +474,10 @@ namespace KGQT.Business
                     account = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
                 if (!string.IsNullOrEmpty(userName))
                     account = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
-                if(account != null)
+                if (account != null)
                 {
                     account.Password = PJUtils.Decrypt("userpass", account.Password);
-                }    
+                }
                 return account;
             }
         }
@@ -615,13 +616,13 @@ namespace KGQT.Business
                     {
                         db.Remove(acc);
                         var kq = db.SaveChanges();
-                        if(kq > 0)
+                        if (kq > 0)
                         {
                             result.IsError = false;
                             result.Message = "Xóa thành công!";
                             result.Data = true;
                             return result;
-                        }    
+                        }
                     }
                     result.IsError = true;
                     result.Message = "Xóa không thành công!";
