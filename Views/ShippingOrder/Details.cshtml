@@ -42,9 +42,13 @@
                                         <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
                                     </div>
                                     <div class="col-md-6 my-auto text-right">
-                                        <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(
-                                        item.CreatedDate.Value.ToString("dd/MM/yyyy")
-                                        )</strong></span>
+                                        <span>
+                                            Ngày lên đơn:  &nbsp;<strong class=" mb-0">
+                                                @(
+                                                    item.CreatedDate.Value.ToString("dd/MM/yyyy")
+                                                    )
+                                            </strong>
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="row p-2 mx-0 my-2 border-bottom">
@@ -61,10 +65,10 @@
                                                 <span>Xuất kho Trung Quốc</span>
                                             </li>
                                         }
-                                        @if (item.DateExpectation != null)
+                                        @if (!string.IsNullOrEmpty(item.DateExpectation))
                                         {
                                             <li class="active-tl">
-                                                <span>Đang trên đường về HCM</span>
+                                                <span>Đang trên đường về HCM - @item.DateExpectation</span>
                                             </li>
                                         }
                                         else
@@ -99,99 +103,103 @@
                                         }
                                     </ul>
                                 </div>
-                                         <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="row p-2 mx-0 mt-2">
-                                                <div class="col-md-3 col-sm-12 col-xs-12">
-                                                    <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
-                                                </div>
-                                                <div class="col-md-4 col-sm-12 col-xs-12">
-                                                    <span>Trạng thái:</span>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="row p-2 mx-0 mt-2">
+                                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                                <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                                            </div>
+                                            <div class="col-md-4 col-sm-12 col-xs-12">
+                                                <span>Trạng thái:</span>
                                                 @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
-                                                </div>
-                                                <div class="col-md-5 col-sm-12 col-xs-12">
-                                                    Dịch vụ phụ:
+                                            </div>
+                                            <div class="col-md-5 col-sm-12 col-xs-12">
+                                                Dịch vụ phụ:
                                                 @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
                                                 {
-                                                            <div class="form-check-inline">
+                                                    <div class="form-check-inline">
 
-                                                                <label class="form-check-label">
-                                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
-                                                                </label>
-                                                            </div>
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
+                                                        </label>
+                                                    </div>
                                                 }
                                                 @if (item.IsAirPackage != null && item.IsAirPackage == true)
                                                 {
-                                                            <div class="form-check-inline">
-                                                                <label class="form-check-label">
-                                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
-                                                                </label>
-                                                            </div>
+                                                    <div class="form-check-inline">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
+                                                        </label>
+                                                    </div>
                                                 }
                                                 @if (item.IsInsurance != null && item.IsInsurance == true)
                                                 {
-                                                            <div class="form-check-inline">
-                                                                <label class="form-check-label">
-                                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
-                                                                </label>
-                                                            </div>
-                                                }
-                                                </div>
-                                            </div>
-                                            <div class="row px-2 mx-0 mb-2">
-                                                <div class="col-md-6">
-                                                    <div>
-                                                        <span>Khách hàng: @item.Username</span>
+                                                    <div class="form-check-inline">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                                        </label>
                                                     </div>
-                                                </div>
-                                            @if (!string.IsNullOrEmpty(item.Phone))
-                                            {
-                                                        <div class="col-md-6 d-flex align-items-center">
-                                                            <div class="form-group">
-                                                                <i class="fa fa-phone"></i><span>@item.Phone</span>
-                                                            </div>
-                                                        </div>
-                                            }
+                                                }
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                                        <div class="row px-2 mx-0 mb-2">
+                                            <div class="col-md-6">
+                                                <div>
+                                                    <span>Khách hàng: @item.Username</span>
+                                                </div>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(item.Phone))
+                                            {
+                                                <div class="col-md-6 d-flex align-items-center">
+                                                    <div class="form-group">
+                                                        <i class="fa fa-phone"></i><span>@item.Phone</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
                                             @if (item.ReceivedDate != null)
                                             {
-                                                        <li class="ml-4">
-                                                            <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
-                                                        </li>
+                                                <li class="ml-4">
+                                                    <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                                </li>
                                             }
 
                                             @if (item.ImportedSGWH != null)
                                             {
-                                                        <li class="ml-4">
-                                                            <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
-                                                        </li>
+                                                <li class="ml-4">
+                                                    <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                                </li>
                                             }
 
-                                            @if (item.DateExpectation != null)
+
+                                            @if (!string.IsNullOrEmpty(item.DateExpectation))
                                             {
-                                                        <li class="ml-4">
-                                                            <span>Đang trên đường về HCM - @item.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
-                                                        </li>
+                                                <li class="ml-4">
+                                                    <span>Đang trên đường về HCM - @item.DateExpectation</span>
+                                                </li>
                                             }
+
 
                                             @if (item.ExportedCNWH != null)
                                             {
-                                                        <li class="ml-4">
-                                                            <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
-                                                        </li>
+                                                <li class="ml-4">
+                                                    <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                                </li>
                                             }
-                                            </ul>
-                                        </div>
+                                        </ul>
                                     </div>
+                                </div>
                                 <div class="row p-2 mx-0 my-2">
                                     <div class="col-md-3">
                                         <div class="form-inline text-left">
-                                            Cân nặng:  &nbsp;<p class=" mb-0">@(
-                                        item.Weight ?? 0
-                                        )kg</p>
+                                            Cân nặng:  &nbsp;<p class=" mb-0">
+                                                @(
+                                                    item.Weight ?? 0
+                                                    )kg
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -230,73 +238,73 @@
                     @*   <!--Start: Kê khai-->
                 @if (Model.Order.IsInsurance != null && Model.Order.IsInsurance == true)
                 {
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Kê khai</h3>
-                    </div>
-                    @if (Model.Packs.Count() == 0)
-                    {
-                        <input type="text" class="form-control" id="txtId" hidden>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="txtLink">Link sản phẩm</label>
-                                <input type="text" class="form-control" id="txtLink">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label for="txtQty">Số lượng</label>
-                                <input type="text" class="form-control" id="txtQty">
-                            </div>
-                            <div class="form-group col-md-2">
-                                <label for="txtAmount">Giá</label>
-                                <input type="text" class="form-control" id="txtAmount">
-                            </div>
-                            <div class="form-group col-md-1 align-self-end">
-                                <div class="d-flex justify-content-end">
-                                    <button type="button" onclick="addDeclare()" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                                </div>
-                            </div>
-                        </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Kê khai</h3>
+                </div>
+                @if (Model.Packs.Count() == 0)
+                {
+                <input type="text" class="form-control" id="txtId" hidden>
+                <div class="form-row">
+                <div class="form-group col-md-6">
+                <label for="txtLink">Link sản phẩm</label>
+                <input type="text" class="form-control" id="txtLink">
+                </div>
+                <div class="form-group col-md-3">
+                <label for="txtQty">Số lượng</label>
+                <input type="text" class="form-control" id="txtQty">
+                </div>
+                <div class="form-group col-md-2">
+                <label for="txtAmount">Giá</label>
+                <input type="text" class="form-control" id="txtAmount">
+                </div>
+                <div class="form-group col-md-1 align-self-end">
+                <div class="d-flex justify-content-end">
+                <button type="button" onclick="addDeclare()" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                </div>
+                </div>
+                </div>
 
 
-                    }
+                }
 
-                    <div class="card table-responsive">
-                        <table class="table table-striped table-bordered table-hover">
-                            <colgroup>
-                                <col width="50%" />
-                                <col width="20%" />
-                                <col width="15%" />
-                                <col width="15%" />
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>Link sản phẩm</th>
-                                    <th>Số lượng</th>
-                                    <th>Giá</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.Declarations)
-                                {
-                                    <tr>
-                                        <td><a class="text-truncate d-block" style="max-width:500px !important" target="_blank" href="@item.ProductLink">@item.ProductLink</a></td>
-                                        <td>@item.ProductQuantity</td>
-                                        <td>@item.ProductPrice</td>
-                                        <td>
-                                            @if (Model.Packs.Count() == 0)
-                                            {
-                                                <button class="btn btn-sm btn-primary mr-2" onclick="editDeclare('@Uri.EscapeUriString(JsonConvert.SerializeObject(item))')">
-                                                    Sửa
-                                                </button>
+                <div class="card table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                <colgroup>
+                <col width="50%" />
+                <col width="20%" />
+                <col width="15%" />
+                <col width="15%" />
+                </colgroup>
+                <thead>
+                <tr>
+                <th>Link sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Declarations)
+                {
+                <tr>
+                <td><a class="text-truncate d-block" style="max-width:500px !important" target="_blank" href="@item.ProductLink">@item.ProductLink</a></td>
+                <td>@item.ProductQuantity</td>
+                <td>@item.ProductPrice</td>
+                <td>
+                @if (Model.Packs.Count() == 0)
+                {
+                <button class="btn btn-sm btn-primary mr-2" onclick="editDeclare('@Uri.EscapeUriString(JsonConvert.SerializeObject(item))')">
+                Sửa
+                </button>
 
-                                                <button class="btn btn-sm btn-danger">Xóa</button>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                <button class="btn btn-sm btn-danger">Xóa</button>
+                }
+                </td>
+                </tr>
+                }
+                </tbody>
+                </table>
+                </div>
                 }
                 <!--End:: Kê khai-->*@
                     <hr />
@@ -306,9 +314,13 @@
                     </div>
                     <div class="d-flex justify-content-between pt-2">
                         <p class="text-muted mb-0">Cân nặng:</p>
-                        <p class="text-muted mb-0"><span class="fw-bold me-4">@(
-                            Model.Order.Weight.HasValue ? Model.Order.Weight : 0
-                            )kg</span></p>
+                        <p class="text-muted mb-0">
+                            <span class="fw-bold me-4">
+                                @(
+                                    Model.Order.Weight.HasValue ? Model.Order.Weight : 0
+                                    )kg
+                            </span>
+                        </p>
                     </div>
                     <div class="d-flex justify-content-between pt-2">
                         <p class="text-muted mb-0">Phí vận chuyển:</p>
@@ -338,7 +350,7 @@
                     <!--End::Thông tin đơn-->
                 </div>
                 <div class="card-footer border-0 rounded-bottom"
-                style="background-color: #008cd0;">
+                     style="background-color: #008cd0;">
                     <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
                         Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.Order.TotalPrice.HasValue ? Model.Order.TotalPrice : 0).Replace(",", ".")đ</span>
                     </h5>

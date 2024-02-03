@@ -67,10 +67,10 @@
                                             <span>Xuất kho Trung Quốc</span>
                                         </li>
                                     }
-                                    @if (item.DateExpectation != null)
+                                    @if (!string.IsNullOrEmpty(item.DateExpectation))
                                     {
                                         <li class="active-tl">
-                                            <span>Đang trên đường về HCM</span>
+                                            <span>Đang trên đường về HCM - @item.DateExpectation</span>
                                         </li>
                                     }
                                     else
@@ -176,10 +176,11 @@
                                             </li>
                                         }
 
-                                        @if (item.DateExpectation != null)
+
+                                        @if (!string.IsNullOrEmpty(item.DateExpectation))
                                         {
                                             <li class="ml-4">
-                                                <span>Đang trên đường về HCM - @item.DateExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                                <span>Đang trên đường về HCM - @item.DateExpectation</span>
                                             </li>
                                         }
 
@@ -230,7 +231,7 @@
                     </div>
                 }
                 <!--End::Thông tin kiện-->
-                <hr />              
+                <hr />
                 <!--Start::Thông tin đơn-->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="lead fw-normal mb-0 text-uppercase text-primary">Chi tiết đơn</h3>
