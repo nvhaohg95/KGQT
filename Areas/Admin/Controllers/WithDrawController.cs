@@ -14,12 +14,13 @@ namespace KGQT.Areas.Admin.Controllers
     public class WithDrawController : Controller
     {
         #region View
-        public IActionResult Index(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public IActionResult Index(int ID,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = WithDrawBusiness.GetList(1,status, fromDate, toDate, page, pageSize);
+            var oData = WithDrawBusiness.GetList(ID, 1, status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
             var totalRecord = (int)oData[1];
             var totalPage = (int)oData[2];
+            ViewData["id"] = ID;
             ViewData["status"] = status;
             ViewData["fromDate"] = fromDate;
             ViewData["toDate"] = toDate;
@@ -130,12 +131,13 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Rút tiền
         [HttpGet]
-        public ActionResult Refuse(int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public ActionResult Refuse(int ID, int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = WithDrawBusiness.GetList(2,status, fromDate, toDate, page, pageSize);
+            var oData = WithDrawBusiness.GetList(ID, 2,status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
             var totalRecord = (int)oData[1];
             var totalPage = (int)oData[2];
+            ViewData["id"] = ID;
             ViewData["status"] = status;
             ViewData["fromDate"] = fromDate;
             ViewData["toDate"] = toDate;

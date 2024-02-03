@@ -110,12 +110,12 @@
                     <h6 class="dropdown-header">
                         THÔNG BÁO
                     </h6>
-                    <div id="notifications" class="mh-300" onscroll="onScroll(this,@user?.ID,@pageNoti)" data-id="@user?.ID" data-page="@pageNoti">
+                    <div id="notifications" class="mh-300" onscroll="onScroll(this)" data-page="@pageNoti">
                         @if (lstNoti != null)
                         {
                             foreach (var item in lstNoti)
                             {
-                                <a class="dropdown-item d-flex align-items-center h-100px" href="/Notification/Detail?id=@item.ID">
+                                <a class="dropdown-item d-flex align-items-center h-100px" href="@item.Url">
                                     <div class="mr-3">
                                         @if (item.NotifType == 1)
                                         {
@@ -576,7 +576,7 @@
                     $.ajax({
                         url: '/Notification/GetList',
                         type: "GET",
-                        data: { id: id, page: page, pageSize: 20 },
+                        data: { page: page, pageSize: 20 },
                         success: function (respone) {
                             if (respone) {
                                 $("#notifications")[0].dataset.page = parseInt($("#notifications")[0].dataset.page) + 1 + "";
