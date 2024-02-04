@@ -1,0 +1,82 @@
+﻿@model KGQT.Models.tbl_Posts
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<style>
+    .note-editor.note-frame.card {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+</style>
+<form id="form">
+    <div class="container-fluid p-4">
+        <div class="row">
+            <h3 class="fw-bolder text-primary text-uppercase">SOAN THẢO BÀI VIẾT</h3>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-12">
+                    <label for="Title" class="fw-bolder">Tiêu đề</label>
+                    <input name="Title" class="form-control" type="text" placeholder="Nhập tiêu đề" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-12">
+                    <label for="Description" class="fw-bolder">Mô tả</label>
+                    <input name="Description" class="form-control" type="text" placeholder="Nhập mô tả" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label for="Contents" class="fw-bolder">Nội dung</label>
+                <textarea id="textEditer" name="Contents"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-primary w-200px" onclick="clickInsert()">Tạo bài viết</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<script src="~/lib/summernote-bs4.js"></script>
+<link href="~/lib/summernote-bs4.css" rel="stylesheet" />
+<script src="~/lib/summernote-bs4.min.js"></script>
+<link href="~/lib/summernote-bs4.min.css" rel="stylesheet" />
+<script type="text/javascript">
+    $('#textEditer').summernote({
+        placeholder: 'Nhập nội dung',
+        height: 250
+    });
+    function clickInsert() {
+        var data = helper.form2Object($('#form').serializeArray());
+        $.ajax({
+            url: '@Url.Action("Create", "Post")',
+            dataType: "json",
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: data,
+            // other AJAX options here
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message);
+                else
+                    helper.showSuc(result.message);
+            },
+            error: function (xhr, status, err) {
+                helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại sau!");
+            }
+        });
+    }
+</script>
+

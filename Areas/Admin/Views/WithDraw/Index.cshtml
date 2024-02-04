@@ -1,6 +1,7 @@
 ﻿@using KGQT.Models;
 @using KGQT.Commons;
 @model List<KGQT.Models.tbl_Withdraw>;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers;
 @{
     ViewData["Title"] = "Nạp tiền";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -145,7 +146,7 @@
         {
             <nav class="d-flex justify-content-end">
                 <ul class="pagination m-0">
-                    <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
+                    @*<li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
                         <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                             <span class="sr-only">Previous</span>
@@ -161,7 +162,87 @@
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Next</span>
                         </a>
-                    </li>
+                    </li>*@
+                    @{
+                        int numberPage = ViewBag.numberPage;
+                        int pageCurrent = ViewBag.pageCurrent;
+                        int offset = 2;//number display page
+
+                        //config FirstLink
+                        if (pageCurrent > 1)
+                        {
+                            int prevPage = pageCurrent - 1;
+                            var PrevLink = new Dictionary<string, string> { { "page", prevPage.ToString() } };
+
+                            <li class="page-item">
+                                <a class="page-link" href="/Admin/Withdraw/Index?page=1">
+                                    <i class="fas fa-fast-backward"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="/Admin/Withdraw/Index?page=@prevPage">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                        }
+
+                        int from = pageCurrent - offset;
+                        int to = pageCurrent + offset;
+                        if (from <= 0)
+                        {
+                            from = 1;
+                            to = offset * 2;
+                        }
+
+
+                        if (to > numberPage)
+                        {
+                            to = numberPage;
+                        }
+
+                        int i;
+                        for (i = from; i <= to; i++)
+                        {
+                            var parms = new Dictionary<string, string>{{ "page",i.ToString()}};
+                            if (pageCurrent == i)
+                            {
+                                <li class="page-item active"><a class="page-link" href="/Admin/Withdraw/Index?page=@i">@i</a></li>
+                            }
+                            else
+                            {
+                                <li class="page-item"><a class="page-link" href="/Admin/Withdraw/Index?page=@i">@i</a></li>
+                            }
+
+                        }
+                        if (pageCurrent < numberPage - (to / 2))
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link">...</a>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            int nextPage = pageCurrent + 1;
+                            <li class="page-item">
+                                <a class="page-link" href="/Admin/Withdraw/Index?page=@nextPage">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="/Admin/Withdraw/Index?page=@numberPage">
+                                    <i class="fas fa-fast-forward"></i>
+                                </a>
+                            </li>
+                        }
+                    }
+
+
+
 
                 </ul>
             </nav>
@@ -170,6 +251,8 @@
 
 </div>
 <script>
+
+
     // get page
     function getPage(pageIndex) {
         var totalPage = @totalPage;
@@ -184,6 +267,7 @@
         else
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
+
     // serach by status
     function clickStatus(status) {
         var fromDate = $('#myform').find('input[name="fromDate"]').val();
@@ -198,6 +282,7 @@
         window.history.replaceState(null, null, params);
         location.reload()
     }
+
     // approval
     function clickApproval(id) {
         helper.showAlert("Bạn có muốn thực hiện yêu cầu này?").then((res) => {
@@ -221,6 +306,7 @@
         });
         
     }
+
     //refuse
     function clickRefuse(id){
         helper.showAlert("Bạn có muốn từ chối yêu cầu này?").then((res) => {

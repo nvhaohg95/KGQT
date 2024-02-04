@@ -14,7 +14,7 @@ namespace KGQT.Areas.Admin.Controllers
     public class WithDrawController : Controller
     {
         #region View
-        public IActionResult Index(int ID,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public IActionResult Index(int ID,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 5)
         {
             var oData = WithDrawBusiness.GetList(ID, 1, status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
@@ -25,8 +25,10 @@ namespace KGQT.Areas.Admin.Controllers
             ViewData["fromDate"] = fromDate;
             ViewData["toDate"] = toDate;
             ViewData["page"] = page;
+            ViewBag.pageCurrent = page;
             ViewData["totalRecord"] = totalRecord;
             ViewData["totalPage"] = totalPage;
+            ViewBag.numberPage = totalPage;
             return View(lstData);
         }
         [HttpGet]
