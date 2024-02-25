@@ -38,6 +38,12 @@ namespace KGQT.Business
             }
         }
 
+        public static List<tbl_Package> GetByBigPackage(int id)
+        {
+            var list = BusinessBase.GetList<tbl_Package>(x => x.BigPackage == id).OrderByDescending(x=>x.OrderDate).ToList();
+            return list;
+        }
+
         public static bool CheckExist(string package)
         {
             using (var db = new nhanshiphangContext())
@@ -555,6 +561,11 @@ namespace KGQT.Business
 
                         var rowCount = dt.Rows.Count;
                         int success = 0;
+                        var big = new tbl_BigPackage();
+                        big.BigPackageCode = file.FileName + "_"+ DateTime.Now.ToString("ddMMyyyy");
+                        big.CreatedDate = DateTime.Now;
+                        big.CreatedBy = accesser;
+                        BusinessBase.Add(big);
                         for (int row = 0; row < rowCount; row++)
                         {
                             try
@@ -594,6 +605,8 @@ namespace KGQT.Business
                                         oExist.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
                                         oExist.ModifiedDate = DateTime.Now;
                                         oExist.ModifiedBy = accesser;
+                                        if (oExist.BigPackage == null || oExist.BigPackage < 0)
+                                            oExist.BigPackage = big.ID;
                                         if (BusinessBase.Update(oExist)) success++;
                                         else
                                         {
@@ -628,6 +641,7 @@ namespace KGQT.Business
                                 p.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
                                 p.CreatedDate = DateTime.Now;
                                 p.CreatedBy = accesser;
+                                p.BigPackage = big.ID;
                                 if (!BusinessBase.Add(p))
                                 {
                                     err.Add(code);

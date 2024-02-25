@@ -125,13 +125,15 @@ namespace KGQT.Areas.Admin.Controllers
         {
             if (id == 0) return false;
             var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
-            if (oOrder == null) return false;
+            if (oOrder == null) return new { error = true, mssg = "Không tìm thấy thông tin đơn" };
+
+            if (oOrder.Status == 2) return new { error = true, mssg = "Đơn này đã thanh toán rồi" };
 
             var username = HttpContext.Session.GetString("user");
 
             var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == oOrder.Username);
 
-            if (oUser == null) return false;
+            if (oUser == null) return new { error = true, mssg ="Không tìm thấy thông tin khách hàng" };
 
             bool check = oUser.Wallet > oOrder.TotalPrice;
             if (check)
@@ -178,7 +180,7 @@ namespace KGQT.Areas.Admin.Controllers
 
                         BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, oOrder.Username);
                     }
-                    return new { res = false };
+                    return new { error = false };
                 }
             }
             else

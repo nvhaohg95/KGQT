@@ -16,4 +16,13 @@
         public int Row { get; set; }
 
     }
+
+    public class tmpExportv2
+    {
+        public string Code { get; set; }
+        public string Username { get; set; }
+        public string Method { get; set; }
+        public string Weight { get; set; }
+        public string Date { get; set; }
+    }
 }

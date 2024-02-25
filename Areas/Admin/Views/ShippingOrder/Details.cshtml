@@ -274,10 +274,12 @@
                 </h5>
             </div>
         </div>
-
-        <div class="w-100 py-2">
-            <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
-        </div>
+        @if (Model.Order.Status == 1)
+        {
+            <div class="w-100 py-2">
+                <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
+            </div>
+        }
     </div>
 </div>
 <script>
@@ -332,7 +334,7 @@
                     helper.showErr('Lỗi!');
                 else {
                     if (res.error)
-                        helper.showErr('Tài khoản không đủ tiền, cần phải nạp thêm ' + res.mssg);
+                        helper.showErr(res.mssg);
                     else
                         helper.showSuc('Thanh toán thành công!');
                 }

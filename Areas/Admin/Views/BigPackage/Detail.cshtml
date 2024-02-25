@@ -1,0 +1,80 @@
+﻿@model List<KGQT.Models.tbl_Package>
+@using KGQT.Models.temp
+@using KGQT.Commons
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Danh sách file lô";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container-fluid h-100">
+    <div class="row">
+        <ul id="breadcrumbs">
+            <li><a href="/admin">Trang chủ</a></li>
+            <li><a href="#">Danh sách file lô</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex flex-column p-2">
+            <div class="row bg-white mt-2">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="fw-bold text-danger text-uppercase m-0">Chi tiết file lô</h5>
+                         <button class="btn btn-success btn-sm" onclick="exportExcel()">Xuất file excel</button>
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead class="thead-light">
+                                <tr class="font-weight-normal">
+                                    <th class="text-center" scope="col">
+                                        MVĐ
+                                    </th>
+                                    <th class="text-center" scope="col">
+                                        Username
+                                    </th>
+                                    <th class="text-center">
+                                        Tuyến
+                                    </th> <th class="text-center">
+                                        Cân nặng
+                                    </th>
+                                    <th class="text-center">Ngày xuất kho</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="table-light font-weight-normal">
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.PackageCode)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.Username)
+                                        </td>
+                                        <td class="text-center">
+                                            @PJUtils.MovingMethod2Type(item.MovingMethod)
+                                        </td>
+                                        <td class="text-center">
+                                            @Converted.Double2String(item.Weight)
+                                        </td>
+                                        <td class="text-center" style="vertical-align:middle">
+                                            @Converted.Date2String(item.OrderDate,true)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function exportExcel() {
+        let url = location.href;
+        url = url.replace('ExportFile', 'GenerateExcel');
+        location.href = url;
+    }
+</script>

@@ -235,79 +235,6 @@
                     }
                     <!--End::Thông tin kiện-->
                     <hr />
-                    @*   <!--Start: Kê khai-->
-                @if (Model.Order.IsInsurance != null && Model.Order.IsInsurance == true)
-                {
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Kê khai</h3>
-                </div>
-                @if (Model.Packs.Count() == 0)
-                {
-                <input type="text" class="form-control" id="txtId" hidden>
-                <div class="form-row">
-                <div class="form-group col-md-6">
-                <label for="txtLink">Link sản phẩm</label>
-                <input type="text" class="form-control" id="txtLink">
-                </div>
-                <div class="form-group col-md-3">
-                <label for="txtQty">Số lượng</label>
-                <input type="text" class="form-control" id="txtQty">
-                </div>
-                <div class="form-group col-md-2">
-                <label for="txtAmount">Giá</label>
-                <input type="text" class="form-control" id="txtAmount">
-                </div>
-                <div class="form-group col-md-1 align-self-end">
-                <div class="d-flex justify-content-end">
-                <button type="button" onclick="addDeclare()" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                </div>
-                </div>
-                </div>
-
-
-                }
-
-                <div class="card table-responsive">
-                <table class="table table-striped table-bordered table-hover">
-                <colgroup>
-                <col width="50%" />
-                <col width="20%" />
-                <col width="15%" />
-                <col width="15%" />
-                </colgroup>
-                <thead>
-                <tr>
-                <th>Link sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Giá</th>
-                <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var item in Model.Declarations)
-                {
-                <tr>
-                <td><a class="text-truncate d-block" style="max-width:500px !important" target="_blank" href="@item.ProductLink">@item.ProductLink</a></td>
-                <td>@item.ProductQuantity</td>
-                <td>@item.ProductPrice</td>
-                <td>
-                @if (Model.Packs.Count() == 0)
-                {
-                <button class="btn btn-sm btn-primary mr-2" onclick="editDeclare('@Uri.EscapeUriString(JsonConvert.SerializeObject(item))')">
-                Sửa
-                </button>
-
-                <button class="btn btn-sm btn-danger">Xóa</button>
-                }
-                </td>
-                </tr>
-                }
-                </tbody>
-                </table>
-                </div>
-                }
-                <!--End:: Kê khai-->*@
-                    <hr />
                     <!--Start::Thông tin đơn-->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="lead fw-normal mb-0 text-uppercase text-primary">Chi tiết đơn</h3>
@@ -357,93 +284,96 @@
                 </div>
             </div>
 
-            <div class="w-100 py-2">
-                <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
+            @if (Model.Order.Status == 1)
+            {
+                <div class="w-100 py-2">
+                    <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
             </div>
+            }
         </div>
 
     </div>
-}
-<script>
-    //Hủy đơn
-    function cancel(id) {
-        $.ajax({
-            url: '@Url.Action("Cancel", "ShippingOrder")',
-            type: 'Post',
-            data: { id },
-            // other AJAX options here
-            success: function (result) {
-                if (!result)
-                    helper.showErr('Lỗi!');
-                else
-                    helper.showSuc('Đã hủy nhận thành công!');
-            },
-            error: function (xhr, status, err) {
-                // error handling
-            }
-        });
-    }
-
-    function payment() {
-        $.ajax({
-            url: '@Url.Action("Payment", "ShippingOrder")',
-            type: 'Post',
-            data: { id: @Model.Order.ID },
-            // other AJAX options here
-            success: function (res) {
-                if (!res)
-                    helper.showErr('Lỗi!');
-                else {
-                    if (res.error)
-                        helper.showErr('Tài khoản không đủ tiền, cần phải nạp thêm ' + res.mssg);
+    <script>
+        //Hủy đơn
+        function cancel(id) {
+            $.ajax({
+                url: '@Url.Action("Cancel", "ShippingOrder")',
+                type: 'Post',
+                data: { id },
+                // other AJAX options here
+                success: function (result) {
+                    if (!result)
+                        helper.showErr('Lỗi!');
                     else
-                        helper.showSuc('Thanh toán thành công!');
+                        helper.showSuc('Đã hủy nhận thành công!');
+                },
+                error: function (xhr, status, err) {
+                    // error handling
                 }
-            },
-            error: function (xhr, status, err) {
-                // error handling
-            }
-        });
-    }
-
-    function addDeclare() {
-        let $id = $("#txtId"), $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
-        let id = $id.val(), link = $link.val(), qty = $Qty.val(), amount = $amount.val();
-
-        if (!link || !qty || !amount) {
-            helper.showErr('Vui lòng nhập đầy đủ thông tin!')
-            return;
+            });
         }
 
-        $.ajax({
-            url: '@Url.Action("AddDeclare", "ShippingOrder")',
-            type: 'Post',
-            data: { id, link, qty, amount, shipId: @Model.Order.ID },
-            // other AJAX options here
-            success: function (result) {
-                if (result == -1)
-                    helper.showErr('Bạn đã kê khai sản phẩn này rồi!');
+        function payment() {
+            $.ajax({
+                url: '@Url.Action("Payment", "ShippingOrder")',
+                type: 'Post',
+                data: { id: @Model.Order.ID },
+                // other AJAX options here
+                success: function (res) {
+                    if (!res)
+                        helper.showErr('Lỗi!');
+                    else {
+                        if (res.error)
+                            helper.showErr(res.mssg);
+                        else
+                            helper.showSuc('Thanh toán thành công!');
+                    }
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+        }
 
-                if (result == 0)
-                    helper.showErr('Lỗi!');
+        function addDeclare() {
+            let $id = $("#txtId"), $link = $("#txtLink"), $Qty = $("#txtQty"), $amount = $('#txtAmount');
+            let id = $id.val(), link = $link.val(), qty = $Qty.val(), amount = $amount.val();
 
-                if (result == 1)
-                    helper.showSuc('Kê khai thành công!');
-
-                if (result == 2)
-                    helper.showSuc('Cập nhật thành công!');
-            },
-            error: function (xhr, status, err) {
-                // error handling
+            if (!link || !qty || !amount) {
+                helper.showErr('Vui lòng nhập đầy đủ thông tin!')
+                return;
             }
-        });
-    }
 
-    function editDeclare(o) {
-        var obj = JSON.parse(decodeURIComponent(o));
-        $("#txtId").val(obj.ID);
-        $("#txtLink").val(obj.ProductLink);
-        $("#txtQty").val(obj.ProductQuantity);
-        $('#txtAmount').val(obj.ProductPrice);
-    }
-</script>
+            $.ajax({
+                url: '@Url.Action("AddDeclare", "ShippingOrder")',
+                type: 'Post',
+                data: { id, link, qty, amount, shipId: @Model.Order.ID },
+                // other AJAX options here
+                success: function (result) {
+                    if (result == -1)
+                        helper.showErr('Bạn đã kê khai sản phẩn này rồi!');
+
+                    if (result == 0)
+                        helper.showErr('Lỗi!');
+
+                    if (result == 1)
+                        helper.showSuc('Kê khai thành công!');
+
+                    if (result == 2)
+                        helper.showSuc('Cập nhật thành công!');
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+        }
+
+        function editDeclare(o) {
+            var obj = JSON.parse(decodeURIComponent(o));
+            $("#txtId").val(obj.ID);
+            $("#txtLink").val(obj.ProductLink);
+            $("#txtQty").val(obj.ProductQuantity);
+            $('#txtAmount').val(obj.ProductPrice);
+        }
+    </script>
+}
