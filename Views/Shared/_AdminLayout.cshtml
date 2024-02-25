@@ -112,7 +112,7 @@
                         {
                             foreach (var item in lstNoti)
                             {
-                                <a class="dropdown-item d-flex align-items-center h-100px" href="/Admin/Notification/Detail?id=@item.ID">
+                                <a class="dropdown-item d-flex align-items-center h-100px" href="@item.Url" onclick="clickNoti(@item.ID)">
                                     <div class="mr-3">
                                         @if (item.NotifType == 1)
                                         {
@@ -204,8 +204,7 @@
                     }
                     else
                     {
-                        <img class="img-profile rounded-circle"
-                             src="~/img/undraw_profile.svg">
+                        <img class="img-profile rounded-circle"src="~/img/undraw_profile.svg">
                     }
                 </a>
                 <!-- Dropdown - User Information -->
@@ -390,10 +389,9 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="~/js/scripts.js"></script>
-    @*<script src="~/js/demo/chart-area-demo.js"></script>
-    <script src="~/js/demo/chart-bar-demo.js"></script>*@
     <script src="~/js/datatables-simple-demo.js"></script>
     <script>
+        // scrolling load noti
         function onScroll(e) {
             if (e.scrollHeight - (e.clientHeight + e.scrollTop) == 0) {
                 let page = parseInt($("#notifications")[0].dataset.page) + 1;
@@ -412,6 +410,16 @@
                 }
             }
         }
+        // click update status noti
+        function clickNoti(id){
+            $.ajax({
+                url: '/Admin/Notification/UpdateStatus',
+                type: "POST",
+                data: {ID:id}
+            });
+        }
+
+        // next/prev page
         function clickChangePass() {
             var data = helper.form2Object($('#formChangePass').serializeArray());
             if (!data) {
@@ -446,6 +454,7 @@
                 }
             });
         }
+        // show/hide password
         function showHidePass(idIcon, idInput) {
             let _input = $(idInput);
             let _icon = $(idIcon);

@@ -74,5 +74,15 @@ namespace KGQT.Controllers
             return View("Index", lstData);
         }
         #endregion
+
+        #region Update status
+        [HttpPost]
+        public bool UpdateStatus(int ID)
+        {
+            var userName = HttpContext.Session.GetString("user");
+            NotificationBusiness.UpdateStatus(ID, userName);
+            return true;
+        }
+        #endregion
     }
 }

@@ -7,7 +7,6 @@ namespace KGQT.Business
 {
     public static class NotificationBusiness
     {
-
         public static object[] GetPage(int receivedID, int status, DateTime? fromDate, DateTime? toDate, int page = 1 , int pageSize = 20,bool isAdmin = false)
         {
             using (var db = new nhanshiphangContext())
@@ -38,10 +37,12 @@ namespace KGQT.Business
                 return new object[] { datas, count, totalPage };
             }
         }
-        public static bool Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, int notiType, string createdBy, bool isForAdmin = false)
+        
+        public static bool Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, int notiType,string url, string createdBy, bool isForAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
+                
                 var data = new tbl_Notification()
                 {
                     SenderID = senderID,
@@ -54,13 +55,23 @@ namespace KGQT.Business
                     IsForAdmin = isForAdmin,
                     NotifType = notiType,
                     Status = 0,
+                    Url = url,
                     CreatedBy = createdBy,
                     CreatedDate = DateTime.Now
                 };
+                
                 db.Add(data);
                 int kq = db.SaveChanges();
                 if (kq > 0)
+                {
+                    if (string.IsNullOrWhiteSpace(data.Url))
+                    {
+                        data.Url = GetUrlDefault(data.ID, isForAdmin);
+                        db.Update(data);
+                        db.SaveChanges();
+                    }
                     return true;
+                }
             }
             return false ;
         }
@@ -95,6 +106,29 @@ namespace KGQT.Business
                 }
                 return new object[] { lstData, lstData.Count, lstData.Count };
             }
+        }
+
+        public static void UpdateStatus(int ID, string userName)
+        {
+            using(var db = new nhanshiphangContext())
+            {
+                var data = db.tbl_Notifications.FirstOrDefault(x => x.ID == ID);
+                if(data != null)
+                {
+                    data.Status = 1;
+                    data.ModifiedBy = userName;
+                    data.ModifiedDate = DateTime.Now;
+                    db.Update(data);
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        public static string GetUrlDefault(int ID,bool isAdmin = false)
+        {
+            if(isAdmin)
+                return "/Admin/Notification/Detail?ID=" + ID;
+            return "/Notification/Detail?ID=" + ID;
         }
     }
 }

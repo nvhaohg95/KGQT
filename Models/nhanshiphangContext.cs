@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using KGQT.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using KGQT.Models;
 
 namespace KGQT.Models
 {
@@ -295,5 +296,7 @@ namespace KGQT.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public DbSet<KGQT.Models.tbl_Posts>? tbl_Posts { get; set; }
     }
 }

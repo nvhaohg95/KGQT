@@ -1,6 +1,5 @@
 ﻿using KGQT.Models;
 using KGQT.Models.temp;
-using Org.BouncyCastle.Pqc.Crypto.Falcon;
 using System;
 
 namespace KGQT.Business
@@ -8,14 +7,18 @@ namespace KGQT.Business
     public class WithDrawBusiness
     {
         #region Get page
-        public static object[] GetList(int type,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public static object[] GetList(int ID,int type,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var lstData = new List<tbl_Withdraw>();
             int count = 0;
             int totalPage = 0;
             using (var db = new nhanshiphangContext())
             {
-                var query = db.tbl_Withdraws.Where(x => x.Type == type);
+                var query = db.tbl_Withdraws.AsQueryable();
+                if(ID > 0)
+                    query = query.Where(x => x.ID == ID);
+                if (status != 0)
+                    query = query.Where(x => x.Type == type);
                 if (status != 0)
                     query = query.Where(x => x.Status == status);
                 if (fromDate != null)
@@ -70,7 +73,7 @@ namespace KGQT.Business
                                 db.SaveChanges();
                                 notiMessage = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", strHTML);
                                 HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 2, 3, moneyLeft.Value, createdBy);
-                                NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, 2, admin.Username);
+                                NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, 2,"" ,admin.Username);
                             }
                             else if(data.Type == 2)
                             {
@@ -82,7 +85,7 @@ namespace KGQT.Business
                                 db.SaveChanges();
                                 notiMessage = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã được duyệt.", strHTML);
                                 HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, createdBy);
-                                NotificationBusiness.Insert(acc.ID, acc.FullName, acc.ID, acc.FullName, data.ID, "", notiMessage, 3, acc.Username);
+                                NotificationBusiness.Insert(acc.ID, acc.FullName, acc.ID, acc.FullName, data.ID, "", notiMessage, 3, "", acc.Username);
                             }    
                             result.IsError = false;
                             result.Message = "Tạo thành công!";
@@ -90,9 +93,10 @@ namespace KGQT.Business
                         }
                         else
                         {
+                            string url = "/Admin/Withdraw/Index?ID=" + data.ID;
                             string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
                             notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", user.FullName, strHTML);
-                            NotificationBusiness.Insert(user.ID, user.FullName, 0, "Admin", data.ID, "", notiMessage, 2, acc.Username, true);
+                            NotificationBusiness.Insert(user.ID, user.FullName, 0, "Admin", data.ID, "", notiMessage, 2, url ,acc.Username, true);
                             result.IsError = false;
                             result.Message = "Yêu cầu của bạn đã được gửi!";
                             result.Data = true;
@@ -132,10 +136,11 @@ namespace KGQT.Business
                     int isSave = db.SaveChanges();
                     if (isSave > 0)
                     {
+                        string url = "/Admin/Refuse/Index?ID=" + data.ID;
                         string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
                         string notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu rút <span class=\"text-danger\">{1}</span>.", acc.FullName, strHTML); ;
                         HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount.Value, 1, 4, moneyLeft.Value, createdBy,0);
-                        NotificationBusiness.Insert(acc.ID, acc.FullName, 0, "Admin", data.ID, "", notiMessage, 3, acc.Username, true);
+                        NotificationBusiness.Insert(acc.ID, acc.FullName, 0, "Admin", data.ID, "", notiMessage, 3, url, acc.Username, true);
                         result.IsError = false;
                         result.Message = "Yêu cầu của bạn đã được gửi!";
                         result.Data = true;
@@ -186,7 +191,7 @@ namespace KGQT.Business
                             user.Wallet = moneyLeft + widthDraw.Amount;
                             message = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", strHTML);
                             HistoryPayWallet.Insert(user.ID, user.Username, widthDraw.ID, widthDraw.Note, widthDraw.Amount.Value, 2, 3, moneyLeft.Value, userName);
-                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 2, admin.Username);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 2, "", admin.Username);
                         }
                         else if (widthDraw.Type == 2)//rút tiền
                         {
@@ -198,7 +203,7 @@ namespace KGQT.Business
                                 history.Status = 1;
                                 db.Update(history);
                             }
-                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 3, admin.Username);
+                            NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 3, "", admin.Username);
                         }
                         user.ModifiedBy = admin.Username;
                         user.ModifiedDate = DateTime.Now;
@@ -266,12 +271,12 @@ namespace KGQT.Business
                             if(widthDraw.Type == 1)
                             {
                                 message = string.Format("Yêu cầu nạp <span class=\"text-success\">{0}</span> của bạn đã bị từ chối.", money);
-                                NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 2, admin.Username);
+                                NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 2, "", admin.Username);
                             }
                             if (widthDraw.Type == 2)
                             {
                                 message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã bị từ chối.", money);
-                                NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 3, admin.Username);
+                                NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, 3, "", admin.Username);
                             }    
                             result.IsError = false;
                             result.Data = true;
