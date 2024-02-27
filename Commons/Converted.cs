@@ -86,6 +86,13 @@ namespace KGQT.Commons
             return d.Value;
         }
 
+        public static string Date2String(DateTime? d, bool withHour)
+        {
+            if (d == null) return "";
+            if (withHour)
+                return d.Value.ToString("dd/MM/yyyy HH:mm:ss");
+            else return d.Value.ToString("dd/MM/yyyy");
+        }
         public static string Double2String(double? str)
         {
             if (str == null) return "0";
