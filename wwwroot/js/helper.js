@@ -154,3 +154,5 @@ window["copyClipboard"] = function copyClipboard(text) {
             setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
     document.body.removeChild(textArea);
 }
+
+

@@ -4,11 +4,11 @@
 @{
     ViewData["Title"] = "Phí vận chuyển";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    int type = (int)ViewData["type"];
-    int page = (int)ViewData["page"];
-    int totalRecord = (int)ViewData["totalRecord"];
-    int totalPage = (int)ViewData["totalPage"];
-    var lstFeeWeightType = ViewData["lstFeeWeightType"] as List<FeeweightCategory>;
+    int type = ViewBag.type;
+    int pageCurrent = ViewBag.pageCurrent;
+    int numberPage = ViewBag.numberPage;
+    int numberRecord = ViewBag.numberRecord;
+    List<FeeweightCategory> lstFeeWeightType = ViewBag.lstFeeWeightType;
 
 }
 
@@ -64,13 +64,13 @@
                 </thead>
                 <tbody>
                     @{
-                        int i = 0;
+                        int idx = 0;
                         foreach (var item in Model)
                         {
-                            i = i + 1;
+                            idx = idx + 1;
                             <tr>
                                 <td class="text-left align-middle">
-                                    <span>@(((page - 1) * 10) + i)</span>
+                                    <span>@(((pageCurrent - 1) * 10) + idx)</span>
                                 </td>
                                 <td class="text-center align-middle">
                                     <span>@(item.WeightFrom + "-" + item.WeightTo + " kg")</span>
@@ -108,42 +108,86 @@
             </table>
         </div>
     </div>
-    <div class="row bg-white p-2">
-        <div class="col-lg-6 col-md-6 col-sm-6">
+    <div class="row p-2">
+        <div class="col-4 align-self-center">
             <span>
                 Tổng số:&nbsp
-                <b>@totalRecord</b>
+                <b>@numberRecord</b>
             </span>
         </div>
-        <div class ="col-lg-6 col-md-6 col-sm-6">
-            @if (totalPage > 1)
+        <div class="col-8">
+            @if (numberPage > 1)
             {
                 <nav class="d-flex justify-content-end">
                     <ul class="pagination m-0">
-                        <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
-                            <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous" title="Trang trước">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" id="pageNumber">
-                                @(page)
-                            </a>
-                        </li>
-                        <li class="@(page >= totalPage ? "page-item disabled" : "page-item cursor-pointer")">
-                            <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next" title="Trang sau">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </li>
+                        @{
+                            int offset = 2; // number display page
+                            if (pageCurrent > 1)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
+                                        <i class="fas fa-fast-backward"></i>
+                                    </button>
+                                </li>
+                                int prevPage = pageCurrent - 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </button>
+                                </li>
+                            }
 
+                            int from = pageCurrent - offset;
+                            int to = pageCurrent + offset;
+                            if (from <= 0)
+                            {
+                                from = 1;
+                                to = offset * 2;
+                            }
+
+                            if (to > numberPage)
+                            {
+                                to = numberPage;
+                            }
+
+                            int i;
+                            for (i = from; i <= to; i++)
+                            {
+                                <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage - (to / 2))
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage)
+                            {
+                                int nextPage = pageCurrent + 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </button>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
+                                        <i class="fas fa-fast-forward"></i>
+                                    </button>
+                                </li>
+                            }
+                        }
                     </ul>
                 </nav>
             }
         </div>
     </div>
-
 </div>
 
 <!-- popup -->
@@ -232,14 +276,11 @@
             url: "/Admin/FeeWeight/create",
             type: 'POST',
             data: data,
-            // other AJAX options here
             success: function (reponse) {
-                if (!reponse)
-                {
-                    helper.showErr('Thêm không thành công. Vui lòng thử lại!');
-                }
+                if (reponse)
+                    helper.showSuc('Thêm thành công!');
                 else
-                    helper.showSuc('Thêm thành công!')
+                    helper.showErr('Thêm không thành công. Vui lòng thử lại!');
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
@@ -252,15 +293,12 @@
             url: "/Admin/FeeWeight/Delete",
             type: 'POST',
             data: { ID:id },
-            // other AJAX options here
             success: function (reponse) 
             {
-                if (!reponse) 
-                {
-                    helper.showErr('Xóa không thành công!')
-                }
-                else
+                if (reponse) 
                     helper.showSuc('Xóa thành công!')
+                else
+                    helper.showErr('Xóa không thành công!')
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
@@ -268,20 +306,6 @@
         });
     }
 
-    // get page
-    function getPage(pageIndex) {
-        var totalPage = @totalPage;
-        if (pageIndex <= 0 || pageIndex > totalPage)
-            return;
-        if (!location.href.includes("page=")) {
-            if (location.href.charAt(location.href.length - 1) == "=")
-                location.href += `&page=${pageIndex}`;
-            else
-                location.href += `?page=${pageIndex}`;
-        }
-        else
-            location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
-    }
     //
     function format(e) {
         helper.getChange(e)

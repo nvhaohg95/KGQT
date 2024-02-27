@@ -35,4 +35,15 @@ function sort(status) {
     location.reload();
 }
 
+function nextPage(crrPage, pageIndex, numberPage) {
+    if (pageIndex < 1 || pageIndex > numberPage) return;
+    if (location.search)
+    {
+        if (location.search.indexOf("page=") != -1)
+            location.href = location.href.replace(`page=${crrPage}`, `page=${pageIndex}`);
+        else
+            location.href += `&page=${pageIndex}`;
+    }
+    else location.href += `?page=${pageIndex}`;
+}
 

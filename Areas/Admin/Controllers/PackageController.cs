@@ -21,15 +21,15 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var oData = Packages.GetPage(status, ID, fromDate, toDate, page, pageSize);
             var lstPackage = oData[0];
-            int totalRecord = (int)oData[1];
-            int totalPage = (int)oData[2];
-            ViewData["status"] = status;
-            ViewData["page"] = page;
-            ViewData["totalRecord"] = totalRecord;
-            ViewData["totalPage"] = totalPage;
-            ViewData["ID"] = ID;
-            ViewData["fromDate"] = fromDate;
-            ViewData["toDate"] = toDate;
+            int numberRecord = (int)oData[1];
+            int numberPage = (int)oData[2];
+            ViewBag.status = status;
+            ViewBag.ID = ID;
+            ViewBag.fromDate = fromDate;
+            ViewBag.toDate = toDate;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
             return View(lstPackage);
         }
 
