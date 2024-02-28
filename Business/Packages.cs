@@ -432,10 +432,8 @@ namespace KGQT.Business
                     pack.WeightReal = Converted.ToDouble(pack.Weight);
             }
 
-            if (pack.WeightPrice > minPackage)
-                pack.WeightPrice = data.Weight;
-            else
-                pack.WeightPrice = minPackage;
+            if (pack.WeightReal <= minPackage)
+                pack.WeightReal = minPackage;
 
 
             var p = BusinessBase.Update(pack);
@@ -483,7 +481,7 @@ namespace KGQT.Business
                         double weightRound = totalWeight;
                         if (totalWeight < minOrder)
                             weightRound = minOrder;
-                        totalWeightPrice = weightRound * finalfee.Amount.Value;
+                        totalWeightPrice = Converted.ToDouble(weightRound * finalfee.Amount.Value);
                     }
 
                     double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => x.WoodPackagePrice.Value);
