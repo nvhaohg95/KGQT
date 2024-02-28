@@ -1,4 +1,5 @@
-﻿using KGQT.Base;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using KGQT.Base;
 using Newtonsoft.Json;
 using System.Globalization;
 
@@ -38,11 +39,11 @@ namespace KGQT.Commons
             return Convert.ToDouble(s);
         }
 
-        public static double ToDouble(double? s)
+        public static double ToDouble(double? s, int period = 1)
         {
-            if (!s.HasValue) return 0;
-
-            return s.Value;
+            if (s == null) return 0;
+            var num = Convert.ToDouble(s);
+            return Math.Round(num, period, MidpointRounding.AwayFromZero);
         }
 
         public static DateTime ToDate(string s)

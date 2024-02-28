@@ -1,5 +1,8 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using ExcelDataReader;
 using Fasterflect;
 using KGQT.Base;
@@ -40,7 +43,7 @@ namespace KGQT.Business
 
         public static List<tbl_Package> GetByBigPackage(int id)
         {
-            var list = BusinessBase.GetList<tbl_Package>(x => x.BigPackage == id).OrderByDescending(x=>x.OrderDate).ToList();
+            var list = BusinessBase.GetList<tbl_Package>(x => x.BigPackage == id).OrderByDescending(x => x.OrderDate).ToList();
             return list;
         }
 
@@ -80,6 +83,7 @@ namespace KGQT.Business
                         PackageCode = p.pack.PackageCode,
                         Status = p.pack.Status,
                         MovingMethod = p.pack.MovingMethod,
+                        WeightReal = p.pack.WeightReal,
                         Weight = p.pack.Weight,
                         Username = p.pack.Username,
                         Phone = a != null && !string.IsNullOrEmpty(a.Phone) ? a.Phone : "",
@@ -199,6 +203,7 @@ namespace KGQT.Business
             model.Status = 1;
             model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             model.UID = user.ID;
+
             model.Username = user.Username;
             model.FullName = user.FullName;
             model.Phone = user.Phone;
@@ -207,6 +212,12 @@ namespace KGQT.Business
             model.OrderDate = DateTime.Now;
             model.CreatedDate = DateTime.Now;
             model.CreatedBy = userLogin;
+            model.Weight = 0;
+            model.WeightExchange = 0;
+            model.Height = 0;
+            model.Width = 0;
+            model.Length = 0;
+            model.WeightReal = 0;
             if (model.IsInsurance.HasValue && model.IsInsurance == true)
             {
                 model.IsInsurancePrice = model.DeclarePrice * 0.05;
@@ -276,7 +287,12 @@ namespace KGQT.Business
             form.OrderDate = DateTime.Now;
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = user.Username;
-
+            form.Weight = 0;
+            form.WeightExchange = 0;
+            form.Height = 0;
+            form.Width = 0;
+            form.Length = 0;
+            form.WeightReal = 0;
             if (form.IsInsurance.HasValue && form.IsInsurance == true)
             {
                 form.IsInsurancePrice = form.DeclarePrice * 0.05;
@@ -351,23 +367,25 @@ namespace KGQT.Business
             }
         }
 
-        public static bool InStockHCMWareHouse(int id, string username, int moving, double weight, double woodPrice, double airPrice, double surCharge, string accessor)
+        public static bool InStockHCMWareHouse(tmpInStock data, string accessor)
         {
-            var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == data.Id);
             if (pack == null) return false;
             var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == accessor);
-            if (!string.IsNullOrEmpty(username) && pack.Username != username)
+            if (!string.IsNullOrEmpty(data.Username) && pack.Username != data.Username)
             {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == username.ToLower());
-                pack.Username = username;
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == data.Username.ToLower());
+                pack.Username = data.Username;
                 pack.UID = user.ID;
                 pack.FullName = user.FullName;
             }
 
-            if (moving > 0 && pack.MovingMethod != moving)
-            {
-                pack.MovingMethod = moving;
-            }
+            if (data.MovingMethod > 0 && pack.MovingMethod != data.MovingMethod)
+                pack.MovingMethod = data.MovingMethod;
+
+            if (data.Height > 0 || data.Width > 0 || data.Length > 0)
+                data.WeightExchange = GetExchangeWeight(pack.MovingMethod, data);
+
             //Update tien p
             var config = BusinessBase.GetFirst<tbl_Configuration>();
             double minPackage = 0.3;
@@ -380,33 +398,58 @@ namespace KGQT.Business
             var lstFee = BusinessBase.GetList<tbl_FeeWeight>(x => x.Type == pack.MovingMethod);
             if (lstFee == null || lstFee.Count == 0) return false;
 
-            var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= weight && weight <= x.WeightTo);
+            var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= data.Weight && data.Weight <= x.WeightTo);
 
             if (lstFee == null || lstFee.Count == 0) return false;
-            if (weight > minPackage)
-                pack.Weight = weight;
-            else
-                pack.Weight = minPackage;
-            pack.WeightReal = weight;
-            pack.WoodPackagePrice = woodPrice;
-            pack.AirPackagePrice = airPrice;
-            pack.SurCharge = surCharge;
+
+            pack.Weight = data.Weight;
+            pack.WeightExchange = Converted.ToDouble(data.WeightExchange);
+            pack.Height = data.Height;
+            pack.Width = data.Width;
+            pack.Length = data.Length;
+            pack.WoodPackagePrice = data.WoodPrice;
+            pack.AirPackagePrice = data.AirPrice;
+            pack.SurCharge = data.SurCharge;
             pack.Status = 4;
             pack.ModifiedBy = accessor;
             pack.ModifiedDate = DateTime.Now;
             pack.ImportedSGWH = DateTime.Now;
+
+            if (pack.MovingMethod < 3)
+            {
+                var maxWeight = pack.Weight * (25 / (float)100);
+                if (pack.WeightExchange > (pack.Weight + maxWeight) || pack.WeightExchange > (pack.Weight + 1))
+                    pack.WeightReal = Converted.ToDouble(pack.WeightExchange);
+                else
+                    pack.WeightReal = Converted.ToDouble(pack.Weight);
+            }
+            else
+            {
+                var maxWeight = pack.Weight * (50 / (float)100);
+                if (pack.WeightExchange >= (pack.Weight + maxWeight) || pack.WeightExchange >= (pack.Weight + 2))
+                    pack.WeightReal = Converted.ToDouble(pack.WeightExchange);
+                else
+                    pack.WeightReal = Converted.ToDouble(pack.Weight);
+            }
+
+            if (pack.WeightPrice > minPackage)
+                pack.WeightPrice = data.Weight;
+            else
+                pack.WeightPrice = minPackage;
+
+
             var p = BusinessBase.Update(pack);
             if (p)
             {
-                BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với cân năng " + weight + "kg", 0, accessor);
+                BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với cân năng " + data.Weight + "kg", 0, accessor);
 
                 if (pack.IsAirPackage.HasValue && pack.IsAirPackage == true)
                 {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + airPrice + "đ", 0, accessor);
+                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + data.AirPrice + "đ", 0, accessor);
                 }
                 if (pack.IsWoodPackage.HasValue && pack.IsWoodPackage == true)
                 {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + woodPrice + "đ", 0, accessor);
+                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + data.WoodPrice + "đ", 0, accessor);
                 }
 
                 //Ktra xem khach da co don chua.
@@ -430,7 +473,8 @@ namespace KGQT.Business
                     BusinessBase.TrackLog(pack.UID.Value, check.ID, "{0} đã cập nhật mã vận đơn " + check.ID + " vào kiện", 0, accessor);
 
                     var lstPack = BusinessBase.GetList<tbl_Package>(x => x.TransID == check.ID);
-                    double totalWeight = lstPack.Where(x => x.Weight != null).Sum(x => x.Weight.Value);
+
+                    double totalWeight = lstPack.Sum(x=>x.WeightReal.Value);                    
                     double totalWeightPrice = 0;
 
                     var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= totalWeight && totalWeight <= x.WeightTo);
@@ -461,8 +505,9 @@ namespace KGQT.Business
                 }
                 else
                 {
-                    var weightRound = pack.Weight;
+                    var weightRound = pack.WeightReal;
                     double feeWeight = 0;
+                    
                     if (weightRound < minOrder)
                     {
                         weightRound = minOrder;
@@ -479,7 +524,7 @@ namespace KGQT.Business
                     ship.Phone = pack.Phone;
                     ship.ShippingMethod = pack.MovingMethod;
                     ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
-                    ship.Weight = pack.Weight;
+                    ship.Weight = pack.WeightReal;
                     ship.WeightPrice = feeWeight;
                     ship.IsAirPackage = pack.IsAirPackage;
                     ship.AirPackagePrice = pack.AirPackagePrice ?? 0;
@@ -507,7 +552,7 @@ namespace KGQT.Business
 
                         }
                         BusinessBase.TrackLog(pack.UID.Value, ship.ID, "{0} đã tạo đơn " + ship.ID + " với kiện " + pack.PackageCode + " vào đơn", 0, accessor);
-                        NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1,"", accessor);
+                        NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "", accessor);
                     }
                 }
             }
@@ -553,7 +598,7 @@ namespace KGQT.Business
                         }
                     });
                     DataTableCollection table = result.Tables;
-                    DataTable dt = table[name];
+                    System.Data.DataTable dt = table[name];
                     if (dt == null)
                         dt = table[table.Count - 1];
                     if (dt != null)
@@ -562,7 +607,7 @@ namespace KGQT.Business
                         var rowCount = dt.Rows.Count;
                         int success = 0;
                         var big = new tbl_BigPackage();
-                        big.BigPackageCode = file.FileName + "_"+ DateTime.Now.ToString("ddMMyyyy");
+                        big.BigPackageCode = file.FileName + "_" + DateTime.Now.ToString("ddMMyyyy");
                         big.CreatedDate = DateTime.Now;
                         big.CreatedBy = accesser;
                         BusinessBase.Add(big);
@@ -633,9 +678,19 @@ namespace KGQT.Business
                                     p.MovingMethod = 2;
                                 if (type == 8)
                                     p.MovingMethod = 3;
+                                if (type == 15)
+                                    p.MovingMethod = 4;
+                                if (type == 20)
+                                    p.MovingMethod = 5;
                                 p.PackageCode = code;
                                 p.Note = note;
                                 p.Status = 3;
+                                p.Weight = 0;
+                                p.WeightExchange = 0;
+                                p.Height = 0;
+                                p.Width = 0;
+                                p.Length = 0;
+                                p.WeightReal = 0;
                                 p.OrderDate = date;
                                 p.ExportedCNWH = date;
                                 p.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
@@ -755,6 +810,27 @@ namespace KGQT.Business
             data.IsError = true;
             data.Message = "Hủy không thành công, vui lòng liên hệ với nhân viên để được giải quyết !";
             return data;
+        }
+
+        public static double GetExchangeWeight(int type, tmpInStock data)
+        {
+            double? w = 0;
+            var total = (data.Length * data.Height * data.Width) / 6000;
+            switch (type)
+            {
+                case 1:
+                case 2:
+                    w = ((total + data.Weight) / 2);
+                    break;
+                case 3:
+                case 4:
+                    w = total;
+                    break;
+                case 5:
+                    w = (data.Length * data.Height * data.Width) / 5000;
+                    break;
+            }
+            return Converted.ToDouble(w);
         }
     }
     #endregion

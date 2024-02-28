@@ -76,7 +76,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult PackagePartial(string code)
         {
-            var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
+            var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower().Contains(code.ToLower()));
             return PartialView("_Package", package);
         }
 
@@ -230,10 +230,12 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="airPrice"></param>
         /// <returns></returns>
         [HttpPost]
-        public bool InStockPackage(int id, string username, int moving, double weight, double woodPrice, double airPrice, double surCharge)
+        public bool InStockPackage(string sData)
         {
             var crrUse = HttpContext.Session.GetString("user");
-            var oSave = Packages.InStockHCMWareHouse(id, username, moving, weight, woodPrice, airPrice, surCharge, crrUse);
+            if (string.IsNullOrEmpty(sData)) return false;
+            var data = JsonConvert.DeserializeObject<tmpInStock>(sData);
+            var oSave = Packages.InStockHCMWareHouse(data, crrUse);
             return oSave;
         }
 

@@ -50,7 +50,8 @@ namespace KGQT.Areas.Admin.Controllers
                 ws.Cells[1, 3].Value = "Tuyến";
                 ws.Cells[1, 4].Value = "Câm nặng";
                 ws.Cells[1, 5].Value = "Ngày xuất kho";
-
+                ws.Cells[1, 6].Value = "Đo lên";
+                ws.Cells[1, 7].Value = "Kích thước";
                 ws.Column(1).Width = 25;
                 ws.Column(5).Width = 25;
 
@@ -73,8 +74,13 @@ namespace KGQT.Areas.Admin.Controllers
                     ws.Cells["C" + i].Value = PJUtils.MovingMethod2Type(row.MovingMethod);
                     ws.Cells["D" + i].Value = Converted.Double2String(row.Weight);
                     ws.Cells["E" + i].Value = Converted.Date2String(row.OrderDate, true);
+                    if (row.WeightExchange > 0)
+                    {
+                        ws.Cells["F" + i].Value = Converted.Double2String(row.WeightExchange);
+                        ws.Cells["G" + i].Value = row.Length + "x" + row.Width + "x" + row.Height;
 
-                    if (string.IsNullOrEmpty(row.Username) || row.Weight <= 0 || row.Weight == null)
+                    }
+                    if (row.ImportedSGWH == null || row.ImportedSGWH == DateTime.MinValue)
                     {
                         rows.Add(i);
                     }
@@ -85,7 +91,7 @@ namespace KGQT.Areas.Admin.Controllers
                 {
                     foreach (var item in rows)
                     {
-                        ws.Cells["A" + item+":"+"E"+item].Style.Fill.SetBackground(System.Drawing.Color.Gray);
+                        ws.Cells["A" + item + ":" + "E" + item].Style.Fill.SetBackground(System.Drawing.Color.Gray);
                     }
                 }
 

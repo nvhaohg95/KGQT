@@ -19,9 +19,7 @@ namespace KGQT.Business
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                    
-                    lstData = query.OrderByDescending(x => x.CreatedDate)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize).ToList();
+                    lstData = query.OrderBy(x => x.Type).OrderByDescending(x=>x.Amount).ToList();
                 }    
                     
                 return new object[] { lstData , total, totalPage };

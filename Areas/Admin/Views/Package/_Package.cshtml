@@ -20,7 +20,6 @@
                     <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(Model.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                 </div>
                 <div class="col-md-3 text-right">
-                    @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
                     <button class="btn-sm btn bg-orange text-white mr-md-2" onclick="submitFn(@Model.ID,@Model.MovingMethod)">Cập nhật</button>
                 </div>
             </div>
@@ -65,7 +64,7 @@
                     </div>
                     <div class="row px-2 mx-0 mb-2">
                         <div class="col-md-6">
-                            <div class="d-flex">
+                            <div class="d-flex align-items-center">
                                 <span>Khách hàng:</span>
                                 <div class="col-md-8">
                                     <input id="txtUsername" class="form-control mb-0" value="@Model.Username" />
@@ -114,12 +113,12 @@
                     </ul>
                 </div>
             </div>
-            <div class="row m-0 pt-2 border-top">
+            <div class="row m-0 mb-2 pt-2 border-top">
                 <div class="col-md-3">
                     <div class="row">
                         <div class="form-inline text-left">
                             Cân nặng:  &nbsp;
-                            <input id="txtWeight" class="form-control mb-0" />
+                            <input id="txtWeight" class="form-control mb-0" value="@Model.Weight" /> &nbsp;Kg
                         </div>
                     </div>
                 </div>
@@ -130,7 +129,7 @@
                         <div class="row">
                             <div class="form-inline text-left">
                                 Đóng gỗ:  &nbsp;
-                                <input data-type="formatvnd" id="txtWoodPackage" class="form-control mb-0" value="@Model.WoodPackagePrice" />
+                                <input data-type="formatvnd" id="txtWoodPackage" class="form-control mb-0" value="@Model.WoodPackagePrice" />  &nbsp; VNĐ
                             </div>
                         </div>
                     </div>
@@ -142,7 +141,7 @@
                         <div class="row">
                             <div class="form-inline text-left">
                                 Bọt khí:  &nbsp;
-                                <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" value="@Model.AirPackagePrice" />
+                                <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" value="@Model.AirPackagePrice" />&nbsp; VNĐ
                             </div>
                         </div>
                     </div>
@@ -152,7 +151,44 @@
                     <div class="row">
                         <div class="form-inline text-left">
                             Thu hộ:  &nbsp;
-                            <input data-type="formatvnd" id="txtSurCharge" class="form-control mb-0" value="@Model.SurCharge" />
+                            <input data-type="formatvnd" id="txtSurCharge" class="form-control mb-0" value="@Model.SurCharge" />&nbsp; VNĐ
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-0 pt-2 border-top">
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="form-inline text-left">
+                            Đo lên:  &nbsp;
+                            <input id="txtWeightEx" class="form-control mb-0" value="@Model.WeightExchange" />&nbsp;Kg
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+
+                    <div class="row">
+                        <div class="form-inline text-left">
+                            Dài:  &nbsp;
+                            <input id="txtLength" class="form-control mb-0" value="@Model.Length" /> &nbsp;cm
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="row">
+                        <div class="form-inline text-left">
+                            Rộng:  &nbsp;
+                            <input id="txtWidth" class="form-control mb-0" value="@Model.Width" />&nbsp;cm
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 align-self-center">
+                    <div class="row">
+                        <div class="form-inline text-left">
+                            Cao:  &nbsp;
+                            <input id="txtHeight" class="form-control mb-0" value="@Model.Height" />&nbsp;cm
                         </div>
                     </div>
                 </div>
@@ -176,50 +212,21 @@ else
             $('#copied-success').css('opacity', '1');
             setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
         })
-
-        $('#txtUsername').autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: '/admin/package/AutoComplete',
-                    type: 'GET',
-                    data: {
-                        s: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 3,
-            delay: 500,
-            select: function (event, ui) {
-                $(this).val(ui.item.username);
-                return false;
-            },
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            return $("<li>")
-                .append("<div>" + item.username + " - " + item.email + "</div>")
-                .appendTo(ul);
-        };
     })
-
     function submitFn(id, moving) {
-        debugger;
         let weight = $('#txtWeight').val();
         let wood = 0;
         let air = 0;
-        let sub = 0;
         let username = "";
         let $wood = $('#txtWoodPackage');
         let $air = $('#txtAirPackage');
-        let $sub = $('#txtSurCharge');
+        let sub = $('#txtSurCharge').val();
         let $username = $('#txtUsername');
+        let $weightEx = $('#txtWeightEx');
+        let $length = $('#txtLength');
+        let $width = $('#txtWidth');
+        let $height = $('#txtHeight');
+
         if (!weight) {
             helper.showErr('Vui lòng nhập cân nặng!');
             return;
@@ -245,11 +252,24 @@ else
                 return;
             }
         }
+        let data = {
+            id,
+            username,
+            movingMethod:moving,
+            weight,
+            woodPrice: wood,
+            airPrice: air,
+            surCharge: sub,
+            weightExchange: $weightEx.val(),
+            length: $length.val(),
+            width: $width.val(),
+            height: $height.val()
+        }
         $.ajax({
             url: '/admin/Package/InStockPackage',
             method: 'POST',
             dataType: 'json',
-            data: { id, username, moving, weight, woodPrice: wood, airPrice: air, sub },
+            data: { sData: JSON.stringify(data) },
             success: function (res) {
                 if (res)
                     helper.showSuc("Cập nhật thành công");
