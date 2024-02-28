@@ -19,13 +19,14 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var oData = AccountBusiness.GetPage(searchText, page, pageSize);
             var lstData = oData[0] as List<tbl_Account>;
-            int totalRecord = (int)oData[1];
-            int totalPage = (int)oData[2];
-            @ViewData["searchText"] = searchText;
-            @ViewData["page"] = page;
-            @ViewData["totalRecord"] = totalRecord;
-            @ViewData["totalPage"] = totalPage;
-            @ViewData["lstRoles"] = AccountBusiness.GetListUserRole();
+            int numberRecord = (int)oData[1];
+            int numberPage = (int)oData[2];
+            ViewBag.searchText = searchText;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
+            ViewBag.lstRoles = AccountBusiness.GetListUserRole();
+
             return View(lstData);
         }
         #endregion

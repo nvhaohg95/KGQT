@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using System.Collections.Specialized;
 using System.Drawing.Printing;
 
 namespace KGQT.Areas.Admin.Controllers
@@ -13,22 +14,21 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("admin")]
     public class WithDrawController : Controller
     {
-        #region View
-        public IActionResult Index(int ID,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 5)
+        #region Nạp tiền
+        public IActionResult Index(int ID,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var oData = WithDrawBusiness.GetList(ID, 1, status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
-            var totalRecord = (int)oData[1];
-            var totalPage = (int)oData[2];
-            ViewData["id"] = ID;
-            ViewData["status"] = status;
-            ViewData["fromDate"] = fromDate;
-            ViewData["toDate"] = toDate;
-            ViewData["page"] = page;
+            var numberRecord = (int)oData[1];
+            var numberPage = (int)oData[2];
+            ViewBag.id = ID;
+            ViewBag.status = status;
+            ViewBag.fromDate = fromDate;
+            ViewBag.toDate = toDate;
             ViewBag.pageCurrent = page;
-            ViewData["totalRecord"] = totalRecord;
-            ViewData["totalPage"] = totalPage;
-            ViewBag.numberPage = totalPage;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
+            
             return View(lstData);
         }
         [HttpGet]
@@ -137,15 +137,15 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var oData = WithDrawBusiness.GetList(ID, 2,status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
-            var totalRecord = (int)oData[1];
-            var totalPage = (int)oData[2];
-            ViewData["id"] = ID;
-            ViewData["status"] = status;
-            ViewData["fromDate"] = fromDate;
-            ViewData["toDate"] = toDate;
-            ViewData["page"] = page;
-            ViewData["totalRecord"] = totalRecord;
-            ViewData["totalPage"] = totalPage;
+            var numberRecord = (int)oData[1];
+            var numberPage = (int)oData[2];
+            ViewBag.id = ID;
+            ViewBag.status = status;
+            ViewBag.fromDate = fromDate;
+            ViewBag.toDate = toDate;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
             return View(lstData);
         }
         #endregion

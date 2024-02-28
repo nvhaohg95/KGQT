@@ -17,21 +17,21 @@ namespace KGQT.Controllers
             var userName = HttpContext.Session.GetString("user");
             var user = AccountBusiness.GetInfo(-1, userName);
             var lstData = new List<tbl_Notification>();
-            var totalRecord = 0;
-            var totalPage = 0;
-            ViewData["status"] = status;
-            ViewData["page"] = page;
-            ViewData["fromDate"] = fromDate;
-            ViewData["toDate"] = toDate;
+            int numberRecord = 0;
+            int numberPage = 0;
             if (user != null)
             {
                 var oData = NotificationBusiness.GetPage(user.ID,status, fromDate,toDate, page, 10);
                 lstData = oData[0] as List<tbl_Notification>;
-                totalRecord = (int)oData[1];
-                totalPage = (int)oData[2];
+                numberRecord = (int)oData[1];
+                numberPage = (int)oData[2];
             }
-            ViewData["totalRecord"] = totalRecord;
-            ViewData["totalPage"] = totalPage;
+            ViewBag.status = status;
+            ViewBag.fromDate = fromDate;
+            ViewBag.toDate = toDate;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
 
             return View(lstData);
         }

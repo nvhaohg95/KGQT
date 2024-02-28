@@ -18,13 +18,15 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var oData = FeeWeightBusiness.GetPage(page, pageSize);
             var lstData = oData[0] as List<tbl_FeeWeight>;
-            int totalRecord = (int)oData[1];
-            int totalPage = (int)oData[2];
-            ViewData["type"] = type;
-            ViewData["page"] = page;
-            ViewData["totalRecord"] = totalRecord;
-            ViewData["totalPage"] = totalPage;
-            ViewData["lstFeeWeightType"] = GetListFeeWeigthCategory();
+            int numberRecord = (int)oData[1];
+            int numberPage = (int)oData[2];
+
+            ViewBag.type = type;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
+            ViewBag.lstFeeWeightType = GetListFeeWeigthCategory();
+
             return View(lstData);
         }
         #endregion
