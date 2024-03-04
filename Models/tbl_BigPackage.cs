@@ -7,6 +7,9 @@ namespace KGQT.Models
     {
         public int ID { get; set; }
         public string? BigPackageCode { get; set; }
+        public string? FileName { get; set; }
+        public string? FilePath { get; set; }
+        public int? DataCount { get; set; }
         public DateTime? BigPackageDateExport { get; set; }
         public int? BigPackageShippingMethod { get; set; }
         public string? BigPackageShippingMethodName { get; set; }

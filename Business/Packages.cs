@@ -604,9 +604,20 @@ namespace KGQT.Business
                     {
 
                         var rowCount = dt.Rows.Count;
+
+                        var exit = BusinessBase.Exist<tbl_BigPackage>(x=>x.FileName == file.FileName && x.DataCount == rowCount);
+                        if (exit)
+                        {
+                            data.IsError = true;
+                            data.Message = "File này đã được upload";
+                            stream.Dispose();
+                            return data;
+                        }
                         int success = 0;
                         var big = new tbl_BigPackage();
                         big.BigPackageCode = file.FileName + "_" + DateTime.Now.ToString("ddMMyyyy");
+                        big.DataCount = rowCount;
+                        big.FileName = file.FileName;
                         big.CreatedDate = DateTime.Now;
                         big.CreatedBy = accesser;
                         BusinessBase.Add(big);

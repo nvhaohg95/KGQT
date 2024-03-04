@@ -127,7 +127,7 @@
                                 </div>
                                 <div class="row px-2 mx-0 mb-2">
                                     <div class="col-md-4 col-sm-12">
-                                            <span>Khách hàng: @item.Username</span>
+                                        <span>Khách hàng: @item.Username</span>
                                     </div>
                                     @if (!string.IsNullOrEmpty(item.Phone))
                                     {
@@ -434,7 +434,10 @@
         let $moving = $('input[name="MovingMethod"]');
         let $wood = $('#txtFeePack');
         let $air = $('#txtAirPackage');
-
+        let $weightEx = $('#txtWeightEx');
+        let $length = $('#txtLength');
+        let $width = $('#txtWidth');
+        let $height = $('#txtHeight');
         if ($username.length) {
             username = $username.val()
             if (!username) {
@@ -467,11 +470,24 @@
                 return;
             }
         }
+        let data = {
+            id: this.packId,
+            username,
+            movingMethod: moving,
+            weight,
+            woodPrice: wood,
+            airPrice: air,
+            surCharge: surCharge,
+            weightExchange: $weightEx.val(),
+            length: $length.val(),
+            width: $width.val(),
+            height: $height.val()
+        }
         $.ajax({
             url: '/admin/Package/InStockPackage',
             method: 'POST',
             dataType: 'json',
-            data: { id: this.packId, username, moving, weight, woodPrice: wood, airPrice: air, surCharge },
+            data: { sData: JSON.stringify(data) },
             beforeSend: function () {
                 stopLoading();
             },

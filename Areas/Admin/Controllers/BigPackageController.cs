@@ -87,7 +87,14 @@ namespace KGQT.Areas.Admin.Controllers
                     }
                     i++;
                 }
+                ws.Cells["A" + (modelRows + 1)].Value = "Tổng cộng";
+                ws.Cells["D" + (modelRows + 1)].Value = data.Sum(x => x.Weight);
+                ws.Cells["F" + (modelRows + 1)].Value = data.Sum(x => x.WeightExchange);
                 ws.Cells["A1:G1"].Style.Fill.SetBackground(System.Drawing.Color.Blue);
+                ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Fill.SetBackground(System.Drawing.Color.Yellow);
+                ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Font.Bold = true;
+                ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Font.Color.SetColor(System.Drawing.Color.Red);
+
                 ws.Cells["A1:G1"].Style.Font.Bold = true;
                 ws.Cells["A1:G1"].Style.Font.Color.SetColor(System.Drawing.Color.White);
                 if (rows.Count > 0)
