@@ -8,6 +8,7 @@ using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
 using System.IO;
 
 namespace KGQT.Mobility
@@ -29,6 +30,24 @@ namespace KGQT.Mobility
         public object GetUser([FromQuery] string userName)
         {
             var result = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+            if (result == null) return null;
+            if (!string.IsNullOrEmpty(result.IMG))
+            {
+                var path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + result.IMG;
+                using (Image image = Image.FromFile(path))
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        image.Save(m, image.RawFormat);
+                        byte[] imageBytes = m.ToArray();
+
+                        // Convert byte[] to Base64 String
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        result.IMG = base64String;
+                    }
+                }
+            }
+            
             return result;
         }
 
