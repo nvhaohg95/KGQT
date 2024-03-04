@@ -38,7 +38,7 @@ namespace KGQT.Areas.Admin.Controllers
             string p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExportExcel");
             List<FileInfoModel> listFile = new List<FileInfoModel>();
             FileService.LoadFiles(p, listFile);
-            return View(listFile.OrderByDescending(x=>x.CreatedOn).ToList());
+            return View(listFile.OrderByDescending(x => x.CreatedOn).ToList());
         }
         public IActionResult Create()
         {
@@ -218,6 +218,17 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult AutoComplete(string s)
         {
             var data = BusinessBase.GetList<tbl_Account>(x => x.Username.Contains(s)).ToList();
+            return Json(data);
+        }
+        /// <summary>
+        /// Gợi ý file lô
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult BigPackageComplete(string s)
+        {
+            var data = BusinessBase.GetList<tbl_BigPackage>(x => x.ID.ToString() == s || x.BigPackageCode.Contains(s)).ToList();
             return Json(data);
         }
 
