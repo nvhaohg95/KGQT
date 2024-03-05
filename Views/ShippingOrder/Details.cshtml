@@ -270,7 +270,7 @@
                         <p class="text-muted mb-0">
                             <span class="fw-bold me-4">
                                 @(
-                                    Model.Order.Weight.HasValue ? Model.Order.Weight : 0
+                                    Model.Order.Weight.HasValue ? Converted.ToDouble(Model.Order.Weight) : 0
                                     )kg
                             </span>
                         </p>
