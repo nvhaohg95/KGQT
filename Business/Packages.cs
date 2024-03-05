@@ -85,6 +85,10 @@ namespace KGQT.Business
                         MovingMethod = p.pack.MovingMethod,
                         WeightReal = p.pack.WeightReal,
                         Weight = p.pack.Weight,
+                        WeightExchange = p.pack.WeightExchange,
+                        Width = p.pack.Width,
+                        Height = p.pack.Height,
+                        Length = p.pack.Length,
                         Username = p.pack.Username,
                         Phone = a != null && !string.IsNullOrEmpty(a.Phone) ? a.Phone : "",
                         OrderDate = p.pack.OrderDate,
@@ -473,7 +477,7 @@ namespace KGQT.Business
 
                     var lstPack = BusinessBase.GetList<tbl_Package>(x => x.TransID == check.ID);
 
-                    double totalWeight = lstPack.Sum(x=>x.WeightReal.Value);                    
+                    double totalWeight = lstPack.Sum(x => x.WeightReal.Value);
                     double totalWeightPrice = 0;
 
                     var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= totalWeight && totalWeight <= x.WeightTo);
@@ -506,7 +510,7 @@ namespace KGQT.Business
                 {
                     var weightRound = pack.WeightReal;
                     double feeWeight = 0;
-                    
+
                     if (weightRound < minOrder)
                     {
                         weightRound = minOrder;
@@ -551,7 +555,7 @@ namespace KGQT.Business
 
                         }
                         BusinessBase.TrackLog(pack.UID.Value, ship.ID, "{0} đã tạo đơn " + ship.ID + " với kiện " + pack.PackageCode + " vào đơn", 0, accessor);
-                        NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "ShippingOrder/Details/"+ship.ID, accessor);
+                        NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                     }
                 }
             }
@@ -605,7 +609,7 @@ namespace KGQT.Business
 
                         var rowCount = dt.Rows.Count;
 
-                        var exit = BusinessBase.Exist<tbl_BigPackage>(x=>x.FileName == file.FileName && x.DataCount == rowCount);
+                        var exit = BusinessBase.Exist<tbl_BigPackage>(x => x.FileName == file.FileName && x.DataCount == rowCount);
                         if (exit)
                         {
                             data.IsError = true;
