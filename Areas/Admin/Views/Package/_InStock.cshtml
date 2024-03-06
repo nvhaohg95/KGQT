@@ -33,30 +33,30 @@
         </div>
     }
     <div class="form-group mb-4">
-        <label class="required">Cân nặng:</label>
+        <label class="required">Cân nặng:(kg)</label>
         <input type="number" class="form-control" id="txtWeight">
     </div>
     @if (Model.IsWoodPackage == true)
     {
         <div class="form-group mb-4">
-            <label class="required" for="txtWoodPackage">Phí đóng gỗ:</label>
+            <label class="required" for="txtWoodPackage">Phí đóng gỗ:(VNĐ)</label>
             <input type="text" data-type="formatvnd" class="form-control" id="txtFeePack" value="@Model.WoodPackagePrice">
         </div>
     }
     @if (Model.IsAirPackage == true)
     {
         <div class="form-group mb-4">
-            <label class="required" for="txtAirPackage">Phí bọt khí:</label>
+            <label class="required" for="txtAirPackage">Phí bọt khí:(VNĐ)</label>
             <input type="text" data-type="formatvnd" class="form-control" id="txtAirPackage" value="@Model.AirPackagePrice">
         </div>
     }
     <div class="form-group mb-4">
-        <label class="required" for="txtAirPackage">Phí thu hộ:</label>
+        <label class="required" for="txtAirPackage">Phí thu hộ:(VNĐ)</label>
         <input type="text" data-type="formatvnd" class="form-control" id="txtSurCharge" value="@Model.SurCharge">
     </div>
     <div class="form-group mb-4">
         <label>Đo lên: (kg)</label>
-        <input id="txtWeightEx" class="form-control mb-0" value="@Model.WeightExchange" />&nbsp;Kg
+        <input id="txtWeightEx" class="form-control mb-0" value="@Model.WeightExchange" />
     </div>
     <div class="form-group mb-4 row">
         <div class="col-md-4">

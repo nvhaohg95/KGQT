@@ -23,7 +23,7 @@ namespace KGQT.Models
         /// <summary>
         /// 1: Đang chờ
         /// 2: Thành công
-        /// 3: Từ chối
+        /// 3: Hủy
         /// </summary>
         public int? Status { get; set; }
         /// <summary>

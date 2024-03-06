@@ -167,15 +167,11 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_Package");
 
-                entity.Property(e => e.AirPackagePrice).HasColumnType("decimal(18, 2)");
-
                 entity.Property(e => e.ComfirmDate).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.DateExpectation).HasMaxLength(150);
-
-                entity.Property(e => e.DeclarePrice).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.Email).HasMaxLength(100);
 
@@ -185,15 +181,9 @@ namespace KGQT.Models
                     .HasColumnType("datetime")
                     .HasComment("Chờ giao");
 
-                entity.Property(e => e.Height).HasColumnType("decimal(18, 2)");
-
                 entity.Property(e => e.ImportedSGWH)
                     .HasColumnType("datetime")
                     .HasComment("Ngày bắt đầu vận chuyển");
-
-                entity.Property(e => e.IsInsurancePrice).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.Length).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
@@ -207,27 +197,11 @@ namespace KGQT.Models
 
                 entity.Property(e => e.Status).HasComment("1. Chưa về\r\n2. Đã về\r\n3. Đã giao");
 
-                entity.Property(e => e.SurCharge).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.TotalPrice).HasColumnType("decimal(18, 2)");
-
                 entity.Property(e => e.TransportingToSGWH)
                     .HasColumnType("datetime")
                     .HasComment("Đang giao");
 
                 entity.Property(e => e.WareHouse).HasMaxLength(100);
-
-                entity.Property(e => e.Weight).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.WeightExchange).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.WeightPrice).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.WeightReal).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.Width).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.WoodPackagePrice).HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<tbl_Role>(entity =>
@@ -249,33 +223,17 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_ShippingOrder");
 
-                entity.Property(e => e.AirPackagePrice).HasColumnType("decimal(18, 2)");
-
                 entity.Property(e => e.ChinaExportDate).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Currency).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.DateExpectation).HasColumnType("datetime");
 
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
-                entity.Property(e => e.InsurancePrice).HasColumnType("decimal(18, 2)");
-
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ShippingMethodName).HasMaxLength(50);
-
-                entity.Property(e => e.SurCharge).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.TotalPrice).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.Weight).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.WeightPrice).HasColumnType("decimal(18, 2)");
-
-                entity.Property(e => e.WoodPackagePrice).HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<tbl_SystemLog>(entity =>

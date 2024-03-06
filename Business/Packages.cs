@@ -381,8 +381,8 @@ namespace KGQT.Business
             {
                 var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == data.Username.ToLower());
                 pack.Username = data.Username;
-                pack.UID = user.ID;
-                pack.FullName = user.FullName;
+                pack.UID = user?.ID;
+                pack.FullName = user?.FullName;
             }
 
             if (data.MovingMethod > 0 && pack.MovingMethod != data.MovingMethod)
@@ -444,15 +444,15 @@ namespace KGQT.Business
             var p = BusinessBase.Update(pack);
             if (p)
             {
-                BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với cân năng " + data.Weight + "kg", 0, accessor);
+                BusinessBase.TrackLog(pack.UID, pack.ID, "{0} đã nhập kho kiện với cân năng " + data.Weight + "kg", 0, accessor);
 
                 if (pack.IsAirPackage.HasValue && pack.IsAirPackage == true)
                 {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + data.AirPrice + "đ", 0, accessor);
+                    BusinessBase.TrackLog(pack.UID, pack.ID, "{0} đã nhập kho kiện với giá quấn bọt khí " + data.AirPrice + "đ", 0, accessor);
                 }
                 if (pack.IsWoodPackage.HasValue && pack.IsWoodPackage == true)
                 {
-                    BusinessBase.TrackLog(pack.UID.Value, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + data.WoodPrice + "đ", 0, accessor);
+                    BusinessBase.TrackLog(pack.UID, pack.ID, "{0} đã nhập kho kiện với giá đóng gỗ " + data.WoodPrice + "đ", 0, accessor);
                 }
 
                 //Ktra xem khach da co don chua.
@@ -551,10 +551,10 @@ namespace KGQT.Business
                             oPack.ModifiedBy = accessor;
                             oPack.ModifiedDate = DateTime.Now;
                             BusinessBase.Update(oPack);
-                            BusinessBase.TrackLog(oPack.UID.Value, oPack.ID, "{0} đã cập nhật mã vận đơn " + ship.ID + " vào kiện", 0, accessor);
+                            BusinessBase.TrackLog(oPack.UID, oPack.ID, "{0} đã cập nhật mã vận đơn " + ship.ID + " vào kiện", 0, accessor);
 
                         }
-                        BusinessBase.TrackLog(pack.UID.Value, ship.ID, "{0} đã tạo đơn " + ship.ID + " với kiện " + pack.PackageCode + " vào đơn", 0, accessor);
+                        BusinessBase.TrackLog(pack.UID, ship.ID, "{0} đã tạo đơn " + ship.ID + " với kiện " + pack.PackageCode + " vào đơn", 0, accessor);
                         NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                     }
                 }
@@ -624,122 +624,125 @@ namespace KGQT.Business
                         big.FileName = file.FileName;
                         big.CreatedDate = DateTime.Now;
                         big.CreatedBy = accesser;
-                        BusinessBase.Add(big);
-                        for (int row = 0; row < rowCount; row++)
+                        if (BusinessBase.Add(big))
                         {
-                            try
+                            for (int row = 0; row < rowCount; row++)
                             {
-                                string customer = dt.Rows[row][1].ToString();
-                                if (customer.IndexOf("-") > 0)
+                                try
                                 {
-                                    lstError.Add(new tempExport { Row = row, Column = 3 });
-                                    continue;
-                                }
-                                string code = dt.Rows[row][3].ToString();
-                                if (string.IsNullOrEmpty(code))
-                                {
-                                    lstError.Add(new tempExport { Row = row, Column = 3 });
-                                    continue;
-                                }
-
-                                int type = Converted.ToInt(dt.Rows[row][2].ToString());
-                                string note = dt.Rows[row][4].ToString();
-                                var date = DateTime.Parse(dt.Rows[row][0].ToString());
-                                var dateExp = DateTime.Now;
-                                if (date != null || date != DateTime.MinValue && type != null || type > 0)
-                                {
-                                    dateExp = date.AddDays(type);
-                                }
-                                var d = PJUtils.GetDeliveryDate(dateExp);
-                                var oExist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
-                                if (oExist != null)
-                                {
-                                    if (oExist.Status <= 3)
+                                    string customer = dt.Rows[row][1].ToString();
+                                    if (customer.IndexOf("-") > 0)
                                     {
-                                        oExist.Status = 3;
-                                        oExist.Note = note;
-                                        oExist.Status = 3;
-                                        oExist.OrderDate = date;
-                                        oExist.ExportedCNWH = date;
-                                        oExist.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
-                                        oExist.ModifiedDate = DateTime.Now;
-                                        oExist.ModifiedBy = accesser;
-                                        if (oExist.BigPackage == null || oExist.BigPackage < 0)
-                                            oExist.BigPackage = big.ID;
-                                        if (BusinessBase.Update(oExist)) success++;
-                                        else
-                                        {
-                                            lstError.Add(new tempExport { Row = row, Column = 3 });
-                                            err.Add(code);
-                                        }
+                                        lstError.Add(new tempExport { Row = row, Column = 3 });
+                                        continue;
                                     }
-                                    continue;
+                                    string code = dt.Rows[row][3].ToString();
+                                    if (string.IsNullOrEmpty(code))
+                                    {
+                                        lstError.Add(new tempExport { Row = row, Column = 3 });
+                                        continue;
+                                    }
+
+                                    int type = Converted.ToInt(dt.Rows[row][2].ToString());
+                                    string note = dt.Rows[row][4].ToString();
+                                    var date = DateTime.Parse(dt.Rows[row][0].ToString());
+                                    var dateExp = DateTime.Now;
+                                    if (date != null || date != DateTime.MinValue && type != null || type > 0)
+                                    {
+                                        dateExp = date.AddDays(type);
+                                    }
+                                    var d = PJUtils.GetDeliveryDate(dateExp);
+                                    var oExist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
+                                    if (oExist != null)
+                                    {
+                                        if (oExist.Status <= 3)
+                                        {
+                                            oExist.Status = 3;
+                                            oExist.Note = note;
+                                            oExist.Status = 3;
+                                            oExist.OrderDate = date;
+                                            oExist.ExportedCNWH = date;
+                                            oExist.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
+                                            oExist.ModifiedDate = DateTime.Now;
+                                            oExist.ModifiedBy = accesser;
+                                            if (oExist.BigPackage == null || oExist.BigPackage < 0)
+                                                oExist.BigPackage = big.ID;
+                                            if (BusinessBase.Update(oExist)) success++;
+                                            else
+                                            {
+                                                lstError.Add(new tempExport { Row = row, Column = 3 });
+                                                err.Add(code);
+                                            }
+                                        }
+                                        continue;
+                                    }
+
+
+                                    var p = new tbl_Package();
+                                    var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == customer.ToLower());
+                                    if (user != null)
+                                    {
+                                        p.Username = user.Username;
+                                        p.UID = user.ID;
+                                        p.FullName = user.FullName;
+                                    }
+
+                                    if (type == 3)
+                                        p.MovingMethod = 1;
+                                    if (type == 5)
+                                        p.MovingMethod = 2;
+                                    if (type == 8)
+                                        p.MovingMethod = 3;
+                                    if (type == 15)
+                                        p.MovingMethod = 4;
+                                    if (type == 20)
+                                        p.MovingMethod = 5;
+                                    p.PackageCode = code;
+                                    p.Note = note;
+                                    p.Status = 3;
+                                    p.Weight = 0;
+                                    p.WeightExchange = 0;
+                                    p.Height = 0;
+                                    p.Width = 0;
+                                    p.Length = 0;
+                                    p.WeightReal = 0;
+                                    p.OrderDate = date;
+                                    p.ExportedCNWH = date;
+                                    p.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
+                                    p.CreatedDate = DateTime.Now;
+                                    p.CreatedBy = accesser;
+                                    p.BigPackage = big.ID;
+                                    if (!BusinessBase.Add(p))
+                                    {
+                                        err.Add(code);
+                                        lstError.Add(new tempExport { Row = row, Column = 3 });
+                                    }
+                                    else
+                                        success++;
                                 }
-
-
-                                var p = new tbl_Package();
-                                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == customer.ToLower());
-                                if (user != null)
+                                catch (Exception ex)
                                 {
-                                    p.Username = user.Username;
-                                    p.UID = user.ID;
-                                    p.FullName = user.FullName;
-                                }
-
-                                if (type == 3)
-                                    p.MovingMethod = 1;
-                                if (type == 5)
-                                    p.MovingMethod = 2;
-                                if (type == 8)
-                                    p.MovingMethod = 3;
-                                if (type == 15)
-                                    p.MovingMethod = 4;
-                                if (type == 20)
-                                    p.MovingMethod = 5;
-                                p.PackageCode = code;
-                                p.Note = note;
-                                p.Status = 3;
-                                p.Weight = 0;
-                                p.WeightExchange = 0;
-                                p.Height = 0;
-                                p.Width = 0;
-                                p.Length = 0;
-                                p.WeightReal = 0;
-                                p.OrderDate = date;
-                                p.ExportedCNWH = date;
-                                p.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
-                                p.CreatedDate = DateTime.Now;
-                                p.CreatedBy = accesser;
-                                p.BigPackage = big.ID;
-                                if (!BusinessBase.Add(p))
-                                {
-                                    err.Add(code);
+                                    Log.Error("Import Excel", JsonConvert.SerializeObject(ex.Message));
                                     lstError.Add(new tempExport { Row = row, Column = 3 });
                                 }
-                                else
-                                    success++;
                             }
-                            catch (Exception ex)
+                            if (success > 0)
                             {
-                                Log.Error("Import Excel", JsonConvert.SerializeObject(ex.Message));
-                                lstError.Add(new tempExport { Row = row, Column = 3 });
+                                string sSuccess = string.Format("Đã thêm thành công {0} trong tổng số {1}", success, rowCount - 1);
+                                data.IsError = false;
+                                string error = string.Join("; ", err);
+                                data.Data = new { success = sSuccess, error = string.Join("; ", err) };
+                                MarkupValueExcel(stream, file.FileName, name, lstError);
+                                return data;
                             }
-                        }
-                        if (success > 0)
-                        {
-                            string sSuccess = string.Format("Đã thêm thành công {0} trong tổng số {1}", success, rowCount - 1);
-                            data.IsError = false;
-                            string error = string.Join("; ", err);
-                            data.Data = new { success = sSuccess, error = string.Join("; ", err) };
-                            MarkupValueExcel(stream, file.FileName, name, lstError);
-                            return data;
-                        }
-                        else
-                        {
-                            data.IsError = true;
-                            data.Message = "Thêm mới không thành công !";
-                            stream.Dispose();
-                            return data;
+                            else
+                            {
+                                BusinessBase.Remove(big);
+                                data.IsError = true;
+                                data.Message = "Thêm mới không thành công !";
+                                stream.Dispose();
+                                return data;
+                            }
                         }
                     }
                     data.IsError = true;
