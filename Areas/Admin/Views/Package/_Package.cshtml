@@ -1,200 +1,203 @@
-﻿@model KGQT.Models.tbl_Package
+﻿@model IEnumerable<KGQT.Models.tbl_Package>
 @using KGQT.Commons
 
 @if (Model != null)
 {
-    <div class="card shadow-0 border mb-4">
-        <div class="card-body p-0 py-2">
-            <div class="row mx-0 py-2 border-bottom bg-success text-white">
-                <div class="col-md-6 my-auto">
-                    <span class="cursor-pointer">
-                        <a href="/admin/package/details?id=@Model.ID">@Model.PackageCode</a>
-                        <span class="btn-copy" data-value="@Model.PackageCode">
-                            <i class="fa fa-copy"></i>
+    @foreach (var item in Model)
+    {
+        <div class="card shadow-0 border mb-4">
+            <div class="card-body p-0 py-2">
+                <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                    <div class="col-md-6 my-auto">
+                        <span class="cursor-pointer">
+                            <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                            <span class="btn-copy" data-value="@item.PackageCode">
+                                <i class="fa fa-copy"></i>
+                            </span>
                         </span>
-                    </span>
-                    <span class="mx-2"> - </span>
-                    <span>Kho nhận: @PJUtils.WareHouse(Model.WareHouse)</span>
+                        <span class="mx-2"> - </span>
+                        <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                    </div>
+                    <div class="col-md-3 my-auto">
+                        <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @item.OrderDate.Value.ToString("dd/MM/yyyy")</strong></span>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <button class="btn-sm btn bg-orange text-white mr-md-2" onclick="submitFn(@item.ID,@item.MovingMethod)">Cập nhật</button>
+                    </div>
                 </div>
-                <div class="col-md-3 my-auto">
-                    <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(Model.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
-                </div>
-                <div class="col-md-3 text-right">
-                    <button class="btn-sm btn bg-orange text-white mr-md-2" onclick="submitFn(@Model.ID,@Model.MovingMethod)">Cập nhật</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="row p-2 mx-0 mt-2">
-                        <div class="col-md-3 col-sm-12 col-xs-12">
-                            <span>Loại vận chuyển: @PJUtils.ShippingMethodName(Model.MovingMethod)</span>
-                        </div>
-                        <div class="col-md-4 col-sm-12 col-xs-12">
-                            <span>Trạng thái:</span>
-                            @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
-                        </div>
-                        <div class="col-md-5 col-sm-12 col-xs-12">
-                            Dịch vụ phụ:
-                            @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
-                            {
-                                <div class="form-check-inline">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row p-2 mx-0 mt-2">
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                            </div>
+                            <div class="col-md-4 col-sm-12 col-xs-12">
+                                <span>Trạng thái:</span>
+                                @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
+                            </div>
+                            <div class="col-md-5 col-sm-12 col-xs-12">
+                                Dịch vụ phụ:
+                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                {
+                                    <div class="form-check-inline">
 
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
-                                    </label>
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
+                                        </label>
+                                    </div>
+                                }
+                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                {
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
+                                        </label>
+                                    </div>
+                                }
+                                @if (item.IsInsurance != null && item.IsInsurance == true)
+                                {
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row px-2 mx-0 mb-2">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <span>Khách hàng:</span>
+                                    <div class="col-md-8">
+                                        <input id="txtUsername" class="form-control mb-0" value="@item.Username" />
+                                    </div>
                                 </div>
-                            }
-                            @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.Phone))
                             {
-                                <div class="form-check-inline">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
-                                    </label>
-                                </div>
-                            }
-                            @if (Model.IsInsurance != null && Model.IsInsurance == true)
-                            {
-                                <div class="form-check-inline">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
-                                    </label>
+                                <div class="col-md-6 d-flex align-Models-center">
+                                    <div class="form-group">
+                                        <i class="fa fa-phone"></i><span>@item.Phone</span>
+                                    </div>
                                 </div>
                             }
                         </div>
                     </div>
-                    <div class="row px-2 mx-0 mb-2">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center">
-                                <span>Khách hàng:</span>
-                                <div class="col-md-8">
-                                    <input id="txtUsername" class="form-control mb-0" value="@Model.Username" />
+                    <div class="col-md-4">
+                        <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                            @if (item.ReceivedDate != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+
+                            @if (item.ImportedSGWH != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+
+                            @if (!string.IsNullOrEmpty(item.DateExpectation))
+                            {
+                                <li class="ml-4">
+                                    <span>Đang trên đường về HCM - @item.DateExpectation</span>
+                                </li>
+                            }
+
+                            @if (item.ExportedCNWH != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="row m-0 mb-2 pt-2 border-top">
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="form-inline text-left">
+                                Cân nặng:  &nbsp;
+                                <input id="txtWeight" class="form-control mb-0" value="@item.Weight" /> &nbsp;Kg
+                            </div>
+                        </div>
+                    </div>
+                    @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                    {
+                        <div class="col-md-3">
+
+                            <div class="row">
+                                <div class="form-inline text-left">
+                                    Đóng gỗ:  &nbsp;
+                                    <input data-type="formatvnd" id="txtWoodPackage" class="form-control mb-0" value="@item.WoodPackagePrice" />  &nbsp; VNĐ
                                 </div>
                             </div>
                         </div>
-                        @if (!string.IsNullOrEmpty(Model.Phone))
-                        {
-                            <div class="col-md-6 d-flex align-Models-center">
-                                <div class="form-group">
-                                    <i class="fa fa-phone"></i><span>@Model.Phone</span>
+                    }
+                    @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                    {
+                        <div class="col-md-3">
+
+                            <div class="row">
+                                <div class="form-inline text-left">
+                                    Bọt khí:  &nbsp;
+                                    <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" value="@item.AirPackagePrice" />&nbsp; VNĐ
                                 </div>
                             </div>
-                        }
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
-                        @if (Model.ReceivedDate != null)
-                        {
-                            <li class="ml-4">
-                                <span>Đã nhận hàng - @Model.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
-                            </li>
-                        }
+                        </div>
+                    }
 
-                        @if (Model.ImportedSGWH != null)
-                        {
-                            <li class="ml-4">
-                                <span>Đã về kho HCM - @Model.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
-                            </li>
-                        }
-
-                        @if (!string.IsNullOrEmpty(Model.DateExpectation))
-                        {
-                            <li class="ml-4">
-                                <span>Đang trên đường về HCM - @Model.DateExpectation</span>
-                            </li>
-                        }
-
-                        @if (Model.ExportedCNWH != null)
-                        {
-                            <li class="ml-4">
-                                <span>Xuất kho Trung Quốc - @Model.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-            <div class="row m-0 mb-2 pt-2 border-top">
-                <div class="col-md-3">
-                    <div class="row">
-                        <div class="form-inline text-left">
-                            Cân nặng:  &nbsp;
-                            <input id="txtWeight" class="form-control mb-0" value="@Model.Weight" /> &nbsp;Kg
+                    <div class="col-md-3 align-self-center">
+                        <div class="row">
+                            <div class="form-inline text-left">
+                                Thu hộ:  &nbsp;
+                                <input data-type="formatvnd" id="txtSurCharge" class="form-control mb-0" value="@item.SurCharge" />&nbsp; VNĐ
+                            </div>
                         </div>
                     </div>
                 </div>
-                @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
-                {
+                <div class="row m-0 pt-2 border-top">
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="form-inline text-left">
+                                Đo lên:  &nbsp;
+                                <input id="txtWeightEx" class="form-control mb-0" value="@item.WeightExchange" />&nbsp;Kg
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-3">
 
                         <div class="row">
                             <div class="form-inline text-left">
-                                Đóng gỗ:  &nbsp;
-                                <input data-type="formatvnd" id="txtWoodPackage" class="form-control mb-0" value="@Model.WoodPackagePrice" />  &nbsp; VNĐ
+                                Dài:  &nbsp;
+                                <input id="txtLength" class="form-control mb-0" value="@item.Length" /> &nbsp;cm
                             </div>
                         </div>
                     </div>
-                }
-                @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
-                {
+
                     <div class="col-md-3">
 
                         <div class="row">
                             <div class="form-inline text-left">
-                                Bọt khí:  &nbsp;
-                                <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" value="@Model.AirPackagePrice" />&nbsp; VNĐ
+                                Rộng:  &nbsp;
+                                <input id="txtWidth" class="form-control mb-0" value="@item.Width" />&nbsp;cm
                             </div>
                         </div>
                     </div>
-                }
-
-                <div class="col-md-3 align-self-center">
-                    <div class="row">
-                        <div class="form-inline text-left">
-                            Thu hộ:  &nbsp;
-                            <input data-type="formatvnd" id="txtSurCharge" class="form-control mb-0" value="@Model.SurCharge" />&nbsp; VNĐ
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row m-0 pt-2 border-top">
-                <div class="col-md-3">
-                    <div class="row">
-                        <div class="form-inline text-left">
-                            Đo lên:  &nbsp;
-                            <input id="txtWeightEx" class="form-control mb-0" value="@Model.WeightExchange" />&nbsp;Kg
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-
-                    <div class="row">
-                        <div class="form-inline text-left">
-                            Dài:  &nbsp;
-                            <input id="txtLength" class="form-control mb-0" value="@Model.Length" /> &nbsp;cm
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-
-                    <div class="row">
-                        <div class="form-inline text-left">
-                            Rộng:  &nbsp;
-                            <input id="txtWidth" class="form-control mb-0" value="@Model.Width" />&nbsp;cm
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 align-self-center">
-                    <div class="row">
-                        <div class="form-inline text-left">
-                            Cao:  &nbsp;
-                            <input id="txtHeight" class="form-control mb-0" value="@Model.Height" />&nbsp;cm
+                    <div class="col-md-3 align-self-center">
+                        <div class="row">
+                            <div class="form-inline text-left">
+                                Cao:  &nbsp;
+                                <input id="txtHeight" class="form-control mb-0" value="@item.Height" />&nbsp;cm
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 }
 else
 {

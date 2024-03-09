@@ -76,7 +76,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult PackagePartial(string code)
         {
-            var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower().Contains(code.ToLower()));
+            var package = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.ToLower().Contains(code.ToLower())).ToList();
             return PartialView("_Package", package);
         }
 
