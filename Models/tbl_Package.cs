@@ -7,8 +7,8 @@ namespace KGQT.Models
     {
         public int ID { get; set; }
         public string PackageCode { get; set; } = null!;
-        public int TransID { get; set; }
-        public int BigPackage { get; set; }
+        public int? BigPackage { get; set; }
+        public int? TransID { get; set; }
         public string? Barcode { get; set; }
         /// <summary>
         /// 1. Chưa về

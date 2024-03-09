@@ -61,6 +61,8 @@ namespace KGQT.Areas.Admin.Controllers
             var model = new OrderDetails();
             model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             model.Packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+            if (model.Order != null)
+                model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username == model.Order.Username);
             return View(model);
         }
         #endregion
@@ -133,7 +135,7 @@ namespace KGQT.Areas.Admin.Controllers
 
             var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == oOrder.Username);
 
-            if (oUser == null) return new { error = true, mssg ="Không tìm thấy thông tin khách hàng" };
+            if (oUser == null) return new { error = true, mssg = "Không tìm thấy thông tin khách hàng" };
 
             bool check = oUser.Wallet > oOrder.TotalPrice;
             if (check)
@@ -189,6 +191,39 @@ namespace KGQT.Areas.Admin.Controllers
                 return new { error = true, mssg = string.Format("{0:N0}đ", pay).Replace(",", ".") };
             }
             return false;
+        }
+
+
+        [HttpPost]
+        public object receiver(int id)
+        {
+            if (id == 0) return false;
+            var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            if (oOrder == null) return new { error = true, mssg = "Không tìm thấy thông tin đơn" };
+
+            if (oOrder.Status == 2) return new { error = true, mssg = "Đơn này đã thanh toán rồi" };
+
+            var username = HttpContext.Session.GetString("user");
+
+            oOrder.Status = 2;
+            oOrder.ModifiedBy = username;
+            oOrder.ModifiedDate = DateTime.Now;
+
+            var s = BusinessBase.Update(oOrder);
+            if (s)
+            {
+                var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+                foreach (var pack in packs)
+                {
+                    pack.Status = 5;
+                    pack.ModifiedBy = username;
+                    pack.ModifiedDate = DateTime.Now;
+                    BusinessBase.Update(pack);
+
+                    BusinessBase.TrackLog(null, pack.ID, $"{oOrder.Username} đã nhận kiện {1}", 1, oOrder.Username);
+                }
+            }
+            return new { error = false};
         }
 
         // POST: ShippingOrderController/Create

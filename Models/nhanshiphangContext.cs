@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using KGQT.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using KGQT.Models;
 
 namespace KGQT.Models
 {
@@ -38,7 +37,6 @@ namespace KGQT.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer(Config.Connections["KGQT"]);
             }
         }
@@ -48,6 +46,8 @@ namespace KGQT.Models
             modelBuilder.Entity<tbl_Account>(entity =>
             {
                 entity.ToTable("tbl_Account");
+
+                entity.Property(e => e.BirthDay).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(50);
 
@@ -89,6 +89,8 @@ namespace KGQT.Models
                 entity.Property(e => e.BigPackageDateExport).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.FileName).HasMaxLength(250);
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             });
@@ -141,6 +143,8 @@ namespace KGQT.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.Status).HasComment("0:chưa active; 1:active");
+
                 entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n");
 
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
@@ -166,6 +170,8 @@ namespace KGQT.Models
                 entity.Property(e => e.ComfirmDate).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.DateExpectation).HasMaxLength(150);
 
                 entity.Property(e => e.Email).HasMaxLength(100);
 
@@ -296,7 +302,5 @@ namespace KGQT.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-        public DbSet<KGQT.Models.tbl_Posts>? tbl_Posts { get; set; }
     }
 }

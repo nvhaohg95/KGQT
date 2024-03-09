@@ -41,8 +41,6 @@ namespace KGQT.Models
         public int? SuportID { get; set; }
         public bool? IsWait { get; set; }
         public int? ComplainID { get; set; }
-        // đường dẫn trỏ tới nghiệp vụ
         public string? Url { get; set; }
-
     }
 }

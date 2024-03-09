@@ -22,11 +22,17 @@
                     </h2>
                     <div class="px-0 pt-2 col-md-12"><span>Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))</div>
                     <div class="px-0 pt-2 col-md-12 row">
-                        <div class="col-md-4">Khách hàng: <strong>@Model.Order.FirstName</strong></div>
-                        <div class="col-md-4"><i class="fa fa-phone px-2"></i><strong>@Model.Order.Phone</strong></div>
-                        <div class="col-md-4"><i class="fa fa-mail-bulk px-2"></i><strong>@Model.Order.Email</strong></div>
+                        <div class="col-md-4">Khách hàng: <strong>@(Model.Order.FirstName ?? Model.Order.Username)</strong></div>
+                        @if (!string.IsNullOrEmpty(Model.Order.Phone))
+                        {
+                            <div class="col-md-4"><i class="fa fa-phone px-2"></i><strong>@Model.Order.Phone</strong></div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Order.Phone))
+                        {
+                            <div class="col-md-4"><i class="fa fa-mail-bulk px-2"></i><strong>@Model.Order.Email</strong></div>
+                        }
                     </div>
-                    <div class="col-md-12 row">
+                    <div class="px-0 col-md-12 row">
                         <span>Địa chỉ:</span><span>@Model.Order.Address</span>
                     </div>
                 </div>
@@ -194,38 +200,68 @@
                                 </div>
                             </div>
                             <div class="row p-2 mx-0 my-2">
-                                <div class="col-md-3">
+                                <div class="col-md-4 col-sm-12">
                                     <div class="form-inline text-left">
-                                        Cân nặng:  &nbsp;<p class=" mb-0">@(item.WeightReal ?? 0)kg</p>
+                                        Cân nặng:  &nbsp;
+                                        <p class=" mb-0">
+                                            @(item.Weight)kg
+                                        </p>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                    {
+                                @if (item.WeightExchange != null && item.WeightExchange > 0)
+                                {
+                                    <div class="col-md-4 col-sm-12">
+
+                                        <div class="form-inline text-left">
+                                            Đo lên:  &nbsp;
+                                            <p class=" mb-0">   (@(item.Length + "x" + item.Width + "x" + item.Height)) @(item.WeightExchange)kg</p>
+                                        </div>
+                                    </div>
+                                }
+                                @if (item.SurCharge != null)
+                                {
+                                    <div class="col-md-4 col-sm-12">
+
+                                        <div class="form-inline text-left">
+                                            Phụ phí:  &nbsp;
+                                            <p class=" mb-0">@Converted.Double2Money(item.SurCharge)đ</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="row p-2 mx-0 my-2">
+                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                {
+                                    <div class="col-md-4 col-sm-12">
+
                                         <div class="form-inline text-left">
                                             Phí đóng gỗ: &nbsp;
-                                            <p class=" mb-0"> @string.Format("{0:N0}",item.WoodPackagePrice != null ? item.WoodPackagePrice : 0).Replace(",", ".")đ </p>
+                                            <p class=" mb-0">@Converted.Double2Money(item.WoodPackagePrice)đ </p>
                                         </div>
-                                    }
-                                </div>
-                                <div class="col-md-2">
-                                    @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                    {
+
+                                    </div>
+                                }
+                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                {
+                                    <div class="col-md-4 col-sm-12">
+
                                         <div class="form-inline text-left">
                                             Phí bọt khí:  &nbsp;
-                                            <p class=" mb-0">@string.Format("{0:N0}",item.AirPackagePrice != null ? item.AirPackagePrice : 0).Replace(",", ".")đ</p>
+                                            <p class=" mb-0">@Converted.Double2Money(item.AirPackagePrice)đ</p>
                                         </div>
-                                    }
-                                </div>
-                                <div class="col-md-2">
-                                    @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                    {
+                                    </div>
+                                }
+                                @if (item.IsInsurance != null && item.IsInsurance == true)
+                                {
+                                    <div class="col-md-4 col-sm-12">
+
                                         <div class="form-inline text-left">
                                             Phí bảo hiểm:  &nbsp;
-                                            <p class=" mb-0">@string.Format("{0:N0}",item.IsInsurancePrice != null ? item.IsInsurancePrice : 0).Replace(",", ".")đ</p>
+                                            <p class=" mb-0">@Converted.Double2Money(item.IsInsurancePrice)đ</p>
                                         </div>
-                                    }
-                                </div>
+
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -238,7 +274,7 @@
                 </div>
                 <div class="d-flex justify-content-between pt-2">
                     <p class="text-muted mb-0">Cân nặng:</p>
-                    <p class="text-muted mb-0"><span class="fw-bold me-4">@(Model.Order.Weight.HasValue ? Model.Order.Weight : 0)kg</span></p>
+                    <p class="text-muted mb-0"><span class="fw-bold me-4">@(Model.Order.Weight.HasValue ? Converted.ToDouble(Model.Order.Weight) : 0)kg</span></p>
                 </div>
                 <div class="d-flex justify-content-between pt-2">
                     <p class="text-muted mb-0">Phí vận chuyển:</p>
@@ -276,9 +312,18 @@
         </div>
         @if (Model.Order.Status == 1)
         {
-            <div class="w-100 py-2">
-                <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
-            </div>
+            @if (Model.User == null)
+            {
+                <div class="w-100 py-2">
+                    <button type="button" class="btn btn-success  py-2 w-100" onclick="receiver()">Nhận hàng</button>
+                </div>
+            }
+            else
+            {
+                <div class="w-100 py-2">
+                    <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
+                </div>
+            }
         }
     </div>
 </div>
@@ -337,6 +382,28 @@
                         helper.showErr(res.mssg);
                     else
                         helper.showSuc('Thanh toán thành công!');
+                }
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    } 
+    
+    function receiver() {
+        $.ajax({
+            url: '/admin/shippingOrder/receiver',
+            type: 'Post',
+            data: { id: @Model.Order.ID },
+            // other AJAX options here
+            success: function (res) {
+                if (!res)
+                    helper.showErr('Lỗi!');
+                else {
+                    if (res.error)
+                        helper.showErr(res.mssg);
+                    else
+                        helper.showSuc('Đã nhận hàng!');
                 }
             },
             error: function (xhr, status, err) {

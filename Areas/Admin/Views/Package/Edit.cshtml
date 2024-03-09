@@ -104,6 +104,10 @@
                     <label class="required" for="txtShipID">Thu hộ</label>
                     <input type="text" class="form-control" id="txtSurCharge" data-type="formatvnd" onkeyup="format(this)" value="@Model.SurCharge" name="SurCharge" placeholder="Nhập mã vận đơn">
                 </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtShipID">Mã file lô</label>
+                    <input type="text" class="form-control" id="txtBigPackage" name="BigPackage" placeholder="Nhập mã file lô" value="@Model.BigPackage">
+                </div>
                 <div class="form-group mb-2">
                     <label class="mb-0">Trạng thái</label>
                 </div>
@@ -162,7 +166,44 @@
             return $("<li>")
                 .append("<div>" + item.username + " - " + item.email + "</div>")
                 .appendTo(ul);
-        };;
+        };
+
+        $('#txtBigPackage').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/package/BigPackageComplete',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
+                    success: function (data) {
+                        response(data);
+                    },
+                    complete: function () {
+                        stopLoading(true);
+                    },
+                });
+            },
+            minLength: 1,
+            delay: 300,
+            select: function (event, ui) {
+                $(this).val(ui.item.id);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.id + " - " + item.bigPackageCode + "</div>")
+                .appendTo(ul);
+        };
 
         setTimeout(() => {
             var inputMoney = document.querySelectorAll('[data-type="formatvnd"]');

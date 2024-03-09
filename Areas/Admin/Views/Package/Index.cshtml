@@ -114,20 +114,35 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="row p-2 mx-0 mt-2">
-                                    <div class="col-md-4 col-sm-12 col-xs-12">
+                                    <div class="col-md-3 col-sm-12 col-xs-12">
                                         <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
                                     </div>
-                                    <div class="col-md-4 col-sm-12 col-xs-12">
+                                    <div class="col-md-3 col-sm-12 col-xs-12">
                                         <span>Trạng thái:</span>
                                         @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                                     </div>
-                                    <div class="col-md-4 col-sm-12 col-xs-12">
-                                        Cân nặng: @(item.WeightReal ?? 0)kg
+                                    <div class="col-md-3 col-sm-12 col-xs-12">
+                                        Cân nặng: @(item.Weight)kg
                                     </div>
+                                    @if (item.WeightExchange > 0)
+                                    {
+                                        <div class="col-md-3 col-sm-12 col-xs-12">
+                                            @if (item.Length > 0 && item.Width > 0 && item.Height > 0)
+                                            {
+                                                <span>
+                                                Đo lên:
+                                                            (@(
+                                                            item.Length + "x" + item.Width + "x" + item.Height
+                                                            ))
+                                                </span>
+                                            }
+                                            @(item.WeightExchange )kg
+                                        </div>
+                                    }
                                 </div>
                                 <div class="row px-2 mx-0 mb-2">
                                     <div class="col-md-4 col-sm-12">
-                                            <span>Khách hàng: @item.Username</span>
+                                        <span>Khách hàng: @item.Username</span>
                                     </div>
                                     @if (!string.IsNullOrEmpty(item.Phone))
                                     {
@@ -434,7 +449,10 @@
         let $moving = $('input[name="MovingMethod"]');
         let $wood = $('#txtFeePack');
         let $air = $('#txtAirPackage');
-
+        let $weightEx = $('#txtWeightEx');
+        let $length = $('#txtLength');
+        let $width = $('#txtWidth');
+        let $height = $('#txtHeight');
         if ($username.length) {
             username = $username.val()
             if (!username) {
@@ -467,11 +485,24 @@
                 return;
             }
         }
+        let data = {
+            id: this.packId,
+            username,
+            movingMethod: moving,
+            weight,
+            woodPrice: wood,
+            airPrice: air,
+            surCharge: surCharge,
+            weightExchange: $weightEx.val(),
+            length: $length.val(),
+            width: $width.val(),
+            height: $height.val()
+        }
         $.ajax({
             url: '/admin/Package/InStockPackage',
             method: 'POST',
             dataType: 'json',
-            data: { id: this.packId, username, moving, weight, woodPrice: wood, airPrice: air, surCharge },
+            data: { sData: JSON.stringify(data) },
             beforeSend: function () {
                 stopLoading();
             },

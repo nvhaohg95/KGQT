@@ -73,6 +73,9 @@
                                         Mã file lô
                                     </th>
                                     <th class="text-center" scope="col">
+                                        Tên file
+                                    </th>
+                                    <th class="text-center" scope="col">
                                         Ngày nhập
                                     </th>
                                     <th class="text-center">
@@ -86,6 +89,8 @@
                                 {
                                     <tr class="table-light font-weight-normal">
                                         <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.ID)
+                                        </td><td class="text-center">
                                             @Html.DisplayFor(modelItem => item.BigPackageCode)
                                         </td>
                                         <td class="text-center">
