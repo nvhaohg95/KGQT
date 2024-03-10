@@ -2,7 +2,7 @@
 
 namespace KGQT.Business
 {
-    public class BigPackage
+    public class BigPackageBusiness
     {
         #region Get
         public static object[] GetPage(string code, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)

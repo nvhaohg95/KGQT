@@ -86,7 +86,7 @@ namespace KGQT.Controllers
             if (id == 0) return false;
             var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             if (oOrder == null) return new { error = true, mssg = "Không tìm thấy thông tin đơn" };
-         
+
             if (oOrder.Status == 2) return new { error = true, mssg = "Đơn này đã thanh toán rồi" };
 
             var username = HttpContext.Session.GetString("user");
@@ -94,8 +94,8 @@ namespace KGQT.Controllers
             var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == username);
 
             if (oUser == null) return new { error = true, mssg = "Không tìm thấy thông tin khách hàng" };
-
-            bool check = oUser.Wallet > oOrder.TotalPrice;
+            double totalPrice = Converted.ToDouble(oOrder.TotalPrice);
+            bool check = oUser.Wallet > totalPrice;
             if (check)
             {
                 oOrder.Status = 2;
@@ -106,13 +106,13 @@ namespace KGQT.Controllers
                 if (s)
                 {
                     oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
-                    var pay = oUser.Wallet - oOrder.TotalPrice;
+                    var pay = oUser.Wallet - totalPrice;
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);
 
                     #region Logs
                     BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice.Value, 1, 1, pay.Value, username);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", totalPrice, 1, 1, pay.Value, username);
                     #endregion
 
                     var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
@@ -130,8 +130,8 @@ namespace KGQT.Controllers
             }
             else
             {
-                var pay = oOrder.TotalPrice - oUser.Wallet;
-                return new { error = true, mssg = "Tài khoản không đủ tiền, cần phải nạp thêm " + string.Format("{0:N0}đ", pay).Replace(",", ".") };
+                var pay = totalPrice - oUser.Wallet;
+                return new { error = true, mssg = "Tài khoản không đủ tiền, cần phải nạp thêm " + Converted.Double2Money(pay) };
             }
             return false;
         }

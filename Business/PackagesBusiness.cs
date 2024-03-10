@@ -23,7 +23,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace KGQT.Business
 {
-    public static class Packages
+    public static class PackagesBusiness
     {
         #region Select
         public static object[] GetAllStatus(string username)
@@ -206,13 +206,17 @@ namespace KGQT.Business
             var user = AccountBusiness.GetInfo(-1, model.Username);
             model.Status = 1;
             model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            model.UID = user.ID;
 
-            model.Username = user.Username;
-            model.FullName = user.FullName;
-            model.Phone = user.Phone;
-            model.Email = user.Email;
-            model.Address = user.Address;
+            if (user != null)
+            {
+                model.UID = user.ID;
+                model.Username = user.Username;
+                model.FullName = user.FullName;
+                model.Phone = user.Phone;
+                model.Email = user.Email;
+                model.Address = user.Address;
+            }
+
             model.OrderDate = DateTime.Now;
             model.CreatedDate = DateTime.Now;
             model.CreatedBy = userLogin;
@@ -229,7 +233,7 @@ namespace KGQT.Business
 
             var s = BusinessBase.Add(model);
             if (s)
-                BusinessBase.TrackLog(user.ID, model.ID, "{0} đã tạo kiện", 0, user.Username);
+                BusinessBase.TrackLog(null, model.ID, "{0} đã tạo kiện", 0, user.Username);
             return s;
         }
 
@@ -325,11 +329,12 @@ namespace KGQT.Business
                 if (!string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
                 {
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == form.Username.ToLower());
-                    if (user == null) return false;
-
-                    p.Username = user.Username;
-                    p.UID = user.ID;
-                    p.FullName = user.FullName;
+                    if (user != null)
+                    {
+                        p.Username = user.Username;
+                        p.UID = user.ID;
+                        p.FullName = user.FullName;
+                    }
                 }
                 p.BigPackage = form.BigPackage;
                 p.PackageCode = form.PackageCode;
@@ -495,12 +500,12 @@ namespace KGQT.Business
                     double totalCharge = lstPack.Sum(x => Convert.ToDouble(x.SurCharge));
 
                     var totalPrice = totalWeightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
-                    check.Weight = totalWeight;
-                    check.WeightPrice = totalWeightPrice;
-                    check.WoodPackagePrice = totalWoodPrice;
-                    check.AirPackagePrice = totalAirPrice;
-                    check.InsurancePrice = totalInsurPrice;
-                    check.TotalPrice = totalPrice;
+                    check.Weight = totalWeight.ToString();
+                    check.WeightPrice = totalWeightPrice.ToString();
+                    check.WoodPackagePrice = totalWoodPrice.ToString();
+                    check.AirPackagePrice = totalAirPrice.ToString();
+                    check.InsurancePrice = totalInsurPrice.ToString();
+                    check.TotalPrice = totalPrice.ToString();
                     check.ModifiedBy = accessor;
                     check.ModifiedDate = DateTime.Now;
                     var oUpdate = BusinessBase.Update(check);
@@ -527,16 +532,16 @@ namespace KGQT.Business
                     ship.Phone = pack.Phone;
                     ship.ShippingMethod = pack.MovingMethod;
                     ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
-                    ship.Weight = pack.WeightReal;
-                    ship.WeightPrice = feeWeight;
+                    ship.Weight = pack.WeightReal.ToString()    ;
+                    ship.WeightPrice = feeWeight.ToString();
                     ship.IsAirPackage = pack.IsAirPackage;
-                    ship.AirPackagePrice = pack.AirPackagePrice ?? 0;
+                    ship.AirPackagePrice =Converted.Double2String(pack.AirPackagePrice);
                     ship.IsWoodPackage = pack.IsWoodPackage;
-                    ship.WoodPackagePrice = pack.WoodPackagePrice ?? 0;
+                    ship.WoodPackagePrice = Converted.Double2String(pack.WoodPackagePrice);
                     ship.IsInsurance = pack.IsInsurance;
-                    ship.InsurancePrice = pack.IsInsurancePrice ?? 0;
-                    ship.SurCharge = pack.SurCharge ?? 0;
-                    ship.TotalPrice = ship.WeightPrice.Value + ship.AirPackagePrice + ship.WoodPackagePrice + ship.InsurancePrice + ship.SurCharge;
+                    ship.InsurancePrice = Converted.Double2String(pack.IsInsurancePrice);
+                    ship.SurCharge = Converted.Double2String(pack.SurCharge);
+                    ship.TotalPrice = Converted.Double2String(feeWeight + pack.AirPackagePrice + pack.WoodPackagePrice + pack.IsInsurancePrice + pack.SurCharge);
                     ship.Status = 1;
                     ship.ChinaExportDate = pack.ExportedCNWH;
                     ship.CreatedDate = DateTime.Now;

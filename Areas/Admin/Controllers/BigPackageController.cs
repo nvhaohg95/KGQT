@@ -14,7 +14,7 @@ namespace KGQT.Areas.Admin.Controllers
     {
         public IActionResult Index(string code, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
-            var oData = BigPackage.GetPage(code, fromDate, toDate, page, pageSize);
+            var oData = BigPackageBusiness.GetPage(code, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_BigPackage>;
             int totalRecord = (int)oData[1];
             int totalPage = (int)oData[2];
@@ -30,7 +30,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult Detail(int id)
         {
             if (id == null || id < 0) return BadRequest();
-            var data = Packages.GetByBigPackage(id);
+            var data = PackagesBusiness.GetByBigPackage(id);
             return View(data);
         }
 
@@ -38,7 +38,7 @@ namespace KGQT.Areas.Admin.Controllers
         public FileResult GenerateExcel(int id)
         {
             var big = BusinessBase.GetOne<tbl_BigPackage>(x => x.ID == id);
-            var data = Packages.GetByBigPackage(id);
+            var data = PackagesBusiness.GetByBigPackage(id);
             if (data == null) return null;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (ExcelPackage excel = new ExcelPackage())

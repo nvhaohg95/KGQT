@@ -269,35 +269,33 @@
                         <p class="text-muted mb-0">Cân nặng:</p>
                         <p class="text-muted mb-0">
                             <span class="fw-bold me-4">
-                                @(
-                                    Model.Order.Weight.HasValue ? Converted.ToDouble(Model.Order.Weight) : 0
-                                    )kg
+                                @Converted.ToDouble(Model.Order.Weight)kg
                             </span>
                         </p>
                     </div>
                     <div class="d-flex justify-content-between pt-2">
                         <p class="text-muted mb-0">Phí vận chuyển:</p>
-                        <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.WeightPrice.HasValue ? Model.Order.WeightPrice : 0).Replace(",", ".")đ</span></p>
+                        <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.WeightPrice)đ</span></p>
                     </div>
                     @if (Model.Order.IsWoodPackage != null && Model.Order.IsWoodPackage == true)
                     {
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí đóng gỗ:</p>
-                            <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.WoodPackagePrice.HasValue ? Model.Order.WoodPackagePrice : 0).Replace(",", ".")đ</span></p>
+                            <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.WoodPackagePrice)đ</span></p>
                         </div>
                     }
                     @if (Model.Order.IsAirPackage != null && Model.Order.IsAirPackage == true)
                     {
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí bọt khí:</p>
-                            <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.AirPackagePrice.HasValue ? Model.Order.AirPackagePrice : 0).Replace(",", ".")đ</span></p>
+                            <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.AirPackagePrice)đ</span></p>
                         </div>
                     }
                     @if (Model.Order.IsInsurance != null && Model.Order.IsInsurance == true)
                     {
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí bảo hiểm:</p>
-                            <p class="text-muted mb-0"><span class="fw-bold me-4">@string.Format("{0:N0}",Model.Order.InsurancePrice.HasValue ? Model.Order.InsurancePrice : 0).Replace(",", ".")đ</span></p>
+                            <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.InsurancePrice)đ</span></p>
                         </div>
                     }
                     <!--End::Thông tin đơn-->
@@ -305,7 +303,7 @@
                 <div class="card-footer border-0 rounded-bottom"
                      style="background-color: #008cd0;">
                     <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
-                        Tổng tiền:   <span class="h2 mb-0 ms-2">@string.Format("{0:N0}",Model.Order.TotalPrice.HasValue ? Model.Order.TotalPrice : 0).Replace(",", ".")đ</span>
+                        Tổng tiền:   <span class="h2 mb-0 ms-2">@Converted.String2Money(Model.Order.TotalPrice)đ</span>
                     </h5>
                 </div>
             </div>

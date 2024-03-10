@@ -17,21 +17,21 @@ namespace KGQT.Models
         public string? ShippingMethodName { get; set; }
         public int? PaymentMethod { get; set; }
         public int Status { get; set; }
-        public double? Weight { get; set; }
-        public double? WeightPrice { get; set; }
+        public string Weight { get; set; }
+        public string WeightPrice { get; set; }
         public bool? IsWoodPackage { get; set; }
-        public double? WoodPackagePrice { get; set; }
+        public string WoodPackagePrice { get; set; }
         public bool? IsAirPackage { get; set; }
-        public double? AirPackagePrice { get; set; }
+        public string AirPackagePrice { get; set; }
         public bool? IsInsurance { get; set; }
-        public double? InsurancePrice { get; set; }
-        public double? SurCharge { get; set; }
-        public double? TotalPrice { get; set; }
-        public double? Currency { get; set; }
+        public string InsurancePrice { get; set; }
+        public string SurCharge { get; set; }
+        public string TotalPrice { get; set; }
+        public string Currency { get; set; }
         public DateTime? DateExpectation { get; set; }
         public DateTime? DateExpectationEdit { get; set; }
         public DateTime? ChinaExportDate { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }

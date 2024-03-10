@@ -90,11 +90,11 @@
                     </div>
                 </div>
                 <div class="form-group mb-4">
-                    <label class="required" for="txtShipID">Thu hộ</label>
-                    <input type="text" class="form-control" data-type="formatvnd" id="txtSurCharge" onkeyup="format(this)" name="SurCharge" placeholder="Nhập mã vận đơn">
+                    <label for="txtShipID">Thu hộ</label>
+                    <input type="text" class="form-control" data-type="formatvnd" id="txtSurCharge" onkeyup="format(this)" name="SurCharge" placeholder="Nhập số tiền">
                 </div>
                 <div class="form-group mb-4">
-                    <label class="required" for="txtShipID">Mã file lô</label>
+                    <label  for="txtShipID">Mã file lô</label>
                     <input type="text" class="form-control" id="txtBigPackage" name="BigPackage" placeholder="Nhập mã file lô">
                 </div>
                 <div class="col-md-12 col-sm-12 col-lg-12 text-center">
@@ -115,15 +115,9 @@
                     data: {
                         s: request.term
                     },
-                    beforeSend: function () {
-                        stopLoading();
-                    },
                     success: function (data) {
                         response(data);
-                    },
-                    complete: function () {
-                        stopLoading(true);
-                    },
+                    }
                 });
             },
             minLength: 3,
@@ -152,15 +146,9 @@
                     data: {
                         s: request.term
                     },
-                    beforeSend: function () {
-                        stopLoading();
-                    },
                     success: function (data) {
                         response(data);
-                    },
-                    complete: function () {
-                        stopLoading(true);
-                    },
+                    }
                 });
             },
             minLength: 1,
