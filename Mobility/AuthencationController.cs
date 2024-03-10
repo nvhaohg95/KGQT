@@ -471,7 +471,7 @@ namespace KGQT.Mobility
             int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
             var user = AccountBusiness.GetInfo(-1, userName);
             var oData = NotificationBusiness.GetPage(user.ID, status, null, null, pageNum, pageSize);
-            return new object[] { true, oData };
+            return new object[] { false, oData };
         }
         #endregion
 
