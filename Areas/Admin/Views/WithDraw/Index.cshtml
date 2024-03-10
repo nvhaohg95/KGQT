@@ -8,6 +8,7 @@
     ViewData["Title"] = "Nạp tiền";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     int status = ViewBag.status;
+    string userName = ViewBag.userName;
     DateTime? fromDate = ViewBag.fromDate;
     DateTime? toDate = ViewBag.toDate;
     int pageCurrent = ViewBag.pageCurrent;
@@ -15,61 +16,55 @@
     int numberRecord = ViewBag.numberRecord;
 }
 
-<div class="row mb-2">
-    <ul id="breadcrumbs">
-        <li><a>Quản lý giao dịch</a></li>
-        <li><a class="active">Nạp tiền</a></li>
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a>Quản lý giao dịch</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Nạp tiền</a></li>
     </ul>
 </div>
-<div class="row bg-white p-2">
-    <div class="col-lg-12 col-md-12 col-sm-12">
-        <form class="row" id="myform">
-            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
-                <p class="fw-bold m-0">Từ ngày:</p>
+<div class="row p-2 mb-2 w-100">
+    <div class="col-12">
+        <form class="row align-items-center align-items-stretch" id="myform">
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <p class="m-0">Khách hàng:</p>
+                @Html.TextBoxFor(model => userName, "", new { @type="text", @class="form-control w-100", @placeholder="Nhập mã định danh" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12">
+                <p class="m-0">Từ ngày:</p>
                 @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
-                <p class="fw-bold m-0">Đến ngày:</p>
+            <div class="col-lg-2 col-md-2 col-sm-12">
+                <p class="m-0">Đến ngày:</p>
                 @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
-                <p class="fw-bold m-0">Trạng thái:</p>
+            <div class="col-lg-2 col-md-2 col-sm-12">
+                <p class="m-0">Trạng thái:</p>
                 <select name="status" id="status" class="form-control">
                     <option value="" @(status == 0 ? "selected" : "")>Tất cả</option>
                     <option value="1" @(status == 1 ? "selected" : "")>Chưa duyệt</option>
                     <option value="2" @(status == 2 ? "selected" : "")>Đã duyệt</option>
                 </select>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-12 mt-2 d-flex align-items-end justify-content-end">
-                <div class="d-flex align-items-center">
-                    <a href="Index" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="d-flex align-items-center justify-content-end h-100 mt-2">
+                    <a href="Index" class="text-decoration-none" title="Làm mới bộ lọc">
                         <i class="fas fa-sync fa-xs"></i>
                     </a>
-                    <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px mx-2">Tìm kiếm</button>
+                    <a class="btn btn-sm btn-success w-100px" href="/Admin/Withdraw/Create?type=1"><i class="fas fa-plus"></i>&nbspThêm</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
-<!--Start: Danh sách giao dịch-->
-<div class="row bg-white p-2">
-    <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
-        <div class="d-flex align-items-center justify-content-between">
-            <div>
-                <h5 class="text-danger text-uppercase fw-bold">NẠP TIỀN</h5>
-            </div>
-            <div>
-                <a class="btn btn-sm btn-success w-100px" href="/Admin/Withdraw/Create?type=1"><i class="fas fa-plus"></i>&nbspThêm</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
+<div class="row p-2 mb-2 w-100">
+    <div class="col-12">
         <table class="table table-hover">
             <thead class="thead-light">
-                <tr class="fw-normal">
+                <tr class="fw-normal text-uppercase">
                     <th class="text-left">Ngày tạo</th>
-                    <th class="text-left">Username</th>
-                    <th class="text-left">Tên Khách hàng</th>
+                    <th class="text-left">Mã định danh</th>
+                    <th class="text-left">Khách hàng</th>
                     <th class="text-left">Nội dung</th>
                     <th class="text-center">Số tiền</th>
                     <th class="text-center">Trạng thái</th>
@@ -135,8 +130,7 @@
         </table>
     </div>
 </div>
-<!--Start: Phân trang-->
-<div class="row p-2">
+<div class="row p-2 w-100">
     <div class="col-4 align-self-center">
         <span>
             Tổng số:&nbsp
@@ -217,21 +211,6 @@
     </div>
 </div>
 <script>
-    // serach by status
-    function clickStatus(status) {
-        var fromDate = $('#myform').find('input[name="fromDate"]').val();
-        var toDate = $('#myform').find('input[name="toDate"]').val();
-        var params = `?status=${status}`;
-        if (fromDate != "") {
-            params += `&fromDate=${fromDate}`;
-        }
-        if (toDate != "") {
-            params += `&toDate=${toDate}`;
-        }
-        window.history.replaceState(null, null, params);
-        location.reload()
-    }
-
     // approval
     function clickApproval(id) {
         helper.showAlert("Bạn có muốn thực hiện yêu cầu này?").then((res) => {

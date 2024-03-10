@@ -6,13 +6,16 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var ID = ViewData["ID"];
 }
-<ul id="breadcrumbs" class="mb-2">
-    <li><a>Người dùng</a></li>
-    <li><a href="/Admin/User/Index">Danh sách</a></li>
-    <li><a>Thông tin tài khoản</a></li>
-</ul>
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a>Người dùng</a></li>
+        <li class="text-uppercase fw-bold"><a href="/Admin/User/Index">Danh sách</a></li>
+        <li class="text-uppercase fw-bold"><a>Thông tin tài khoản</a></li>
+    </ul>
+</div>
 
-<div class="row justify-content-center py-4">
+
+<div class="row justify-content-center py-4 w-100">
     <div class="col-lg-8 col-md-12 col-sm-12" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
         <div class="row bg-white justify-content-center p-4">
             <div class="col-lg-12 col-md-3 col-sm-12">
