@@ -31,9 +31,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
+            var username = HttpContext.Request.Query["username"];
             using (var db = new nhanshiphangContext())
             {
-                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize);
+                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize,username);
                 var lstData = oData[0] as List<tbl_ShippingOrder>;
                 int numberRecord = (int)oData[1];
                 int numberPage = (int)oData[2];
