@@ -332,7 +332,7 @@ namespace KGQT.Mobility
             }
             int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
             var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
-            return new object[] { true, lstPacks };
+            return new object[] { false, lstPacks };
         }
 
         [HttpPost]
