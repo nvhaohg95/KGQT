@@ -8,6 +8,8 @@ using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Drawing;
 using System.IO;
 
 namespace KGQT.Mobility
@@ -16,19 +18,31 @@ namespace KGQT.Mobility
     public class AuthencationController
     {
         #region Authencation
-        [HttpGet]
+        [HttpPost]
         [Route("login")]
-        public object Login([FromQuery] string userName, [FromQuery] string passWord) 
+        public object Login([FromBody] RequestModel model) 
         {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model)) {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            } 
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
+            string? passWord = dataRequest.ContainsKey("passWord") ? dataRequest["passWord"].ToString() : "";
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(passWord)) {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            } 
             var result = AccountBusiness.Login(userName, passWord);
-            return result;
-        }
-
-        [HttpGet]
-        [Route("getuser")]
-        public object GetUser([FromQuery] string userName)
-        {
-            var result = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
             return result;
         }
 
@@ -36,6 +50,13 @@ namespace KGQT.Mobility
         [Route("register")]
         public object RegisterAccount([FromBody] SignUpModel model)
         {
+            var oRequest = new DataReturnModel<object>();
+            if (model == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
             if (!string.IsNullOrEmpty(model.Base64String))
             {
                 byte[] bytes = Convert.FromBase64String(model.Base64String);
@@ -47,97 +68,299 @@ namespace KGQT.Mobility
                     model.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
                 }
             }
-            var data = AccountBusiness.Register(model);
-            return data;
+            var result = AccountBusiness.Register(model);
+            return result;
         }
 
         [HttpPost]
         [Route("changepassword")]
         public object ChangePassword([FromBody] ChangePassword model)
         {
-            var data = AccountBusiness.ChangePassword(model);
-            return data;
+            var oRequest = new DataReturnModel<object>();
+            if (model == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            var result = AccountBusiness.ChangePassword(model);
+            return result;
         }
         #endregion
 
         #region HomePage
-        [HttpGet]
-        [Route("dashboard")]
-        public object[] GetDashBoard([FromQuery] string userName)
+
+        [HttpPost]
+        [Route("getuser")]
+        public object[] GetUser([FromBody] RequestModel model)
         {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
+            var result = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+            if (result == null) {
+                oRequest.IsError = true;
+                oRequest.Message = "Người dùng không còn tồn tại!";
+                return new object[] { true, oRequest };
+            }
+            if (!string.IsNullOrEmpty(result.IMG))
+            {
+                string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + result.IMG;
+                using (Image image = Image.FromFile(path))
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        image.Save(m, image.RawFormat);
+                        byte[] imageBytes = m.ToArray();
+
+                        // Convert byte[] to Base64 String
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        result.IMG = base64String;
+                    }
+                }
+            }
+            return new object[] { false, result };
+        }
+
+        [HttpPost]
+        [Route("dashboard")]
+        public object[] GetDashBoard([FromBody] RequestModel model)
+        {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true,oRequest  };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true,oRequest };
+            }
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
+            if (string.IsNullOrEmpty(userName))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true,oRequest};
+            }
             var lstpack = Packages.GetAllStatus(userName);
             var lstship = ShippingOrder.GetAllStatus(userName);
-            //var result = AccountBusiness.Login(userName, passWord);
-            return new object[] { lstpack, lstship };
+            return new object[] {false, lstpack, lstship };
         }
         #endregion
 
         #region PackagePage
-        [HttpGet]
+        [HttpPost]
         [Route("package")]
-        public object[] GetPackage([FromQuery] int status, [FromQuery] string ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, 
-            [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+        public object[] GetPackage([FromBody] RequestModel model)
         {
-            var oData = Packages.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
-            return oData;
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            int status = dataRequest.ContainsKey("status") ? Int32.Parse(dataRequest["status"].ToString()) : 0;
+            string? ID = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
+            int pageNum = dataRequest.ContainsKey("pageNum") ? Int32.Parse(dataRequest["pageNum"].ToString()) : 0;
+            int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+            if(string.IsNullOrEmpty(userName))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var oData = Packages.GetPage(status, ID, null, null, pageNum, pageSize, userName);
+            return new object[] { false, oData };
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("checkstatus")]
-        public object[] CheckStatusPackage([FromQuery] string ID,[FromQuery] string userName)
+        public object[] CheckStatusPackage([FromBody] RequestModel model)
         {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            string? ID = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+            if (string.IsNullOrEmpty(ID) || string.IsNullOrEmpty(userName))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
             var data = Packages.GetStatusOrder(ID, userName);
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == ID && x.Status < 2);
-            return new object[] { data, oPack };
+            return new object[] {false, data, oPack };
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("cancel")]
-        public object[] CancelPackage([FromQuery] int ID, [FromQuery] string userName)
+        public object[] CancelPackage([FromBody] RequestModel model)
         {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            int ID = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+            if (string.IsNullOrEmpty(userName))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
             var data = Packages.Cancel(ID, userName);
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == ID);
-            return new object[] { data, oPack };
+            return new object[] { false, data, oPack };
         }
 
         [HttpPost]
         [Route("createpackage")]
         public object[] CreatePackage([FromBody] tbl_Package model)
         {
+            var oRequest = new DataReturnModel<object>();
+            if (model == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
             var data = Packages.CustomerAdd(model, model.Username);
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == model.PackageCode);
-            return new object[] { data, oPack };
+            return new object[] {false, data, oPack };
         }
 		#endregion
 
 		#region OrderPage
-		[HttpGet]
+		[HttpPost]
 		[Route("order")]
-		public object[] GetOrder([FromQuery] int status, [FromQuery] string ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
-			[FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+		public object[] GetOrder([FromBody] RequestModel model)
 		{
-			var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
-			return oData;
-		}
-
-        [HttpGet]
-        [Route("getlistpackage")]
-        public object GetListPackage([FromQuery] int id)
-        {
-            var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
-            return lstPacks;
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            int status = dataRequest.ContainsKey("status") ? Int32.Parse(dataRequest["status"].ToString()) : 0;
+            string? ID = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
+            int pageNum = dataRequest.ContainsKey("pageNum") ? Int32.Parse(dataRequest["pageNum"].ToString()) : 0;
+            int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+            if (string.IsNullOrEmpty(userName))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var oData = ShippingOrder.GetPage(status, ID, null, null, pageNum, pageSize, userName);
+            return new object[] { false, oData };
         }
 
-        [HttpGet]
-        [Route("payment")]
-        public object Payment([FromQuery] int id, [FromQuery] string username)
+        [HttpPost]
+        [Route("getlistpackage")]
+        public object GetListPackage([FromBody] RequestModel model)
         {
-            var data = new DataReturnModel<object>();
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
+            var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+            return new object[] { false, lstPacks };
+        }
+
+        [HttpPost]
+        [Route("payment")]
+        public object Payment([FromBody] RequestModel model)
+        {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+
             if (id == 0) return null;
             var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             if (oOrder == null) return null;
 
-            var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == username);
+            var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
 
             if (oUser == null) return null;
 
@@ -145,7 +368,7 @@ namespace KGQT.Mobility
             if (check)
             {
                 oOrder.Status = 2;
-                oOrder.ModifiedBy = username;
+                oOrder.ModifiedBy = userName;
                 oOrder.ModifiedDate = DateTime.Now;
 
                 var s = BusinessBase.Update(oOrder);
@@ -158,56 +381,97 @@ namespace KGQT.Mobility
 
                     #region Logs
                     BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice.Value, 1, 1, pay.Value, username);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice.Value, 1, 1, pay.Value, userName);
                     #endregion
 
                     var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
                     foreach (var pack in packs)
                     {
                         pack.Status = 5;
-                        pack.ModifiedBy = username;
+                        pack.ModifiedBy = userName;
                         pack.ModifiedDate = DateTime.Now;
                         BusinessBase.Update(pack);
 
-                        BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, username);
+                        BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, userName);
                     }
-                    data.IsError = false;
-                    data.Message = "Thanh toán đơn hàng thành công";
-                    data.Data = oOrder;
-                    return data;
+                    oRequest.IsError = false;
+                    oRequest.Message = "Thanh toán đơn hàng thành công";
+                    oRequest.Data = oOrder;
+                    return oRequest;
                 }
             }
             else
             {
                 var pay = oOrder.TotalPrice - oUser.Wallet;
-                data.IsError = true;
-                data.Message = string.Format("{0:N0}đ", pay).Replace(",", ".");
-                return data;
+                oRequest.IsError = true;
+                oRequest.Message = string.Format("{0:N0}đ", pay).Replace(",", ".");
+                return oRequest;
             }
             return null;
         }
         #endregion
 
         #region HistoryWallet
-        [HttpGet]
+        [HttpPost]
         [Route("historywallet")]
-        public object[] GetHistoryWallet([FromQuery] int status, [FromQuery] int ID, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
-            [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+        public object[] GetHistoryWallet([FromBody] RequestModel model)
         {
-            var oData = HistoryPayWallet.GetPage(userName, ID, status, fromDate, toDate, pageNum, pageSize);
-            return oData;
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            int status = dataRequest.ContainsKey("status") ? Int32.Parse(dataRequest["status"].ToString()) : 0;
+            int ID = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
+            int pageNum = dataRequest.ContainsKey("pageNum") ? Int32.Parse(dataRequest["pageNum"].ToString()) : 0;
+            int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+            if (string.IsNullOrEmpty(userName))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var oData = HistoryPayWallet.GetPage(userName, ID, status, null, null, pageNum, pageSize);
+            return new object[] { false, oData };
         }
         #endregion
 
         #region Notification
-        [HttpGet]
+        [HttpPost]
         [Route("notification")]
-        public object GetNotification([FromQuery] int status, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
-            [FromQuery] int pageNum, [FromQuery] int pageSize, [FromQuery] string userName)
+        public object[] GetNotification([FromBody] RequestModel model)
         {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+            int status = dataRequest.ContainsKey("status") ? Int32.Parse(dataRequest["status"].ToString()) : 0;
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+            int pageNum = dataRequest.ContainsKey("pageNum") ? Int32.Parse(dataRequest["pageNum"].ToString()) : 0;
+            int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
             var user = AccountBusiness.GetInfo(-1, userName);
-            var oData = NotificationBusiness.GetPage(user.ID, status, fromDate, toDate, pageNum, pageSize);
-            return oData;
+            var oData = NotificationBusiness.GetPage(user.ID, status, null, null, pageNum, pageSize);
+            return new object[] { false, oData };
         }
         #endregion
 
@@ -216,6 +480,13 @@ namespace KGQT.Mobility
         [Route("createwithdraw")]
         public object CreateWithDraw([FromBody] tbl_Withdraw model)
         {
+            var oRequest = new DataReturnModel<object>();
+            if (model == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
             var user = AccountBusiness.GetInfo(-1, model.Username);
             if (user != null && model != null)
             {
@@ -235,12 +506,20 @@ namespace KGQT.Mobility
             }
             else
             {
-                var data = new DataReturnModel<object>();
-                data.IsError = true;
-                data.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
-                data.Data = false;
-                return data;
+                oRequest.IsError = true;
+                oRequest.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
+                oRequest.Data = false;
+                return oRequest;
             }
+        }
+        #endregion
+
+        #region Function
+        private bool ValidateModelRequest(RequestModel model)
+        {
+            if (model == null) return false;
+            if (string.IsNullOrEmpty(model.DataRequest)) return false;
+            return true;
         }
         #endregion
 

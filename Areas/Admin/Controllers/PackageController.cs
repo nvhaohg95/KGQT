@@ -38,7 +38,7 @@ namespace KGQT.Areas.Admin.Controllers
             string p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExportExcel");
             List<FileInfoModel> listFile = new List<FileInfoModel>();
             FileService.LoadFiles(p, listFile);
-            return View(listFile.OrderByDescending(x=>x.CreatedOn).ToList());
+            return View(listFile.OrderByDescending(x => x.CreatedOn).ToList());
         }
         public IActionResult Create()
         {
@@ -76,7 +76,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult PackagePartial(string code)
         {
-            var package = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode.ToLower() == code.ToLower());
+            var package = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.ToLower().Contains(code.ToLower())).ToList();
             return PartialView("_Package", package);
         }
 
@@ -220,6 +220,17 @@ namespace KGQT.Areas.Admin.Controllers
             var data = BusinessBase.GetList<tbl_Account>(x => x.Username.Contains(s)).ToList();
             return Json(data);
         }
+        /// <summary>
+        /// Gợi ý file lô
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult BigPackageComplete(string s)
+        {
+            var data = BusinessBase.GetList<tbl_BigPackage>(x => x.ID.ToString() == s || x.BigPackageCode.Contains(s)).ToList();
+            return Json(data);
+        }
 
         /// <summary>
         /// Nhập kho
@@ -230,10 +241,12 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="airPrice"></param>
         /// <returns></returns>
         [HttpPost]
-        public bool InStockPackage(int id, string username, int moving, double weight, double woodPrice, double airPrice, double surCharge)
+        public bool InStockPackage(string sData)
         {
             var crrUse = HttpContext.Session.GetString("user");
-            var oSave = Packages.InStockHCMWareHouse(id, username, moving, weight, woodPrice, airPrice, surCharge, crrUse);
+            if (string.IsNullOrEmpty(sData)) return false;
+            var data = JsonConvert.DeserializeObject<tmpInStock>(sData);
+            var oSave = Packages.InStockHCMWareHouse(data, crrUse);
             return oSave;
         }
 

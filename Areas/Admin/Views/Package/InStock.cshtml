@@ -39,7 +39,7 @@
                     data: { code },
                     success: function (resonse) {
                         $('#lstPackage').html(resonse);
-
+                        autocomplete();
                     }, error: function (e) {
                         console.log(e);
                     }
@@ -47,4 +47,37 @@
             }
         }
     });
+
+    function autocomplete(){
+        $('#txtUsername').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/package/AutoComplete',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            delay: 500,
+            select: function (event, ui) {
+                $(this).val(ui.item.username);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.username + (item.phone ? (" - "+ item.phone) : '') + "</div>")
+                .appendTo(ul);
+        };
+    }
 </script>

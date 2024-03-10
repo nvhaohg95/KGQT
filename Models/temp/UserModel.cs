@@ -97,4 +97,9 @@ namespace KGQT.Models.temp
         public string FileName { get; set; }
 
     }
+
+    public class RequestModel
+    {
+        public string DataRequest { get; set; }
+    }
 }

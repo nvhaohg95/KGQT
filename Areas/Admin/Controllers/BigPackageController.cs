@@ -48,11 +48,13 @@ namespace KGQT.Areas.Admin.Controllers
                 ws.Cells[1, 1].Value = "MVĐ";
                 ws.Cells[1, 2].Value = "Username";
                 ws.Cells[1, 3].Value = "Tuyến";
-                ws.Cells[1, 4].Value = "Câm nặng";
+                ws.Cells[1, 4].Value = "Cân nặng";
                 ws.Cells[1, 5].Value = "Ngày xuất kho";
-
+                ws.Cells[1, 6].Value = "Đo lên";
+                ws.Cells[1, 7].Value = "Kích thước";
                 ws.Column(1).Width = 25;
                 ws.Column(5).Width = 25;
+                ws.Column(7).Width = 25;
 
                 var modelRows = data.Count() + 1;
                 string modelRange = "A1:E" + modelRows.ToString();
@@ -73,19 +75,33 @@ namespace KGQT.Areas.Admin.Controllers
                     ws.Cells["C" + i].Value = PJUtils.MovingMethod2Type(row.MovingMethod);
                     ws.Cells["D" + i].Value = Converted.Double2String(row.Weight);
                     ws.Cells["E" + i].Value = Converted.Date2String(row.OrderDate, true);
+                    if (row.WeightExchange > 0)
+                    {
+                        ws.Cells["F" + i].Value = Converted.Double2String(row.WeightExchange);
+                        ws.Cells["G" + i].Value = row.Length + "x" + row.Width + "x" + row.Height;
 
-                    if (string.IsNullOrEmpty(row.Username) || row.Weight <= 0 || row.Weight == null)
+                    }
+                    if (row.ImportedSGWH == null || row.ImportedSGWH == DateTime.MinValue)
                     {
                         rows.Add(i);
                     }
                     i++;
                 }
+                ws.Cells["A" + (modelRows + 1)].Value = "Tổng cộng";
+                ws.Cells["D" + (modelRows + 1)].Value = data.Sum(x => x.Weight);
+                ws.Cells["F" + (modelRows + 1)].Value = data.Sum(x => x.WeightExchange);
+                ws.Cells["A1:G1"].Style.Fill.SetBackground(System.Drawing.Color.Blue);
+                ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Fill.SetBackground(System.Drawing.Color.Yellow);
+                ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Font.Bold = true;
+                ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Font.Color.SetColor(System.Drawing.Color.Red);
 
+                ws.Cells["A1:G1"].Style.Font.Bold = true;
+                ws.Cells["A1:G1"].Style.Font.Color.SetColor(System.Drawing.Color.White);
                 if (rows.Count > 0)
                 {
                     foreach (var item in rows)
                     {
-                        ws.Cells["A" + item+":"+"E"+item].Style.Fill.SetBackground(System.Drawing.Color.Gray);
+                        ws.Cells["A" + item + ":" + "E" + item].Style.Fill.SetBackground(System.Drawing.Color.Gray);
                     }
                 }
 

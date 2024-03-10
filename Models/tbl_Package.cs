@@ -7,8 +7,8 @@ namespace KGQT.Models
     {
         public int ID { get; set; }
         public string PackageCode { get; set; } = null!;
-        public int TransID { get; set; }
-        public int BigPackage { get; set; }
+        public int? BigPackage { get; set; }
+        public int? TransID { get; set; }
         public string? Barcode { get; set; }
         /// <summary>
         /// 1. Chưa về
@@ -18,6 +18,10 @@ namespace KGQT.Models
         public int Status { get; set; }
         public int MovingMethod { get; set; }
         public double? Weight { get; set; }
+        public double? Length { get; set; }
+        public double? Width { get; set; }
+        public double? Height { get; set; }
+        public double? WeightExchange { get; set; }
         public double? WeightReal { get; set; }
         public double? WeightPrice { get; set; }
         public bool? IsAirPackage { get; set; }

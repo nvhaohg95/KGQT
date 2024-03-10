@@ -1,4 +1,5 @@
-﻿using KGQT.Base;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using KGQT.Base;
 using Newtonsoft.Json;
 using System.Globalization;
 
@@ -38,11 +39,17 @@ namespace KGQT.Commons
             return Convert.ToDouble(s);
         }
 
-        public static double ToDouble(double? s)
+        public static double ToDouble(double? s, int period = 1)
         {
-            if (!s.HasValue) return 0;
-
-            return s.Value;
+            if (s == null) return 0;
+            var num = Convert.ToDouble(s);
+            return Math.Round(num, period, MidpointRounding.AwayFromZero);
+        }
+        public static decimal ToDecimal (double? s, int period = 1)
+        {
+            if (s == null) return 0;
+            var num = Convert.ToDecimal(s);
+            return Math.Round(num, period, MidpointRounding.AwayFromZero);
         }
 
         public static DateTime ToDate(string s)
@@ -136,6 +143,13 @@ namespace KGQT.Commons
                 return string.Format("{0:N0}", Math.Round(num, 1)).Replace(",", ".");
             return string.Format("{0:N0}", value).Replace(",", ".");
         }
-
+        public static string Decimal2Money(decimal? value)
+        {
+            if (value == null) return "0";
+            decimal num = Convert.ToDecimal(value);
+            if (value.ToString().IndexOf(".") > 0)
+                return string.Format("{0:N0}", Math.Round(num, 1)).Replace(",", ".");
+            return string.Format("{0:N0}", value).Replace(",", ".");
+        }
     }
 }
