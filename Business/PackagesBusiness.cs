@@ -541,7 +541,7 @@ namespace KGQT.Business
                     ship.IsInsurance = pack.IsInsurance;
                     ship.InsurancePrice = Converted.Double2String(pack.IsInsurancePrice);
                     ship.SurCharge = Converted.Double2String(pack.SurCharge);
-                    ship.TotalPrice = Converted.Double2String(feeWeight + pack.AirPackagePrice + pack.WoodPackagePrice + pack.IsInsurancePrice + pack.SurCharge);
+                    ship.TotalPrice = Converted.Double2String(feeWeight + pack.AirPackagePrice + pack.WoodPackagePrice + Converted.ToDouble(pack.IsInsurancePrice) + pack.SurCharge);
                     ship.Status = 1;
                     ship.ChinaExportDate = pack.ExportedCNWH;
                     ship.CreatedDate = DateTime.Now;

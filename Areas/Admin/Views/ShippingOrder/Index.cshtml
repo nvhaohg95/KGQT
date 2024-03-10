@@ -147,7 +147,7 @@
                                             @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                         </td>
                                         <td class="text-center" style="vertical-align:middle">
-                                            @string.Format("{0:N0}đ", item.TotalPrice).Replace(",",".")
+                                            @Converted.String2Money(item.TotalPrice)
                                         </td>
                                         <td class="text-center" style="vertical-align:middle">
                                             @Html.DisplayFor(modelItem => item.CreatedDate)

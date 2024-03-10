@@ -22,10 +22,19 @@ namespace KGQT.Areas.Admin.Controllers
                 toDate = DateTime.Now;
 
             fromDate = fromDate.Value.Date;
-            toDate = toDate.Value.AddDays(1).AddTicks(-1);
+            toDate = toDate.Value.Date.AddDays(1).AddTicks(-1);
 
-            var total =StatisticsBusiness.Revenue(fromDate, toDate, page,pageSize);
-            return View(total);
+            var oData = StatisticsBusiness.Revenue(fromDate, toDate, page,pageSize);
+
+            var lstData = oData[0] as List<tbl_ShippingOrder>;
+            int numberRecord = (int)oData[1];
+            int numberPage = (int)oData[2];
+            ViewBag.fromDate = fromDate;
+            ViewBag.toDate = toDate;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
+            return View(lstData);
         }
     }
 }
