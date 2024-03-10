@@ -332,7 +332,7 @@ namespace KGQT.Mobility
             }
             int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
             var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
-            return new object[] { true, lstPacks };
+            return new object[] { false, lstPacks };
         }
 
         [HttpPost]
@@ -472,7 +472,7 @@ namespace KGQT.Mobility
             int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
             var user = AccountBusiness.GetInfo(-1, userName);
             var oData = NotificationBusiness.GetPage(user.ID, status, null, null, pageNum, pageSize);
-            return new object[] { true, oData };
+            return new object[] { false, oData };
         }
         #endregion
 

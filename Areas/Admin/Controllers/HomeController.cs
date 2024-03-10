@@ -32,5 +32,12 @@ namespace KGQT.Areas.Admin.Controllers
 
         #endregion
 
+        #region Dasboard
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
+        #endregion
+
     }
 }
