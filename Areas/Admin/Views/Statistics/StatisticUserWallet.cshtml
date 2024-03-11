@@ -1,13 +1,11 @@
-﻿@model List<KGQT.Models.tbl_Package>
+﻿@model List<KGQT.Models.tbl_Account>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using KGQT.Models
 @using KGQT.Commons
 @{
-    ViewData["Title"] = "Thống kê cân nặng";
+    ViewData["Title"] = "Thống kê số dư tài khoản khách hàng";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
-    DateTime? fromDate = ViewBag.fromDate;
-    DateTime? toDate = ViewBag.toDate;
     int pageCurrent = ViewBag.pageCurrent;
     int numberPage = ViewBag.numberPage;
     int numberRecord = ViewBag.numberRecord;
@@ -21,22 +19,10 @@
         </ul>
     </div>
     <form class="row mb-2 py-2">
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="row form-group">
-                <label class="fw-bold mb-0">Từ ngày</label>
-                @Html.TextBoxFor(model => fromDate,new { @type="date",@class="form-control"})
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="form-group">
-                <label class="fw-bold mb-0">Đến ngày</label>
-                @Html.TextBoxFor(model => toDate,new { @type="date",@class="form-control"})
-            </div>
-        </div>
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="d-flex align-items-end justify-content-between">
                 <div>
-                    <h5 class="text-primary fw-bold text-uppercase m-0">Thống kê cân nặng</h5>
+                    <h5 class="text-primary fw-bold text-uppercase m-0">Thống kê số dư tài khoản khách hàng</h5>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">
                     <a href="StatisticRevenue" class="text-decoration-none mr-2 btn btn-sm btn-info">
@@ -52,12 +38,10 @@
     <div class="row">
         <div class="form-group row">
             <div class="col-md-12 col-sm-12">
-                <span class="col-form-label">Từ ngày <b>@fromDate.Value.ToString("dd/MM/yyyy")</b> đến ngày <b>@toDate</b></span>
-            </div>
-            <div class="col-md-6 col-sm-12">
+                <span class="col-form-label">Tổng số dư của khách:</span>
                 @if (Model.Count > 0)
                 {
-                    <label class="col-form-label">Cân nặng <b>@Converted.ToDouble(Model.Sum(x=>x.WeightReal))</b>kg</label>
+                    <label class="col-form-label"><b>@Converted.Double2Money(Model.AsEnumerable().Sum(x=>x.Wallet))</b>đ</label>
                 }
             </div>
         </div>
@@ -69,16 +53,13 @@
                     <thead class="thead-light">
                         <tr>
                             <th class="text-center">
-                                Mã đơn
+                                Tài khoản
                             </th>
                             <th class="text-center">
-                                Cân nặng
+                                Tên khách
                             </th>
                             <th class="text-center">
-                                Quy đổi
-                            </th>
-                            <th class="text-center">
-                                Ngày cân
+                                Số dư ví
                             </th>
                             <th class="text-center"></th>
                         </tr>
@@ -88,21 +69,18 @@
                         {
                             <tr class="table-light font-weight-normal py-2">
                                 <td class="text-left align-middle">
-                                    @Html.DisplayFor(modelItem => item.PackageCode)
+                                    @Html.DisplayFor(modelItem => item.Username)
                                 </td>
                                 <td class="text-center align-middle">
-                                    @Converted.ToDouble(item.Weight)
+                                    @Html.DisplayFor(modelItem => item.FullName)
                                 </td>
                                 <td class="text-center align-middle">
-                                    @Converted.ToDouble(item.WeightExchange)
+                                    @Converted.Double2Money(item.Wallet)
                                 </td>
                                 <td class="text-center align-middle">
-                                    @Html.DisplayFor(modelItem => item.CreatedDate)
-                                </td>
-                                <td class="text-center align-middle">
-                                    <a class="btn btn-sm btn-secondary" href="/Admin/package/Details?id=@item.ID">
+                                    <a class="btn btn-sm btn-secondary" href="/Admin/account/Detail?id=@item.ID">
                                         <i class="far fa-eye"></i>
-                                        <span>Xem kiện</span>
+                                        <span>Xem</span>
                                     </a>
                                 </td>
                             </tr>

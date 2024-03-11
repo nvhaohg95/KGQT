@@ -9,6 +9,28 @@ namespace KGQT.Areas.Admin.Controllers
     public class StatisticsController : Controller
     {
         /// <summary>
+        /// Thống kê số dư khách
+        /// </summary>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public IActionResult StatisticUserWallet( int page = 1, int pageSize = 20)
+        {
+
+            var oData = StatisticsBusiness.UserWallet(page, pageSize);
+
+            var lstData = oData[0] as List<tbl_Account>;
+            int numberRecord = (int)oData[1];
+            int numberPage = (int)oData[2];
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
+            return View(lstData);
+        }
+        
+        /// <summary>
         /// Thống kê cân nặng
         /// </summary>
         /// <param name="fromDate"></param>
