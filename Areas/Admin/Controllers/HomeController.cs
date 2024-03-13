@@ -18,7 +18,7 @@ namespace KGQT.Areas.Admin.Controllers
         #region Index/Home
         public IActionResult Index()
         {
-            var pack = Packages.GetAllStatus("");
+            var pack = PackagesBusiness.GetAllStatus("");
             ViewData["pack_st3"] = pack[0];
             ViewData["pack_st4"] = pack[1];
             ViewData["pack_st5"] = pack[2];

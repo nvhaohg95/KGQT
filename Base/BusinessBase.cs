@@ -225,18 +225,16 @@ namespace KGQT.Business.Base
 
         public static IQueryable<T> Get<T>() where T : class
         {
-            using (var db = new nhanshiphangContext())
+            var db = new nhanshiphangContext();
+            try
             {
-                try
-                {
-                    return db.Set<T>().AsQueryable();
+                return db.Set<T>().AsQueryable();
 
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
-                    return null;
-                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                return null;
             }
         }
 

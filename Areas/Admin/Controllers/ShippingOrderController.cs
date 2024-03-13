@@ -31,9 +31,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
+            var username = HttpContext.Request.Query["username"];
             using (var db = new nhanshiphangContext())
             {
-                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize);
+                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize,username);
                 var lstData = oData[0] as List<tbl_ShippingOrder>;
                 int numberRecord = (int)oData[1];
                 int numberPage = (int)oData[2];
@@ -136,8 +137,8 @@ namespace KGQT.Areas.Admin.Controllers
             var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == oOrder.Username);
 
             if (oUser == null) return new { error = true, mssg = "Không tìm thấy thông tin khách hàng" };
-
-            bool check = oUser.Wallet > oOrder.TotalPrice;
+            double totalPrice = Convert.ToDouble(oOrder.TotalPrice);
+            bool check = oUser.Wallet > totalPrice;
             if (check)
             {
                 oOrder.Status = 2;
@@ -148,21 +149,21 @@ namespace KGQT.Areas.Admin.Controllers
                 if (s)
                 {
                     oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
-                    var pay = oUser.Wallet - oOrder.TotalPrice;
+                    var pay = oUser.Wallet - totalPrice;
 
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);
 
                     #region Logs
                     BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 0, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice.Value, 1, 1, pay.Value, username);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", totalPrice, 1, 1, pay.Value, username);
                     #endregion
 
                     var trade = new tbl_TradeHistory();
                     trade.UID = oUser.ID;
                     trade.Title = PJUtils.TradeName(1);
                     trade.OrderCode = oOrder.ShippingOrderCode;
-                    trade.OrderPrice = string.Format("{0:N0}đ", oOrder.TotalPrice).Replace(",", ".");
+                    trade.OrderPrice = Converted.Double2Money(totalPrice);
                     trade.AmountIn = "0";
                     trade.AmountDebt = "0";
                     trade.PaymentMethod = 1;
@@ -187,7 +188,7 @@ namespace KGQT.Areas.Admin.Controllers
             }
             else
             {
-                var pay = oOrder.TotalPrice - oUser.Wallet;
+                var pay = totalPrice - oUser.Wallet;
                 return new { error = true, mssg = string.Format("{0:N0}đ", pay).Replace(",", ".") };
             }
             return false;
@@ -224,79 +225,6 @@ namespace KGQT.Areas.Admin.Controllers
                 }
             }
             return new { error = false};
-        }
-
-        // POST: ShippingOrderController/Create
-        /// <summary>
-        /// Status: 1: chưa xác nhận,2:Hàng về kho TQ, 3:Đang trên đường về HCM,
-        /// 4:Hàng về tới HCM, 5:Đã nhận hàng,9:Đã hủy, 10: Thất lạc, 11: không nhận dc hàng
-        /// </summary>
-        /// <param name="form"></param>
-        /// <param name="package"></param>
-        /// <param name="declares"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public bool Create(tbl_ShippingOrder form, string package, string declares)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(package)) return false;
-
-                var userLogin = HttpContext.Session.GetString("user");
-                var user = AccountBusiness.GetInfo(-1, form.Username);
-                form.Status = 1;
-                form.CreatedDate = DateTime.Now;
-                form.CreatedBy = userLogin;
-                form.Username = user.Username;
-                form.Email = user.Email;
-                //form.LastName = user.LastName;
-                //form.FirstName = user.FirstName;
-                form.Phone = user.Phone;
-                //form.Address = user.Address;
-                form.Weight = 0;
-                form.WeightPrice = 0;
-                form.InsurancePrice = 0;
-                form.AirPackagePrice = 0;
-                form.WoodPackagePrice = 0;
-                form.TotalPrice = 0;
-                form.ShippingMethodName = PJUtils.ShippingMethodName(form.ShippingMethod.Value);
-                var sPacks = package.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                var oPacks = BusinessBase.GetList<tbl_Package>(x => sPacks.Contains(x.PackageCode));
-
-                foreach (var item in oPacks)
-                {
-                    if (item.IsInsurance != null && item.IsInsurance == true)
-                    {
-                        form.IsInsurance = true;
-                        form.InsurancePrice += item.IsInsurancePrice;
-                    }
-
-                    if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                    {
-                        form.IsWoodPackage = true;
-                        form.WoodPackagePrice += item.WoodPackagePrice;
-                    }
-
-                    if (item.IsAirPackage != null && item.IsAirPackage == true)
-                    {
-                        form.IsAirPackage = true;
-                        form.AirPackagePrice += item.AirPackagePrice;
-                    }
-
-                    form.WeightPrice += item.WeightPrice;
-                    form.Weight += item.Weight;
-
-                }
-
-                var totalPrice = form.WeightPrice + form.AirPackagePrice + form.AirPackagePrice + form.InsurancePrice;
-                form.TotalPrice = totalPrice;
-                var s = BusinessBase.Add(form);
-                return s;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
         }
         #endregion
     }

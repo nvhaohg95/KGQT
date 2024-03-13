@@ -223,17 +223,35 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_ShippingOrder");
 
+                entity.Property(e => e.AirPackagePrice).HasMaxLength(20);
+
                 entity.Property(e => e.ChinaExportDate).HasColumnType("datetime");
 
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+                entity.Property(e => e.CreatedBy).HasMaxLength(150);
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.DateExpectation).HasColumnType("datetime");
 
                 entity.Property(e => e.DateExpectationEdit).HasColumnType("datetime");
 
+                entity.Property(e => e.InsurancePrice).HasMaxLength(20);
+
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ShippingMethodName).HasMaxLength(50);
+
+                entity.Property(e => e.SurCharge).HasMaxLength(20);
+
+                entity.Property(e => e.TotalPrice).HasMaxLength(20);
+
+                entity.Property(e => e.Weight).HasMaxLength(10);
+
+                entity.Property(e => e.WeightPrice).HasMaxLength(20);
+
+                entity.Property(e => e.WoodPackagePrice).HasMaxLength(20);
             });
 
             modelBuilder.Entity<tbl_SystemLog>(entity =>

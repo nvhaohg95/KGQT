@@ -19,7 +19,7 @@ namespace KGQT.Areas.Admin.Controllers
         #region View
         public IActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = Packages.GetPage(status, ID, fromDate, toDate, page, pageSize);
+            var oData = PackagesBusiness.GetPage(status, ID, fromDate, toDate, page, pageSize);
             var lstPackage = oData[0];
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
@@ -97,7 +97,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult ExportFile(int status, DateTime? fromDate, DateTime? toDate)
         {
-            var data = Packages.GetListExport(status, fromDate, toDate);
+            var data = PackagesBusiness.GetListExport(status, fromDate, toDate);
             @ViewData["status"] = status;
             @ViewData["fromDate"] = fromDate;
             @ViewData["toDate"] = toDate;
@@ -107,7 +107,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public FileResult GenerateExcel(int status, DateTime? fromDate, DateTime? toDate)
         {
-            var data = Packages.GetListExport(status, fromDate, toDate);
+            var data = PackagesBusiness.GetListExport(status, fromDate, toDate);
 
             var dt = new DataTable("Excel");
             dt.Columns.AddRange(new DataColumn[]{
@@ -139,7 +139,7 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult QueryOrderStatus(string code)
         {
             var user = HttpContext.Session.GetString("user");
-            var data = Packages.GetStatusOrder(code, user);
+            var data = PackagesBusiness.GetStatusOrder(code, user);
             return View(data);
         }
 
@@ -156,7 +156,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var userLogin = HttpContext.Session.GetString("user");
             var data = JsonConvert.DeserializeObject<tbl_Package>(sData);
-            var oSave = Packages.Add(data, userLogin);
+            var oSave = PackagesBusiness.Add(data, userLogin);
             return Json(oSave);
         }
 
@@ -179,7 +179,7 @@ namespace KGQT.Areas.Admin.Controllers
                 return oData;
             }
             var userLogin = HttpContext.Session.GetString("user");
-            oData = Packages.CreateWithFileExcel(file, sheet, userLogin);
+            oData = PackagesBusiness.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
         }
 
@@ -192,7 +192,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public bool CheckPackage(string package)
         {
-            return Packages.CheckExist(package);
+            return PackagesBusiness.CheckExist(package);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var crrUse = HttpContext.Session.GetString("user");
 
-            var oSave = Packages.Update(form, crrUse);
+            var oSave = PackagesBusiness.Update(form, crrUse);
             return oSave;
         }
 
@@ -246,7 +246,7 @@ namespace KGQT.Areas.Admin.Controllers
             var crrUse = HttpContext.Session.GetString("user");
             if (string.IsNullOrEmpty(sData)) return false;
             var data = JsonConvert.DeserializeObject<tmpInStock>(sData);
-            var oSave = Packages.InStockHCMWareHouse(data, crrUse);
+            var oSave = PackagesBusiness.InStockHCMWareHouse(data, crrUse);
             return oSave;
         }
 
