@@ -162,6 +162,7 @@ namespace KGQT.Business
                         Wallet = 0,
                         Status = 2,
                         RoleID = 4, //user
+                        IsActive = true,
                         CreatedDate = DateTime.Now,
                         CreatedBy = data.Username
                     };

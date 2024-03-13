@@ -41,8 +41,18 @@ namespace KGQT.Mobility
                 oRequest.IsError = true;
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
-            } 
-            var result = AccountBusiness.Login(userName, passWord);
+            }
+            DataReturnModel<tbl_Account> result = AccountBusiness.Login(userName, passWord);
+            if (!result.IsError)
+            {
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                if (user.IsActive == false)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Người không tồn tại. Vui lòng thử lại!";
+                    return oRequest;
+                }
+            }
             return result;
         }
 
@@ -91,27 +101,27 @@ namespace KGQT.Mobility
                 return oRequest;
             }
             string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
-
-            /*var oRequest = new DataReturnModel<object>();
-            if (model == null)
+            var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+            if (user == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Người dùng không còn tồn tại!";
+                return oRequest;
+            }
+            user.IsActive = false;
+            var update = BusinessBase.Update(user);
+            if (!update)
             {
                 oRequest.IsError = true;
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
             }
-            if (!string.IsNullOrEmpty(model.Base64String))
+            else
             {
-                byte[] bytes = Convert.FromBase64String(model.Base64String);
-                MemoryStream stream = new MemoryStream(bytes);
-                IFormFile file = new FormFile(stream, 0, bytes.Length, model.FileName, model.FileName);
-                if (file != null)
-                {
-                    model.File = file;
-                    model.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
-                }
+                oRequest.IsError = false;
+                oRequest.Message = "Xóa tài khoản thành công!";
+                return oRequest;
             }
-            var result = AccountBusiness.Register(model);*/
-            return null;
         }
 
         [HttpPost]
