@@ -71,6 +71,11 @@ namespace KGQT
         #endregion
 
 
+        public IActionResult Index()
+        {
+            return View();  
+        }
+
     }
 
 

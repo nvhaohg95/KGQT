@@ -6,7 +6,7 @@ namespace KGQT.Business
     public static class FeeWeightBusiness
     {
         #region Get Page
-        public static object[] GetPage(int page, int pageSize = 10)
+        public static object[] GetPage(int type,int page, int pageSize = 10)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -14,14 +14,19 @@ namespace KGQT.Business
                 int total = 0;
                 int totalPage = 0;
                 IQueryable<tbl_FeeWeight> query = db.tbl_FeeWeights;
+                if(type > 0)
+                    query = query.Where(x => x.Type == type);
                 total = query.Count();
                 if (total > 0)
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
-                   
-                    lstData = query.OrderBy(x => x.Type).OrderByDescending(x=>x.Amount).ToList();
+                    int pageNum = (page - 1) * pageSize;
+                    lstData = query.OrderBy(x => x.Type)
+                        .OrderByDescending(x=>x.Amount)
+                        .Skip(pageNum)
+                        .Take(pageSize)
+                        .ToList();
                 }    
-                    
                 return new object[] { lstData , total, totalPage };
             }
         }
