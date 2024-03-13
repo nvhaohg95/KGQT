@@ -15,14 +15,15 @@ namespace KGQT.Areas.Admin.Controllers
     public class WithDrawController : Controller
     {
         #region Nạp tiền
-        public IActionResult Index(int ID,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public IActionResult Index(int ID,string userName, int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = WithDrawBusiness.GetList(ID, 1, status, fromDate, toDate, page, pageSize);
+            var oData = WithDrawBusiness.GetList(ID, 1, userName, status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
             var numberRecord = (int)oData[1];
             var numberPage = (int)oData[2];
             ViewBag.id = ID;
             ViewBag.status = status;
+            ViewBag.userName = userName;
             ViewBag.fromDate = fromDate;
             ViewBag.toDate = toDate;
             ViewBag.pageCurrent = page;
@@ -34,8 +35,8 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create(string user,int type)
         {
-            ViewData["user"] = user;
-            ViewData["type"] = type;
+            ViewBag.user = user;
+            ViewBag.type = type;
             return View();
         }
         #endregion
@@ -133,13 +134,14 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Rút tiền
         [HttpGet]
-        public ActionResult Refuse(int ID, int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public ActionResult Refuse(int ID, string userName, int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
-            var oData = WithDrawBusiness.GetList(ID, 2,status, fromDate, toDate, page, pageSize);
+            var oData = WithDrawBusiness.GetList(ID, 2,userName, status, fromDate, toDate, page, pageSize);
             var lstData = oData[0] as List<tbl_Withdraw>;
             var numberRecord = (int)oData[1];
             var numberPage = (int)oData[2];
             ViewBag.id = ID;
+            ViewBag.userName = userName;
             ViewBag.status = status;
             ViewBag.fromDate = fromDate;
             ViewBag.toDate = toDate;

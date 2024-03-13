@@ -7,7 +7,7 @@ namespace KGQT.Business
     public class WithDrawBusiness
     {
         #region Get page
-        public static object[] GetList(int ID,int type,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
+        public static object[] GetList(int ID,int type, string userName,int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             var lstData = new List<tbl_Withdraw>();
             int count = 0;
@@ -17,8 +17,10 @@ namespace KGQT.Business
                 var query = db.tbl_Withdraws.AsQueryable();
                 if(ID > 0)
                     query = query.Where(x => x.ID == ID);
-                if (status != 0)
+                if (type != 0)
                     query = query.Where(x => x.Type == type);
+                if (!string.IsNullOrEmpty(userName))
+                    query = query.Where(x => x.Username != null && x.Username.Contains(userName));
                 if (status != 0)
                     query = query.Where(x => x.Status == status);
                 if (fromDate != null)

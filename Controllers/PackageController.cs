@@ -15,7 +15,7 @@ namespace KGQT.Controllers
         public IActionResult Index(int status, string ID, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10)
         {
             var username = HttpContext.Session.GetString("user");
-            var oData = Packages.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
+            var oData = PackagesBusiness.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
             var lstPackage = oData[0];
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
@@ -52,7 +52,7 @@ namespace KGQT.Controllers
         public IActionResult QueryOrderStatus(string code)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var data = Packages.GetStatusOrder(code, userLogin);
+            var data = PackagesBusiness.GetStatusOrder(code, userLogin);
             return View(data);
         }
         #endregion
@@ -62,14 +62,14 @@ namespace KGQT.Controllers
         public DataReturnModel<bool> Create(tbl_Package form)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var data = Packages.CustomerAdd(form,userLogin);
+            var data = PackagesBusiness.CustomerAdd(form,userLogin);
             return data;
         }
 
         public DataReturnModel<bool> Cancel(int id)
         {
             var userLogin = HttpContext.Session.GetString("user");
-            var data = Packages.Cancel(id, userLogin);
+            var data = PackagesBusiness.Cancel(id, userLogin);
             return data;
         }
         #endregion

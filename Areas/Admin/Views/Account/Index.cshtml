@@ -12,18 +12,15 @@
     List<UserRole> lstRoles = ViewBag.lstRoles;
 }
 
-<div class="row mb-2">
-    <ul id="breadcrumbs">
-        <li><a>Người dùng</a></li>
-        <li><a>Danh sách</a></li>
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a>Người dùng</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Danh sách</a></li>
     </ul>
 </div>
-<div class="row bg-white p-2">
-    <div class="col-12 py-2">
+<div class="row p-2 mb-2 w-100">
+    <div class="col-12 mb-2">
         <div class="row">
-            <h5 class="fw-bold text-danger text-uppercase m-0">DANH SÁCH NGƯỜI DÙNG</h5>
-        </div>
-        <div class="row mt-2">
             <div class="col-12 d-flex align-items-center justify-content-between">
                 <form method="get">
                     @Html.TextBoxFor(model => searchText,"",new {@type="search", @placeholder="Tìm kiếm", @class="input", @name="searchText"})
@@ -39,7 +36,7 @@
     <div class="col-12">
         <table class="table table-hover">
             <thead class="thead-light">
-                <tr class="fw-bold">
+                <tr class="fw-bold text-uppercase">
                     <th class="text-left">Khách hàng</th>
                     <th class="text-left">Tài khoản</th>
                     <th class="text-left">SĐT</th>
@@ -91,7 +88,7 @@
         </table>
     </div>
 </div>
-<div class="row bg-white p-2">
+<div class="row p-2 w-100">
     <div class="col-4 align-self-center">
         <span>
             Tổng số:&nbsp

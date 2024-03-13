@@ -108,7 +108,7 @@ namespace KGQT.Commons
             {
                 var split = str.ToString().Split('.');
                 if (split[1].Length > 2)
-                    return Math.Round(str.Value, 1).ToString().Replace(",", ".");
+                    return Math.Round(str.Value, 1, MidpointRounding.AwayFromZero).ToString().Replace(",", ".");
             }
             return str.ToString().Replace(",", ".");
         }
@@ -121,7 +121,7 @@ namespace KGQT.Commons
             {
                 var split = value.Split('.');
                 if (split[1].Length > 2)
-                    return Math.Round(num, 1).ToString().Replace(",", ".");
+                    return Math.Round(num, 1, MidpointRounding.AwayFromZero).ToString().Replace(",", ".");
             }
             return value.Replace(",", ".");
         }
@@ -131,8 +131,8 @@ namespace KGQT.Commons
             if (string.IsNullOrEmpty(value)) return "0";
             double num = Convert.ToDouble(value);
             if (value.IndexOf(".") > 0)
-                return string.Format("{0:N0}", Math.Round(num, 1)).Replace(",", ".");
-            return string.Format("{0:N0}", num).Replace(",", ".");
+                return string.Format("{0:N0}", Math.Round(num, 1, MidpointRounding.AwayFromZero)).Replace(".", ",");
+            return string.Format("{0:N0}", num).Replace(".", ",");
         }
 
         public static string Double2Money(double? value)
@@ -140,16 +140,16 @@ namespace KGQT.Commons
             if (value == null) return "0";
             double num = Convert.ToDouble(value);
             if (value.ToString().IndexOf(".") > 0)
-                return string.Format("{0:N0}", Math.Round(num, 1)).Replace(",", ".");
-            return string.Format("{0:N0}", value).Replace(",", ".");
+                return string.Format("{0:N0}", Math.Round(num, 1, MidpointRounding.AwayFromZero)).Replace(".", ",");
+            return string.Format("{0:N0}", value).Replace(".", ",");
         }
         public static string Decimal2Money(decimal? value)
         {
             if (value == null) return "0";
             decimal num = Convert.ToDecimal(value);
             if (value.ToString().IndexOf(".") > 0)
-                return string.Format("{0:N0}", Math.Round(num, 1)).Replace(",", ".");
-            return string.Format("{0:N0}", value).Replace(",", ".");
+                return string.Format("{0:N0}", Math.Round(num, 1, MidpointRounding.AwayFromZero)).Replace(".", ",");
+            return string.Format("{0:N0}", value).Replace(".", ",");
         }
     }
 }

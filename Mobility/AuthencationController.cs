@@ -209,7 +209,7 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true,oRequest};
             }
-            var lstpack = Packages.GetAllStatus(userName);
+            var lstpack = PackagesBusiness.GetAllStatus(userName);
             var lstship = ShippingOrder.GetAllStatus(userName);
             return new object[] {false, lstpack, lstship };
         }
@@ -245,7 +245,7 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            var oData = Packages.GetPage(status, ID, null, null, pageNum, pageSize, userName);
+            var oData = PackagesBusiness.GetPage(status, ID, null, null, pageNum, pageSize, userName);
             return new object[] { false, oData };
         }
 
@@ -275,7 +275,7 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            var data = Packages.GetStatusOrder(ID, userName);
+            var data = PackagesBusiness.GetStatusOrder(ID, userName);
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == ID && x.Status < 2);
             return new object[] {false, data, oPack };
         }
@@ -306,7 +306,7 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            var data = Packages.Cancel(ID, userName);
+            var data = PackagesBusiness.Cancel(ID, userName);
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == ID);
             return new object[] { false, data, oPack };
         }
@@ -322,7 +322,7 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            var data = Packages.CustomerAdd(model, model.Username);
+            var data = PackagesBusiness.CustomerAdd(model, model.Username);
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == model.PackageCode);
             return new object[] {false, data, oPack };
         }
@@ -414,7 +414,8 @@ namespace KGQT.Mobility
 
             if (oUser == null) return null;
 
-            bool check = oUser.Wallet > oOrder.TotalPrice;
+            double totalPrice = Converted.ToDouble(oOrder.TotalPrice);
+            bool check = oUser.Wallet > totalPrice;
             if (check)
             {
                 oOrder.Status = 2;
@@ -425,13 +426,13 @@ namespace KGQT.Mobility
                 if (s)
                 {
                     oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
-                    var pay = oUser.Wallet - oOrder.TotalPrice;
+                    var pay = oUser.Wallet - totalPrice;
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);
 
                     #region Logs
                     BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice.Value, 1, 1, pay.Value, userName);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", totalPrice, 1, 1, pay.Value, userName);
                     #endregion
 
                     var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
@@ -452,9 +453,9 @@ namespace KGQT.Mobility
             }
             else
             {
-                var pay = oOrder.TotalPrice - oUser.Wallet;
+                var pay = totalPrice - oUser.Wallet;
                 oRequest.IsError = true;
-                oRequest.Message = string.Format("{0:N0}đ", pay).Replace(",", ".");
+                oRequest.Message = Converted.Double2Money(pay);
                 return oRequest;
             }
             return null;
