@@ -73,6 +73,48 @@ namespace KGQT.Mobility
         }
 
         [HttpPost]
+        [Route("deleteaccount")]
+        public object DeleteAccount([FromBody] RequestModel model)
+        {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
+
+            /*var oRequest = new DataReturnModel<object>();
+            if (model == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            if (!string.IsNullOrEmpty(model.Base64String))
+            {
+                byte[] bytes = Convert.FromBase64String(model.Base64String);
+                MemoryStream stream = new MemoryStream(bytes);
+                IFormFile file = new FormFile(stream, 0, bytes.Length, model.FileName, model.FileName);
+                if (file != null)
+                {
+                    model.File = file;
+                    model.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
+                }
+            }
+            var result = AccountBusiness.Register(model);*/
+            return null;
+        }
+
+        [HttpPost]
         [Route("changepassword")]
         public object ChangePassword([FromBody] ChangePassword model)
         {
@@ -84,6 +126,14 @@ namespace KGQT.Mobility
                 return oRequest;
             }
             var result = AccountBusiness.ChangePassword(model);
+            return result;
+        }
+
+        [HttpPost]
+        [Route("getconfig")]
+        public object GetConfig()
+        {
+            var result = BusinessBase.GetOne<tbl_Configuration>(x => x.Websitename == "Trakuaidi");
             return result;
         }
         #endregion
