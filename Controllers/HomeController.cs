@@ -76,6 +76,11 @@ namespace KGQT
             return View();  
         }
 
+        public IActionResult Policy()
+        {
+            return View();
+        }
+
     }
 
 
