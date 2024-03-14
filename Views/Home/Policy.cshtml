@@ -1,4 +1,5 @@
-﻿<html><head>
+﻿<html>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <title>Codx</title>
@@ -27,7 +28,8 @@
             max-width: 320px;
         }
 
-        .fixed-top {}
+        .fixed-top {
+        }
 
         body {
             background: rgba(245, 248, 250, 1);
@@ -52,9 +54,9 @@
             color: #000;
         }
 
-        .nav-link:hover {
-            color: #005DC7 !important;
-        }
+            .nav-link:hover {
+                color: #005DC7 !important;
+            }
 
         .section {
             padding: 60px 0 0px 0;
@@ -103,7 +105,7 @@
 
     <!-- Begin page -->
     <div class="layout-wrapper landing">
-        <nav class="navbar navbar-expand-lg navbar-landing" id="navbar">
+        <nav style="background-color: white;" class="navbar navbar-expand-lg navbar-landing" id="navbar">
             <div class="container">
                 <a class="navbar-brand" href="/">
                     <img src="/img/logo.png" class="card-logo card-logo-light" alt="logo light" height="100" width="100">
@@ -115,17 +117,8 @@
                             <a class="nav-link fs-14 active" href="#dangnhap">Đăng nhập</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fs-14" href="#mophong">Mô phỏng phần mền</a>
+                            <a class="nav-link fs-14" href="#dangkymophong">Đăng ký tài khoản</a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a class="nav-link fs-14" href="#dangky">Đăng ký tài khoản</a>
-                        </li> -->
-                        <li class="nav-item">
-                            <a class="nav-link fs-14" href="#dangkymophong">Đăng ký mô phỏng</a>
-                        </li>
-                        <!-- <li class="nav-item">
-                            <a class="nav-link fs-14" href="#taikhoan">Tài khoản</a>
-                        </li> -->
                         <li class="nav-item">
                             <a class="nav-link fs-14" href="#xoataikhoan">Xóa tài khoản</a>
                         </li>
@@ -163,8 +156,10 @@
                     <div class="col-lg-6">
                         <div class="text-center mb-2 pt-3">
                             <h3 class="mb-3 fw-semibold">Đăng nhập</h3>
-                            <p class="text-muted mb-4">Người dùng nhập thông tin tài khoản và mật khẩu vào biểu mẫu và
-                                chọn "Đăng nhập"</p>
+                            <p class="text-muted mb-4">
+                                Người dùng nhập thông tin tài khoản và mật khẩu vào biểu mẫu và
+                                chọn "Đăng nhập"
+                            </p>
                         </div>
                     </div>
                     <!-- end col -->
@@ -185,33 +180,6 @@
         </section>
         <!-- end dang nhap -->
         <!-- start dang nhap -->
-        <section class="section" id="mophong">
-            <div class="bg-overlay bg-overlay-pattern"></div>
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6">
-                        <div class="text-center mb-2 pt-3">
-                            <h3 class="mb-3 fw-semibold">Mô phỏng phần mềm</h3>
-                            <p class="text-muted mb-4">Sau khi mở ứng dụng lần đầu, tại trang đăng nhập tài khoản, người
-                                dùng chọn nút "Mô tả phần mềm" nếu chưa có tài khoản sử dụng</p>
-                        </div>
-                    </div>
-                    <!-- end col -->
-                </div>
-                <!-- end row -->
-                <div class="row align-items-center">
-                    <div class="col-lg-6 col-sm-7 col-10 mx-auto">
-                        <div class="text-center mb-2 pt-3">
-                            <img src="/assets/static-pages/images/img-2.png" alt="" class="img-fluid">
-                        </div>
-                    </div>
-                </div>
-
-                <!--end row-->
-            </div>
-
-            <!-- end container -->
-        </section>
         <!-- end dang nhap -->
         <!-- start dang nhap -->
         <section class="section" id="dangkymophong">
@@ -220,7 +188,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="text-center mb-2 pt-3">
-                            <h3 class="mb-3 fw-semibold">Đăng ký mô phỏng</h3>
+                            <h3 class="mb-3 fw-semibold">Đăng ký tài khoản</h3>
                             <p class="text-muted mb-4">1. Chọn đăng ký tài khoản</p>
                         </div>
                     </div>
@@ -333,9 +301,11 @@
                     <div class="col-lg-6">
                         <div class="text-center mb-2 pt-3">
                             <h3 class="mb-3 fw-semibold">Xác nhận xóa tài khoản</h3>
-                            <p class="text-muted mb-4">Tài khoản sau khi xóa dữ liệu sẽ bị xóa hoàn toàn khỏi hệ thống
+                            <p class="text-muted mb-4">
+                                Tài khoản sau khi xóa dữ liệu sẽ bị xóa hoàn toàn khỏi hệ thống
                                 và khóa lại địa chỉ email hiện tại, người dùng sẽ không thể đăng nhập hay đăng ký tài
-                                khoản mới với địa chỉ email hiện tại đang sử dụng</p>
+                                khoản mới với địa chỉ email hiện tại đang sử dụng
+                            </p>
                         </div>
                     </div>
                     <!-- end col -->
@@ -396,4 +366,5 @@
 
 
 
-</body></html>
+</body>
+</html>
