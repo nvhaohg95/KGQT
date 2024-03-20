@@ -124,19 +124,19 @@
                                     <div class="col-md-3 col-sm-12 col-xs-12">
                                         Cân nặng: @(item.Weight)kg
                                     </div>
-                                    @if (item.WeightExchange > 0)
+                                    @if (Converted.ToDouble(item.WeightExchange) > 0)
                                     {
                                         <div class="col-md-3 col-sm-12 col-xs-12">
-                                            @if (item.Length > 0 && item.Width > 0 && item.Height > 0)
+                                            @if (Converted.ToDouble(item.Length) > 0 && Converted.ToDouble(item.Width) > 0 && Converted.ToDouble(item.Height) > 0)
                                             {
                                                 <span>
-                                                Đo lên:
-                                                            (@(
-                                                            item.Length + "x" + item.Width + "x" + item.Height
-                                                            ))
+                                                    Đo lên:
+                                                    (@(
+                                                       item.Length + "x" + item.Width + "x" + item.Height
+                                                       ))
                                                 </span>
                                             }
-                                            @(item.WeightExchange )kg
+                                            @(item.WeightExchange)kg
                                         </div>
                                     }
                                 </div>

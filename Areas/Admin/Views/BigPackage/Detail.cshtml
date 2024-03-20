@@ -59,10 +59,10 @@
                                             @PJUtils.MovingMethod2Type(item.MovingMethod)
                                         </td>
                                         <td class="text-center">
-                                            @Converted.Double2String(item.Weight)
+                                            @item.Weight
                                         </td>
                                         <td class="text-center">
-                                            @Converted.Double2String(item.WeightExchange)
+                                            @item.WeightExchange
                                         </td>
                                         <td class="text-center" style="vertical-align:middle">
                                             @Converted.Date2String(item.OrderDate,true)
@@ -75,10 +75,10 @@
                                     </td>
                                     
                                     <td class="text-center bg-warning" style="vertical-align:middle">
-                                        @Model.Sum(x=>x.Weight)
+                                        @Model.Sum(x=>Converted.ToDouble(x.Weight))
                                     </td>
                                     <td class="text-center bg-warning">
-                                        @Model.Sum(x=>x.WeightExchange)
+                                        @Model.Sum(x=>Converted.ToDouble(x.WeightExchange))
                                     </td>
                                     <td></td>
                                 </tr>

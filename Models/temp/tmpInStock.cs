@@ -12,6 +12,8 @@
         public double? SurCharge { get; set; }
         public double? WoodPrice { get; set; }
         public double? AirPrice { get; set; }
+        public double? DeclarePrice { get; set; }
+        public string? Link { get; set; }
         public string Username { get; set; }
 
     }

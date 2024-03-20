@@ -74,6 +74,10 @@
                         <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance" onchange="showhideDeclare(this)" @(Model.IsInsurance == true ? "checked=\"checked\"" : "")>
                         <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
                     </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsBrand" id="IsBrand" @(Model.IsBrand == true ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="isBrand">Hàng hiệu</label>
+                    </div>
                 </div>
 
                 <div id="frmWoodPack" class="form-group mb-4 @(Model.IsWoodPackage == true ? "d-block" : "d-none")">

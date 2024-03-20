@@ -1,8 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using KGQT.Business;
+﻿using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
@@ -10,7 +6,6 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Drawing;
-using System.IO;
 
 namespace KGQT.Mobility
 {
@@ -330,8 +325,8 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
-            var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+            string code = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : "";
+            var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == code);
             return new object[] { false, lstPacks };
         }
 
@@ -353,11 +348,11 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
             }
-            int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
+            string code = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : "";
             string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
 
-            if (id == 0) return null;
-            var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+            if (string.IsNullOrEmpty(code)) return null;
+            var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ShippingOrderCode == code);
             if (oOrder == null) return null;
 
             var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
@@ -385,7 +380,7 @@ namespace KGQT.Mobility
                     HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", totalPrice, 1, 1, pay.Value, userName);
                     #endregion
 
-                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == code);
                     foreach (var pack in packs)
                     {
                         pack.Status = 5;

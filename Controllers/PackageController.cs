@@ -36,7 +36,7 @@ namespace KGQT.Controllers
 
         public IActionResult Details(int id)
         {
-            var model = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            var model = PackagesBusiness.GetOne(id);
             var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == model.UID);
             if (user != null)
             {

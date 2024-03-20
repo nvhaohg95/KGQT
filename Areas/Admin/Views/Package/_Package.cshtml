@@ -35,41 +35,36 @@
                                 <span>Trạng thái:</span>
                                 @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                             </div>
-                            <div class="col-md-5 col-sm-12 col-xs-12">
-                                Dịch vụ phụ:
-                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                {
-                                    <div class="form-check-inline">
-
-                                        <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
-                                        </label>
+                            <div class="px-0 col-md-5 col-sm-12 col-xs-12">
+                                <div class="form-inline align-items-lg-start">
+                                    <label class="col-sm-12 col-md-5 col-form-label">Dịch vụ phụ:</label>
+                                    <div class="col-md-7 col-sm-12 row">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsWoodPackage" onchange="updateService(this,1,@item.ID)" id="cbPack@(item.ID)" @(item.IsWoodPackage == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="cbPack">Đóng gỗ</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsAirPackage" onchange="updateService(this,2,@item.ID)" id="cbAirbag@(item.ID)" @(item.IsAirPackage == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="cbAirbag">Túi khí</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance@(item.ID)" onchange="updateService(this,3,@item.ID)" @(item.IsInsurance == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsBrand" id="IsBrand" onchange="updateService(this,4,@item.ID)" @(item.IsBrand == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="isBrand">Hàng hiệu</label>
+                                        </div>
                                     </div>
-                                }
-                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                {
-                                    <div class="form-check-inline">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
-                                        </label>
-                                    </div>
-                                }
-                                @if (item.IsInsurance != null && item.IsInsurance == true)
-                                {
-                                    <div class="form-check-inline">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
-                                        </label>
-                                    </div>
-                                }
+                                </div>
                             </div>
                         </div>
-                        <div class="row px-2 mx-0 mb-2">
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center">
-                                    <span>Khách hàng:</span>
-                                    <div class="col-md-8">
-                                        <input id="txtUsername" class="form-control mb-0" value="@item.Username" />
+                        <div class="row px-0 mx-0 mb-2">
+                            <div class="px-0 col-md-6">
+                                <div class="form-inline">
+                                    <label class="col-md-3 col-sm-4 col-form-label justify-content-start">Khách hàng:</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input id="txtUsername@(item.ID)" class="txtUsername form-control form-control-sm mb-0 w-100" value="@item.Username" />
                                     </div>
                                 </div>
                             </div>
@@ -83,7 +78,7 @@
                             }
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="px-0 col-md-4">
                         <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
                             @if (item.ReceivedDate != null)
                             {
@@ -116,81 +111,141 @@
                     </div>
                 </div>
                 <div class="row m-0 mb-2 pt-2 border-top">
-                    <div class="col-md-3">
-                        <div class="row">
-                            <div class="form-inline text-left">
-                                Cân nặng:  &nbsp;
-                                <input id="txtWeight" class="form-control mb-0" value="@item.Weight" /> &nbsp;Kg
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Cân nặng:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWeight@(item.ID)" type="text" class="form-control form-control-sm mb-0" value="@item.Weight" placeholder="Nhập số kilogram">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        kg
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                    {
-                        <div class="col-md-3">
 
-                            <div class="row">
-                                <div class="form-inline text-left">
-                                    Đóng gỗ:  &nbsp;
-                                    <input data-type="formatvnd" id="txtWoodPackage" class="form-control mb-0" value="@item.WoodPackagePrice" />  &nbsp; VNĐ
+                    <div class="px-0 col-md-3 @(item.IsWoodPackage != null && item.IsWoodPackage == true ? "" :"d-none")" id="WoodPackage@(item.ID)">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Đóng gỗ:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWoodPackage@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.WoodPackagePrice" placeholder="Nhập tiền đóng gỗ">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    }
-                    @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                    {
-                        <div class="col-md-3">
+                    </div>
 
-                            <div class="row">
-                                <div class="form-inline text-left">
-                                    Bọt khí:  &nbsp;
-                                    <input data-type="formatvnd" id="txtAirPackage" class="form-control mb-0" value="@item.AirPackagePrice" />&nbsp; VNĐ
+                    <div class="px-0 col-md-3 @(item.IsAirPackage != null && item.IsAirPackage == true ? "" :"d-none")" id="AirPackage@(item.ID)">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Bọt khí:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtAirPackage@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.AirPackagePrice" placeholder="Nhập tiền quấn bọt khí">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    }
+                    </div>
 
-                    <div class="col-md-3 align-self-center">
-                        <div class="row">
-                            <div class="form-inline text-left">
-                                Thu hộ:  &nbsp;
-                                <input data-type="formatvnd" id="txtSurCharge" class="form-control mb-0" value="@item.SurCharge" />&nbsp; VNĐ
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Thu hộ:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtSurCharge@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.SurCharge" placeholder="Nhập phí thu hộ">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row m-0 pt-2 border-top">
-                    <div class="col-md-3">
-                        <div class="row">
-                            <div class="form-inline text-left">
-                                Đo lên:  &nbsp;
-                                <input id="txtWeightEx" class="form-control mb-0" value="@item.WeightExchange" />&nbsp;Kg
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
 
-                        <div class="row">
-                            <div class="form-inline text-left">
-                                Dài:  &nbsp;
-                                <input id="txtLength" class="form-control mb-0" value="@item.Length" /> &nbsp;cm
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Đo lên:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWeightEx@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.WeightExchange" placeholder="Nhập khối lượng quy đổi">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        kg
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-
-                        <div class="row">
-                            <div class="form-inline text-left">
-                                Rộng:  &nbsp;
-                                <input id="txtWidth" class="form-control mb-0" value="@item.Width" />&nbsp;cm
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Dài:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtLength@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.Length" placeholder="Nhập chiều dài">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        cm
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 align-self-center">
-                        <div class="row">
-                            <div class="form-inline text-left">
-                                Cao:  &nbsp;
-                                <input id="txtHeight" class="form-control mb-0" value="@item.Height" />&nbsp;cm
+
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Rộng:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWidth@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.Width" placeholder="Nhập chiều rộng">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        cm
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Cao:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtHeight@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.Height" placeholder="Nhập chiều cao">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        cm
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-0 pt-2 border-top @(item.IsInsurance != null && item.IsInsurance == true ? "" :"d-none")" id="declarefrom@(item.ID)">
+
+                    <div class="px-0 col-md-5 col-sm-12">
+                        <div class="form-inline">
+                            <label class="col-md-3 col-sm-6 col-form-label justify-content-start">Link sản phẩm:</label>
+                            <div class="col-md-7 col-sm-6">
+                                <input id="txtDeclaration@(item.ID)" class="form-control form-control-sm mb-0 w-100" value="@item.Declaration" placeholder="Nhập link sản phẩm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-5 col-sm-12">
+                        <div class="form-inline">
+                            <label class="col-sm-2 col-form-label justify-content-start">Giá:</label>
+                            <div class="col-sm-10 input-group">
+                                <input id="txtDeclarePrice@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.DeclarePrice" placeholder="Nhập giá khê khai">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -217,56 +272,76 @@ else
         })
     })
     function submitFn(id, moving) {
-        let weight = $('#txtWeight').val();
-        let wood = 0;
-        let air = 0;
-        let username = "";
-        let $wood = $('#txtWoodPackage');
-        let $air = $('#txtAirPackage');
+        debugger;
+        console.log('fasfasf')
+        let weight = $('#txtWeight' + id).val();
+        let wood = $('#txtWoodPackage' + id).data('value');
+        let air = $('#txtAirPackage' + id).data('value');
+        let isPrice = $('#txtDeclarePrice' + id).data('value')
+        let isLink = $('#txtDeclaration' + id).val();
         let sub = $('#txtSurCharge').val();
-        let $username = $('#txtUsername');
-        let $weightEx = $('#txtWeightEx');
-        let $length = $('#txtLength');
-        let $width = $('#txtWidth');
-        let $height = $('#txtHeight');
+        let username = $('#txtUsername' + id).val();
+        let weightEx = $('#txtWeightEx' + id).val();
+        let length = $('#txtLength' + id).val();
+        let width = $('#txtWidth' + id).val();
+        let height = $('#txtHeight' + id).val();
+
+        let $wood = $('#cbPack' + id).is(":checked");
+        let $air = $('#cbAirbag' + id).is(":checked");
+        let $inSure = $('#cbInsurance' + id).is(":checked");
 
         if (!weight) {
             helper.showErr('Vui lòng nhập cân nặng!');
             return;
         }
-        if ($wood.length) {
-            wood = $wood.data('value');
+
+        if ($wood) {
             if (!wood) {
                 helper.showErr('Vui lòng nhập phí đóng gỗ!');
                 return;
             }
+        } else {
+            wood = 0;
         }
-        if ($air.length) {
-            air = $air.data('value');
+
+        if ($air) {
             if (!air) {
                 helper.showErr('Vui lòng nhập phí quấn bọt khí!');
                 return;
             }
+        } else {
+            air = 0;
         }
-        if ($username.length) {
-            username = $username.val();
-            if (!username) {
-                helper.showErr('Vui lòng khai báo khách hàng!');
+
+        if ($inSure) {
+            if (!isLink || !isPrice) {
+                helper.showErr('Vui lòng nhập kê khai báo hiểm!');
                 return;
             }
+        } else {
+            isLink = "";
+            isPrice = 0;
         }
+
+        if (!username) {
+            helper.showErr('Vui lòng khai báo khách hàng!');
+            return;
+        }
+
         let data = {
             id,
             username,
-            movingMethod:moving,
+            movingMethod: moving,
             weight,
             woodPrice: wood,
             airPrice: air,
             surCharge: sub,
-            weightExchange: $weightEx.val(),
-            length: $length.val(),
-            width: $width.val(),
-            height: $height.val()
+            link: isLink,
+            declarePrice: isPrice,
+            weightExchange:weightEx,
+            length: length,
+            width: width,
+            height: height
         }
         $.ajax({
             url: '/admin/Package/InStockPackage',
@@ -276,6 +351,35 @@ else
             success: function (res) {
                 if (res)
                     helper.showSuc("Cập nhật thành công");
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    }
+
+    function updateService(e, type, id) {
+        console.log('asff')
+        let checked = $(e).is(":checked")
+        $.ajax({
+            url: '/admin/Package/UpdateService',
+            method: 'POST',
+            dataType: 'json',
+            data: { id, type, check: checked },
+            success: function (res) {
+                if (res) {
+
+                    if (type == 1)
+                        $('#WoodPackage' + id).toggleClass('d-none');
+
+                    if (type == 2)
+                        $('#AirPackage' + id).toggleClass('d-none');
+
+                    if (type == 3)
+                        $('#declarefrom' + id).toggleClass('d-none');
+
+                    helper.showSuc("Cập nhật thành công", false);
+                }
             },
             error: function (err) {
                 console.log(err)

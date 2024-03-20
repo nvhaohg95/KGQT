@@ -1,4 +1,5 @@
-﻿using KGQT.Business;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
@@ -60,8 +61,8 @@ namespace KGQT.Areas.Admin.Controllers
         public ActionResult Details(int id)
         {
             var model = new OrderDetails();
-            model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
-            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+            model.Order = ShippingOrder.GetOne(id);
+            model.Packs = PackagesBusiness.GetByTransId(model.Order.ShippingOrderCode);
             if (model.Order != null)
                 model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username == model.Order.Username);
             return View(model);
@@ -173,7 +174,7 @@ namespace KGQT.Areas.Admin.Controllers
                     trade.CreatedBy = "Auto";
                     BusinessBase.Add(trade);
 
-                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == oOrder.ShippingOrderCode);
                     foreach (var pack in packs)
                     {
                         pack.Status = 5;
@@ -213,7 +214,7 @@ namespace KGQT.Areas.Admin.Controllers
             var s = BusinessBase.Update(oOrder);
             if (s)
             {
-                var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+                var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == oOrder.ShippingOrderCode);
                 foreach (var pack in packs)
                 {
                     pack.Status = 5;

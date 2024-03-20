@@ -42,7 +42,7 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 IQueryable<tbl_Package> query = db.tbl_Packages
-                    .Where(x => x.Weight > 0 && x.CreatedDate >= startDate && x.CreatedDate <= endDate);
+                    .Where(x => (!string.IsNullOrEmpty(x.Weight) && x.Weight != "0") && x.CreatedDate >= startDate && x.CreatedDate <= endDate);
 
                 int total = query.Count();
                 var lstData = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();

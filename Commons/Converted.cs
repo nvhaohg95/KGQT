@@ -100,6 +100,25 @@ namespace KGQT.Commons
                 return d.Value.ToString("dd/MM/yyyy HH:mm:ss");
             else return d.Value.ToString("dd/MM/yyyy");
         }
+
+        public static string StringCeiling(object value)
+        {
+            if (value == null) return "0";
+            double num = Convert.ToDouble(value);
+            if (value.ToString().IndexOf(".") > -1)
+                return Math.Ceiling(num).ToString().Replace(",", ".");
+            return value.ToString().Replace(",", ".");
+        }
+
+        public static double DoubleCeiling(double? value)
+        {
+            if (value == null) return 0;
+            double num = Convert.ToDouble(value);
+            if (value.ToString().IndexOf(".") > -1)
+                return Math.Ceiling(num);
+            return Convert.ToDouble(value);
+        }
+
         public static string Double2String(double? str)
         {
             if (str == null) return "0";

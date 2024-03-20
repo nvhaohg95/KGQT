@@ -2,12 +2,39 @@
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.EntityFrameworkCore;
+using System.Composition;
 
 namespace KGQT.Business
 {
     public static class ShippingOrder
     {
         #region Get count
+        public static tbl_ShippingOrder GetOne(int id)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                return db.tbl_ShippingOrders.FirstOrDefault(x => x.ID == id);
+            }
+        }
+
+        public static tbl_ShippingOrder CheckOrderInStock(string username, int method, DateTime fromDate, DateTime toDate, DateTime exportStart, DateTime exportEnd)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                try
+                {
+                    var query = db.tbl_ShippingOrders.Where(x => x.ShippingMethod == method && x.Username.ToLower() == username.ToLower()
+                    && x.CreatedDate >= fromDate && x.CreatedDate <= toDate && x.ChinaExportDate >= exportStart && x.ChinaExportDate <= exportEnd);
+
+                    var a = query.FirstOrDefault();
+                    return a;
+                }
+                catch(Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
         public static object[] GetAllStatus(string username)
         {
             using (var db = new nhanshiphangContext())

@@ -43,9 +43,8 @@ namespace KGQT.Controllers
         public ActionResult Details(int id)
         {
             var model = new OrderDetails();
-            model.Order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
-            model.Packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
-            //model.Declarations = BusinessBase.GetList<tbl_ShippingOrderDeclaration>(x => x.ShippingOrderID == id);
+            model.Order = ShippingOrder.GetOne(id);
+            model.Packs = PackagesBusiness.GetByTransId(model.Order.ShippingOrderCode);
             return View(model);
         }
 
@@ -115,7 +114,7 @@ namespace KGQT.Controllers
                     HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", totalPrice, 1, 1, pay.Value, username);
                     #endregion
 
-                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == id);
+                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == oOrder.ShippingOrderCode);
                     foreach (var pack in packs)
                     {
                         pack.Status = 5;

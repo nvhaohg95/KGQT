@@ -76,8 +76,8 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult PackagePartial(string code)
         {
-            var package = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.ToLower().Contains(code.ToLower())).ToList();
-            return PartialView("_Package", package);
+            var p = PackagesBusiness.GetInStock(code);
+            return PartialView("_Package", p);
         }
 
         [HttpGet]
@@ -181,6 +181,31 @@ namespace KGQT.Areas.Admin.Controllers
             var userLogin = HttpContext.Session.GetString("user");
             oData = PackagesBusiness.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
+        }
+
+        /// <summary>
+        /// type 1= dong go, 2=bot khi, 3=bao hiem; 4 = hang hieu
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="type"></param>
+        /// <param name="check"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public bool UpdateService(int id, int type, bool check)
+        {
+            var pack = PackagesBusiness.GetOne(id);
+            if(pack == null)
+            return false;
+
+            if(type == 1)
+                pack.IsWoodPackage = check;
+            if(type==2)
+                pack.IsAirPackage = check;
+            if(type == 3)
+                pack.IsInsurance = check;
+            if (type == 4)
+                pack.IsBrand = check;
+            return BusinessBase.Update(pack);
         }
 
 

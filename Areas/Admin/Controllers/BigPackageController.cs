@@ -73,11 +73,11 @@ namespace KGQT.Areas.Admin.Controllers
                     ws.Cells["A" + i].Value = row.PackageCode;
                     ws.Cells["B" + i].Value = row.Username;
                     ws.Cells["C" + i].Value = PJUtils.MovingMethod2Type(row.MovingMethod);
-                    ws.Cells["D" + i].Value = Converted.Double2String(row.Weight);
+                    ws.Cells["D" + i].Value =row.Weight;
                     ws.Cells["E" + i].Value = Converted.Date2String(row.OrderDate, true);
-                    if (row.WeightExchange > 0)
+                    if (Converted.ToDouble(row.WeightExchange) > 0)
                     {
-                        ws.Cells["F" + i].Value = Converted.Double2String(row.WeightExchange);
+                        ws.Cells["F" + i].Value = Converted.ToDouble(row.WeightExchange);
                         ws.Cells["G" + i].Value = row.Length + "x" + row.Width + "x" + row.Height;
 
                     }
@@ -88,8 +88,8 @@ namespace KGQT.Areas.Admin.Controllers
                     i++;
                 }
                 ws.Cells["A" + (modelRows + 1)].Value = "Tổng cộng";
-                ws.Cells["D" + (modelRows + 1)].Value = data.Sum(x => x.Weight);
-                ws.Cells["F" + (modelRows + 1)].Value = data.Sum(x => x.WeightExchange);
+                ws.Cells["D" + (modelRows + 1)].Value = data.Sum(x => Converted.ToDouble(x.Weight));
+                ws.Cells["F" + (modelRows + 1)].Value = data.Sum(x => Converted.ToDouble(x.WeightExchange));
                 ws.Cells["A1:G1"].Style.Fill.SetBackground(System.Drawing.Color.Blue);
                 ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Fill.SetBackground(System.Drawing.Color.Yellow);
                 ws.Cells[$"A{modelRows + 1}:G{modelRows + 1}"].Style.Font.Bold = true;
