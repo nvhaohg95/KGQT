@@ -36,8 +36,18 @@ namespace KGQT.Mobility
                 oRequest.IsError = true;
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
-            } 
-            var result = AccountBusiness.Login(userName, passWord);
+            }
+            DataReturnModel<tbl_Account> result = AccountBusiness.Login(userName, passWord);
+            if (!result.IsError)
+            {
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                if (user.IsActive == false)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Người không tồn tại. Vui lòng thử lại!";
+                    return oRequest;
+                }
+            }
             return result;
         }
 
@@ -68,6 +78,48 @@ namespace KGQT.Mobility
         }
 
         [HttpPost]
+        [Route("deleteaccount")]
+        public object DeleteAccount([FromBody] RequestModel model)
+        {
+            var oRequest = new DataReturnModel<object>();
+            if (!ValidateModelRequest(model))
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+            if (dataRequest == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
+            var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+            if (user == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Người dùng không còn tồn tại!";
+                return oRequest;
+            }
+            user.IsActive = false;
+            var update = BusinessBase.Update(user);
+            if (!update)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+            else
+            {
+                oRequest.IsError = false;
+                oRequest.Message = "Xóa tài khoản thành công!";
+                return oRequest;
+            }
+        }
+
+        [HttpPost]
         [Route("changepassword")]
         public object ChangePassword([FromBody] ChangePassword model)
         {
@@ -79,6 +131,14 @@ namespace KGQT.Mobility
                 return oRequest;
             }
             var result = AccountBusiness.ChangePassword(model);
+            return result;
+        }
+
+        [HttpPost]
+        [Route("getconfig")]
+        public object GetConfig()
+        {
+            var result = BusinessBase.GetOne<tbl_Configuration>(x => x.Websitename == "Trakuaidi");
             return result;
         }
         #endregion

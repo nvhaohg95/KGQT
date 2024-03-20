@@ -28,6 +28,7 @@ namespace KGQT.Models
         public double? QuanLyDHPercent { get; set; }
         public double? QuanLyCurrencyND { get; set; }
         public bool? IsShowNoti { get; set; }
+        public bool? IsMobileReview { get; set; }
         public string? BankInfor { get; set; }
         public int? SearchBaiDuTimes { get; set; }
     }

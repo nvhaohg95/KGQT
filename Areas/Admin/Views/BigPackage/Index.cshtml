@@ -12,11 +12,11 @@
     int totalRecord = (int)ViewData["totalRecord"];
     int totalPage = (int)ViewData["totalPage"];
 }
-<div class="container-fluid h-100">
+<div class="container-fluid w-100 h-100">
     <div class="row">
-        <ul id="breadcrumbs">
-            <li><a href="/admin">Trang chủ</a></li>
-            <li><a href="#">Danh sách file lô</a></li>
+        <ul id="breadcrumbs" class="ps-2">
+            <li class="text-uppercase fw-bold"><a href="/admin">Trang chủ</a></li>
+            <li class="text-uppercase fw-bold"><a href="#">Danh sách file lô</a></li>
         </ul>
     </div>
     <div class="row">
@@ -48,10 +48,10 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
-                                    <a href="Index?page=1" class="text-decoration-none mr-2 btn btn-info btn-sm">
-                                        <i class="fas fa-sync fa-xs mr-2"></i>Làm mới bộ lọc
+                                    <a href="Index?page=1" class="text-decoration-none" title="Làm mới bộ lọc">
+                                        <i class="fas fa-sync fa-xs mr-2"></i>
                                     </a>
-                                    <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
+                                    <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
                                 </div>
                             </div>
                         </form>
@@ -116,35 +116,81 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-4 align-self-center">
             <span>
                 Tổng số:&nbsp
                 <b>@totalRecord</b>
             </span>
         </div>
-        <div class="col-7">
+        <div class="col-8">
             @if (totalPage > 1)
             {
                 <nav class="d-flex justify-content-end">
                     <ul class="pagination m-0">
-                        <li class="@(page <=1 ? "page-item disabled" : "page-item cursor-pointer")">
-                            <a class="page-link" onclick="getPage(@(page - 1))" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" id="pageNumber">
-                                @(page)
-                            </a>
-                        </li>
-                        <li class="@(page >= totalPage ? "page-item disabled" : "page-item cursor-pointer")">
-                            <a class="page-link" onclick="getPage(@(page + 1))" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </li>
+                        @{
+                            int offset = 2; // number display page
+                            if (page > 1)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@(page),1,@totalPage)">
+                                        <i class="fas fa-fast-backward"></i>
+                                    </button>
+                                </li>
+                                int prevPage = page - 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@(page),@prevPage,@totalPage)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </button>
+                                </li>
+                            }
+
+                            int from = page - offset;
+                            int to = page + offset;
+                            if (from <= 0)
+                            {
+                                from = 1;
+                                to = offset * 2;
+                            }
+
+                            if (to > totalPage)
+                            {
+                                to = totalPage;
+                            }
+
+                            int i;
+                            for (i = from; i <= to; i++)
+                            {
+                                <li class="@(page == i ? "page-item active" : "page-item")">
+                                    <button type="button" class="page-link" onclick="nextPage(@(page),@i,@totalPage)">@i</button>
+                                </li>
+                            }
+                            if (page < totalPage - (to / 2))
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
+                            if (page < totalPage)
+                            {
+                                int nextPage = page + 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@(page),@nextPage,@totalPage)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </button>
+                                </li>
+                            }
+                            if (page < totalPage)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@(page),@totalPage,@totalPage)">
+                                        <i class="fas fa-fast-forward"></i>
+                                    </button>
+                                </li>
+                            }
+                        }
                     </ul>
                 </nav>
             }

@@ -16,7 +16,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Index(int type,int page = 1,int pageSize = 10)
         {
-            var oData = FeeWeightBusiness.GetPage(page, pageSize);
+            var oData = FeeWeightBusiness.GetPage(type,page, pageSize);
             var lstData = oData[0] as List<tbl_FeeWeight>;
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
