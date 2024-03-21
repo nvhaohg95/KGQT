@@ -64,7 +64,7 @@ namespace KGQT.Areas.Admin.Controllers
                 s = BusinessBase.Update(u);
 
                 #region Logs
-                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount.Value, 1, 1, u.Wallet.Value, userName);
+                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount, 1, 1, u.Wallet, userName);
                 #endregion
             }
             return Ok(s);

@@ -1,5 +1,6 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using KGQT.Business;
+@using KGQT.Commons;
 @using KGQT.Models.temp;
 @using KGQT.Models;
 @using Newtonsoft.Json;
@@ -86,7 +87,7 @@
                 {
                     <span class="nav-link">
                         <span class="text-dark">Ví cá nhân&nbsp:&nbsp</span>
-                        <span class="fw-bold text-danger">@string.Format("{0:N0}đ",user.Wallet).Replace(",",".")</span>
+                        <span class="fw-bold text-danger">@Converted.String2Money(user.Wallet)đ</span>
                     </span>
                 }
                 else

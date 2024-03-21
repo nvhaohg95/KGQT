@@ -129,7 +129,7 @@ namespace KGQT.Business
                     Username = data.UserName,
                     Password = PJUtils.Encrypt("userpass", data.Password),
                     Email = data.Email,
-                    Wallet = 0,
+                    Wallet = "0",
                     RoleID = data.RoleID,
                     CreatedDate = DateTime.Now,
                     CreatedBy = createdBy

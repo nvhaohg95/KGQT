@@ -71,7 +71,6 @@
                     <td class="fw-bold text-center">Số tiền</td>
                     <td class="fw-bold text-center">Số dư</td>
                     <td class="fw-bold text-center">Tổng</td>
-                    @*<td class="fw-bold text-center">Thao tác</td>*@
                 </tr>
             </thead>
             <tbody>
@@ -105,32 +104,30 @@
                         <td class="text-left">
                             @if (item.Type == 1)
                             {
-                                <span class="text-danger">-@string.Format("{0:N0}",item.Amount).Replace(",",".")đ</span>
+                                <span class="text-danger">-@Converted.String2Money(item.Amount)đ</span>
                             }
                             else
                             {
-                                <span class="text-success">+@string.Format("{0:N0}",item.Amount).Replace(",",".")đ</span>
+                                <span class="text-success">+@Converted.String2Money(item.Amount)đ</span>
                             }
                         </td>
                         <td class="text-center">
-                            <span class="text-success">@string.Format("{0:N0}",item.MoneyLeft).Replace(",",".")đ</span>
+                            <span class="text-success">@Converted.String2Money(item.MoneyLeft)đ</span>
                         </td>
                         <td class="text-center">
-                            @if(item.Type == 1)
+                            @if (item.Type == 1)
                             {
-                                <span class="text-success">@string.Format("{0:N0}",item.MoneyLeft - item.Amount).Replace(",",".")đ</span>
+                                <span class="text-success">
+                                    @Converted.Double2Money(Converted.ToDouble(item.MoneyLeft) - Converted.ToDouble(item.Amount))đ
+                                </span>
                             }
                             else
                             {
-                                <span class="text-success">@string.Format("{0:N0}",item.MoneyLeft + item.Amount).Replace(",",".")đ</span>
+                                <span class="text-success">
+                                    @Converted.Double2Money(Converted.ToDouble(item.MoneyLeft)+ Converted.ToDouble(item.Amount))đ
+                                </span>
                             }
                         </td>
-                        @*<td class="text-center">
-                            <a class="btn btn-sm btn-secondary" asp-action="Detail" asp-route-id="@item.ID">
-                                <i class="far fa-edit"></i>
-                                <span>Xem</span>
-                            </a>
-                        </td>*@
                     </tr>
                 }
             </tbody>

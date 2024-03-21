@@ -23,7 +23,7 @@ namespace KGQT.Business
             {
                 try
                 {
-                    var query = db.tbl_ShippingOrders.Where(x => x.ShippingMethod == method && x.Username.ToLower() == username.ToLower()
+                    var query = db.tbl_ShippingOrders.Where(x =>x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower()
                     && x.CreatedDate >= fromDate && x.CreatedDate <= toDate && x.ChinaExportDate >= exportStart && x.ChinaExportDate <= exportEnd);
 
                     var a = query.FirstOrDefault();

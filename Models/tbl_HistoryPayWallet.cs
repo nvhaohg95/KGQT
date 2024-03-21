@@ -9,9 +9,9 @@ namespace KGQT.Models
         public int UID { get; set; }
         public string Username { get; set; } = null!;
         public int OrderID { get; set; }
-        public double Amount { get; set; }
+        public string Amount { get; set; } = null!;
         public string? HContent { get; set; }
-        public double MoneyLeft { get; set; }
+        public string MoneyLeft { get; set; } = null!;
         /// <summary>
         /// 1: trừ
         /// 2: cộng

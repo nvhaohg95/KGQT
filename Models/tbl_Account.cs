@@ -43,7 +43,7 @@ namespace KGQT.Models
         /// 3. Banned
         /// </summary>
         public int? Status { get; set; }
-        public double? Wallet { get; set; }
+        public string? Wallet { get; set; }
         public bool? IsNotReceiveMail { get; set; }
         public bool? IsOutCityCustomer { get; set; }
         public bool? IsActive { get; set; }

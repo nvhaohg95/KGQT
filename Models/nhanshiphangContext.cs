@@ -78,6 +78,8 @@ namespace KGQT.Models
                 entity.Property(e => e.UserLevel).HasComment("1. thành viên\r\n2. dịch vụ order\r\n3. shop đồng\r\n4. shop bạc\r\n5. shop vàng\r\n6. shop kim cương\r\n7. shop vip 1\r\n8. shop vip 2\r\n9. shop vip 3\r\n10. shop vip 4");
 
                 entity.Property(e => e.Username).HasMaxLength(50);
+
+                entity.Property(e => e.Wallet).HasMaxLength(20);
             });
 
             modelBuilder.Entity<tbl_BigPackage>(entity =>
@@ -126,6 +128,8 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_FeeWeight");
 
+                entity.Property(e => e.Amount).HasMaxLength(20);
+
                 entity.Property(e => e.CreatedBy).HasMaxLength(250);
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
@@ -134,6 +138,8 @@ namespace KGQT.Models
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.PriceBrand).HasMaxLength(20);
+
                 entity.Property(e => e.Type).HasComment("1. Vận chuyển nhanh\r\n2. Vận chuyển tiết kiệm");
             });
 
@@ -141,7 +147,11 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_HistoryPayWallet");
 
+                entity.Property(e => e.Amount).HasMaxLength(20);
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.MoneyLeft).HasMaxLength(20);
 
                 entity.Property(e => e.Status).HasComment("0:chưa active; 1:active");
 
@@ -269,6 +279,8 @@ namespace KGQT.Models
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.RecID).HasMaxLength(50);
+
                 entity.Property(e => e.ShippingMethodName).HasMaxLength(50);
 
                 entity.Property(e => e.ShippingOrderCode).HasMaxLength(50);
@@ -315,6 +327,8 @@ namespace KGQT.Models
                 entity.ToTable("tbl_Withdraw");
 
                 entity.Property(e => e.AcceptDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Amount).HasMaxLength(20);
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(250);
 

@@ -41,7 +41,7 @@
                 <span class="col-form-label">Tổng số dư của khách:</span>
                 @if (Model.Count > 0)
                 {
-                    <label class="col-form-label"><b>@Converted.Double2Money(Model.AsEnumerable().Sum(x=>x.Wallet))</b>đ</label>
+                    <label class="col-form-label"><b>@Converted.Double2Money(Model.AsEnumerable().Sum(x=>Converted.ToDouble(x.Wallet)))</b>đ</label>
                 }
             </div>
         </div>
@@ -75,7 +75,7 @@
                                     @Html.DisplayFor(modelItem => item.FullName)
                                 </td>
                                 <td class="text-center align-middle">
-                                    @Converted.Double2Money(item.Wallet)
+                                    @Converted.String2Money(item.Wallet)
                                 </td>
                                 <td class="text-center align-middle">
                                     <a class="btn btn-sm btn-secondary" href="/Admin/account/Detail?id=@item.ID">

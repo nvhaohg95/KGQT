@@ -9,7 +9,7 @@ namespace KGQT.Models
         public int? UID { get; set; }
         public string? Username { get; set; }
         public string? Fullname { get; set; }
-        public double? Amount { get; set; }
+        public string? Amount { get; set; }
         public string? BankName { get; set; }
         /// <summary>
         /// 1. Tiền mặt
@@ -25,7 +25,7 @@ namespace KGQT.Models
         /// 2: Thành công
         /// 3: Hủy
         /// </summary>
-        public int? Status { get; set; }
+        public int Status { get; set; }
         /// <summary>
         /// 1. Nạp tiền
         /// 2. Rút tiền

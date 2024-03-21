@@ -420,7 +420,7 @@ namespace KGQT.Mobility
             if (oUser == null) return null;
 
             double totalPrice = Converted.ToDouble(oOrder.TotalPrice);
-            bool check = oUser.Wallet > totalPrice;
+            bool check = Converted.ToDouble(oUser.Wallet) > totalPrice;
             if (check)
             {
                 oOrder.Status = 2;
@@ -431,13 +431,12 @@ namespace KGQT.Mobility
                 if (s)
                 {
                     oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
-                    var pay = oUser.Wallet - totalPrice;
+                    var pay = Converted.StringCeiling(Converted.ToDouble(oUser.Wallet) - totalPrice);
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);
 
                     #region Logs
-                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 1, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", totalPrice, 1, 1, pay.Value, userName);
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice, 1, 1, pay, userName);
                     #endregion
 
                     var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == code);
@@ -447,8 +446,6 @@ namespace KGQT.Mobility
                         pack.ModifiedBy = userName;
                         pack.ModifiedDate = DateTime.Now;
                         BusinessBase.Update(pack);
-
-                        BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, userName);
                     }
                     oRequest.IsError = false;
                     oRequest.Message = "Thanh toán đơn hàng thành công";
@@ -458,9 +455,9 @@ namespace KGQT.Mobility
             }
             else
             {
-                var pay = totalPrice - oUser.Wallet;
+                var pay = Converted.StringCeiling(totalPrice - Converted.ToDouble(oUser.Wallet));
                 oRequest.IsError = true;
-                oRequest.Message = Converted.Double2Money(pay);
+                oRequest.Message = Converted.String2Money(pay);
                 return oRequest;
             }
             return null;

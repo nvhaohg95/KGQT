@@ -7,7 +7,7 @@ namespace KGQT.Business
     public static class HistoryPayWallet
     {
         #region CRUD
-        public static bool Insert(int uid,string username,int orderId,string content,double amount,int type, int tradeType, double moneyleft,string createdBy,int status = 1)
+        public static bool Insert(int uid,string username,int orderId,string content,string amount,int type, int tradeType, string moneyleft,string createdBy,int status = 1)
         {
             tbl_HistoryPayWallet pay = new tbl_HistoryPayWallet();
             pay.UID = uid;

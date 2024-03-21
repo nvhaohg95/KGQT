@@ -1,4 +1,5 @@
 ﻿using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 
@@ -46,8 +47,8 @@ namespace KGQT.Business
                     var user = db.tbl_Accounts.FirstOrDefault(x => x.ID == withDraw.UID);
                     if (user != null)
                     {
-                        var moneyLeft = user.Wallet != null ? user.Wallet : 0;
-                        user.Wallet = moneyLeft + withDraw.Amount;
+                        var moneyLeft = Converted.ToDouble(user.Wallet);
+                        user.Wallet = Converted.StringCeiling(moneyLeft + Converted.ToDouble(withDraw.Amount));
                         db.Update(user);
                         db.Update(withDraw);
                         var isSave = db.SaveChanges();
@@ -57,7 +58,7 @@ namespace KGQT.Business
                             result.IsError = false;
                             result.Message = "Duyệt thành công";
                             #region Logs
-                            HistoryPayWallet.Insert(user.ID, user.Username, withDraw.ID, withDraw.Note, withDraw.Amount.Value, 1, 1, moneyLeft.Value, createdBy);
+                            HistoryPayWallet.Insert(user.ID, user.Username, withDraw.ID, withDraw.Note, withDraw.Amount, 1, 1, moneyLeft.ToString(), createdBy);
                             #endregion
                             return result;
                         }

@@ -12,7 +12,7 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 IQueryable<tbl_Account> query = db.tbl_Accounts
-                    .Where(x => x.Wallet != 0);
+                    .Where(x => x.Wallet != "0");
 
                 int total = query.Count();
                 var lstData = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();

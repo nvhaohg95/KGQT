@@ -177,6 +177,14 @@
                                                     <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
                                                 </label>
                                             </div>
+                                        } 
+                                        @if (item.IsBrand != null && item.IsBrand == true)
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Hàng hiệu
+                                                </label>
+                                            </div>
                                         }
                                     </div>
                                 </div>

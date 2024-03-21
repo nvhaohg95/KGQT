@@ -35,7 +35,7 @@ namespace KGQT.Areas.Admin.Controllers
             var username = HttpContext.Request.Query["username"];
             using (var db = new nhanshiphangContext())
             {
-                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize,username);
+                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
                 var lstData = oData[0] as List<tbl_ShippingOrder>;
                 int numberRecord = (int)oData[1];
                 int numberPage = (int)oData[2];
@@ -62,7 +62,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var model = new OrderDetails();
             model.Order = ShippingOrder.GetOne(id);
-            model.Packs = PackagesBusiness.GetByTransId(model.Order.ShippingOrderCode);
+            model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
             if (model.Order != null)
                 model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username == model.Order.Username);
             return View(model);
@@ -93,7 +93,6 @@ namespace KGQT.Areas.Admin.Controllers
                 if (!string.IsNullOrEmpty(sUser))
                 {
                     var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    BusinessBase.TrackLog(user.ID, order.ID, "{0} đã xác nhận đơn", 0, user.Username);
                     return true;
                 }
 
@@ -116,7 +115,6 @@ namespace KGQT.Areas.Admin.Controllers
                 if (!string.IsNullOrEmpty(sUser))
                 {
                     var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    BusinessBase.TrackLog(user.ID, order.ID, "{0} đã hủy đơn", 0, user.Username);
                     return true;
                 }
 
@@ -139,7 +137,7 @@ namespace KGQT.Areas.Admin.Controllers
 
             if (oUser == null) return new { error = true, mssg = "Không tìm thấy thông tin khách hàng" };
             double totalPrice = Convert.ToDouble(oOrder.TotalPrice);
-            bool check = oUser.Wallet > totalPrice;
+            bool check = Convert.ToDouble(oUser.Wallet) >= totalPrice;
             if (check)
             {
                 oOrder.Status = 2;
@@ -150,15 +148,12 @@ namespace KGQT.Areas.Admin.Controllers
                 if (s)
                 {
                     oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
-                    var pay = oUser.Wallet - totalPrice;
+                    var pay = Converted.StringCeiling(Converted.ToDouble(oUser.Wallet) - totalPrice);
 
-                    oUser.Wallet = pay;
-                    BusinessBase.Update(oUser);
+                    if (!AccountBusiness.UpdateWallet(oUser.ID, pay))
+                        return new { error = true, mssg = "Thanh toán thất bại !" };
 
-                    #region Logs
-                    BusinessBase.TrackLog(oUser.ID, oOrder.ID, "{0} đã thanh toán cho đơn hàng {1}", 0, oOrder.Username);
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", totalPrice, 1, 1, pay.Value, username);
-                    #endregion
+                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice, 1, 1, pay, username);
 
                     var trade = new tbl_TradeHistory();
                     trade.UID = oUser.ID;
@@ -189,8 +184,8 @@ namespace KGQT.Areas.Admin.Controllers
             }
             else
             {
-                var pay = totalPrice - oUser.Wallet;
-                return new { error = true, mssg = string.Format("{0:N0}đ", pay).Replace(",", ".") };
+                var pay = Converted.StringCeiling(totalPrice - Converted.ToDouble(oUser.Wallet));
+                return new { error = true, mssg = "Tài khoản khách không đủ tiền, cần phải nạp thêm " + Converted.String2Money(pay)+"đ" };
             }
             return false;
         }
@@ -221,11 +216,9 @@ namespace KGQT.Areas.Admin.Controllers
                     pack.ModifiedBy = username;
                     pack.ModifiedDate = DateTime.Now;
                     BusinessBase.Update(pack);
-
-                    BusinessBase.TrackLog(null, pack.ID, $"{oOrder.Username} đã nhận kiện {1}", 1, oOrder.Username);
                 }
             }
-            return new { error = false};
+            return new { error = false };
         }
         #endregion
     }

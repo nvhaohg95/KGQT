@@ -122,7 +122,6 @@
                                             @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                                         </div>
                                         <div class="col-md-5 col-sm-12 col-xs-12">
-                                            Dịch vụ phụ:
                                             @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
                                             {
                                                 <div class="form-check-inline">
@@ -145,6 +144,14 @@
                                                 <div class="form-check-inline">
                                                     <label class="form-check-label">
                                                         <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                                    </label>
+                                                </div>
+                                            }
+                                            @if (item.IsBrand != null && item.IsBrand == true)
+                                            {
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" class="form-check-input mt-1" checked disabled>Hàng hiệu
                                                     </label>
                                                 </div>
                                             }

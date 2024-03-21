@@ -6,6 +6,7 @@ namespace KGQT.Models
     public partial class tbl_ShippingOrder
     {
         public int ID { get; set; }
+        public string? RecID { get; set; }
         public string ShippingOrderCode { get; set; } = null!;
         public string? Username { get; set; }
         public string? Email { get; set; }

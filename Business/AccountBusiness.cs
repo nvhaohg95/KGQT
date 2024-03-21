@@ -159,7 +159,7 @@ namespace KGQT.Business
                         Email = data.Email,
                         Address = data.Address,
                         IMG = data.IMG,
-                        Wallet = 0,
+                        Wallet = "0",
                         Status = 2,
                         RoleID = 4, //user
                         IsActive = true,
@@ -579,7 +579,7 @@ namespace KGQT.Business
                     Username = data.UserName,
                     Password = PJUtils.Encrypt("userpass", data.Password),
                     Email = data.Email,
-                    Wallet = 0,
+                    Wallet = "0",
                     RoleID = data.RoleID,
                     CreatedDate = DateTime.Now,
                     CreatedBy = createdBy
@@ -691,6 +691,20 @@ namespace KGQT.Business
             }
         }
 
+        public static bool UpdateWallet(int id, string money)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
+                if (acc != null)
+                {
+                    acc.Wallet = money;
+                    db.Update(acc);
+                    return db.SaveChanges() > 0;
+                }
+            }
+            return false;
+        }
         #endregion
 
         #region Get List User Role
