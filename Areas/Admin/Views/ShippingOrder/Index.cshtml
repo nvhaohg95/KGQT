@@ -14,20 +14,20 @@
     int numberRecord = ViewBag.numberRecord;
 }
 <div class="container-fluid h-100">
-    <div class="row">
+    <div class="row w-100">
         <ul id="breadcrumbs">
             <li><a href="/admin">Trang chủ</a></li>
             <li><a href="#">Danh sách ký gửi</a></li>
         </ul>
     </div>
-    <div class="row">
+    <div class="row w-100">
         <div class="col-12 d-flex flex-column p-2">
-            <div class="row bg-white px-2 py-2">
+            <div class="row bg-white">
                 <div class="col-12">
-                    <div class="row py-2">
+                    <div class="row">
                         <form class="col-12" id="myform" method="get">
                             <div class="row">
-                                <div class="col-3 col-md-3 col-sm-12">
+                                <div class="col-lg-3 col-md-3 col-sm-12">
                                     <div>
                                         <span class="fw-bold">Nhập mã đơn:</span>
                                     </div>
@@ -35,7 +35,7 @@
                                         @Html.TextBoxFor(model => ID,new { @type="search",@class="form-control",@placeholder="Nhập mã đơn hàng"})
                                     </div>
                                 </div>
-                                <div class="col-4 col-md-4 col-sm-12">
+                                <div class="col-lg-4 col-md-4 col-sm-12">
                                     <div class="row">
                                         <span class="fw-bold">Thời gian tạo:</span>
                                     </div>
@@ -48,7 +48,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-3 col-md-3 col-sm-12">
+                                <div class="col-lg-2 col-md-3 col-sm-12">
                                     <div>
                                         <span class="fw-bold">Trạng thái:</span>
                                     </div>
@@ -62,11 +62,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
-                                    <a href="Index?page=1" class="text-decoration-none mr-2" title="Làm mới bộ lọc">
-                                        <i class="fas fa-sync fa-xs"></i>
-                                    </a>
-                                    <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
+                                <div class="col-lg-3 col-md-2 col-sm-12">
+                                    <div class="d-flex align-items-end justify-content-end w-100 h-100">
+                                        <a href="Index?page=1" class="btn btn-sm btn-info mr-2 w-100px">
+                                            <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
+                                        </a>
+                                        <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                                   </div>
                                 </div>
                             </div>
                         </form>

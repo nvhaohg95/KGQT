@@ -11,31 +11,30 @@
     int numberRecord = ViewBag.numberRecord;
 }
 
-<div class="container-fluid h-100">
-    <div class="row mb-2">
+<div class="container-fluid w-100 h-100">
+    <div class="row mb-2 w-100 ">
         <ul id="breadcrumbs">
-            <li><a href="/">Trang chủ</a></li>
-            <li><a>Thống kê</a></li>
+            <li class="text-uppercase fw-bold"><a href="/">Trang chủ</a></li>
+            <li class="text-uppercase fw-bold"><a>Thống kê</a></li>
         </ul>
     </div>
-    <form class="row mb-2 py-2">
+    <form class="row mb-2 py-2 w-100 ">
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="d-flex align-items-end justify-content-between">
                 <div>
-                    <h5 class="text-primary fw-bold text-uppercase m-0">Thống kê số dư tài khoản khách hàng</h5>
+                    <h5 class="text-danger fw-bold text-uppercase m-0">Thống kê số dư tài khoản khách hàng</h5>
                 </div>
                 <div class="d-flex align-items-center justify-content-end">
-                    <a href="StatisticRevenue" class="text-decoration-none mr-2 btn btn-sm btn-info">
-                        <i class="fas fa-sync fa-xs"></i>
-                        Làm mới bộ lọc
+                    <a href="StatisticRevenue" class="mr-2 btn btn-sm btn-info w-100px">
+                        <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
                     </a>
-                    <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
                 </div>
             </div>
 
         </div>
     </form>
-    <div class="row">
+    <div class="row w-100 ">
         <div class="form-group row">
             <div class="col-md-12 col-sm-12">
                 <span class="col-form-label">Tổng số dư của khách:</span>
@@ -46,7 +45,7 @@
             </div>
         </div>
     </div>
-    <div class="row bg-white">
+    <div class="row bg-white w-100 ">
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -90,7 +89,7 @@
             </div>
         </div>
     </div>
-    <div class="row p-2">
+    <div class="row p-2 w-100 ">
         <div class="col-4 align-self-center">
             <span>
                 Tổng số:&nbsp

@@ -54,23 +54,23 @@
         </div>
         <div class="row py-2">
             <form class="row col-lg-12 col-md-12 col-sm-12" id="myform" method="get">
-                <div class="col-lg-4 col-md-12 col-sm-12">
+                <div class="col-lg-3 col-md-12 col-sm-12">
                     @Html.TextBoxFor(model => ID ,"",new { @type="search", @class="form-control w-100",@placeholder="Nhập mã đơn hàng" })
                 </div>
-                <div class="row col-lg-8 col-md-12 col-sm-12">
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                        <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
-                               onblur="(this.type='text')" />
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                        <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
-                               onblur="(this.type='text')" />
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 mt-2 d-flex align-items-center justify-content-end">
-                        <a href="Index" class="btn btn-sm btn-info mx-2">
-                            <i class="fas fa-sync fa-xs mr-2"></i>Làm mới
+                <div class="col-lg-3 col-md-4 col-sm-12">
+                    <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
+                           onblur="(this.type='text')" />
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-12">
+                    <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
+                           onblur="(this.type='text')" />
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-12">
+                    <div class="d-flex align-items-end justify-content-end">
+                        <a href="Index" class="btn btn-sm btn-info mx-2 w-100px">
+                            <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
                         </a>
-                        <button type="submit" class="btn btn-sm btn-primary"> <i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                        <button type="submit" class="btn btn-sm btn-primary w-100px"> <i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
                     </div>
                 </div>
             </form>
@@ -85,7 +85,7 @@
                 <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách kiện ký gửi</h3>
             </div>
             <div class="col-md-6 col-sm-12 mb-2 text-md-right text-center">
-                <a href="/package/create" class="btn-success btn-sm pointer-event">Thêm Mã Vận Đơn</a>
+                <a href="/package/create" class="btn btn-success btn-sm pointer-event">Thêm Mã Vận Đơn</a>
             </div>
         </div>
         @foreach (var item in Model)

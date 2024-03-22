@@ -20,18 +20,21 @@
 </div>
 <div class="row p-2 mb-2 w-100">
     <div class="col-12 mb-2">
-        <div class="row">
-            <div class="col-12 d-flex align-items-center justify-content-between">
-                <form method="get">
-                    @Html.TextBoxFor(model => searchText,"",new {@type="search", @placeholder="Tìm kiếm", @class="input", @name="searchText"})
-                    <a href="/Admin/Account/Index?page=1" class="text-decoration-none mx-2" title="Làm mới bộ lọc">
-                        <i class="fas fa-sync fa-xs"></i>
-                    </a>
-                    <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
-                </form>
-                <button class="btn btn-sm btn-success w-100px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i>&nbspThêm</button>
+        <form method="get" class="row">
+            <div class="col-6">
+                <h3 class="text-uppercase text-danger mb-0">DANH SÁCH NGƯỜI DÙNG</h3>
             </div>
-        </div>
+            <div class="col-6">
+                <div class="d-flex align-items-end justify-content-end">
+                    @Html.TextBoxFor(model => searchText,"",new {@type="search", @placeholder="Tìm kiếm", @class="input w-300px", @name="searchText"})
+                    <a href="/Admin/Account/Index?page=1" class="btn btn-sm btn-info ml-2 w-100px">
+                        <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary ml-2 w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                    <button type="button" class="btn btn-sm btn-success ml-2 w-100px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i>&nbspThêm</button>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="col-12">
         <table class="table table-hover">
