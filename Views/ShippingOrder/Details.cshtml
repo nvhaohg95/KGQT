@@ -20,7 +20,12 @@
                 <div class="card-header">
                     <div class="card-header">
                         <h2>Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span></h2>
-                        <span class="py-2">Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))
+                        <div class="px-0 pt-2 col-md-12">
+                            <span>Ngày tạo: @Model.Order.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="px-0 pt-2 col-md-12">
+                            <span class="py-2">Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))
+                        </div>
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -219,7 +224,7 @@
                                             </div>
                                         </div>
                                     }
-                                    @if (item.SurCharge != null)
+                                    @if (Converted.ToDouble(item.SurCharge) > 0)
                                     {
                                         <div class="col-md-4 col-sm-12">
 
@@ -230,40 +235,43 @@
                                         </div>
                                     }
                                 </div>
-                                <div class="row p-2 mx-0 my-2">
-                                    @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                    {
-                                        <div class="col-md-4 col-sm-12">
+                                @if ((item.IsWoodPackage != null && item.IsWoodPackage == true) || (item.IsAirPackage != null && item.IsAirPackage == true) || (item.IsInsurance != null && item.IsInsurance == true))
+                                {
+                                    <div class="row p-2 mx-0 my-2">
+                                        @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                        {
+                                            <div class="col-md-4 col-sm-12">
 
-                                            <div class="form-inline text-left">
-                                                Phí đóng gỗ: &nbsp;
-                                                <p class=" mb-0">@Converted.String2Money(item.WoodPackagePrice)đ </p>
+                                                <div class="form-inline text-left">
+                                                    Phí đóng gỗ: &nbsp;
+                                                    <p class=" mb-0">@Converted.String2Money(item.WoodPackagePrice)đ </p>
+                                                </div>
+
                                             </div>
+                                        }
+                                        @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                        {
+                                            <div class="col-md-4 col-sm-12">
 
-                                        </div>
-                                    }
-                                    @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                    {
-                                        <div class="col-md-4 col-sm-12">
-
-                                            <div class="form-inline text-left">
-                                                Phí bọt khí:  &nbsp;
-                                                <p class=" mb-0">@Converted.String2Money(item.AirPackagePrice)đ</p>
+                                                <div class="form-inline text-left">
+                                                    Phí bọt khí:  &nbsp;
+                                                    <p class=" mb-0">@Converted.String2Money(item.AirPackagePrice)đ</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    }
-                                    @if (item.IsInsurance != null && item.IsInsurance == true)
-                                    {
-                                        <div class="col-md-4 col-sm-12">
+                                        }
+                                        @if (item.IsInsurance != null && item.IsInsurance == true)
+                                        {
+                                            <div class="col-md-4 col-sm-12">
 
-                                            <div class="form-inline text-left">
-                                                Phí bảo hiểm:  &nbsp;
-                                                <p class=" mb-0">@Converted.String2Money(item.IsInsurancePrice)đ</p>
+                                                <div class="form-inline text-left">
+                                                    Phí bảo hiểm:  &nbsp;
+                                                    <p class=" mb-0">@Converted.String2Money(item.IsInsurancePrice)đ</p>
+                                                </div>
+
                                             </div>
-
-                                        </div>
-                                    }
-                                </div>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     }
