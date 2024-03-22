@@ -60,7 +60,7 @@
                 <input type="text" class="form-control" id="txtAmount" data-type="formatvnd" name="Amount" value="0" placeholder="Nhập số tiền">
             </div>
             <div class="form-group mb-4">
-                <label class="required" for="txtShipID">Nội dung</label>
+                <label for="txtShipID">Nội dung</label>
                 <textarea class="form-control" id="txtNote" name="Note" placeholder="Nhập nội dung"></textarea>
             </div>
 
@@ -159,16 +159,7 @@
             helper.showErr('Vui lòng nhập số tiền!');
             return;
         }
-
-        if (Number(data.Amount.replaceAll(",", "")) < 50000) {
-            helper.showWarn('Số tiền nạp/rút tối thiếu phải lớn hơn 50,000đ!');
-            return;
-        }
-
-        if (!data.Note) {
-            helper.showWarn('Vui lòng nhập nội dung!');
-            return;
-        }
+        
         $.ajax({
             url: '/Admin/WithDraw/Create',
             type: 'POST',

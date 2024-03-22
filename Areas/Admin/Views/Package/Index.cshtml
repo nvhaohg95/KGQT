@@ -13,57 +13,56 @@
     int numberRecord = ViewBag.numberRecord;
 
 }
-<ul id="breadcrumbs">
-    <li><a href="/">Quản lý ký gửi</a></li>
-    <li><a>Danh sách kiện</a></li>
-</ul>
-
-<div class="row bg-white px-2">
-    <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="row py-2">
-            <form class="col-lg-12 col-md-12 col-sm-12" id="myform" method="get">
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a href="/">Quản lý ký gửi</a></li>
+        <li class="text-uppercase fw-bold"><a>Danh sách kiện</a></li>
+    </ul>
+</div>
+<div class="row bg-white py-2">
+    <form class="col-lg-12 col-md-12 col-sm-12" id="myform" method="get">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                @Html.TextBoxFor(model => ID,"",new { @type="search", @class="form-control", @placeholder="Nhập mã đơn hàng" })
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <select name="Status" id="Status" class="form-control">
+                    <option value="0" selected="@(status == 0)">Tất cả</option>
+                    <option value="1" selected="@(status == 1)">Chưa xác nhận</option>
+                    <option value="2" selected="@(status == 2)">Hàng về kho TQ</option>
+                    <option value="3" selected="@(status == 3)">Đang trên đường về HCM</option>
+                    <option value="4" selected="@(status == 4)">Hàng về tới HCM</option>
+                    <option value="4" selected="@(status == 5)">Đã nhận hàng</option>
+                    <option value="4" selected="@(status == 9)">Đã hủy</option>
+                    <option value="4" selected="@(status == 10)">Thất lạc</option>
+                    <option value="4" selected="@(status == 11)">Không nhận được hàng</option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12">
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-12">
-                        @Html.TextBoxFor(model => ID,"",new { @type="search", @class="form-control", @placeholder="Nhập mã đơn hàng" })
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
+                               onblur="(this.type='text')" />
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12">
-                        <select name="Status" id="Status" class="form-control">
-                            <option value="0" selected="@(status == 0)">Tất cả</option>
-                            <option value="1" selected="@(status == 1)">Chưa xác nhận</option>
-                            <option value="2" selected="@(status == 2)">Hàng về kho TQ</option>
-                            <option value="3" selected="@(status == 3)">Đang trên đường về HCM</option>
-                            <option value="4" selected="@(status == 4)">Hàng về tới HCM</option>
-                            <option value="4" selected="@(status == 5)">Đã nhận hàng</option>
-                            <option value="4" selected="@(status == 9)">Đã hủy</option>
-                            <option value="4" selected="@(status == 10)">Thất lạc</option>
-                            <option value="4" selected="@(status == 11)">Không nhận được hàng</option>
-                        </select>
-                    </div>
-                    <div class="row col-lg-4 col-md-12 col-sm-12">
-                        <div class="col-lg-6 col-md-6 col-sm-12">
-                            <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
-                                   onblur="(this.type='text')" />
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12">
-                            <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
-                                   onblur="(this.type='text')" />
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
-                        <div class="d-flex align-items-center justify-content-end">
-                            <a href="Index" class="btn btn-sm btn-info mx-2">
-                                <i class="fas fa-sync fa-xs"></i>Làm mới
-                            </a>
-                            <button type="submit" class="btn btn-sm btn-primary"> <i class="fas fa-search fa-xs"></i>Tìm kiếm</button>
-                        </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
+                               onblur="(this.type='text')" />
                     </div>
                 </div>
-            </form>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
+                <div class="d-flex align-items-center justify-content-end">
+                    <a href="Index" class="btn btn-sm btn-info mr-2 w-100px">
+                        <i class="fas fa-sync fa-xs mr-2"></i>Làm mới
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                </div>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 <div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 card" style="border-radius: 10px;">
+    <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="py-2">
             <!--Start::Thông tin kiện-->
             <div class="row mb-2">
@@ -71,8 +70,10 @@
                     <h3 class="lead fw-bold mb-0 text-danger text-uppercase">DANH SÁCH KIỆN</h3>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12 text-md-right text-center">
-                    <a href="/Admin/Package/Create" class="btn btn-sm btn-success pointer-event w-100px"><i class="fas fa-plus"></i>&nbspThêm</a>
-                    <button class="btn btn-sm btn-info pointer-event" data-toggle="modal" data-target="#import"><i class="fas fa-file-excel mr-2"></i>Tạo bằng file</button>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <a href="/Admin/Package/Create" class="btn btn-sm btn-success pointer-event mr-2 w-100px"><i class="fas fa-plus"></i>&nbspThêm</a>
+                        <button class="btn btn-sm btn-info pointer-event" data-toggle="modal" data-target="#import"><i class="fas fa-file-excel mr-2"></i>Import file</button>
+                    </div>
                 </div>
             </div>
             @foreach (var item in Model)

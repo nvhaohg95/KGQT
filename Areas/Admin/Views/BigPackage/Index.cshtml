@@ -13,20 +13,20 @@
     int totalPage = (int)ViewData["totalPage"];
 }
 <div class="container-fluid w-100 h-100">
-    <div class="row">
+    <div class="row w-100">
         <ul id="breadcrumbs" class="ps-2">
             <li class="text-uppercase fw-bold"><a href="/admin">Trang chủ</a></li>
             <li class="text-uppercase fw-bold"><a href="#">Danh sách file lô</a></li>
         </ul>
     </div>
-    <div class="row">
+    <div class="row w-100">
         <div class="col-12 d-flex flex-column p-2">
-            <div class="row bg-white px-2 py-2">
+            <div class="row bg-white">
                 <div class="col-12">
-                    <div class="row py-2">
+                    <div class="row">
                         <form class="col-12" id="myform" method="get">
                             <div class="row">
-                                <div class="col-5 col-md-5 col-sm-12">
+                                <div class="col-lg-4 col-md-4 col-sm-12">
                                     <div>
                                         <span class="fw-bold">Nhập mã đơn:</span>
                                     </div>
@@ -34,7 +34,7 @@
                                         @Html.TextBoxFor(model => code,new { @type="search",@class="form-control",@placeholder="Nhập mã đơn hàng"})
                                     </div>
                                 </div>
-                                <div class="col-5 col-md-5 col-sm-12">
+                                <div class="col-lg-4 col-md-4 col-sm-12">
                                     <div class="row">
                                         <span class="fw-bold">Thời gian tạo:</span>
                                     </div>
@@ -47,11 +47,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
-                                    <a href="Index?page=1" class="text-decoration-none" title="Làm mới bộ lọc">
-                                        <i class="fas fa-sync fa-xs mr-2"></i>
+                                <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-end justify-content-end">
+                                    <a href="Index?page=1" class="btn btn-sm btn-info mr-2 w-100px">
+                                        <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
                                     </a>
-                                    <button type="submit" class="btn btn-sm btn-primary w-100px">Tìm kiếm</button>
+                                    <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
                                 </div>
                             </div>
                         </form>
