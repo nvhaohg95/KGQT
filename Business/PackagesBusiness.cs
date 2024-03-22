@@ -522,7 +522,7 @@ namespace KGQT.Business
                         priceBrand = Converted.DoubleCeiling((Converted.ToDouble(feeBrand.PriceBrand) + Converted.ToDouble(feeBrand.Amount)) * weightBrand);
                     }
 
-                    double totalWeight = weight + weightBrand;
+                    double totalWeight =Converted.ToDouble(weight + weightBrand);
                     var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= weight && weight <= x.WeightTo);
                     if (finalfee != null)
                     {
@@ -544,7 +544,7 @@ namespace KGQT.Business
 
                     var totalPrice = totalWeightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge + priceBrand;
                     totalWeightPrice = totalWeightPrice + priceBrand;
-                    check.Weight = weight.ToString();
+                    check.Weight = Converted.Double2String(weight);
                     check.WeightPrice = Converted.StringCeiling(totalWeightPrice);
                     check.WoodPackagePrice = totalWoodPrice.ToString();
                     check.AirPackagePrice = totalAirPrice.ToString();
