@@ -68,7 +68,7 @@ namespace KGQT.Business
                     query = query.Where(x => x.Status == status);
 
                 if (!string.IsNullOrEmpty(ID))
-                    query = query.Where(x => x.ShippingOrderCode == ID);
+                    query = query.Where(x => x.ShippingOrderCode.Contains(ID) || x.Username.Contains(ID));
 
                 if (fromDate != null)
                     query = query.Where(x => x.CreatedDate >= fromDate);
