@@ -30,5 +30,7 @@ namespace KGQT.Models
         public bool? IsShowNoti { get; set; }
         public string? BankInfor { get; set; }
         public int? SearchBaiDuTimes { get; set; }
+
+        public bool? IsMobileReview { get; set; }
     }
 }
