@@ -293,25 +293,32 @@
                         <p class="text-muted mb-0">Phí vận chuyển:</p>
                         <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.WeightPrice)đ</span></p>
                     </div>
-                    @if (Model.Order.IsWoodPackage != null && Model.Order.IsWoodPackage == true)
+                    @if (!string.IsNullOrEmpty(Model.Order.WoodPackagePrice) && Model.Order.WoodPackagePrice != "0")
                     {
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí đóng gỗ:</p>
                             <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.WoodPackagePrice)đ</span></p>
                         </div>
                     }
-                    @if (Model.Order.IsAirPackage != null && Model.Order.IsAirPackage == true)
+                    @if (!string.IsNullOrEmpty(Model.Order.AirPackagePrice) && Model.Order.AirPackagePrice != "0")
                     {
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí bọt khí:</p>
                             <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.AirPackagePrice)đ</span></p>
                         </div>
                     }
-                    @if (Model.Order.IsInsurance != null && Model.Order.IsInsurance == true)
+                    @if (!string.IsNullOrEmpty(Model.Order.InsurancePrice) && Model.Order.InsurancePrice != "0")
                     {
                         <div class="d-flex justify-content-between pt-2">
                             <p class="text-muted mb-0">Phí bảo hiểm:</p>
                             <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.InsurancePrice)đ</span></p>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Order.SurCharge))
+                    {
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="text-muted mb-0">Phụ phí:</p>
+                            <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.SurCharge)đ</span></p>
                         </div>
                     }
                     <!--End::Thông tin đơn-->

@@ -350,19 +350,53 @@ namespace KGQT.Business
                         p.FullName = user.FullName;
                     }
                 }
+
+                bool changePrice = false;
+
                 p.BigPackage = form.BigPackage;
                 p.PackageCode = form.PackageCode;
                 p.MovingMethod = form.MovingMethod;
                 p.IsAirPackage = form.IsAirPackage;
-                p.AirPackagePrice = form.AirPackagePrice;
-                p.IsInsurancePrice = form.IsInsurancePrice;
                 p.Declaration = form.Declaration;
-                p.DeclarePrice = form.DeclarePrice;
                 p.IsWoodPackage = form.IsWoodPackage;
-                p.WoodPackagePrice = form.WoodPackagePrice;
+
+                if (p.AirPackagePrice != form.AirPackagePrice)
+                {
+                    p.AirPackagePrice = form.AirPackagePrice;
+                    changePrice = true;
+                }
+
+                if (p.IsInsurancePrice != form.IsInsurancePrice)
+                {
+                    p.IsInsurancePrice = form.IsInsurancePrice;
+                }
+
+                if (p.WoodPackagePrice != form.WoodPackagePrice)
+                {
+                    p.WoodPackagePrice = form.WoodPackagePrice;
+                    changePrice = true;
+                }
+                
+                if (p.DeclarePrice != form.DeclarePrice)
+                {
+                    p.DeclarePrice = form.DeclarePrice;
+                    changePrice = true;
+                }
+               
+                if (p.IsBrand != form.IsBrand)
+                {
+                    p.IsBrand = form.IsBrand;
+                    changePrice = true;
+                }
+                
+                if (p.SurCharge != form.SurCharge)
+                {
+                    p.SurCharge = form.SurCharge;
+                    changePrice = true;
+                }
+                
                 p.WareHouse = form.WareHouse;
                 p.Status = form.Status;
-                p.SurCharge = form.SurCharge;
                 p.ModifiedBy = userLogin;
                 p.ModifiedDate = DateTime.Now;
                 if (oldStt != p.Status)
@@ -379,6 +413,9 @@ namespace KGQT.Business
                 var update = BusinessBase.Update(p);
                 if (update)
                 {
+                    if (changePrice)
+                        ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
+
                     var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
                     BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
                 }
@@ -492,7 +529,14 @@ namespace KGQT.Business
                 DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
                 DateTime startDate = DateTime.Now.Date; //One day 
                 DateTime endDate = startDate.AddDays(1).AddTicks(-1);
-                var check = ShippingOrder.CheckOrderInStock(pack.Username, pack.MovingMethod, startDate, endDate, cnExportDateFrom, cnExportDateEnd);
+                tbl_ShippingOrder check = null;
+
+                if (!string.IsNullOrEmpty(pack.TransID))
+                    check = ShippingOrder.GetOne(pack.TransID);
+
+                if (check == null)
+                    check = ShippingOrder.CheckOrderInStock(pack.Username, pack.MovingMethod, startDate, endDate, cnExportDateFrom, cnExportDateEnd);
+
                 if (check != null)
                 {
                     //Cap nhat lai transid cho p
@@ -556,6 +600,7 @@ namespace KGQT.Business
                     check.AirPackagePrice = totalAirPrice.ToString();
                     check.InsurancePrice = totalInsurPrice.ToString();
                     check.TotalPrice = totalPrice.ToString();
+                    check.SurCharge = totalCharge.ToString();
                     check.ModifiedBy = accessor;
                     check.ModifiedDate = DateTime.Now;
                     var oUpdate = BusinessBase.Update(check);
