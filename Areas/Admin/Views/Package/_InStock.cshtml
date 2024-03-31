@@ -82,6 +82,12 @@
     })
 
     function _autoComplete() {
+        $("#txtUsername").keypress(function (e) {
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if (code == 13) { //Enter keycode
+                return false;
+            }
+        });
         $('#txtUsername').autocomplete({
             source: function (request, response) {
                 $.ajax({
@@ -95,6 +101,7 @@
                     }
                 });
             },
+            autoFocus: true,
             minLength: 2,
             delay: 500,
             select: function (event, ui) {

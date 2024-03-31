@@ -160,6 +160,7 @@ namespace KGQT.Business
                         Address = data.Address,
                         IMG = data.IMG,
                         Wallet = "0",
+                        AvailableSearch = 20,
                         Status = 2,
                         RoleID = 4, //user
                         IsActive = true,
@@ -705,6 +706,21 @@ namespace KGQT.Business
             }
             return false;
         }
+
+        public static bool UpdateSearch(int id, int times)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
+                if (acc != null)
+                {
+                    acc.AvailableSearch = times;
+                    db.Update(acc);
+                    return db.SaveChanges() > 0;
+                }
+            }
+            return false;
+        }
         #endregion
 
         #region Get List User Role
@@ -724,6 +740,23 @@ namespace KGQT.Business
 
         #endregion
 
+        #region Get one
+        public static tbl_Account GetOne(int id)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                return db.tbl_Accounts.FirstOrDefault(y => y.ID == id);
+            }
+        }
+
+        public static tbl_Account GetOne(string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                return db.tbl_Accounts.FirstOrDefault(y => y.Username == username);
+            }
+        }
+        #endregion
 
         #region Update Info
         public static DataReturnModel<tbl_Account> UpdateInfo(tbl_Account data, IFormFile fileImg)

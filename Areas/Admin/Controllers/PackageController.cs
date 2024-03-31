@@ -143,6 +143,19 @@ namespace KGQT.Areas.Admin.Controllers
             return View(data);
         }
 
+        [HttpGet]
+        public object CheckAvailableSearch(string code)
+        {
+            var pack = PackagesBusiness.GetOne(code);
+            if (pack == null) return new { error = 1, msg = "Không tìm thấy kiện !" };
+            if (string.IsNullOrEmpty(pack.Username))
+                return new { error = 1, msg = "Kiện chưa kê khác khách hàng!" };
+            var user = AccountBusiness.GetOne(pack.Username);
+            if(user == null)
+                return new { error = 2, msg = "Khách hàng này không có trong hệ thống, bạn có muốn tiếp tục!" };
+
+            return new { error = 3, data = user.AvailableSearch };
+        }
         #endregion
 
         #region Function
@@ -194,14 +207,14 @@ namespace KGQT.Areas.Admin.Controllers
         public bool UpdateService(int id, int type, bool check)
         {
             var pack = PackagesBusiness.GetOne(id);
-            if(pack == null)
-            return false;
+            if (pack == null)
+                return false;
 
-            if(type == 1)
+            if (type == 1)
                 pack.IsWoodPackage = check;
-            if(type==2)
+            if (type == 2)
                 pack.IsAirPackage = check;
-            if(type == 3)
+            if (type == 3)
                 pack.IsInsurance = check;
             if (type == 4)
                 pack.IsBrand = check;

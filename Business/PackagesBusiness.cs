@@ -24,6 +24,15 @@ namespace KGQT.Business
             }
         }
 
+        public static tbl_Package GetOne(string code)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var qry = db.tbl_Packages.Where(x => x.PackageCode == code);
+                return qry.FirstOrDefault();
+            }
+        }
+
         public static List<tbl_Package> GetByTransId(string transId)
         {
             using (var db = new nhanshiphangContext())
@@ -132,25 +141,26 @@ namespace KGQT.Business
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
             if (oPack != null)
             {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == oPack.UID);
-
-                if (oPack.SearchBaiduTimes == null)
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == oPack.Username);
+                if (user != null)
                 {
-                    oPack.SearchBaiduTimes = 0;
-                    if (user == null || string.IsNullOrEmpty(user.Wallet) || Converted.ToDouble(user.Wallet) < 500)
+                    if (user.AvailableSearch == 0)
                     {
-                        data.IsError = true;
-                        data.Message = "Tài khoản khách không đủ tiền";
-                        return data;
+                        if (string.IsNullOrEmpty(user.Wallet) || Converted.ToDouble(user.Wallet) < 500)
+                        {
+                            data.IsError = true;
+                            data.Message = "Tài khoản khách không đủ tiền";
+                            return data;
+                        }
+                        var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
+                        AccountBusiness.UpdateWallet(user.ID, wallet);
+                        #region Logs
+                        HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + oPack.PackageCode, "500", 1, 1, wallet, uslogin);
+                        #endregion
                     }
-                    var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
-                    AccountBusiness.UpdateWallet(user.ID, wallet);
-
-                    #region Logs
-                    HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + oPack.PackageCode, "500", 1, 1, wallet, uslogin);
-                    #endregion
+                    else
+                        AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);
                 }
-
                 using (HttpClient client = new HttpClient())
                 {
                     string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, code);
@@ -376,25 +386,25 @@ namespace KGQT.Business
                     p.WoodPackagePrice = form.WoodPackagePrice;
                     changePrice = true;
                 }
-                
+
                 if (p.DeclarePrice != form.DeclarePrice)
                 {
                     p.DeclarePrice = form.DeclarePrice;
                     changePrice = true;
                 }
-               
+
                 if (p.IsBrand != form.IsBrand)
                 {
                     p.IsBrand = form.IsBrand;
                     changePrice = true;
                 }
-                
+
                 if (p.SurCharge != form.SurCharge)
                 {
                     p.SurCharge = form.SurCharge;
                     changePrice = true;
                 }
-                
+
                 p.WareHouse = form.WareHouse;
                 p.Status = form.Status;
                 p.ModifiedBy = userLogin;
@@ -444,9 +454,10 @@ namespace KGQT.Business
             var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == data.Id);
             if (pack == null) return false;
             var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == accessor);
+            tbl_Account user = null;
             if (!string.IsNullOrEmpty(data.Username) && pack.Username != data.Username)
             {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == data.Username.ToLower());
+                user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == data.Username.ToLower());
                 pack.Username = data.Username;
                 pack.UID = user?.ID;
                 pack.FullName = user?.FullName;
@@ -520,6 +531,11 @@ namespace KGQT.Business
             var p = BusinessBase.Update(pack);
             if (p)
             {
+                if (user != null)
+                {
+                    AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch + 1);
+                }
+
                 //Ktra xem khach da co don chua.
                 DateTime cnExportDateFrom = DateTime.Now;
                 if (pack.ExportedCNWH != null)

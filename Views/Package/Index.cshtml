@@ -303,23 +303,64 @@
     })
 
     function checkStatus(code, times) {
-        if (!times) {
-            Swal.fire({
-                title: "Chú ý",
-                text: "Sử dụng chức năng này sẽ tốn phí 500đ/kiện (Chỉ tốn phí lần đầu). Bạn có chắc muốn sử dụng?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Đồng ý",
-                cancelButtonText: "Từ chối"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    location.href = "/package/QueryOrderStatus?code=" + code;
+        $.ajax({
+            url: '/Package/CheckAvailableSearch',
+            method: 'GET',
+            dataType: 'json',
+            data: { code },
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (res) {
+                if (res.error == 1) {
+                    helper.showErr(res.msg);
+                    return;
                 }
-            });
-        } else
-            location.href = "/package/QueryOrderStatus?code=" + code;
+                if (res.error == 2) {
+                    Swal.fire({
+                        title: "Chú ý",
+                        text: res.msg,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Đồng ý",
+                        cancelButtonText: "Từ chối"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                        }
+                    });
+                    return;
+                }
+                if (res.error == 3) {
+                    if (res.data == 0) {
+                        Swal.fire({
+                            title: "Chú ý",
+                            text: "Khách hàng đã hết lượt tra cứu miễn phí, tiếp tục sẽ tốn phí 500đ?",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Đồng ý",
+                            cancelButtonText: "Từ chối"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.href = "/package/QueryOrderStatus?code=" + code;
+                            }
+                        });
+                    } else
+                        location.href = "/package/QueryOrderStatus?code=" + code;
+                }
+
+            },
+            error: function (err) {
+                console.log(err)
+            },
+            complete: function () {
+                stopLoading(true);
+            },
+        })
     }
 
     function cancel(id) {
