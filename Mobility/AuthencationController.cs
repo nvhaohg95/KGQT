@@ -475,7 +475,7 @@ namespace KGQT.Mobility
             {
                 var pay = Converted.StringCeiling(totalPrice - Converted.ToDouble(oUser.Wallet));
                 oRequest.IsError = true;
-                oRequest.Message = "Tài khoản không đủ tiền, cần phải nạp thêm" + Converted.String2Money(pay) + "đ";
+                oRequest.Message = "Tài khoản không đủ tiền, cần phải nạp thêm " + Converted.String2Money(pay) + "đ";
                 return oRequest;
             }
             return oRequest;
