@@ -272,16 +272,16 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            string? ID = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
+            string? code = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
             string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
-            if (string.IsNullOrEmpty(ID) || string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(userName))
             {
                 oRequest.IsError = true;
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            var data = PackagesBusiness.GetStatusOrder(ID, userName);
-            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == ID && x.Status < 2);
+            var data = PackagesBusiness.GetStatusOrder(code, userName);
+            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
             return new object[] {false, data, oPack };
         }
 
@@ -385,8 +385,8 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
             }
-            string code = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : "";
-            var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == code);
+            string recID = dataRequest.ContainsKey("recID") ? dataRequest["recID"].ToString() : "";
+            var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == recID);
             return new object[] { false, lstPacks };
         }
 
@@ -408,19 +408,35 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
             }
-            string code = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : "";
+            string? recID = dataRequest.ContainsKey("recID") ? dataRequest["recID"].ToString() : null;
             string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
-
-            if (string.IsNullOrEmpty(code)) return null;
-            var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ShippingOrderCode == code);
-            if (oOrder == null) return null;
-
+            if (string.IsNullOrEmpty(recID)) {
+                oRequest.IsError = true;
+                oRequest.Message = "Không tìm thấy mã kiện. Vui lòng thử lại!";
+                return oRequest;
+            }
+            var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.RecID == recID);
+            if (oOrder == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Không tìm thấy thông tin đơn. Vui lòng thử lại!";
+                return oRequest;
+            }
+            if (oOrder.Status == 2)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Đơn này đã thanh toán rồi!";
+                return oRequest;
+            }
             var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
-
-            if (oUser == null) return null;
-
+            if (oUser == null)
+            {
+                oRequest.IsError = true;
+                oRequest.Message = "Người dùng không còn tồn tại. Vui lòng thử lại!";
+                return oRequest;
+            }
             double totalPrice = Converted.ToDouble(oOrder.TotalPrice);
-            bool check = Converted.ToDouble(oUser.Wallet) > totalPrice;
+            bool check = Converted.ToDouble(oUser.Wallet) >= totalPrice;
             if (check)
             {
                 oOrder.Status = 2;
@@ -430,16 +446,18 @@ namespace KGQT.Mobility
                 var s = BusinessBase.Update(oOrder);
                 if (s)
                 {
-                    oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
                     var pay = Converted.StringCeiling(Converted.ToDouble(oUser.Wallet) - totalPrice);
-                    oUser.Wallet = pay;
-                    BusinessBase.Update(oUser);
-
+                    if (!AccountBusiness.UpdateWallet(oUser.ID, pay))
+                    {
+                        oRequest.IsError = false;
+                        oRequest.Message = "Thanh toán thất bại. Vui lòng thử lại!";
+                        return oRequest;
+                    }
                     #region Logs
                     HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice, 1, 1, pay, userName);
                     #endregion
 
-                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == code);
+                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == oOrder.ShippingOrderCode);
                     foreach (var pack in packs)
                     {
                         pack.Status = 5;
@@ -447,9 +465,9 @@ namespace KGQT.Mobility
                         pack.ModifiedDate = DateTime.Now;
                         BusinessBase.Update(pack);
                     }
-                    oRequest.IsError = false;
-                    oRequest.Message = "Thanh toán đơn hàng thành công";
                     oRequest.Data = oOrder;
+                    oRequest.IsError = false;
+                    oRequest.Message = "Thanh toán thành công!";
                     return oRequest;
                 }
             }
@@ -457,10 +475,10 @@ namespace KGQT.Mobility
             {
                 var pay = Converted.StringCeiling(totalPrice - Converted.ToDouble(oUser.Wallet));
                 oRequest.IsError = true;
-                oRequest.Message = Converted.String2Money(pay);
+                oRequest.Message = "Tài khoản không đủ tiền, cần phải nạp thêm" + Converted.String2Money(pay) + "đ";
                 return oRequest;
             }
-            return null;
+            return oRequest;
         }
         #endregion
 
