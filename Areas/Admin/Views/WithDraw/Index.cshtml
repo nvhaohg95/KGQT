@@ -218,7 +218,7 @@
 <script>
     // approval
     function clickApproval(id) {
-        helper.showAlert("Bạn có muốn thực hiện yêu cầu này?").then((res) => {
+        helper.showAlert("Duyệt yêu cầu nạp tiền!").then((res) => {
             if (res.isConfirmed)
             {
                 $.ajax({
@@ -242,7 +242,7 @@
 
     //refuse
     function clickRefuse(id){
-        helper.showAlert("Bạn có muốn từ chối yêu cầu này?").then((res) => {
+        helper.showAlert("Từ chối yêu cầu nạp tiền!").then((res) => {
             if (res.isConfirmed)
             {
                 $.ajax({
@@ -256,7 +256,7 @@
                             helper.showSuc(reponse.message);
                     },
                     error: function (xhr, status, err) {
-                        helper.showErr('Hệ thống thực thi không thành công.')
+                        helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
                     }
                 });
             }

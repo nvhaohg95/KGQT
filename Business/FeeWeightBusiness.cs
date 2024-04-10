@@ -1,4 +1,5 @@
-﻿using KGQT.Models;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using KGQT.Models;
 using System.Linq;
 
 namespace KGQT.Business
@@ -21,8 +22,7 @@ namespace KGQT.Business
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                     int pageNum = (page - 1) * pageSize;
-                    lstData = query.OrderBy(x => x.Type)
-                        .OrderByDescending(x=>x.Amount)
+                    lstData = query.OrderBy(x => x.CreatedDate)
                         .Skip(pageNum)
                         .Take(pageSize)
                         .ToList();
@@ -76,6 +76,40 @@ namespace KGQT.Business
                 }    
             }
             return false;
+        }
+        #endregion
+
+        #region Get By ID
+        public static tbl_FeeWeight? GetByID(int ID)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var data = db.tbl_FeeWeights.FirstOrDefault(x => x.ID == ID);
+                return data;
+            }
+        }
+        #endregion
+
+        #region Update
+        public static bool Update(tbl_FeeWeight model, string modifiedBy)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var data = db.tbl_FeeWeights.FirstOrDefault(x => x.ID == model.ID);
+                if(data != null)
+                {
+                    data.Type = model.Type;
+                    data.WeightFrom = model.WeightFrom;
+                    data.WeightTo = model.WeightTo;
+                    data.Amount = model.Amount;
+                    data.ModifiedBy = modifiedBy;
+                    data.ModifiedDate = DateTime.Now;
+                    db.Update(data);
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
+            }
         }
         #endregion
     }

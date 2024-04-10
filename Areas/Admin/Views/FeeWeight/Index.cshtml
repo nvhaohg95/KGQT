@@ -70,7 +70,7 @@
                                     <span>@(item.WeightFrom + "-" + item.WeightTo + " kg")</span>
                                 </td>
                                 <td class="text-center align-middle text-danger">
-                                    @string.Format("{0:N0}",item.Amount != null ? item.Amount : 0).Replace(",", ".")đ
+                                    @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
                                 </td>
                                 <td class="text-center align-middle">
                                     @switch (item.Type)
@@ -90,6 +90,10 @@
                                     }
                                 </td>
                                 <td class="text-center align-middle">
+                                    <a class="btn btn-sm btn-light" onclick="clickUpdate(@item.ID)">
+                                        <i class="fas fa-pencil-alt"></i>
+                                        <span>Sửa</span>
+                                    </a>
                                     <a class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)">
                                         <i class="fas fa-trash-alt"></i>
                                         <span>Xóa</span>
@@ -184,7 +188,7 @@
     </div>
 </div>
 
-<!-- popup -->
+<!-- popup - add -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -248,6 +252,76 @@
         </div>
     </div>
 </div>
+
+<!-- popup- edit -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="exampleModalLabel2">Cập nhật Phí Vận chuyển</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#exampleModal2').modal('hide')">
+                    <span aria-hidden="true" class="text-danger">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="container-fluid" id="formEditFeeWeight">
+                    <div class="row d-none">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <input id="ID" class="form-control form-control-user border-none rounded" name="ID"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Tuyến vận chuyển</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+
+                            <select id="Type" name="Type" class="form-control">
+                                @if (lstFeeWeightType != null)
+                                {
+                                    foreach (var item in lstFeeWeightType)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Cân nặng từ</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="WeightFrom" class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Cân nặng đến</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="WeightTo" class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Giá tiền</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="Amount" class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary w-100px" onclick="$('#exampleModal2').modal('hide')">Đóng</button>
+                <button type="button" class="btn btn-primary w-100px" onclick="update()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     // insert
     function insert() {
@@ -281,21 +355,83 @@
             }
         });
     }
-    // delete
-    function clickDelete(id){
+
+    function clickUpdate(id) {
         $.ajax({
-            url: "/Admin/FeeWeight/Delete",
+            url: "/Admin/FeeWeight/GetByID",
             type: 'POST',
-            data: { ID:id },
-            success: function (reponse) 
-            {
-                if (reponse) 
-                    helper.showSuc('Xóa thành công!')
+            data: { ID: id },
+            success: function (reponse) {
+                if (reponse)
+                {
+                    $("#exampleModal2").modal('show');
+                    $("#ID").val(reponse.id);
+                    $("#Type").val(reponse.type);
+                    $("#WeightFrom").val(reponse.weightFrom);
+                    $("#WeightTo").val(reponse.weightTo);
+                    $("#Amount").val(reponse.amount);
+                }
                 else
-                    helper.showErr('Xóa không thành công!')
+                    helper.showErr('Dữ liệu đã bị xóa!');
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
+    //update
+    function update(){
+        var data = helper.form2Object($('#formEditFeeWeight').serializeArray());
+        if (!data["WeightFrom"]) {
+            helper.showErr('Vui lòng nhập cân nặng nhỏ nhất!');
+            return
+        }
+
+        if (!data["WeightTo"]) {
+            helper.showErr('Vui lòng nhập cân nặng lớn nhất!');
+            return
+        }
+
+        if (!data["Amount"]) {
+            helper.showErr('Vui lòng nhập giá tiền!');
+            return;
+        }
+        $.ajax({
+            url: "/Admin/FeeWeight/update",
+            type: 'POST',
+            data: data,
+            success: function (reponse) {
+                if (reponse)
+                    helper.showSuc('Cập nhật thành công!');
+                else
+                    helper.showErr('Cấp nhật không thành công. Vui lòng thử lại!');
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
+
+    // delete
+    function clickDelete(id){
+        helper.showAlert("Bạn có muốn thực hiện thao tác xóa?")
+        .then((res) => {
+            if (res.isConfirmed) 
+            {
+                $.ajax({
+                    url: "/Admin/FeeWeight/Delete",
+                    type: 'POST',
+                    data: { ID: id },
+                    success: function (reponse) {
+                        if (reponse)
+                            helper.showSuc('Xóa thành công!')
+                        else
+                            helper.showErr('Xóa không thành công!')
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+                    }
+                });
             }
         });
     }
