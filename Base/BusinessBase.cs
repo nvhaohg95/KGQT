@@ -1,14 +1,15 @@
-using KGQT.Base;
+using DocumentFormat.OpenXml.Vml.Office;
 using KGQT.Commons;
 using KGQT.Models;
 using Newtonsoft.Json;
-using System;
+using Serilog;
 using System.Linq.Expressions;
-
+using ILogger = Serilog.ILogger;
 namespace KGQT.Business.Base
 {
     public static class BusinessBase
     {
+        private static readonly ILogger _log = Log.ForContext(typeof(BusinessBase));
 
         public static bool Add<T>(T entity) where T : class
         {
@@ -17,20 +18,14 @@ namespace KGQT.Business.Base
                 try
                 {
                     db.Add(entity);
-                    bool s = db.SaveChanges() > 0;
-                    if (s)
-                    {
-                        Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
-                        return s;
-                    }
+                    return db.SaveChanges() > 0;
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Lỗi thêm mới table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Lỗi thêm mới table :" + typeof(T).Name, ex.Message,JsonConvert.SerializeObject(entity));
                     return false;
                 }
             }
-            return false;
         }
         public static int Add<T>(T entity, string key) where T : class
         {
@@ -52,7 +47,6 @@ namespace KGQT.Business.Base
                     db.Add(entity);
                     if (db.SaveChanges() > 0)
                     {
-                        Log.Info("Thêm mới thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
                         var propertyInfo = entity.GetType().GetProperty("ID");
                         var value = propertyInfo?.GetValue(entity, null);
                         if (value != null)
@@ -61,7 +55,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Lỗi thêm mới table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Lỗi thêm mới table :" + typeof(T).Name, ex.Message, JsonConvert.SerializeObject(entity));
                     return -1;
                 }
             }
@@ -75,19 +69,14 @@ namespace KGQT.Business.Base
                 try
                 {
                     db.Set<T>().Update(entity);
-                    if (db.SaveChanges() > 0)
-                    {
-                        Log.Info("Cập nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
-                        return true;
-                    }
+                    return db.SaveChanges() > 0;
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Cập nhật không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Cập nhật không thành công :" + typeof(T).Name, ex.Message, JsonConvert.SerializeObject(entity));
                     return false;
                 }
             }
-            return true;
         }
         public static bool Remove<T>(Expression<Func<T, bool>> predicate) where T : class
         {
@@ -97,19 +86,14 @@ namespace KGQT.Business.Base
                 {
                     var entity = GetOne(predicate);
                     db.Set<T>().Remove(entity);
-                    if (db.SaveChanges() > 0)
-                    {
-                        Log.Info("Xóa nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
-                        return true;
-                    }
+                    return db.SaveChanges() > 0;
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Xóa không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Xóa không thành công :" + typeof(T).Name, ex.Message);
                     return false;
                 }
             }
-            return true;
         }
 
         public static bool Remove<T>(T entity) where T : class
@@ -119,19 +103,14 @@ namespace KGQT.Business.Base
                 try
                 {
                     db.Set<T>().Remove(entity);
-                    if (db.SaveChanges() > 0)
-                    {
-                        Log.Info("Xóa nhật thành công: " + typeof(T).Name, JsonConvert.SerializeObject(entity));
-                        return true;
-                    }
+                    return db.SaveChanges() > 0;
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Xóa không thành công :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Xóa không thành công :" + typeof(T).Name, ex, JsonConvert.SerializeObject(entity));
                     return false;
                 }
             }
-            return true;
         }
 
         public static int GetCount<T>(Expression<Func<T, bool>> expression = null) where T : class
@@ -147,7 +126,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
                     return 0;
                 }
             }
@@ -164,7 +143,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
                     return null;
                 }
             }
@@ -181,7 +160,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
                     return null;
                 }
             }
@@ -200,7 +179,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
                     return null;
                 }
             }
@@ -217,7 +196,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
                     return false;
                 }
             }
@@ -233,7 +212,7 @@ namespace KGQT.Business.Base
             }
             catch (Exception ex)
             {
-                Log.Error("Lỗi query, table :" + typeof(T).Name, JsonConvert.SerializeObject(ex));
+                _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
                 return null;
             }
         }

@@ -430,7 +430,7 @@ namespace KGQT.Mobility
                 var s = BusinessBase.Update(oOrder);
                 if (s)
                 {
-                    oUser = BusinessBase.GetOne<tbl_Account>(x => x.UserID == oUser.UserID);
+                    oUser = BusinessBase.GetOne<tbl_Account>(x => x.ID == oUser.ID);
                     var pay = Converted.StringCeiling(Converted.ToDouble(oUser.Wallet) - totalPrice);
                     oUser.Wallet = pay;
                     BusinessBase.Update(oUser);

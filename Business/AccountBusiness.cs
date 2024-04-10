@@ -1,16 +1,16 @@
-﻿using DocumentFormat.OpenXml.EMMA;
-using KGQT.Base;
-using KGQT.Commons;
+﻿using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
-using Newtonsoft.Json;
+using Serilog;
 using System.Text.RegularExpressions;
-using static KGQT.HomeController;
+using ILogger = Serilog.ILogger;
 
 namespace KGQT.Business
 {
     public class AccountBusiness
     {
+        private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
+
         #region Login
         public static DataReturnModel<tbl_Account> Login(string userName, string password)
         {
@@ -59,7 +59,8 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                Log.Info("account base", JsonConvert.SerializeObject(ex));
+                _log.Error("Lỗi đăng nhập", ex.Message);
+
                 return dtReturn;
             }
         }

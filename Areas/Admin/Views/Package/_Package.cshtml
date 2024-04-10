@@ -272,8 +272,6 @@ else
         })
     })
     function submitFn(id, moving) {
-        debugger;
-        console.log('fasfasf')
         let weight = $('#txtWeight' + id).val();
         let wood = $('#txtWoodPackage' + id).data('value');
         let air = $('#txtAirPackage' + id).data('value');
@@ -338,7 +336,7 @@ else
             surCharge: sub,
             link: isLink,
             declarePrice: isPrice,
-            weightExchange:weightEx,
+            weightExchange: weightEx,
             length: length,
             width: width,
             height: height
@@ -349,8 +347,10 @@ else
             dataType: 'json',
             data: { sData: JSON.stringify(data) },
             success: function (res) {
-                if (res)
-                    helper.showSuc("Cập nhật thành công");
+                if (!res.isError)
+                    helper.showSuc(res.message);
+                else
+                    helper.showErr(res.message);
             },
             error: function (err) {
                 console.log(err)

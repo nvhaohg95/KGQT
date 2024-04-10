@@ -3,19 +3,20 @@ using System.Security.Cryptography;
 using KGQT.Models.temp;
 using ExcelDataReader;
 using System.Data;
-using System.Linq;
 using Fasterflect;
 using OfficeOpenXml;
-using System.Security.Policy;
 using System.Drawing;
-using KGQT.Base;
 using Newtonsoft.Json;
 using System.Globalization;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
 namespace KGQT.Commons
 {
     public class PJUtils
     {
+        private static readonly ILogger _log = Log.ForContext(typeof(PJUtils));
+
         public static Dictionary<int, UserLogin> userLogins = new Dictionary<int, UserLogin>();
         public static string Encrypt(string key, string data)
         {
@@ -151,10 +152,10 @@ namespace KGQT.Commons
                     sReturn = "<span class=\"text-white btn btn-sm bg-warning\" style=\"font-size:12px\">Hàng về kho TQ</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-info\" style=\"font-size:12px\">Đang về HCM</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-info\" style=\"font-size:12px\">Đang về kho HCM</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-primary\" style=\"font-size:12px\">Hàng về tới HCM</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-primary\" style=\"font-size:12px\">Đã về kho HCM</span>";
                     break;
                 case 5:
                     sReturn = "<span class=\"text-white btn btn-sm bg-success\" style=\"font-size:12px\">Đã nhận hàng</span>";
@@ -199,10 +200,10 @@ namespace KGQT.Commons
                     sReturn = "Hàng về kho TQ";
                     break;
                 case 3:
-                    sReturn = "Đang trên đường về HCM";
+                    sReturn = "Đang về kho HCM";
                     break;
                 case 4:
-                    sReturn = "Hàng về tới HCM";
+                    sReturn = "Đã về kho HCM";
                     break;
                 case 5:
                     sReturn = "Đã nhận hàng";
@@ -474,7 +475,7 @@ namespace KGQT.Commons
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Export file excel", JsonConvert.SerializeObject(ex));
+                            _log.Error("Export file excel", JsonConvert.SerializeObject(ex));
                             return "";
                         }
                         #endregion

@@ -7,13 +7,17 @@ using KGQT.Models;
 using KGQT.Models.temp;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using Serilog;
 using System.Data;
 using System.Drawing;
+using ILogger = Serilog.ILogger;
 
 namespace KGQT.Business
 {
     public static class PackagesBusiness
     {
+        private static readonly ILogger _log = Log.ForContext(typeof(PackagesBusiness));
+
         #region Select
         public static tbl_Package GetOne(int id)
         {
@@ -60,7 +64,7 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                var qry = db.tbl_Packages.Where(x => x.PackageCode.Contains(code));
+                var qry = db.tbl_Packages.Where(x => x.PackageCode.Contains(code) && x.Status != 9);
                 return qry.ToList();
             }
         }
@@ -345,96 +349,99 @@ namespace KGQT.Business
 
         public static bool Update(tbl_Package form, string userLogin)
         {
-            try
+            using (var db = new nhanshiphangContext())
             {
-                var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == form.ID);
-                if (p == null) return false;
-                int oldStt = p.Status;
-                if (!string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
+                try
                 {
-                    var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == form.Username.ToLower());
-                    if (user != null)
+                    var p = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
+                    if (p == null) return false;
+                    int oldStt = p.Status;
+                    if (string.IsNullOrEmpty(p.Username) || !string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
                     {
-                        p.Username = user.Username;
-                        p.UID = user.ID;
-                        p.FullName = user.FullName;
+                        var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == form.Username.ToLower());
+                        if (user != null)
+                        {
+                            p.Username = user.Username;
+                            p.UID = user.ID;
+                            p.FullName = user.FullName;
+                        }
                     }
-                }
 
-                bool changePrice = false;
+                    bool changePrice = false;
 
-                p.BigPackage = form.BigPackage;
-                p.PackageCode = form.PackageCode;
-                p.MovingMethod = form.MovingMethod;
-                p.IsAirPackage = form.IsAirPackage;
-                p.Declaration = form.Declaration;
-                p.IsWoodPackage = form.IsWoodPackage;
+                    p.BigPackage = form.BigPackage;
+                    p.PackageCode = form.PackageCode;
+                    p.MovingMethod = form.MovingMethod;
+                    p.IsAirPackage = form.IsAirPackage;
+                    p.Declaration = form.Declaration;
+                    p.IsWoodPackage = form.IsWoodPackage;
 
-                if (p.AirPackagePrice != form.AirPackagePrice)
-                {
-                    p.AirPackagePrice = form.AirPackagePrice;
-                    changePrice = true;
-                }
-
-                if (p.IsInsurancePrice != form.IsInsurancePrice)
-                {
-                    p.IsInsurancePrice = form.IsInsurancePrice;
-                }
-
-                if (p.WoodPackagePrice != form.WoodPackagePrice)
-                {
-                    p.WoodPackagePrice = form.WoodPackagePrice;
-                    changePrice = true;
-                }
-
-                if (p.DeclarePrice != form.DeclarePrice)
-                {
-                    p.DeclarePrice = form.DeclarePrice;
-                    changePrice = true;
-                }
-
-                if (p.IsBrand != form.IsBrand)
-                {
-                    p.IsBrand = form.IsBrand;
-                    changePrice = true;
-                }
-
-                if (p.SurCharge != form.SurCharge)
-                {
-                    p.SurCharge = form.SurCharge;
-                    changePrice = true;
-                }
-
-                p.WareHouse = form.WareHouse;
-                p.Status = form.Status;
-                p.ModifiedBy = userLogin;
-                p.ModifiedDate = DateTime.Now;
-                if (oldStt != p.Status)
-                {
-                    if (p.Status == 3)
+                    if (p.AirPackagePrice != form.AirPackagePrice)
                     {
-                        p.ExportedCNWH = DateTime.Now;
-                        var d = PJUtils.GetDeliveryDate(DateTime.Now, p.MovingMethod);
-                        p.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
-
-                        p.Exported = true;
+                        p.AirPackagePrice = form.AirPackagePrice;
+                        changePrice = true;
                     }
-                }
-                var update = BusinessBase.Update(p);
-                if (update)
-                {
-                    if (changePrice)
-                        ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
 
-                    var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
-                    BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
+                    if (p.IsInsurancePrice != form.IsInsurancePrice)
+                    {
+                        p.IsInsurancePrice = form.IsInsurancePrice;
+                    }
+
+                    if (p.WoodPackagePrice != form.WoodPackagePrice)
+                    {
+                        p.WoodPackagePrice = form.WoodPackagePrice;
+                        changePrice = true;
+                    }
+
+                    if (p.DeclarePrice != form.DeclarePrice)
+                    {
+                        p.DeclarePrice = form.DeclarePrice;
+                        changePrice = true;
+                    }
+
+                    if (p.IsBrand != form.IsBrand)
+                    {
+                        p.IsBrand = form.IsBrand;
+                        changePrice = true;
+                    }
+
+                    if (p.SurCharge != form.SurCharge)
+                    {
+                        p.SurCharge = form.SurCharge;
+                        changePrice = true;
+                    }
+
+                    p.WareHouse = form.WareHouse;
+                    p.Status = form.Status;
+                    p.ModifiedBy = userLogin;
+                    p.ModifiedDate = DateTime.Now;
+                    if (oldStt != p.Status)
+                    {
+                        if (p.Status == 3)
+                        {
+                            p.ExportedCNWH = DateTime.Now;
+                            var d = PJUtils.GetDeliveryDate(DateTime.Now, p.MovingMethod);
+                            p.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
+
+                            p.Exported = true;
+                        }
+                    }
+                    var update = BusinessBase.Update(p);
+                    if (update)
+                    {
+                        if (changePrice)
+                            ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
+
+                        var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userLogin);
+                        BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
+                    }
+                    return update;
                 }
-                return update;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Lỗi cập nhật package", JsonConvert.SerializeObject(ex));
-                return false;
+                catch (Exception ex)
+                {
+                    _log.Error("Lỗi cập nhật package", ex.Message);
+                    return false;
+                }
             }
         }
         public static bool UpdateTrans(int id, string transId)
@@ -449,238 +456,281 @@ namespace KGQT.Business
                 return db.SaveChanges() > 0;
             }
         }
-        public static bool InStockHCMWareHouse(tmpInStock data, string accessor)
+        public static DataReturnModel<bool> InStockHCMWareHouse(tmpInStock data, string accessor)
         {
-            var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == data.Id);
-            if (pack == null) return false;
-            var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == accessor);
-            tbl_Account user = null;
-            if (!string.IsNullOrEmpty(data.Username) && pack.Username != data.Username)
+            using (var db = new nhanshiphangContext())
             {
-                user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == data.Username.ToLower());
-                pack.Username = data.Username;
-                pack.UID = user?.ID;
-                pack.FullName = user?.FullName;
-            }
-
-            if (data.MovingMethod > 0 && pack.MovingMethod != data.MovingMethod)
-                pack.MovingMethod = data.MovingMethod;
-
-            if (data.Height > 0 || data.Width > 0 || data.Length > 0)
-                data.WeightExchange = GetExchangeWeight(pack.MovingMethod, data);
-
-            //Update tien p
-            var config = BusinessBase.GetFirst<tbl_Configuration>();
-            double minPackage = 0.3;
-            double minOrder = 1;
-            if (config != null)
-            {
-                minPackage = config.MinPackage ?? 0.3;
-                minOrder = config.MinOrder ?? 1;
-            }
-            var lstFee = BusinessBase.GetList<tbl_FeeWeight>(x => x.Type == pack.MovingMethod);
-            if (lstFee == null || lstFee.Count == 0) return false;
-
-            var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= data.Weight && data.Weight <= x.WeightTo);
-
-            if (lstFee == null || lstFee.Count == 0) return false;
-
-            pack.Weight = data.Weight.ToString();
-            pack.WeightExchange = data.WeightExchange.ToString();
-            pack.Height = data.Height.ToString();
-            pack.Width = data.Width.ToString();
-            pack.Length = data.Length.ToString();
-            pack.WoodPackagePrice = data.WoodPrice.ToString();
-            pack.AirPackagePrice = data.AirPrice.ToString();
-            pack.SurCharge = data.SurCharge.ToString();
-            pack.Status = 4;
-            pack.ModifiedBy = accessor;
-            pack.ModifiedDate = DateTime.Now;
-            pack.ImportedSGWH = DateTime.Now;
-
-            if (pack.MovingMethod < 3)
-            {
-                var maxWeight = data.Weight * (25 / (float)100);
-                if (data.WeightExchange > (data.Weight + maxWeight) || data.WeightExchange > (data.Weight + 1))
-                    pack.WeightReal = data.WeightExchange.ToString();
-                else
-                    pack.WeightReal = data.Weight.ToString();
-            }
-            else
-            {
-                var maxWeight = data.Weight * (50 / (float)100);
-                if (data.WeightExchange >= (data.Weight + maxWeight) || data.WeightExchange >= (data.Weight + 2))
-                    pack.WeightReal = pack.WeightExchange;
-                else
-                    pack.WeightReal = pack.Weight;
-            }
-
-            if (Converted.ToDouble(pack.Weight) <= minPackage)
-                pack.Weight = minPackage.ToString();
-
-            if (Converted.ToDouble(pack.WeightReal) <= minPackage)
-                pack.WeightReal = minPackage.ToString();
-
-            if (pack.IsInsurance == true && data.DeclarePrice > 0)
-            {
-                pack.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(data.DeclarePrice) * 0.05);
-                pack.Declaration = data.Link;
-                pack.DeclarePrice = data.DeclarePrice.ToString();
-            }
-
-            var p = BusinessBase.Update(pack);
-            if (p)
-            {
-                if (user != null)
+                var dt = new DataReturnModel<bool>();
+                try
                 {
-                    AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch + 1);
-                }
+                    var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == data.Id);
+                    if (pack == null)
+                    {
+                        dt.IsError = true;
+                        dt.Message = "Không tìm thấy thông tin kiện";
+                        return dt;
+                    };
 
-                //Ktra xem khach da co don chua.
-                DateTime cnExportDateFrom = DateTime.Now;
-                if (pack.ExportedCNWH != null)
-                    cnExportDateFrom = pack.ExportedCNWH.Value.Date;
-                else
-                    pack.ExportedCNWH = cnExportDateFrom;
-                DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
-                DateTime startDate = DateTime.Now.Date; //One day 
-                DateTime endDate = startDate.AddDays(1).AddTicks(-1);
-                tbl_ShippingOrder check = null;
+                    var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                    tbl_Account user = null;
+                    if (!string.IsNullOrEmpty(data.Username) && pack.Username != data.Username)
+                    {
+                        user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.Username.ToLower());
+                        pack.Username = data.Username;
+                        pack.UID = user?.ID;
+                        pack.FullName = user?.FullName;
+                    }
 
-                if (!string.IsNullOrEmpty(pack.TransID))
-                    check = ShippingOrder.GetOne(pack.TransID);
+                    if (data.MovingMethod > 0 && pack.MovingMethod != data.MovingMethod)
+                        pack.MovingMethod = data.MovingMethod;
 
-                if (check == null)
-                    check = ShippingOrder.CheckOrderInStock(pack.Username, pack.MovingMethod, startDate, endDate, cnExportDateFrom, cnExportDateEnd);
+                    if (data.Height > 0 || data.Width > 0 || data.Length > 0)
+                        data.WeightExchange = GetExchangeWeight(pack.MovingMethod, data);
 
-                if (check != null)
-                {
-                    //Cap nhat lai transid cho p
-                    pack.TransID = check.RecID;
+                    //Update tien p
+                    var config = db.tbl_Configurations.FirstOrDefault();
+                    double minPackage = 0.3;
+                    double minOrder = 1;
+                    if (config != null)
+                    {
+                        minPackage = config.MinPackage ?? 0.3;
+                        minOrder = config.MinOrder ?? 1;
+                    }
+
+                    data.Weight = Converted.ToDouble(data.Weight);
+
+                    var lstFee = db.tbl_FeeWeights.Where(x => x.Type == pack.MovingMethod).ToList();
+                    if (lstFee == null || lstFee.Count == 0)
+                    {
+                        dt.IsError = true;
+                        dt.Message = "Chưa thiết lập giá cho loại vận chuyển " + PJUtils.ShippingMethodName(pack.MovingMethod);
+                        return dt;
+                    }
+
+                    var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= data.Weight && data.Weight <= x.WeightTo);
+
+                    if (lstFee == null || lstFee.Count == 0)
+                    {
+                        dt.IsError = true;
+                        dt.Message = $"Chưa thiết lập giá cho số kilogram {data.Weight}";
+                        return dt;
+                    }
+
+                    pack.Weight = Converted.ToDouble(data.Weight).ToString();
+                    pack.WeightExchange = data.WeightExchange.ToString();
+                    pack.Height = data.Height.ToString();
+                    pack.Width = data.Width.ToString();
+                    pack.Length = data.Length.ToString();
+                    pack.WoodPackagePrice = data.WoodPrice.ToString();
+                    pack.AirPackagePrice = data.AirPrice.ToString();
+                    pack.SurCharge = data.SurCharge.ToString();
+                    pack.Status = 4;
                     pack.ModifiedBy = accessor;
                     pack.ModifiedDate = DateTime.Now;
-                    UpdateTrans(pack.ID, check.RecID);
-                    var lstPack = GetByTransId(check.RecID);
+                    pack.ImportedSGWH = DateTime.Now;
 
-                    double weight = 0;
-                    double weightPrice = 0;
-                    double priceBrand = 0;
-                    double weightBrand = 0;
-                    foreach (var item in lstPack)
+                    if (pack.MovingMethod < 3)
                     {
-                        if (item.IsBrand == true)
-                            weightBrand += Converted.ToDouble(item.WeightReal);
+                        var maxWeight = data.Weight * (25 / (float)100);
+                        if (data.WeightExchange > (data.Weight + maxWeight) || data.WeightExchange > (data.Weight + 1))
+                            pack.WeightReal = data.WeightExchange.ToString();
                         else
-                            weight += Converted.ToDouble(item.WeightReal);
+                            pack.WeightReal = Converted.ToDouble(data.Weight).ToString();
+                    }
+                    else
+                    {
+                        var maxWeight = data.Weight * (50 / (float)100);
+                        if (data.WeightExchange >= (data.Weight + maxWeight) || data.WeightExchange >= (data.Weight + 2))
+                            pack.WeightReal = pack.WeightExchange;
+                        else
+                            pack.WeightReal = pack.Weight;
                     }
 
-                    if (weightBrand > 0 && weightBrand < minPackage)
-                        weightBrand = minPackage;
+                    if (Converted.ToDouble(pack.Weight) <= minPackage)
+                        pack.Weight = minPackage.ToString();
 
-                    if (weightBrand > 0)
+                    if (Converted.ToDouble(pack.WeightReal) <= minPackage)
+                        pack.WeightReal = minPackage.ToString();
+
+                    if (pack.IsInsurance == true && data.DeclarePrice > 0)
                     {
-                        var feeBrand = lstFee.FirstOrDefault(x => x.WeightFrom <= weightBrand && weightBrand <= x.WeightTo);
-                        priceBrand = Converted.DoubleCeiling((Converted.ToDouble(feeBrand.PriceBrand) + Converted.ToDouble(feeBrand.Amount)) * weightBrand);
+                        pack.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(data.DeclarePrice) * 0.05);
+                        pack.Declaration = data.Link;
+                        pack.DeclarePrice = data.DeclarePrice.ToString();
                     }
 
-                    double totalWeight = Converted.ToDouble(weight + weightBrand);
-
-                    var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= totalWeight && totalWeight <= x.WeightTo);
-                    if (finalfee != null)
+                    db.Update(pack);
+                    if (db.SaveChanges() > 0)
                     {
-                        if (totalWeight < minOrder)
+                        if (user != null)
+                            AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch + 1);
+
+                        //Ktra xem khach da co don chua.
+                        DateTime cnExportDateFrom = DateTime.Now;
+                        if (pack.ExportedCNWH != null)
+                            cnExportDateFrom = pack.ExportedCNWH.Value.Date;
+                        else
+                            pack.ExportedCNWH = cnExportDateFrom;
+                        DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
+                        DateTime startDate = DateTime.Now.Date; //One day 
+                        DateTime endDate = startDate.AddDays(1).AddTicks(-1);
+                        tbl_ShippingOrder check = null;
+
+                        if (!string.IsNullOrEmpty(pack.TransID))
+                            check = ShippingOrder.GetOne(pack.TransID);
+
+                        if (check == null)
+                            check = ShippingOrder.CheckOrderInStock(pack.Username, pack.MovingMethod, startDate, endDate, cnExportDateFrom, cnExportDateEnd);
+
+                        if (check != null)
                         {
-                            if (weight > 0)
-                                weightPrice = Converted.DoubleCeiling((minOrder - weightBrand) * Converted.ToDouble(finalfee.Amount));
-                            else
-                                priceBrand = Converted.DoubleCeiling((Converted.ToDouble(finalfee.PriceBrand) + Converted.ToDouble(finalfee.Amount)) * minOrder);
+                            //Cap nhat lai transid cho p
+                            pack.TransID = check.RecID;
+                            pack.ModifiedBy = accessor;
+                            pack.ModifiedDate = DateTime.Now;
+                            UpdateTrans(pack.ID, check.RecID);
+                            var lstPack = GetByTransId(check.RecID);
 
-                            weight = minOrder;
+                            double weight = 0;
+                            double weightPrice = 0;
+                            double priceBrand = 0;
+                            double weightBrand = 0;
+                            foreach (var item in lstPack)
+                            {
+                                if (item.IsBrand == true)
+                                    weightBrand += Converted.ToDouble(item.WeightReal);
+                                else
+                                    weight += Converted.ToDouble(item.WeightReal);
+                            }
+
+                            if (weightBrand > 0 && weightBrand < minPackage)
+                                weightBrand = minPackage;
+
+                            if (weightBrand > 0)
+                            {
+                                var feeBrand = lstFee.FirstOrDefault(x => x.WeightFrom <= weightBrand && weightBrand <= x.WeightTo);
+                                priceBrand = Converted.DoubleCeiling((Converted.ToDouble(feeBrand.PriceBrand) + Converted.ToDouble(feeBrand.Amount)) * weightBrand);
+                            }
+
+                            double totalWeight = Converted.ToDouble(weight + weightBrand);
+
+                            var finalfee = lstFee.FirstOrDefault(x => x.WeightFrom <= totalWeight && totalWeight <= x.WeightTo);
+                            if (finalfee != null)
+                            {
+                                if (totalWeight < minOrder)
+                                {
+                                    if (weight > 0)
+                                        weightPrice = Converted.DoubleCeiling((minOrder - weightBrand) * Converted.ToDouble(finalfee.Amount));
+                                    else
+                                        priceBrand = Converted.DoubleCeiling((Converted.ToDouble(finalfee.PriceBrand) + Converted.ToDouble(finalfee.Amount)) * minOrder);
+
+                                    weight = minOrder;
+                                }
+                                else
+                                {
+                                    weightPrice = Converted.DoubleCeiling(weight * Converted.ToDouble(finalfee.Amount));
+                                    weight = totalWeight;
+                                }
+                            }
+
+                            double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => Converted.ToDouble(x.WoodPackagePrice));
+                            double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => Converted.ToDouble(x.AirPackagePrice));
+                            double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => Converted.ToDouble(x.IsInsurancePrice));
+                            double totalCharge = lstPack.Sum(x => Converted.ToDouble(x.SurCharge));
+                            double totalweightPrice = priceBrand + weightPrice;
+                            var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
+                            check.Weight = Converted.Double2String(weight);
+                            check.WeightPrice = Converted.StringCeiling(totalweightPrice);
+                            check.WoodPackagePrice = totalWoodPrice.ToString();
+                            check.AirPackagePrice = totalAirPrice.ToString();
+                            check.InsurancePrice = totalInsurPrice.ToString();
+                            check.TotalPrice = totalPrice.ToString();
+                            check.SurCharge = totalCharge.ToString();
+                            check.ModifiedBy = accessor;
+                            check.ModifiedDate = DateTime.Now;
+                            db.Update(check);
+                            if (db.SaveChanges() > 0)
+                            {
+                                dt.IsError = false;
+                                dt.Message = "Đã nhập kho";
+                                return dt;
+                            }
                         }
                         else
                         {
-                            weightPrice = Converted.DoubleCeiling(weight * Converted.ToDouble(finalfee.Amount));
-                            weight = totalWeight;
+                            var weightRound = Converted.ToDouble(pack.WeightReal);
+                            double feeWeight = 0;
+
+                            if (weightRound < minOrder)
+                                weightRound = minOrder;
+
+                            feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
+
+                            if (pack.IsBrand == true)
+                            {
+                                feeWeight = Converted.DoubleCeiling((Converted.ToDouble(fee.PriceBrand) + Converted.ToDouble(fee.Amount)) * weightRound);
+                            }
+
+                            var ship = new tbl_ShippingOrder();
+                            ship.ShippingOrderCode = pack.PackageCode;
+                            ship.RecID = Guid.NewGuid().ToString("N");
+                            ship.Username = pack.Username;
+                            ship.FirstName = pack.FullName;
+                            ship.LastName = pack.FullName;
+                            ship.Email = pack.Email;
+                            ship.Address = pack.Address;
+                            ship.Phone = pack.Phone;
+                            ship.ShippingMethod = pack.MovingMethod;
+                            ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
+                            ship.Weight = weightRound.ToString();
+                            ship.WeightPrice = feeWeight.ToString();
+                            ship.IsAirPackage = pack.IsAirPackage;
+                            ship.AirPackagePrice = pack.AirPackagePrice;
+                            ship.IsWoodPackage = pack.IsWoodPackage;
+                            ship.WoodPackagePrice = pack.WoodPackagePrice;
+                            ship.IsInsurance = pack.IsInsurance;
+                            ship.InsurancePrice = pack.IsInsurancePrice;
+                            ship.SurCharge = pack.SurCharge;
+                            ship.TotalPrice = Converted.Double2String(feeWeight
+                                + Converted.ToDouble(pack.AirPackagePrice)
+                                + Converted.ToDouble(pack.WoodPackagePrice)
+                                + Converted.ToDouble(pack.IsInsurancePrice)
+                                + Converted.ToDouble(pack.SurCharge));
+                            ship.Status = 1;
+                            ship.ChinaExportDate = pack.ExportedCNWH;
+                            ship.CreatedDate = DateTime.Now;
+                            ship.CreatedBy = accessor;
+                            db.Add(ship);
+                            bool save = db.SaveChanges() > 0;
+                            if (save)
+                            {
+                                var oPack = db.tbl_Packages.FirstOrDefault(x => x.ID == pack.ID);
+                                if (oPack != null)
+                                {
+                                    oPack.TransID = ship.RecID;
+                                    oPack.ModifiedBy = accessor;
+                                    oPack.ModifiedDate = DateTime.Now;
+                                    BusinessBase.Update(oPack);
+                                }
+                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "/ShippingOrder/Details/" + ship.ID, accessor);
+                                dt.IsError = false;
+                                dt.Message = "Đã nhập kho";
+                                return dt;
+                            }
+                            dt.IsError = true;
+                            dt.Message = "Lỗi vui lòng thử lại";
+                            return dt;
                         }
                     }
-
-                    double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => Converted.ToDouble(x.WoodPackagePrice));
-                    double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => Converted.ToDouble(x.AirPackagePrice));
-                    double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => Converted.ToDouble(x.IsInsurancePrice));
-                    double totalCharge = lstPack.Sum(x => Converted.ToDouble(x.SurCharge));
-                    double totalweightPrice = priceBrand + weightPrice;
-                    var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
-                    check.Weight = Converted.Double2String(weight);
-                    check.WeightPrice = Converted.StringCeiling(totalweightPrice);
-                    check.WoodPackagePrice = totalWoodPrice.ToString();
-                    check.AirPackagePrice = totalAirPrice.ToString();
-                    check.InsurancePrice = totalInsurPrice.ToString();
-                    check.TotalPrice = totalPrice.ToString();
-                    check.SurCharge = totalCharge.ToString();
-                    check.ModifiedBy = accessor;
-                    check.ModifiedDate = DateTime.Now;
-                    var oUpdate = BusinessBase.Update(check);
                 }
-                else
+                catch (Exception ex)
                 {
-                    var weightRound = Converted.ToDouble(pack.WeightReal);
-                    double feeWeight = 0;
-
-                    if (weightRound < minOrder)
-                        weightRound = minOrder;
-
-                    feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
-
-                    if (pack.IsBrand == true)
-                    {
-                        feeWeight = Converted.DoubleCeiling((Converted.ToDouble(fee.PriceBrand) + Converted.ToDouble(fee.Amount)) * weightRound);
-                    }
-
-                    var ship = new tbl_ShippingOrder();
-                    ship.ShippingOrderCode = pack.PackageCode;
-                    ship.RecID = Guid.NewGuid().ToString("N");
-                    ship.Username = pack.Username;
-                    ship.FirstName = pack.FullName;
-                    ship.LastName = pack.FullName;
-                    ship.Email = pack.Email;
-                    ship.Address = pack.Address;
-                    ship.Phone = pack.Phone;
-                    ship.ShippingMethod = pack.MovingMethod;
-                    ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
-                    ship.Weight = weightRound.ToString();
-                    ship.WeightPrice = feeWeight.ToString();
-                    ship.IsAirPackage = pack.IsAirPackage;
-                    ship.AirPackagePrice = pack.AirPackagePrice;
-                    ship.IsWoodPackage = pack.IsWoodPackage;
-                    ship.WoodPackagePrice = pack.WoodPackagePrice;
-                    ship.IsInsurance = pack.IsInsurance;
-                    ship.InsurancePrice = pack.IsInsurancePrice;
-                    ship.SurCharge = pack.SurCharge;
-                    ship.TotalPrice = Converted.Double2String(feeWeight
-                        + Converted.ToDouble(pack.AirPackagePrice)
-                        + Converted.ToDouble(pack.WoodPackagePrice)
-                        + Converted.ToDouble(pack.IsInsurancePrice)
-                        + Converted.ToDouble(pack.SurCharge));
-                    ship.Status = 1;
-                    ship.ChinaExportDate = pack.ExportedCNWH;
-                    ship.CreatedDate = DateTime.Now;
-                    ship.CreatedBy = accessor;
-                    var oAdd = BusinessBase.Add(ship);
-                    if (oAdd)
-                    {
-                        var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == pack.ID);
-                        if (oPack != null)
-                        {
-                            oPack.TransID = ship.RecID;
-                            oPack.ModifiedBy = accessor;
-                            oPack.ModifiedDate = DateTime.Now;
-                            BusinessBase.Update(oPack);
-                        }
-                        NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "/ShippingOrder/Details/" + ship.ID, accessor);
-                    }
+                    _log.Error("InstockSGWare", ex.Message);
                 }
+                dt.IsError = true;
+                dt.Message = "Lỗi vui lòng thử lại";
+                return dt;
             }
-            return p;
         }
 
         public static DateTime CaclDateExpectation(tbl_Package item)
@@ -843,7 +893,7 @@ namespace KGQT.Business
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log.Error("Import Excel", JsonConvert.SerializeObject(ex.Message));
+                                    _log.Error("Import Excel", ex.Message);
                                     lstError.Add(new tempExport { Row = row, Column = 3 });
                                 }
                             }
@@ -911,12 +961,12 @@ namespace KGQT.Business
                             pathRoot = pathRoot + "/" + fileName;
 
                             pack.SaveAs(pathRoot);
-                            byte[] fileBytes = System.IO.File.ReadAllBytes(pathRoot);
+                            byte[] fileBytes = File.ReadAllBytes(pathRoot);
                             return pathRoot;
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Export file excel", JsonConvert.SerializeObject(ex));
+                            _log.Error("Export file excel", ex.Message);
                             return "";
                         }
                         #endregion
@@ -925,29 +975,34 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
+                _log.Error("MarkupValueExcel", ex.Message);
                 return "";
             }
         }
 
         public static DataReturnModel<bool> Cancel(int id, string username)
         {
-            var data = new DataReturnModel<bool>();
-            var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id && x.Status <= 2);
-            if (pack != null)
+            using (var db = new nhanshiphangContext())
             {
-                pack.Status = 9;
-                pack.ModifiedBy = username;
-                pack.ModifiedDate = DateTime.Now;
-                if (BusinessBase.Update(pack))
+                var data = new DataReturnModel<bool>();
+                var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id && x.Status <= 2);
+                if (pack != null)
                 {
-                    data.IsError = false;
-                    data.Message = "Hủy đơn thành công!";
-                    return data;
+                    pack.Status = 9;
+                    pack.ModifiedBy = username;
+                    pack.ModifiedDate = DateTime.Now;
+                    db.Update(pack);
+                    if (db.SaveChanges() > 0)
+                    {
+                        data.IsError = false;
+                        data.Message = "Hủy đơn thành công!";
+                        return data;
+                    }
                 }
+                data.IsError = true;
+                data.Message = "Hủy không thành công, vui lòng liên hệ với nhân viên để được giải quyết !";
+                return data;
             }
-            data.IsError = true;
-            data.Message = "Hủy không thành công, vui lòng liên hệ với nhân viên để được giải quyết !";
-            return data;
         }
 
         public static double GetExchangeWeight(int type, tmpInStock data)

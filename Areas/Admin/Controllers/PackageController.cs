@@ -151,7 +151,7 @@ namespace KGQT.Areas.Admin.Controllers
             if (string.IsNullOrEmpty(pack.Username))
                 return new { error = 1, msg = "Kiện chưa kê khác khách hàng!" };
             var user = AccountBusiness.GetOne(pack.Username);
-            if(user == null)
+            if (user == null)
                 return new { error = 2, msg = "Khách hàng này không có trong hệ thống, bạn có muốn tiếp tục!" };
 
             return new { error = 3, data = user.AvailableSearch };
@@ -186,7 +186,6 @@ namespace KGQT.Areas.Admin.Controllers
             var oData = new DataReturnModel<object>();
             if (file == null)
             {
-                Log.Error("Tạo file với excel,Csv", "Không có file dc chọn");
                 oData.IsError = true;
                 oData.Message = "Không có file nào được chọn!";
                 return oData;
@@ -279,10 +278,16 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="airPrice"></param>
         /// <returns></returns>
         [HttpPost]
-        public bool InStockPackage(string sData)
+        public object InStockPackage(string sData)
         {
+            var dt = new DataReturnModel<bool>();
             var crrUse = HttpContext.Session.GetString("user");
-            if (string.IsNullOrEmpty(sData)) return false;
+            if (string.IsNullOrEmpty(sData))
+            {
+                dt.IsError = true;
+                dt.Message = "Lỗi, không thể chuyển đổi dữ liệu";
+                return dt;
+            }
             var data = JsonConvert.DeserializeObject<tmpInStock>(sData);
             var oSave = PackagesBusiness.InStockHCMWareHouse(data, crrUse);
             return oSave;
