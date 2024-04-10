@@ -329,6 +329,7 @@ namespace KGQT.Business
             form.Width = "0";
             form.Length = "0";
             form.WeightReal = "0";
+            form.SearchBaiduTimes = 0;
             if (form.IsInsurance.HasValue && form.IsInsurance == true)
             {
                 form.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
