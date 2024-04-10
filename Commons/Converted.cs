@@ -1,12 +1,14 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using KGQT.Base;
+﻿using KGQT.Business;
 using Newtonsoft.Json;
-using System.Globalization;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
 namespace KGQT.Commons
 {
     public static class Converted
     {
+        private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
+
         public static int ToInt(int? s)
         {
             if (!s.HasValue) return 0;
@@ -36,16 +38,16 @@ namespace KGQT.Commons
         {
             if (s == null) return 0;
 
-            return Convert.ToDouble(s);
+            return Convert.ToDouble(s.ToString());
         }
 
         public static double ToDouble(double? s, int period = 1)
         {
             if (s == null) return 0;
-            var num = Convert.ToDouble(s);
+            var num = Convert.ToDouble(s.ToString());
             return Math.Round(num, period, MidpointRounding.AwayFromZero);
         }
-        public static decimal ToDecimal (double? s, int period = 1)
+        public static decimal ToDecimal(double? s, int period = 1)
         {
             if (s == null) return 0;
             var num = Convert.ToDecimal(s);
@@ -62,21 +64,7 @@ namespace KGQT.Commons
             }
             catch (Exception ex)
             {
-                Log.Error("Parse Datetime", JsonConvert.SerializeObject(ex));
-                //var arr = s.Split("/", StringSplitOptions.RemoveEmptyEntries);
-                //if (arr.Length == 3)
-                //{
-                //    int d = Convert.ToInt32(arr[0]);
-                //    int m = Convert.ToInt32(arr[1]);
-                //    var arrY = arr[3].Split(" ", StringSplitOptions.RemoveEmptyEntries);
-                //    int y = Convert.ToInt32(arrY[0]);
-                //    if (CultureInfo.CurrentCulture.Name.ToLower() == "en-US")
-                //    {
-
-                //    }
-
-
-                //}
+                _log.Error("Parse Datetime", ex.Message, s);
             }
             return dt;
         }

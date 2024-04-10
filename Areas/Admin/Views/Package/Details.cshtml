@@ -17,14 +17,10 @@
             <div class="card" style="border-radius: 10px;">
                 <div class="card-body">
                     <div class="row border-bottom border-gray mb-4">
-                        <div class="col-md-5 col-sm-12">
+                        <div class="col-md-6 col-sm-12">
                             <h3>Mã vận đơn: <span class="text-uppercase text-danger">@Model.PackageCode</span></h3>
                         </div>
-                        <div class="col-md-3 col-sm-12">
-                            @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
-                        </div>
-
-                        <div class="col-md-4 col-sm-12">
+                        <div class="col-md-6 col-sm-12">
                             @if (Model.Status == 0)
                             {
                                 <button type="button" onclick="confirm(@Model.ID)" class="btn btn-sm btn-primary float-right mx-2">Xác nhận đơn</button>
@@ -36,6 +32,17 @@
                             @if (Model.Status == 1)
                             {
                                 <button type="button" class="btn-sm btn bg-orange text-white  float-right mx-2">Kiểm tra hàng kho TQ</button>
+                            }
+                        </div>
+                        <div class="row pb-2">
+                            <div class="col-md-12 col-sm-12">
+                                @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.TransID))
+                            {
+                                <div class="col-md-12 col-sm-12">
+                                    <a href="/Admin/ShippingOrder/Details?recid=@Model.TransID">Xem chi tiết đơn</a>
+                                </div>
                             }
                         </div>
                     </div>

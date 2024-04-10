@@ -245,6 +245,7 @@
         else
             $('#frmDeclare').css('display', 'block');
     }
+
     function toggleWoodPack(o) {
         if (!$(o).is(':checked'))
             $('#frmWoodPack').addClass('d-none');
@@ -262,7 +263,7 @@
     function update() {
         var data = helper.form2Object($('#frmShip').serializeArray());
         data.ID = @Model.ID;
-       
+
         if (!data.PackageCode) {
             helper.showErr('Vui lòng nhập mã kiện!');
             return
@@ -286,6 +287,16 @@
                 data[name] = value;
             }
         });
+
+        if (!data["IsWoodPackage"])
+            data["IsWoodPackage"] = false;
+        if (!data["IsAirPackage"])
+            data["IsAirPackage"] = false;
+        if (!data["IsInsurance"])
+            data["IsInsurance"] = false; 
+            if (!data["IsBrand"])
+            data["IsBrand"] = false;
+
         $.ajax({
             url: '/admin/Package/Update',
             type: 'POST',

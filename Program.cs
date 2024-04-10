@@ -2,17 +2,16 @@
 using KGQT.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
+Serilog.Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
