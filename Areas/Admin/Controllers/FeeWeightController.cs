@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -68,6 +70,26 @@ namespace KGQT.Areas.Admin.Controllers
         public bool Delete(int id) 
         {
             var result = FeeWeightBusiness.Delete(id);
+            return result;
+        }
+        #endregion
+
+        #region Get By ID
+        public tbl_FeeWeight? GetByID(int id)
+        {
+            if(id < 0) return null;
+            var data =  FeeWeightBusiness.GetByID(id);
+            return data;
+        }
+        #endregion
+
+        #region Update
+        public bool Update(tbl_FeeWeight model)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var user = AccountBusiness.GetInfo(-1, userLogin);
+            if (model == null || user == null) return false;
+            var result = FeeWeightBusiness.Update(model, user.UserID);
             return result;
         }
         #endregion

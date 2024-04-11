@@ -108,6 +108,7 @@ namespace KGQT.Areas.Admin.Controllers
                     if (model.UID == admin.ID)
                         HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(admin));
                 }
+                result.Url = Url.Action("Index");
                 return result;
             }
             result.IsError = true;
