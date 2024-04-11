@@ -453,7 +453,6 @@ namespace KGQT.Business
                             }
                         }
 
-                        if (changePrice)
                             ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
 
                         var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userLogin);
