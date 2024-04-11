@@ -59,12 +59,12 @@
                 <div class="d-flex align-items-center justify-content-end">
                     <a href="Index" class="w-100px mr-2 btn btn-sm btn-info">
                         <i class="fas fa-sync fa-xs"></i>
-                       Xóa lọc
+                        Xóa lọc
                     </a>
                     <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
                 </div>
             </div>
-            
+
         </div>
     </form>
     <div class="row bg-white">
@@ -75,6 +75,9 @@
                         <tr>
                             <th class="text-center">
                                 Mã đơn
+                            </th>
+                            <th class="text-center">
+                                Kiện
                             </th>
                             <th class="text-center">
                                 Vận chuyển
@@ -91,9 +94,6 @@
                             <th class="text-center">
                                 Ngày tạo
                             </th>
-                            <th class="text-center">
-                                Người tạo
-                            </th>
                             <th class="text-center"></th>
                         </tr>
                     </thead>
@@ -104,10 +104,13 @@
                                 <td class="text-left align-middle">
                                     @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                 </td>
+                                <td class="text-left w-300px text-break">
+                                        @item.PackageCode
+                                </td>
                                 <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                 </td>
-                                <td class="text-left align-middle">
+                                <td class="text-left align-middle w-200px">
                                     <div class="form-group mb-0">
                                         @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
                                         {
@@ -132,7 +135,7 @@
                                         }
                                     </div>
                                 </td>
-                                <td class="text-center align-middle">
+                                <td class="text-center align-middle w-200px">
                                     @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                 </td>
                                 <td class="text-center align-middle">
@@ -140,9 +143,6 @@
                                 </td>
                                 <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.CreatedDate)
-                                </td>
-                                <td class="text-center align-middle">
-                                    @Html.DisplayFor(modelItem => item.Username)
                                 </td>
                                 <td class="text-center align-middle">
                                     <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.ID">

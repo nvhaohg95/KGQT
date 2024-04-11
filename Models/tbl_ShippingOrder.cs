@@ -8,6 +8,7 @@ namespace KGQT.Models
         public int ID { get; set; }
         public string? RecID { get; set; }
         public string ShippingOrderCode { get; set; } = null!;
+        public string? PackageCode { get; set; }
         public string? Username { get; set; }
         public string? Email { get; set; }
         public string? FirstName { get; set; }

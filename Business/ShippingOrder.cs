@@ -78,7 +78,7 @@ namespace KGQT.Business
                     query = query.Where(x => x.Status == status);
 
                 if (!string.IsNullOrEmpty(ID))
-                    query = query.Where(x => x.ShippingOrderCode.Contains(ID) || x.Username.Contains(ID));
+                    query = query.Where(x => x.ShippingOrderCode.Contains(ID) || x.Username.Contains(ID) || x.PackageCode.Contains(ID));
 
                 if (fromDate != null)
                     query = query.Where(x => x.CreatedDate >= fromDate);
@@ -175,6 +175,9 @@ namespace KGQT.Business
                 double totalCharge = packages.Sum(x => Converted.ToDouble(x.SurCharge));
                 double totalweightPrice = priceBrand + weightPrice;
                 var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
+                var sPack = packages.Select(x => x.PackageCode).ToArray();
+
+                ship.PackageCode = string.Join(", ", sPack);
                 ship.Weight = Converted.Double2String(weight);
                 ship.WeightPrice = Converted.StringCeiling(totalweightPrice);
                 ship.WoodPackagePrice = totalWoodPrice.ToString();
