@@ -68,7 +68,7 @@
                                             <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
                                         </a>
                                         <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
-                                   </div>
+                                    </div>
                                 </div>
                             </div>
                         </form>
@@ -90,6 +90,9 @@
                                         Mã đơn
                                     </th>
                                     <th class="text-center" scope="col">
+                                        Kiện
+                                    </th>
+                                    <th class="text-center" scope="col">
                                         Vận chuyển
                                     </th>
                                     <th class="text-center">
@@ -99,13 +102,10 @@
                                         Trạng thái
                                     </th>
                                     <th class="text-center">
-                                        Đơn giá
+                                        Tổng tiền
                                     </th>
                                     <th class="text-center">
-                                        Chi tiết
-                                    </th>
-                                    <th class="text-center">
-                                        Người tạo
+                                        Ngày tạo
                                     </th>
                                     <th class="text-center"></th>
                                 </tr>
@@ -117,10 +117,13 @@
                                         <td class="text-left">
                                             @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                         </td>
+                                        <td class="text-left w-300px text-break">
+                                                @item.PackageCode
+                                        </td>
                                         <td class="text-center">
                                             @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                         </td>
-                                        <td class="text-left" style="vertical-align:middle">
+                                        <td class="text-left w-200px  align-middle">
                                             <div class="form-group mb-0">
                                                 @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
                                                 {
@@ -145,17 +148,14 @@
                                                 }
                                             </div>
                                         </td>
-                                        <td class="text-center" style="vertical-align:middle">
+                                        <td class="text-center w-200px  align-middle">
                                             @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                         </td>
-                                        <td class="text-center" style="vertical-align:middle">
+                                        <td class="text-center  align-middle">
                                             @Converted.String2Money(item.TotalPrice)
                                         </td>
-                                        <td class="text-center" style="vertical-align:middle">
+                                        <td class="text-center  align-middle">
                                             @Html.DisplayFor(modelItem => item.CreatedDate)
-                                        </td>
-                                        <td class="text-center" style="vertical-align:middle">
-                                            @Html.DisplayFor(modelItem => item.Username)
                                         </td>
                                         <td class="text-center">
                                             <a class="btn btn-sm btn-info" href="/Admin/ShippingOrder/Details?id=@item.ID">
@@ -168,7 +168,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                 </div>
             </div>
         </div>

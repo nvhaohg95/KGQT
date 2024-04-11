@@ -705,8 +705,11 @@ namespace KGQT.Business
                             double totalCharge = lstPack.Sum(x => Converted.ToDouble(x.SurCharge));
                             double totalweightPrice = priceBrand + weightPrice;
                             var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
+                            var sPackageCode = lstPack.Select(x=>x.PackageCode).ToArray();
+
                             check.Weight = Converted.Double2String(weight);
                             check.WeightPrice = Converted.StringCeiling(totalweightPrice);
+                            check.PackageCode = string.Join(", ", sPackageCode);
                             check.WoodPackagePrice = totalWoodPrice.ToString();
                             check.AirPackagePrice = totalAirPrice.ToString();
                             check.InsurancePrice = totalInsurPrice.ToString();
@@ -739,6 +742,7 @@ namespace KGQT.Business
 
                             var ship = new tbl_ShippingOrder();
                             ship.ShippingOrderCode = pack.PackageCode;
+                            ship.PackageCode = pack.PackageCode;
                             ship.RecID = Guid.NewGuid().ToString("N");
                             ship.Username = pack.Username;
                             ship.FirstName = pack.FullName;
