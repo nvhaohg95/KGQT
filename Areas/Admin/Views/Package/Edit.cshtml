@@ -302,10 +302,10 @@
             type: 'POST',
             data: { form: data },
             success: function (result) {
-                if (!result)
-                    helper.showErr('Lỗi!')
+                if (result.isError)
+                    helper.showErr(result.message)
                 else
-                    helper.showSuc('Cập nhật đơn thành công!')
+                    helper.showSuc(result.message, false, "Thành công", "/admin/package/index")
             },
             error: function (xhr, status, err) {
             }

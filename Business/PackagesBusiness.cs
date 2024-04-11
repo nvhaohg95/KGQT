@@ -142,7 +142,7 @@ namespace KGQT.Business
         {
             DataReturnModel<tmpChinaOrderStatus> data = new DataReturnModel<tmpChinaOrderStatus>();
             data.Key = code;
-            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code && x.Status < 2);
+            var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
             if (oPack != null)
             {
                 var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == oPack.Username);
@@ -173,16 +173,33 @@ namespace KGQT.Business
                     {
                         string sData = response.Content.ReadAsStringAsync().Result;
                         data.Data = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
+                        data.IsError = !data.Data.success;
                         if (!data.IsError && data.Data.data != null && data.Data.data.Count > 0)
                         {
                             var exist = data.Data.data.FirstOrDefault(x => x.context.Contains("签收") || x.context.Contains("退回"));
-                            oPack.Status = 2;
+                            if (oPack.Status < 2)
+                                oPack.Status = 2;
                             oPack.ExportedCNWH = Converted.ToDate(exist.time);
                             if (BusinessBase.Update(oPack))
                             {
                                 var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == uslogin);
                                 BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
                             }
+
+                            for (int i = 0; i < data.Data.data.Count; i++)
+                            {
+                                string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(data.Data.data[i].context, "zh", "vi"));
+                                string properties_trans = stran.Replace("[", "").Replace("]", "").Replace("\"", "");
+                                string[] ass = properties_trans.Split(',');
+                                data.Data.data[i].context = ass[0];
+                            }
+                        }
+                        else
+                        {
+                            string reason = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(data.Data.reason, "zh", "vi"));
+                            string properties_trans = reason.Replace("[", "").Replace("]", "").Replace("\"", "");
+                            string[] ass = properties_trans.Split(',');
+                            data.Data.reason = ass[0];
                         }
                     }
                     else
@@ -198,7 +215,7 @@ namespace KGQT.Business
             }
             else
             {
-                data.IsError = false;
+                data.IsError = true;
                 data.Message = "Đơn hàng chưa được tạo trên hệ thống tracking.nhanshiphang.vn";
                 return data;
             }
@@ -231,12 +248,19 @@ namespace KGQT.Business
         #endregion
 
         #region CRUD
-        public static bool Add(tbl_Package model, string userLogin)
+        public static DataReturnModel<bool> Add(tbl_Package model, string userLogin)
         {
+            var dt = new DataReturnModel<bool>();
             var user = AccountBusiness.GetInfo(-1, model.Username);
             model.Status = 1;
             model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-
+            var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == model.PackageCode);
+            if (exist != null)
+            {
+                dt.IsError = true;
+                dt.Message = "Mã vận đơn đã tốn tại";
+                return dt;
+            }
             if (user != null)
             {
                 model.UID = user.ID;
@@ -256,13 +280,21 @@ namespace KGQT.Business
             model.Width = "0";
             model.Length = "0";
             model.WeightReal = "0";
+            model.SearchBaiduTimes = 0;
             if (model.IsInsurance.HasValue && model.IsInsurance == true)
             {
                 model.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(model.DeclarePrice) * 0.05);
             }
 
-            var s = BusinessBase.Add(model);
-            return s;
+            if (BusinessBase.Add(model))
+            {
+                dt.IsError = false;
+                dt.Message = "Thêm mới thành công";
+                return dt;
+            }
+            dt.IsError = true;
+            dt.Message = "Thêm mới không thành công";
+            return dt;
         }
 
         public static DataReturnModel<bool> CustomerAdd(tbl_Package form, string userLogin)
@@ -348,14 +380,21 @@ namespace KGQT.Business
             return data;
         }
 
-        public static bool Update(tbl_Package form, string userLogin)
+        public static DataReturnModel<bool> Update(tbl_Package form, string userLogin)
         {
             using (var db = new nhanshiphangContext())
             {
+                var dt = new DataReturnModel<bool>();
                 try
                 {
                     var p = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
-                    if (p == null) return false;
+                    if (p == null)
+                    {
+                        dt.IsError= true;
+                        dt.Message = "Không tìm thấy thông tin kiện";
+                        return dt;
+                    }
+
                     int oldStt = p.Status;
                     bool changeCus = false;
                     if (string.IsNullOrEmpty(p.Username) || !string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
@@ -432,10 +471,10 @@ namespace KGQT.Business
                     var update = BusinessBase.Update(p);
                     if (update)
                     {
-                        if(!string.IsNullOrEmpty(p.TransID) && changeCus)
+                        if (!string.IsNullOrEmpty(p.TransID) && changeCus)
                         {
-                            var ship = db.tbl_ShippingOrders.FirstOrDefault(x=>x.RecID == p.TransID);
-                            if(ship != null)
+                            var ship = db.tbl_ShippingOrders.FirstOrDefault(x => x.RecID == p.TransID);
+                            if (ship != null)
                             {
                                 ship.Username = p.Username;
 
@@ -453,18 +492,22 @@ namespace KGQT.Business
                             }
                         }
 
-                            ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
+                        ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
 
                         var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userLogin);
                         BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
+                        dt.IsError = false;
+                        dt.Message = "Cập nhật thành công!";
+                        return dt;
                     }
-                    return update;
                 }
                 catch (Exception ex)
                 {
                     _log.Error("Lỗi cập nhật package", ex.Message);
-                    return false;
                 }
+                dt.IsError = false;
+                dt.Message = "Cập nhật thành công!";
+                return dt;
             }
         }
         public static bool UpdateTrans(int id, string transId)

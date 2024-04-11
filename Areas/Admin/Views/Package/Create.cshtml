@@ -242,11 +242,11 @@
             beforeSend: function () {
                 stopLoading();
             },
-            success: function (result) {
-                if (!result)
-                    helper.showErr('Tạo đơn lỗi!')
+            success: function (res) {
+                if (res.isError)
+                    helper.showErr(res.message)
                 else
-                    helper.showSuc('Tạo đơn thành công!')
+                    helper.showSuc(res.message, false, "Thành công", "/admin/Package/index")
             },
             error: function (xhr, status, err) {
                 // error handling

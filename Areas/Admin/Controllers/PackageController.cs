@@ -165,12 +165,12 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="sData"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult Create(string sData)
+        public object Create(string sData)
         {
             var userLogin = HttpContext.Session.GetString("user");
             var data = JsonConvert.DeserializeObject<tbl_Package>(sData);
             var oSave = PackagesBusiness.Add(data, userLogin);
-            return Json(oSave);
+            return oSave;
         }
 
 
@@ -238,7 +238,7 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
-        public bool Update(tbl_Package form)
+        public DataReturnModel<bool> Update(tbl_Package form)
         {
             var crrUse = HttpContext.Session.GetString("user");
 

@@ -10,6 +10,9 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Serilog;
 using ILogger = Serilog.ILogger;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace KGQT.Commons
 {
@@ -40,6 +43,7 @@ namespace KGQT.Commons
             encStream.Close();
             return Convert.ToBase64String(cryptoByte, 0, cryptoByte.GetLength(0)).Trim();
         }
+
         public static string Decrypt(string key, string data)
         {
             if (string.IsNullOrEmpty(data))
@@ -59,6 +63,175 @@ namespace KGQT.Commons
             StreamReader read = new StreamReader(decStream);
             return (read.ReadToEnd());
         }
+
+        #region Translate
+        public static string RemoveHTMLTags(string content)
+        {
+            var cleaned = string.Empty;
+            try
+            {
+                StringBuilder textOnly = new StringBuilder();
+                using (var reader = XmlNodeReader.Create(new System.IO.StringReader("<xml>" + content + "</xml>")))
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.NodeType == XmlNodeType.Text)
+                            textOnly.Append(reader.ReadContentAsString());
+                    }
+                }
+                cleaned = textOnly.ToString();
+            }
+            catch
+            {
+                //A tag is probably not closed. fallback to regex string clean.
+                string textOnly = string.Empty;
+                Regex tagRemove = new Regex(@"<[^>]*(>|$)");
+                Regex compressSpaces = new Regex(@"[\order\r\n]+");
+                textOnly = tagRemove.Replace(content, string.Empty);
+                textOnly = compressSpaces.Replace(textOnly, " ");
+                cleaned = textOnly;
+            }
+
+            return cleaned;
+        }
+
+        public static string TranslateTextNew(string input, string sLang, string tLang)
+        {
+            try
+            {
+                string url = String.Format("https://translate.googleapis.com/translate_a/single?client=gtx&sl={0}&tl={1}&dt=t&q={2}", sLang, tLang, input);
+                var request = (HttpWebRequest)WebRequest.Create(url);
+                request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36";
+                request.Method = "GET";
+                var content = String.Empty;
+                HttpStatusCode statusCode;
+                using (var response = request.GetResponse())
+                using (var stream = response.GetResponseStream())
+                {
+                    var contentType = response.ContentType;
+                    Encoding encoding = null;
+                    if (contentType != null)
+                    {
+                        var match = Regex.Match(contentType, @"(?<=charset\=).*");
+                        if (match.Success)
+                            encoding = Encoding.GetEncoding(match.ToString());
+                    }
+                    encoding = encoding ?? Encoding.UTF8;
+                    statusCode = ((HttpWebResponse)response).StatusCode;
+                    using (var reader = new StreamReader(stream, encoding))
+                        content = reader.ReadToEnd();
+                }
+                return content;
+
+            }
+            catch(Exception e) 
+            {
+                _log.Error(e.Message);
+                return input;
+            }
+        }
+
+        public static string RemoveSpecialCharacter(string strMyString)
+        {
+            if (strMyString.Contains("<"))
+            {
+                strMyString = strMyString.Replace("<", "");
+            }
+            if (strMyString.Contains("["))
+            {
+                strMyString = strMyString.Replace("[", "");
+            }
+            if (strMyString.Contains("^"))
+            {
+                strMyString = strMyString.Replace("^", "");
+            }
+            if (strMyString.Contains(">"))
+            {
+                strMyString = strMyString.Replace(">", "");
+            }
+            if (strMyString.Contains("]"))
+            {
+                strMyString = strMyString.Replace("]", "");
+            }
+            if (strMyString.Contains("+"))
+            {
+                strMyString = strMyString.Replace("+", "");
+            }
+            if (strMyString.Contains("//"))
+            {
+                strMyString = strMyString.Replace("/", "");
+            }
+            if (strMyString.Contains(""))
+            {
+                strMyString = strMyString.Replace("", "");
+            }
+            if (strMyString.Contains("'"))
+            {
+                strMyString = strMyString.Replace("'", "");
+            }
+            if (strMyString.Contains("."))
+            {
+                strMyString = strMyString.Replace(".", "");
+            }
+            if (strMyString.Contains("{"))
+            {
+                strMyString = strMyString.Replace("{", "");
+            }
+            if (strMyString.Contains("}"))
+            {
+                strMyString = strMyString.Replace("}", "");
+            }
+            if (strMyString.Contains("("))
+            {
+                strMyString = strMyString.Replace("(", "");
+            }
+            if (strMyString.Contains(")"))
+            {
+                strMyString = strMyString.Replace(")", "");
+            }
+            if (strMyString.Contains("#"))
+            {
+                strMyString = strMyString.Replace("#", "");
+            }
+            if (strMyString.Contains("$"))
+            {
+                strMyString = strMyString.Replace("$", "");
+            }
+            if (strMyString.Contains("*"))
+            {
+                strMyString = strMyString.Replace("*", "");
+            }
+            if (strMyString.Contains("@"))
+            {
+                strMyString = strMyString.Replace("@", "");
+            }
+            if (strMyString.Contains("!"))
+            {
+                strMyString = strMyString.Replace("!", "");
+            }
+            if (strMyString.Contains(":"))
+            {
+                strMyString = strMyString.Replace(":", "");
+            }
+            //if (strMyString.Contains(";"))
+            //{
+            //    strMyString = strMyString.Replace(";", "");
+            //}
+            if (strMyString.Contains("?"))
+            {
+                strMyString = strMyString.Replace("?", "");
+            }
+            if (strMyString.Contains(">"))
+            {
+                strMyString = strMyString.Replace(">", "");
+            }
+            if (strMyString.Contains("."))
+            {
+                strMyString = strMyString.Replace(".", "");
+            }
+            return strMyString.ToString();
+        }
+        #endregion
         public static bool ConvertStringToBool(string i)
         {
             i = i.ToLower();
@@ -66,6 +239,7 @@ namespace KGQT.Commons
                 return true;
             return false;
         }
+
         public static string RemoveUnicode(string text)
         {
             string[] arr1 = new string[] { "á", "à", "ả", "ã", "ạ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ă", "ắ", "ằ", "ẳ", "ẵ", "ặ",
@@ -488,6 +662,9 @@ namespace KGQT.Commons
             }
         }
 
+
+
+
         #region Kiểm tra ngày lễ or chủ nhật
         public static bool IsHoliday(DateTime date)
         {
@@ -560,6 +737,7 @@ namespace KGQT.Commons
 
             return date;
         }
+
         #endregion
     }
 }

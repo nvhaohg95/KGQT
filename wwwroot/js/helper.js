@@ -32,13 +32,15 @@
         );
     },
 
-    showSuc: function (message, refresh = true, title = "Thành công") {
+    showSuc: function (message, refresh = true, title = "Thành công",url="") {
         return Swal.fire(
             title,
             message,
             'success',
         ).then((result) => {
-            if (refresh)
+            if (url)
+                location.replace(url);
+            else if (refresh)
                 window.location.reload();
         });
     },
