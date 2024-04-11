@@ -357,6 +357,7 @@ namespace KGQT.Business
                     var p = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
                     if (p == null) return false;
                     int oldStt = p.Status;
+                    bool changeCus = false;
                     if (string.IsNullOrEmpty(p.Username) || !string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
                     {
                         var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == form.Username.ToLower());
@@ -366,6 +367,7 @@ namespace KGQT.Business
                             p.UID = user.ID;
                             p.FullName = user.FullName;
                         }
+                        changeCus = true;
                     }
 
                     bool changePrice = false;
@@ -430,6 +432,27 @@ namespace KGQT.Business
                     var update = BusinessBase.Update(p);
                     if (update)
                     {
+                        if(!string.IsNullOrEmpty(p.TransID) && changeCus)
+                        {
+                            var ship = db.tbl_ShippingOrders.FirstOrDefault(x=>x.RecID == p.TransID);
+                            if(ship != null)
+                            {
+                                ship.Username = p.Username;
+
+                                var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == p.Username);
+                                if (user != null)
+                                {
+                                    ship.Email = user.Email;
+                                    ship.FirstName = user.FullName;
+                                    ship.Phone = user.Phone;
+                                    ship.Address = user.Address;
+                                }
+
+                                db.Update(ship);
+                                db.SaveChanges();
+                            }
+                        }
+
                         if (changePrice)
                             ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
 

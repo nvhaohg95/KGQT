@@ -92,15 +92,17 @@
                             @(PJUtils.TradeType(item.TradeType))
                         </td>
                         <td class="text-center text-truncate" title="@item.HContent">
-                            @if (item.HContent.Length < 50)
+                            @if (!string.IsNullOrEmpty(item.HContent))
                             {
-                                @item.HContent
+                                @if (item.HContent.Length < 50)
+                                {
+                                    @item.HContent
+                                }
+                                else
+                                {
+                                    @item.HContent.Substring(0,50)
+                                }
                             }
-                            else
-                            {
-                                @item.HContent.Substring(0,50)
-                            }
-
                         </td>
                         <td class="text-left">
                             @if (item.Type == 1)

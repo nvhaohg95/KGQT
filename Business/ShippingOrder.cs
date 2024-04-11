@@ -112,19 +112,19 @@ namespace KGQT.Business
         #endregion
 
         #region 
-        public static bool CalculatorAllPrice(string recID, string accessor)
+        public static void CalculatorAllPrice(string transID, string accessor)
         {
-            if (string.IsNullOrEmpty(recID)) return false;
+            if (string.IsNullOrEmpty(transID)) return;
             using (var db = new nhanshiphangContext())
             {
-                var ship = db.tbl_ShippingOrders.FirstOrDefault(x => x.RecID == recID);
+                var ship = db.tbl_ShippingOrders.FirstOrDefault(x => x.RecID == transID);
 
-                if (ship == null) return false;
+                if (ship == null) return;
 
                 var packages = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();
                 var config = db.tbl_Configurations.FirstOrDefault();
                 var lstFee = db.tbl_FeeWeights.Where(x => x.Type == ship.ShippingMethod).ToList();
-                if (lstFee == null || lstFee.Count == 0) return false;
+                if (lstFee == null || lstFee.Count == 0) return;
                 double minPackage = 0.3;
                 double minOrder = 1;
                 double weight = 0;
@@ -185,7 +185,8 @@ namespace KGQT.Business
                 ship.ModifiedBy = accessor;
                 ship.ModifiedDate = DateTime.Now;
                 db.tbl_ShippingOrders.Update(ship);
-                return db.SaveChanges() > 0;
+                db.SaveChanges();
+                return;
             }
         }
 
@@ -234,7 +235,7 @@ namespace KGQT.Business
                         if (db.SaveChanges() > 0)
                         {
 
-                            var  u = db.tbl_Accounts.FirstOrDefault(x => x.ID == oUser.ID);
+                            var u = db.tbl_Accounts.FirstOrDefault(x => x.ID == oUser.ID);
                             var pay = Converted.StringCeiling(wallet - totalPrice);
                             u.Wallet = pay;
                             db.Update(u);
@@ -271,7 +272,7 @@ namespace KGQT.Business
                         return dt;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _log.Error("Payment", ex.Message);
                     db.tbl_ShippingOrders.Update(oldOrder);
