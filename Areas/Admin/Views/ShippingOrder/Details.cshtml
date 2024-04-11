@@ -407,7 +407,7 @@
                 if (res.isError)
                     helper.showErr(res.message);
                 else
-                    helper.showSuc(res.message);
+                    helper.showSuc(res.message, false, "Thành công", "/admin/shippingOrder/index");
             },
             error: function (xhr, status, err) {
                 // error handling
