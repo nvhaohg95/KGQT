@@ -169,7 +169,12 @@
                     helper.showErr(respone.message)
                 else
                 {
-                    helper.showSuc('Duyệt thành công!', false, "Thành công", "/Admin/Withdraw/Index")
+                    let url = "";
+                    if(@type == 1)
+                        url = "/Admin/Withdraw/Index";
+                    else if (@type == 2)
+                        url = "/Admin/Withdraw/Refuse";
+                    helper.showSuc('Duyệt thành công!', false, "Thành công", url)
                 }
             },
             error: function (xhr, status, err) {
