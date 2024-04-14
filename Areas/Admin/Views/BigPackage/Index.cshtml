@@ -90,7 +90,8 @@
                                     <tr class="table-light font-weight-normal">
                                         <td class="text-center">
                                             @Html.DisplayFor(modelItem => item.ID)
-                                        </td><td class="text-center">
+                                        </td>
+                                        <td class="text-center">
                                             @Html.DisplayFor(modelItem => item.BigPackageCode)
                                         </td>
                                         <td class="text-center">
@@ -104,7 +105,9 @@
                                                 <i class="far fa-edit"></i>
                                                 <span>Xem</span>
                                             </a>
-                                             <button class="btn btn-success btn-sm" onclick="exportExcel(@item.ID)">Xuất file excel</button>
+                                            <button class="btn btn-success btn-sm" onclick="exportExcel(@item.ID)">Xuất file excel</button>
+                                            <button class="btn btn-warning btn-sm" onclick="deleteBig(@item.ID)">Xóa file</button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteBigAndPack(@item.ID)">Xóa file và kiện</button>
                                         </td>
                                     </tr>
                                 }
@@ -210,7 +213,71 @@
     }
 
     function exportExcel(id) {
-        location.href = "/admin/bigpackage/GenerateExcel?id="+id;
+        location.href = "/admin/bigpackage/GenerateExcel?id=" + id;
+    }
+
+    function deleteBig(id) {
+        Swal.fire({
+            title: "Cảnh báo !",
+            text: "Bạn có chắc muốn xóa file này?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Không",
+            confirmButtonText: "Xóa",
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/BigPackage/delete',
+                    type: 'POST',
+                    data: { id },
+                    // other AJAX options here
+                    success: function (result) {
+                        if (result) {
+                            helper.showSuc('Xóa thành công!');
+                        }else
+                            helper.showErr('Xóa không thành công, vui lòng thử lại sau!');
+                    },
+                    error: function (xhr, status, err) {
+                        // error handling
+                    }
+                })
+            }
+        });
+    }
+
+    function deleteBigAndPack(id) {
+        Swal.fire({
+            title: "Cảnh báo !",
+            text: "Bạn có chắc muốn xóa file và tất cả mã vận đơn của file này?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Không",
+            confirmButtonText: "Xóa",
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/BigPackage/deleteAllPack',
+                    type: 'POST',
+                    data: { id },
+                    // other AJAX options here
+                    success: function (result) {
+                        if (result.isError) {
+                            helper.showErr(result.message);
+                        }else
+                            helper.showSuc(result.message);
+                    },
+                    error: function (xhr, status, err) {
+                        // error handling
+                    }
+                })
+            }
+        });
     }
 </script>
 

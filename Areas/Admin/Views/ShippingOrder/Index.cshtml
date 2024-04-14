@@ -89,6 +89,9 @@
                                     <th class="text-center" scope="col">
                                         Mã đơn
                                     </th>
+                                    <th class="text-center">
+                                        Khách hàng
+                                    </th>
                                     <th class="text-center" scope="col">
                                         Kiện
                                     </th>
@@ -116,6 +119,10 @@
                                     <tr class="table-light font-weight-normal">
                                         <td class="text-left">
                                             @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                        </td>
+
+                                        <td class="text-center  align-middle">
+                                            @Html.DisplayFor(modelItem => item.Username)
                                         </td>
                                         <td class="text-left w-300px text-break">
                                                 @item.PackageCode

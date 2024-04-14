@@ -8,6 +8,7 @@ namespace KGQT.Models
         public int ID { get; set; }
         public double? WeightFrom { get; set; }
         public double? WeightTo { get; set; }
+        public string? Display { get; set; }
         public string? PriceBrand { get; set; }
         public string? Amount { get; set; }
         public DateTime? CreatedDate { get; set; }

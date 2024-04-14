@@ -1,4 +1,5 @@
 ﻿using KGQT.Models;
+using KGQT.Models.temp;
 
 namespace KGQT.Business
 {
@@ -14,7 +15,7 @@ namespace KGQT.Business
                 int totalPage = 1;
                 int total = 0;
                 IQueryable<tbl_BigPackage> query = db.tbl_BigPackages;
-                
+
                 if (!string.IsNullOrEmpty(code))
                     query = query.Where(x => x.BigPackageCode == code);
 
@@ -37,6 +38,42 @@ namespace KGQT.Business
             }
         }
 
+        public static bool Delete(int id)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var p = db.tbl_BigPackages.FirstOrDefault(x => x.ID == id);
+                db.tbl_BigPackages.Remove(p);
+                return db.SaveChanges() > 0;
+            }
+        }
+
+        public static DataReturnModel<bool> DeleteAllPack(int id)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var dt = new DataReturnModel<bool>();
+                if(db.tbl_Packages.Any(x=>x.Status == 5))
+                {
+                    dt.IsError = true;
+                    dt.Message = "Có kiện đã được nhận không thể xóa";
+                    return dt;
+                }
+
+                var p = db.tbl_BigPackages.FirstOrDefault(x => x.ID == id);
+                db.RemoveRange(db.tbl_Packages.Where(x => x.BigPackage == id));
+                db.tbl_BigPackages.Remove(p);
+                if( db.SaveChanges() > 0)
+                {
+                    dt.IsError = false;
+                    dt.Message = "Xóa thành công";
+                    return dt;
+                }
+                dt.IsError = true;
+                dt.Message = "Xóa không thành công, vui lòng thử lại sau";
+                return dt;
+            }
+        }
         #endregion
     }
 }

@@ -42,6 +42,13 @@
                 </div>
                 <div class="col-3 form-group">
                     <div>
+                        <span class="fw-bold">Hiển thị</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.Display ,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Hiện thị đến người dùng" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
                         <span class="fw-bold">Giá tiền</span>
                         <span class="text-danger">(*)</span>
                     </div>

@@ -112,5 +112,19 @@ namespace KGQT.Areas.Admin.Controllers
                 }
             }
         }
+
+        [HttpPost]
+        public bool Delete(int id)
+        {
+            bool result = BigPackageBusiness.Delete(id);
+            return result;
+        }
+
+        [HttpPost]
+        public object DeleteAllPack(int id)
+        {
+            var rs = BigPackageBusiness.DeleteAllPack(id);
+            return rs;
+        }
     }
 }
