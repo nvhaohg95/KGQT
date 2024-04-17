@@ -1,4 +1,5 @@
-﻿using KGQT.Business.Base;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
@@ -27,17 +28,20 @@ namespace KGQT.Business
             }
         }
 
-        public static tbl_ShippingOrder CheckOrderInStock(string username, int method, DateTime fromDate, DateTime toDate, DateTime exportStart, DateTime exportEnd)
+        public static tbl_ShippingOrder CheckOrderInStock(string username, int method, DateTime fromDate, DateTime toDate, DateTime exportStart, DateTime exportEnd, string recID = "")
         {
             using (var db = new nhanshiphangContext())
             {
                 try
                 {
-                    var query = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower()
-                    && x.CreatedDate >= fromDate && x.CreatedDate <= toDate && x.ChinaExportDate >= exportStart && x.ChinaExportDate <= exportEnd);
+                    var query = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower());
+                    query = query.Where(x => x.CreatedDate >= fromDate && x.CreatedDate <= toDate);
+                    query = query.Where(x => x.ChinaExportDate >= exportStart && x.ChinaExportDate <= exportEnd);
 
-                    var a = query.FirstOrDefault();
-                    return a;
+                    if (!string.IsNullOrEmpty(recID))
+                        query = query.Where(x => x.RecID != recID);
+
+                    return query.FirstOrDefault();
                 }
                 catch (Exception ex)
                 {
@@ -108,7 +112,81 @@ namespace KGQT.Business
             return BusinessBase.Add(model);
         }
 
+        public static bool Add(tbl_Package pack, string accessor)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var config = db.tbl_Configurations.FirstOrDefault();
+                double minPackage = 0.3;
+                double minOrder = 1;
+                if (config != null)
+                {
+                    minPackage = config.MinPackage ?? 0.3;
+                    minOrder = config.MinOrder ?? 1;
+                }
 
+                var weightRound = Converted.ToDouble(pack.WeightReal);
+
+                if (weightRound < minOrder)
+                    weightRound = minOrder;
+
+                var lstFee = db.tbl_FeeWeights.Where(x => x.Type == pack.MovingMethod).ToList();
+                var fee = lstFee.FirstOrDefault(x => x.WeightFrom <= weightRound && weightRound <= x.WeightTo);
+                double feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
+
+                if (pack.IsBrand == true)
+                {
+                    feeWeight = Converted.DoubleCeiling((Converted.ToDouble(fee.PriceBrand) + Converted.ToDouble(fee.Amount)) * weightRound);
+                }
+
+                var ship = new tbl_ShippingOrder();
+                ship.ShippingOrderCode = pack.PackageCode;
+                ship.PackageCode = pack.PackageCode;
+                ship.RecID = Guid.NewGuid().ToString("N");
+                ship.Username = pack.Username;
+                ship.FirstName = pack.FullName;
+                ship.LastName = pack.FullName;
+                ship.Email = pack.Email;
+                ship.Address = pack.Address;
+                ship.Phone = pack.Phone;
+                ship.ShippingMethod = pack.MovingMethod;
+                ship.ShippingMethodName = PJUtils.ShippingMethodName(pack.MovingMethod);
+                ship.Weight = weightRound.ToString();
+                ship.WeightPrice = feeWeight.ToString();
+                ship.IsAirPackage = pack.IsAirPackage;
+                ship.AirPackagePrice = pack.AirPackagePrice;
+                ship.IsWoodPackage = pack.IsWoodPackage;
+                ship.WoodPackagePrice = pack.WoodPackagePrice;
+                ship.IsInsurance = pack.IsInsurance;
+                ship.InsurancePrice = pack.IsInsurancePrice;
+                ship.SurCharge = pack.SurCharge;
+                ship.TotalPrice = Converted.Double2String(feeWeight
+                    + Converted.ToDouble(pack.AirPackagePrice)
+                    + Converted.ToDouble(pack.WoodPackagePrice)
+                    + Converted.ToDouble(pack.IsInsurancePrice)
+                    + Converted.ToDouble(pack.SurCharge));
+                ship.Status = 1;
+                ship.ChinaExportDate = pack.ExportedCNWH;
+                ship.CreatedDate = DateTime.Now;
+                ship.CreatedBy = accessor;
+                db.Add(ship);
+                var save = db.SaveChanges() > 0;
+                if (save)
+                {
+                    var oPack = db.tbl_Packages.FirstOrDefault(x => x.ID == pack.ID);
+                    if (oPack != null)
+                    {
+                        oPack.TransID = ship.RecID;
+                        oPack.ModifiedBy = accessor;
+                        oPack.ModifiedDate = DateTime.Now;
+                        BusinessBase.Update(oPack);
+                    }
+                    var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                    NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "/ShippingOrder/Details/" + ship.ID, accessor);
+                }
+                return save;
+            }
+        }
         #endregion
 
         #region 

@@ -400,7 +400,9 @@ namespace KGQT.Business
                     }
 
                     int oldStt = p.Status;
-                    bool changeCus = false;
+                    int oldVc = p.MovingMethod;
+                    bool changePrice = false;
+
                     if (string.IsNullOrEmpty(p.Username) || !string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
                     {
                         var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == form.Username.ToLower());
@@ -410,10 +412,7 @@ namespace KGQT.Business
                             p.UID = user.ID;
                             p.FullName = user.FullName;
                         }
-                        changeCus = true;
                     }
-
-                    bool changePrice = false;
 
                     p.BigPackage = form.BigPackage;
                     p.PackageCode = form.PackageCode;
@@ -475,46 +474,74 @@ namespace KGQT.Business
                     var update = BusinessBase.Update(p);
                     if (update)
                     {
+                        var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userLogin);
+
                         if (!string.IsNullOrEmpty(p.TransID))
                         {
-
                             var ship = db.tbl_ShippingOrders.FirstOrDefault(x => x.RecID == p.TransID);
+                            int countPackold = db.tbl_Packages.Where(x => x.TransID == ship.RecID).Count();
 
                             if (ship != null)
                             {
-
                                 var shipnew = ShippingOrder.CheckOrderInStock(p.Username, p.MovingMethod, ship.CreatedDate.Value.Date,
-                                    ship.CreatedDate.Value.Date.AddDays(1).AddTicks(-1), p.ExportedCNWH.Value, p.ExportedCNWH.Value.AddDays(1).AddTicks(-1));
+                                    ship.CreatedDate.Value.Date.AddDays(1).AddTicks(-1), p.ExportedCNWH.Value, p.ExportedCNWH.Value.AddDays(1).AddTicks(-1), ship.RecID);
+
                                 if (shipnew != null)
                                 {
-                                    var packe = db.tbl_Packages.FirstOrDefault(x => x.ID == p.ID);
+                                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == p.Username.ToLower());
+                                    var packe = BusinessBase.GetOne<tbl_Package>(x => x.ID == p.ID);
                                     p.TransID = shipnew.RecID;
                                     packe.TransID = shipnew.RecID;
-                                    db.tbl_ShippingOrders.Remove(ship);
-                                    db.Update(packe);
-                                    db.SaveChanges();
+                                    BusinessBase.Update(packe);
+
+                                    ShippingOrder.CalculatorAllPrice(shipnew.RecID, userLogin);
+
+                                    if (countPackold == 1)
+                                        db.tbl_ShippingOrders.Remove(ship);
+                                    else
+                                        ShippingOrder.CalculatorAllPrice(ship.RecID, userLogin);
+
+                                    BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chuyển kiện từ đơn " + ship.RecID + " sang đơn " + shipnew.RecID, 0, admin.Username);
                                 }
                                 else
                                 {
-                                    ship.Username = p.Username;
-                                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == p.Username);
-                                    if (user != null)
+                                    if (oldVc != p.MovingMethod)
                                     {
-                                        ship.Email = user.Email;
-                                        ship.FirstName = user.FullName;
-                                        ship.Phone = user.Phone;
-                                        ship.Address = user.Address;
+                                        p = BusinessBase.GetOne<tbl_Package>(x => x.ID == p.ID);
+                                        var s = ShippingOrder.Add(p, userLogin);
+                                        if (!s)
+                                        {
+                                            dt.IsError = true;
+                                            dt.Message = "Cập nhật không thành công!";
+                                            return dt;
+                                        }
+                                        if (countPackold == 1)
+                                            db.tbl_ShippingOrders.Remove(ship);
+                                        else
+                                            ShippingOrder.CalculatorAllPrice(ship.RecID, userLogin);
                                     }
-
-                                    db.Update(ship);
-                                    db.SaveChanges();
+                                    else
+                                    {
+                                        ship.Username = p.Username;
+                                        var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == p.Username.ToLower());
+                                        if (user != null)
+                                        {
+                                            ship.Email = user.Email;
+                                            ship.FirstName = user.FullName;
+                                            ship.Phone = user.Phone;
+                                            ship.Address = user.Address;
+                                            ship.Username = user.Username;
+                                        }
+                                        db.Update(ship);
+                                        db.SaveChanges();
+                                    }
                                 }
                             }
+
+                            p = BusinessBase.GetOne<tbl_Package>(x => x.ID == p.ID);
+                            ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
                         }
 
-                        ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
-
-                        var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == userLogin);
                         BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
                         dt.IsError = false;
                         dt.Message = "Cập nhật thành công!";
