@@ -1904,6 +1904,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Firebase\" />
     <Folder Include="uploads\" />
     <Folder Include="wwwroot\css\images\" />
     <Folder Include="wwwroot\uploads\avatars\" />
