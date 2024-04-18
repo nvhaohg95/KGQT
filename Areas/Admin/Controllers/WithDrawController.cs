@@ -32,6 +32,7 @@ namespace KGQT.Areas.Admin.Controllers
             
             return View(lstData);
         }
+        
         [HttpGet]
         public IActionResult Create(string user,int type)
         {
