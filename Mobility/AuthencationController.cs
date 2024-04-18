@@ -1,8 +1,12 @@
-﻿using KGQT.Business;
+﻿using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
+using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Drawing;
@@ -392,7 +396,7 @@ namespace KGQT.Mobility
 
         [HttpPost]
         [Route("payment")]
-        public object Payment([FromBody] RequestModel model)
+        public async Task<object> Payment([FromBody] RequestModel model)
         {
             var oRequest = new DataReturnModel<object>();
             if (!ValidateModelRequest(model))
@@ -408,75 +412,25 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
             }
-            string? recID = dataRequest.ContainsKey("recID") ? dataRequest["recID"].ToString() : null;
+            int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
             string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
-            if (string.IsNullOrEmpty(recID)) {
-                oRequest.IsError = true;
-                oRequest.Message = "Không tìm thấy mã kiện. Vui lòng thử lại!";
-                return oRequest;
-            }
-            var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.RecID == recID);
-            if (oOrder == null)
+            string? token = dataRequest.ContainsKey("token") ? dataRequest["token"].ToString() : null;
+            var result = ShippingOrder.Payment(id, userName);
+            oRequest.IsError = result.IsError;
+            oRequest.Message = result.Message;
+            if (!oRequest.IsError)
             {
-                oRequest.IsError = true;
-                oRequest.Message = "Không tìm thấy thông tin đơn. Vui lòng thử lại!";
-                return oRequest;
-            }
-            if (oOrder.Status == 2)
-            {
-                oRequest.IsError = true;
-                oRequest.Message = "Đơn này đã thanh toán rồi!";
-                return oRequest;
-            }
-            var oUser = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
-            if (oUser == null)
-            {
-                oRequest.IsError = true;
-                oRequest.Message = "Người dùng không còn tồn tại. Vui lòng thử lại!";
-                return oRequest;
-            }
-            double totalPrice = Converted.ToDouble(oOrder.TotalPrice);
-            bool check = Converted.ToDouble(oUser.Wallet) >= totalPrice;
-            if (check)
-            {
-                oOrder.Status = 2;
-                oOrder.ModifiedBy = userName;
-                oOrder.ModifiedDate = DateTime.Now;
-
-                var s = BusinessBase.Update(oOrder);
-                if (s)
+                var oOrder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
+                if (oOrder != null)
                 {
-                    var pay = Converted.StringCeiling(Converted.ToDouble(oUser.Wallet) - totalPrice);
-                    if (!AccountBusiness.UpdateWallet(oUser.ID, pay))
-                    {
-                        oRequest.IsError = false;
-                        oRequest.Message = "Thanh toán thất bại. Vui lòng thử lại!";
-                        return oRequest;
-                    }
-                    #region Logs
-                    HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, "", oOrder.TotalPrice, 1, 1, pay, userName);
-                    #endregion
-
-                    var packs = BusinessBase.GetList<tbl_Package>(x => x.TransID == oOrder.ShippingOrderCode);
-                    foreach (var pack in packs)
-                    {
-                        pack.Status = 5;
-                        pack.ModifiedBy = userName;
-                        pack.ModifiedDate = DateTime.Now;
-                        BusinessBase.Update(pack);
-                    }
                     oRequest.Data = oOrder;
-                    oRequest.IsError = false;
-                    oRequest.Message = "Thanh toán thành công!";
-                    return oRequest;
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        string body = $"Thanh toán cho đơn {oOrder?.ShippingOrderCode} thành công";
+                        await SendFCMAsync(body, token, null);
+                    }
                 }
-            }
-            else
-            {
-                var pay = Converted.StringCeiling(totalPrice - Converted.ToDouble(oUser.Wallet));
-                oRequest.IsError = true;
-                oRequest.Message = "Tài khoản không đủ tiền, cần phải nạp thêm " + Converted.String2Money(pay) + "đ";
-                return oRequest;
+
             }
             return oRequest;
         }
@@ -591,6 +545,46 @@ namespace KGQT.Mobility
             if (model == null) return false;
             if (string.IsNullOrEmpty(model.DataRequest)) return false;
             return true;
+        }
+        private async Task<object> SendFCMAsync(string body, string token, string data)
+        {
+            if (FirebaseApp.DefaultInstance == null)
+            {
+                string path = AppDomain.CurrentDomain.BaseDirectory + "Firebase-key\\" + "trakuaidi-app-firebase-key.json";
+                FirebaseApp.Create(new AppOptions()
+                {
+                    Credential = GoogleCredential.FromFile(path)
+                });
+            }
+
+            // This registration token comes from the client FCM SDKs.
+            //var registrationToken = "dLz14KR5QdmuioC_LZ0y8j:APA91bHduPYeNfEOAFHpOEhUmFAQrhZVvrhpok95mJulgQzF6OFYY99HukLTCAxNQ9lGpxhcdD0BE8WMqDKuVP2ahi4Z8wZT81qk8-3juViDjAa35oVWu650R90nMgPyOKAXL3D6GN-0";
+            // See documentation on defining a message payload.
+            var message = new Message()
+            {
+
+                Data = new Dictionary<string, string>()
+        {
+            { "data", data },
+        },
+                Token = token,
+                Android = new AndroidConfig()
+                {
+                    Notification = new AndroidNotification()
+                    {
+                        ChannelId = "Trakuaidi",
+                        Priority = NotificationPriority.HIGH,
+                        Title = "Trakuaidi xin thông báo",
+                        Body = body,
+                    },
+                }
+            };
+
+            // Send a message to the device corresponding to the provided
+            // registration token.
+            string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+            // Response is a message ID string.
+            return response;
         }
         #endregion
 
