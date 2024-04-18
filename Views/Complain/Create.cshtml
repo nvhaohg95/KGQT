@@ -1,0 +1,102 @@
+﻿@model KGQT.Models.tbl_Complain
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a>Dịch vụ</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Khiếu nại</a></li>
+    </ul>
+</div>
+
+<div class="row justify-content-center w-100">
+    <div class="col-8">
+        <form method="post" action="Create" id="frmComplain">
+            <div class="form-group">
+                <h5 class="fw-bold text-danger text-uppercase mt-2">Tạo đơn khiếu nại</h5>
+            </div>
+            <div class="form-group mb-4">
+                <label class="required" for="Type">Hình thức khiếu nại:</label>
+                <select class="form-control" name="Type" id="Type" onchange="selected(this)">
+                    <option value="0">Khiếu nại thiếu hàng</option>
+                    <option value="1">Khiếu nại sai mẫu (bồi thường)</option>
+                    <option value="2">Khiếu nại sai mẫu (trả hàng)</option>
+                    <option value="3">Lỗi hệ thống</option>
+                </select>
+            </div>
+            @*<div class="form-group mb-4">
+                <label class="required" for="Title">Tiêu đề:</label>
+                <input type="text" class="form-control" name="Title" id="Title" placeholder="Nhập tiêu đề"/>
+            </div>*@
+            <div class="form-group mb-4" id="extendTransId">
+                <label class="required" for="TransId">Mã đơn hàng:</label>
+                <input type="text" class="form-control" name="TransId" id="TransId" placeholder="Nhập mã đơn hàng" />
+            </div>
+            <div class="form-group mb-4">
+                <label class="required" for="Context">Nội dung:</label>
+                <textarea class="form-control" name="Context" id="Context" rows="5" placeholder="Nhập nội dung"></textarea>
+            </div>
+            <div class="col-md-12 col-sm-12 col-lg-12 text-right">
+                <button type="button" class="btn btn-sm btn-success w-100px" onclick="onClick()">Gửi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selected(e) {
+        var v = $(e).find(":selected").val();
+        if (v == "3")
+            $('#extendTransId')?.addClass('d-none');
+        else
+            $('#extendTransId')?.removeClass('d-none');
+    }
+    function onClick(){
+        var data = helper.form2Object($('#frmComplain').serializeArray());
+        if (!data) 
+        {
+            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+            return;
+        }
+        if(!data.Type)
+        {
+            helper.showWarn('Vui lòng chọn hình thức khiếu nại!');
+            return;
+        }
+        else 
+        {
+            if (data.Type != "3" && !data.TransId) {
+                helper.showWarn('Vui lòng nhập mã đơn hàng của bạn!');
+                return;
+            }
+        }
+
+        //if (!data.Title) {
+        //    helper.showWarn('Vui lòng nhập nội dung mô tả!');
+        //    return;
+        //}
+
+        if (!data.Context) {
+            helper.showWarn('Vui lòng nhập nội dung mô tả!');
+            return;
+        }
+
+        $.ajax({
+            url: '/Complain/Create',
+            type: "POST",
+            data: data,
+            success: function (respone) {
+                if (respone.isError)
+                    helper.showErr(respone.message)
+                else
+                    helper.showSuc('Yêu cầu của bạn đã được gửi!');
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
+</script>
