@@ -111,7 +111,8 @@
                             @if (item.Status < 2)
                             {
                                 <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
-                                <button type="button" onclick="cancel(@item.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
+                                <button type="button" onclick="cancel(@item.ID)" class="btn btn-sm bg-dark text-white float-right  mr-2">Hủy đơn</button>
+                                <button class="btn-sm btn bg-danger text-white" onclick="Delete(@item.ID)">Xóa</button>
                             }
                         </div>
                     </div>
@@ -382,6 +383,35 @@
                 // error handling
             }, complete: function () {
                 stopLoading(true);
+            }
+        });
+    }
+
+    function Delete(id) {
+        Swal.fire({
+            title: "Bạn có chắc muốn xóa kiện này?",
+            showCancelButton: true,
+            CancelButtonText: "Không",
+            confirmButtonText: "Có",
+            allowOutsideClick: false,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Package/Delete',
+                    type: 'POST',
+                    data: { id },
+                    // other AJAX options here
+                    success: function (result) {
+                        if (result.isError)
+                            helper.showErr(result.message)
+                        else
+                            helper.showSuc(result.message)
+                    },
+                    error: function (xhr, status, err) {
+                        // error handling
+                    }
+                });
             }
         });
     }

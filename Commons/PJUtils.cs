@@ -295,7 +295,7 @@ namespace KGQT.Commons
             switch (status)
             {
                 case 2:
-                    text = "Chậm";
+                    text = "Thường";
                     break;
                 case 3:
                     text = "Bộ";
@@ -335,7 +335,7 @@ namespace KGQT.Commons
                     sReturn = "<span class=\"text-white btn btn-sm bg-success\" style=\"font-size:12px\">Đã nhận hàng</span>";
                     break;
                 case 9:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-danger\" style=\"font-size:12px\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-dark\" style=\"font-size:12px\">Đã hủy</span>";
                     break;
                 case 10:
                     sReturn = "<span class=\"text-white btn btn-sm bg-light\" style=\"font-size:12px\">Thất lạc</span>";

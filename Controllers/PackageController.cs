@@ -86,6 +86,19 @@ namespace KGQT.Controllers
             var data = PackagesBusiness.Cancel(id, userLogin);
             return data;
         }
+
+        /// <summary>
+        /// xoa đơn
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public DataReturnModel<bool> Delete(int id)
+        {
+            var userLogin = HttpContext.Session.GetString("user");
+            var data = PackagesBusiness.Delete(id);
+            return data;
+        }
         #endregion
 
     }
