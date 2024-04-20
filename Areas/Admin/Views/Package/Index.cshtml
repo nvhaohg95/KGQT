@@ -32,10 +32,10 @@
                     <option value="2" selected="@(status == 2)">Hàng về kho TQ</option>
                     <option value="3" selected="@(status == 3)">Đang trên đường về HCM</option>
                     <option value="4" selected="@(status == 4)">Hàng về tới HCM</option>
-                    <option value="4" selected="@(status == 5)">Đã nhận hàng</option>
-                    <option value="4" selected="@(status == 9)">Đã hủy</option>
-                    <option value="4" selected="@(status == 10)">Thất lạc</option>
-                    <option value="4" selected="@(status == 11)">Không nhận được hàng</option>
+                    <option value="5" selected="@(status == 5)">Đã nhận hàng</option>
+                    <option value="9" selected="@(status == 9)">Đã hủy</option>
+                    <option value="10" selected="@(status == 10)">Thất lạc</option>
+                    <option value="11" selected="@(status == 11)">Không nhận được hàng</option>
                 </select>
             </div>
             <div class="col-lg-4 col-md-12 col-sm-12">
@@ -96,10 +96,13 @@
                                 <span>Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
-                                <a href="/admin/package/edit?id=@item.ID" class="btn btn-sm bg-warning text-white mr-2">Chỉnh sửa</a>
+                                @if (item.Status != 5)
+                                {
+                                    <a href="/admin/package/edit?id=@item.ID" class="btn btn-sm bg-warning text-white mr-2">Chỉnh sửa</a>
+                                }
                                 @if (item.Status != 5 && item.Status != 9)
                                 {
-                                    <button class="btn-sm btn bg-danger text-white mr-2" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                    <button class="btn-sm btn bg-dark text-white mr-2" onclick="cancel(@item.ID)">Hủy đơn</button>
                                 }
                                 @if (item.Status < 2)
                                 {
@@ -109,7 +112,10 @@
                                 {
                                     <button class="btn-sm btn bg-info text-white mr-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
                                 }
-
+                                @if (item.Status != 5)
+                                {
+                                    <button class="btn-sm btn bg-danger text-white mr-2" onclick="Delete(@item.ID)">Xóa</button>
+                                }
                             </div>
                         </div>
                         <div class="row">
@@ -424,6 +430,39 @@
             }
         });
     }
+
+    function Delete(id) {
+        Swal.fire({
+            title: "Bạn có chắc muốn xóa kiện này?",
+            showCancelButton: true,
+            CancelButtonText: "Không",
+            confirmButtonText: "Có",
+            allowOutsideClick: false,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/Package/Delete',
+                    type: 'POST',
+                    data: { id },
+                    // other AJAX options here
+                    success: function (result) {
+                        if (!result)
+                            helper.showErr('Xóa thất bại!')
+                        else
+                            helper.showSuc('Xóa thành công!')
+                    },
+                    error: function (xhr, status, err) {
+                        // error handling
+                    }
+                });
+            }
+        });
+    }
+
+
+
+
     //<!--------------Start: Nhập kho---------------->
     function instock(id, code) {
         $('#package-code').text(code);
@@ -547,7 +586,7 @@
                 if (res.error == 2) {
                     Swal.fire({
                         title: "Chú ý",
-                            text: res.msg,
+                        text: res.msg,
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#3085d6",

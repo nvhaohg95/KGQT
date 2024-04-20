@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<KGQT.Models.tbl_Notification>;
 @foreach (var item in Model)
 {
-    <a class="dropdown-item d-flex align-items-center h-100px" href="#">
+    <a class="dropdown-item d-flex align-items-center h-100px" href="@item.Url">
         <div class="mr-3">
             @if (item.NotifType == 1)
             {

@@ -254,46 +254,67 @@ namespace KGQT.Business
             var user = AccountBusiness.GetInfo(-1, model.Username);
             model.Status = 1;
             model.PackageCode = model.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == model.PackageCode);
-            if (exist != null)
+            model.PackageCode = model.PackageCode.Replace(",", ";");
+            var lst1 = model.PackageCode.Split(";", StringSplitOptions.RemoveEmptyEntries);
+            int fail = 0;
+            foreach (var item in lst1)
+            {
+                var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == item);
+                if (exist != null)
+                {
+                    dt.IsError = true;
+                    dt.Message += $"Mã vận đơn {item} đã tốn tại <hr>";
+                    continue;
+                }
+                var pack = new tbl_Package();
+                if (user != null)
+                {
+                    pack.UID = user.ID;
+                    pack.Username = user.Username;
+                    pack.FullName = user.FullName;
+                    pack.Phone = user.Phone;
+                    pack.Email = user.Email;
+                    pack.Address = user.Address;
+                }
+                pack.PackageCode = item;
+                pack.WareHouse = model.WareHouse;
+                pack.MovingMethod = model.MovingMethod;
+                pack.IsAirPackage = model.IsAirPackage;
+                pack.IsWoodPackage = model.IsWoodPackage;
+                pack.IsInsurance = model.IsInsurance;
+                pack.IsBrand = model.IsBrand;
+                pack.SurCharge = model.SurCharge;
+                pack.Note = model.Note;
+                pack.BigPackage = model.BigPackage;
+                pack.OrderDate = DateTime.Now;
+                pack.CreatedDate = DateTime.Now;
+                pack.CreatedBy = userLogin;
+                pack.Weight = "0";
+                pack.WeightExchange = "0";
+                pack.Height = "0";
+                pack.Width = "0";
+                pack.Length = "0";
+                pack.WeightReal = "0";
+                pack.SearchBaiduTimes = 0;
+                if (model.IsInsurance.HasValue && model.IsInsurance == true)
+                {
+                    pack.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(model.DeclarePrice) * 0.05);
+                }
+
+                if (BusinessBase.Add(pack))
+                {
+                    dt.Message += $"Đã thêm Mã vận đơn {item} </br>";
+                }
+            }
+            if (fail == lst1.Length)
             {
                 dt.IsError = true;
-                dt.Message = "Mã vận đơn đã tốn tại";
-                return dt;
+                dt.Message = "Thêm mới không thành công";
             }
-            if (user != null)
-            {
-                model.UID = user.ID;
-                model.Username = user.Username;
-                model.FullName = user.FullName;
-                model.Phone = user.Phone;
-                model.Email = user.Email;
-                model.Address = user.Address;
-            }
-
-            model.OrderDate = DateTime.Now;
-            model.CreatedDate = DateTime.Now;
-            model.CreatedBy = userLogin;
-            model.Weight = "0";
-            model.WeightExchange = "0";
-            model.Height = "0";
-            model.Width = "0";
-            model.Length = "0";
-            model.WeightReal = "0";
-            model.SearchBaiduTimes = 0;
-            if (model.IsInsurance.HasValue && model.IsInsurance == true)
-            {
-                model.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(model.DeclarePrice) * 0.05);
-            }
-
-            if (BusinessBase.Add(model))
+            else
             {
                 dt.IsError = false;
-                dt.Message = "Thêm mới thành công";
-                return dt;
             }
-            dt.IsError = true;
-            dt.Message = "Thêm mới không thành công";
             return dt;
         }
 
@@ -302,85 +323,105 @@ namespace KGQT.Business
             var data = new DataReturnModel<bool>();
             var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
             form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
-            bool equalVC = true;
-            var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == form.PackageCode);
-
-            if (exist != null)
+            form.PackageCode = form.PackageCode.Replace(",", ";");
+            var lst1 = form.PackageCode.Split(";", StringSplitOptions.RemoveEmptyEntries);
+            int fail = 0;
+            foreach (var item in lst1)
             {
-                if (exist.Username == userLogin || string.IsNullOrEmpty(exist.Username))
-                {
-                    exist.UID = user.ID;
-                    exist.Username = user.Username;
-                    exist.FullName = user.FullName;
-                    exist.Address = user.Address;
-                    exist.Phone = user.Phone;
-                    exist.Email = user.Email;
-                }
-                else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
-                {
-                    data.IsError = true;
-                    data.Message = "Mã vận đơn đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin!";
-                    return data;
-                }
+                bool equalVC = true;
+                var exist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == item);
 
-                if (exist.MovingMethod != form.MovingMethod)
-                    equalVC = true;
-
-                exist.IsAirPackage = form.IsAirPackage;
-                exist.IsWoodPackage = form.IsWoodPackage;
-                exist.IsInsurance = form.IsInsurance;
-                if (form.IsInsurance.HasValue && form.IsInsurance == true)
+                if (exist != null)
                 {
-                    exist.Declaration = form.Declaration;
-                    exist.DeclarePrice = form.DeclarePrice;
-                    form.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
-                }
+                    if (exist.Username == userLogin || string.IsNullOrEmpty(exist.Username))
+                    {
+                        exist.UID = user.ID;
+                        exist.Username = user.Username;
+                        exist.FullName = user.FullName;
+                        exist.Address = user.Address;
+                        exist.Phone = user.Phone;
+                        exist.Email = user.Email;
+                    }
+                    else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
+                    {
+                        data.Message = $"Mã vận đơn {item} đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin! <hr>";
+                        fail++;
+                        continue;
+                    }
 
-                exist.ModifiedBy = user.Username;
-                exist.ModifiedDate = DateTime.Now;
-                var update = BusinessBase.Update(exist);
-                if (update)
-                    BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
+                    if (form.MovingMethod > 0 && exist.MovingMethod != form.MovingMethod)
+                        equalVC = true;
+
+                    exist.IsAirPackage = form.IsAirPackage;
+                    exist.IsWoodPackage = form.IsWoodPackage;
+                    exist.IsInsurance = form.IsInsurance;
+                    if (form.IsInsurance.HasValue && form.IsInsurance == true)
+                    {
+                        exist.Declaration = form.Declaration;
+                        exist.DeclarePrice = form.DeclarePrice;
+                        exist.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
+                    }
+
+                    exist.ModifiedBy = user.Username;
+                    exist.ModifiedDate = DateTime.Now;
+                    var update = BusinessBase.Update(exist);
+                    if (update)
+                        BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
+                    data.IsError = false;
+                    data.Message = "Tạo Mã vận đơn thành công!";
+                    if (equalVC)
+                        data.Message = $"Mã vận đơn {item} đã được nhân viên khai báo phương thức vận chuyển." +
+                            $" Để thay đổi phương thức vận chuyển vui lòng liên hệ nhân viên Nhanshiphang để được giúp đỡ <hr>";
+                    continue;
+                }
+                else
+                {
+                    var pack = new tbl_Package();
+                    pack.PackageCode = item;
+                    pack.WareHouse = form.WareHouse;
+                    pack.MovingMethod = form.MovingMethod;
+                    pack.IsAirPackage = form.IsAirPackage;
+                    pack.IsWoodPackage = form.IsWoodPackage;
+                    pack.IsInsurance = form.IsInsurance;
+                    pack.Status = 1;
+                    pack.UID = user.ID;
+                    pack.Username = user.Username;
+                    pack.FullName = user.FullName;
+                    pack.Phone = user.Phone;
+                    pack.Email = user.Email;
+                    pack.Address = user.Address;
+                    pack.OrderDate = DateTime.Now;
+                    pack.CreatedDate = DateTime.Now;
+                    pack.CreatedBy = user.Username;
+                    pack.Weight = "0";
+                    pack.WeightExchange = "0";
+                    pack.Height = "0";
+                    pack.Width = "0";
+                    pack.Length = "0";
+                    pack.WeightReal = "0";
+                    pack.SearchBaiduTimes = 0;
+                    pack.Note = form.Note;
+                    if (form.IsInsurance.HasValue && form.IsInsurance == true)
+                    {
+                        pack.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
+                    }
+
+                    var s = BusinessBase.Add(pack);
+                    if (s)
+                    {
+                        data.Message += $"Đã thêm mã vận đơn {item}</br>";
+                        BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
+                    }
+                }
+            }
+            if (fail == lst1.Length)
+            {
+                data.IsError = true;
+                data.Message = "Thêm mới không thành công";
+
+            }
+            else
                 data.IsError = false;
-                data.Message = "Tạo Mã vận đơn thành công!";
-                if (equalVC)
-                    data.Message = $"Phương thức vận chuyển: <b style=\"color:red\">{PJUtils.ShippingMethodName(exist.MovingMethod)}</b> đã được nhân viên tạo trước đó." +
-                        $" Để thay đổi phương thức vận chuyển vui lòng liên hệ nhân viên Nhanshiphang để được giúp đỡ";
-                return data;
-            }
-
-            form.Status = 1;
-            form.UID = user.ID;
-            form.Username = user.Username;
-            form.FullName = user.FullName;
-            form.Phone = user.Phone;
-            form.Email = user.Email;
-            form.Address = user.Address;
-            form.OrderDate = DateTime.Now;
-            form.CreatedDate = DateTime.Now;
-            form.CreatedBy = user.Username;
-            form.Weight = "0";
-            form.WeightExchange = "0";
-            form.Height = "0";
-            form.Width = "0";
-            form.Length = "0";
-            form.WeightReal = "0";
-            form.SearchBaiduTimes = 0;
-            if (form.IsInsurance.HasValue && form.IsInsurance == true)
-            {
-                form.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
-            }
-
-            var s = BusinessBase.Add(form);
-            if (s)
-            {
-                data.IsError = false;
-                data.Message = "Đã thêm mã vận đơn";
-                BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
-                return data;
-            }
-            data.IsError = true;
-            data.Message = "Thêm mới không thành công";
             return data;
         }
 
@@ -1117,6 +1158,27 @@ namespace KGQT.Business
                 }
                 data.IsError = true;
                 data.Message = "Hủy không thành công, vui lòng liên hệ với nhân viên để được giải quyết !";
+                return data;
+            }
+        }
+        public static DataReturnModel<bool> Delete(int id)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var data = new DataReturnModel<bool>();
+                var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id && x.Status <= 2);
+                if (pack != null)
+                {
+                    db.Remove(pack);
+                    if (db.SaveChanges() > 0)
+                    {
+                        data.IsError = false;
+                        data.Message = "Xóa đơn thành công!";
+                        return data;
+                    }
+                }
+                data.IsError = true;
+                data.Message = "Xóa không thành công, vui lòng liên hệ với nhân viên để được giải quyết !";
                 return data;
             }
         }

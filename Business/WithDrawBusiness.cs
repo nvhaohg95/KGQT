@@ -1,4 +1,5 @@
-﻿using KGQT.Commons;
+﻿using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using System;
@@ -141,7 +142,7 @@ namespace KGQT.Business
                     int isSave = db.SaveChanges();
                     if (isSave > 0)
                     {
-                        string url = "/Admin/Refuse/Index?ID=" + data.ID;
+                        string url = "/Admin/WithDraw/Refuse?ID=" + data.ID;
                         string strHTML = string.Format("{0:N0}đ", data.Amount).Replace(",", ".");
                         string notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu rút <span class=\"text-danger\">{1}</span>.", acc.FullName, strHTML); ;
                         HistoryPayWallet.Insert(acc.ID, acc.Username, data.ID, data.Note, data.Amount, 1, 4, moneyLeft.ToString(), createdBy,0);
@@ -192,7 +193,7 @@ namespace KGQT.Business
                         string message = "";
                         if (widthDraw.Type == 1) //nạp tiền
                         {
-                            var moneyLeft =Converted.ToDouble(user.Wallet);
+                            var moneyLeft = Converted.ToDouble(user.Wallet);
                             double wallet = moneyLeft + Converted.ToDouble(widthDraw.Amount);
                             user.Wallet = Converted.StringCeiling(wallet);
                             message = string.Format("Tài khoản của bạn đã được <span class=\"text-success\">+{0}</span>", strHTML);
@@ -260,7 +261,9 @@ namespace KGQT.Business
                     {
                         if(widthDraw.Type == 2)
                         {
-                            user.Wallet = user.Wallet + widthDraw.Amount;
+                            
+                            var money = Converted.ToDouble(user.Wallet) + Converted.ToDouble(widthDraw.Amount);
+                            user.Wallet = Converted.StringCeiling(money);
                             user.ModifiedBy = userName;
                             user.ModifiedDate = DateTime.Now;
                             var historyWallet = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.OrderID == widthDraw.ID);

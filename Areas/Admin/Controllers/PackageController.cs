@@ -312,6 +312,21 @@ namespace KGQT.Areas.Admin.Controllers
             }
             return false;
         }
+        /// <summary>
+        /// xoa đơn
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public bool Delete(int id)
+        {
+            var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            if (p != null && p.Status != 5)
+            {
+                return BusinessBase.Remove(p);
+            }
+            return false;
+        }
 
         public void ExportFile(IFormFile file, List<tempExport> data)
         {
