@@ -10,9 +10,9 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("admin")]
     public class ComplainController : Controller
     {
-        public IActionResult Index(string transId, DateTime? fromDate, DateTime? toDate, int status, int page = 1)
+        public IActionResult Index(int? ID,string transId, DateTime? fromDate, DateTime? toDate, int status, int page = 1)
         {
-            var oData = ComplainBusiness.GetList(transId, fromDate, toDate,status, page);
+            var oData = ComplainBusiness.GetList(ID,transId, fromDate, toDate,status, page);
             var lstData = oData[0] as List<tbl_Complain>;
             var numberRecord = (int)oData[1];
             var numberPage = (int)oData[2];

@@ -38,9 +38,9 @@
                 <p class="m-0">Trạng thái:</p>
                 <select name="status" id="status" class="form-control">
                     <option value="" @(status == 0 ? "selected" : "")>Tất cả</option>
-                    <option value="1" @(status == 1 ? "selected" : "")>Chưa duyệt</option>
-                    <option value="2" @(status == 2 ? "selected" : "")>Đã duyệt</option>
-                    <option value="3" @(status == 2 ? "selected" : "")>Đã hủy</option>
+                    <option value="1" @(status == 1 ? "selected" : "")>Chưa xử lí</option>
+                    <option value="2" @(status == 2 ? "selected" : "")>Đã xử lí</option>
+                    <option value="3" @(status == 3 ? "selected" : "")>Từ chối</option>
 
                 </select>
             </div>
@@ -57,9 +57,8 @@
 </div>
 <div class="row p-2 mb-2 w-100">
     <div clss="col-12">
-        <div class="d-flex align-items-center justify-content-between w-100">
+        <div class="d-flex flex-column w-100">
             <h3 class="text-uppercase text-danger">KHIẾU NẠI</h3>
-            <a class="btn btn-sm btn-success w-100px" href="/Complain/Create"><i class="fas fa-plus"></i>&nbspThêm</a>
         </div>
     </div>
     <div class="col-12">
