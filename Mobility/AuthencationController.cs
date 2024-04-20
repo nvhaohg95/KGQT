@@ -747,7 +747,7 @@ namespace KGQT.Mobility
             if (string.IsNullOrEmpty(model.DataRequest)) return false;
             return true;
         }
-        public async Task<object> SendFCMAsync(string body, string token, string data)
+        private async Task<object> SendFCMAsync(string body, string token, string data)
         {
             try
             {
