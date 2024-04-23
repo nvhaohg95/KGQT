@@ -51,6 +51,9 @@ namespace KGQT.Models
         public int? SaleID { get; set; }
         public string? SaleUsername { get; set; }
         public string? Token { get; set; }
+        public string? TokenDevice { get; set; }
+        public string? DeviceName { get; set; }
+        public string? DeviceID { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }

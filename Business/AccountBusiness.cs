@@ -165,6 +165,9 @@ namespace KGQT.Business
                         Status = 2,
                         RoleID = 4, //user
                         IsActive = true,
+                        TokenDevice = data.TokenDevice,
+                        DeviceID = data.DeviceID,
+                        DeviceName = data.DeviceName,
                         CreatedDate = DateTime.Now,
                         CreatedBy = data.Username
                     };
