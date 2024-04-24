@@ -374,7 +374,10 @@ namespace KGQT.Mobility
                 if (!string.IsNullOrEmpty(result.IMG))
                 {
                     string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + result.IMG;
-                    using (Image image = Image.FromFile(path))
+                    byte[] imageBytes = File.ReadAllBytes(path);
+                    string base64String = Convert.ToBase64String(imageBytes);
+                    result.IMG = base64String;
+                    /*using (Image image = Image.FromFile(path))
                     {
                         using (MemoryStream m = new MemoryStream())
                         {
@@ -385,7 +388,7 @@ namespace KGQT.Mobility
                             string base64String = Convert.ToBase64String(imageBytes);
                             result.IMG = base64String;
                         }
-                    }
+                    }*/
                 }
                 return new object[] { false, result };
             }

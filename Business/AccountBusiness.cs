@@ -814,7 +814,8 @@ namespace KGQT.Business
                     {
                         if (fileImg != null)
                         {
-                            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+                            //string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+                            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
                             if (!Directory.Exists(path))
                                 Directory.CreateDirectory(path);
                             var bytes = FileService.ResizeImage(fileImg);
