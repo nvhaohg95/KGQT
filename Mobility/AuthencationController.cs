@@ -73,7 +73,7 @@ namespace KGQT.Mobility
                             data.TypeRequest = "loginerror";
                             Dictionary<string, string> datas = new Dictionary<string, string>();
                             datas.Add("data", JsonConvert.SerializeObject(data));
-                            await SendFCMAsync(body, user.TokenDevice, datas);
+                            await Helper.SendFCMAsync(body, user.TokenDevice, datas);
                         }
                     }
                     user.TokenDevice = token;
@@ -710,11 +710,11 @@ namespace KGQT.Mobility
                     if (oOrder != null)
                     {
                         oRequest.Data = oOrder;
-                        if (!string.IsNullOrEmpty(token))
+                        /*if (!string.IsNullOrEmpty(token))
                         {
                             string body = $"Thanh toán cho đơn {oOrder?.ShippingOrderCode} thành công";
                             await SendFCMAsync(body, token, null);
-                        }
+                        }*/
                     }
 
                 }
@@ -846,14 +846,14 @@ namespace KGQT.Mobility
                         var result = WithDrawBusiness.Insert(tbl, tbl.Username);
                         oRequest.IsError = result.IsError;
                         oRequest.Message = result.Message;
-                        if (!oRequest.IsError)
+                        /*if (!oRequest.IsError)
                         {
                             if (!string.IsNullOrEmpty(token))
                             {
                                 string body = $"Yêu cầu rút tiền của bạn đã được gửi đi";
                                 await SendFCMAsync(body, token, null);
                             }
-                        }
+                        }*/
                         return oRequest;
                     }
                     else
@@ -861,14 +861,14 @@ namespace KGQT.Mobility
                         var result = WithDrawBusiness.Insert2(tbl, tbl.Username);
                         oRequest.IsError = result.IsError;
                         oRequest.Message = result.Message;
-                        if (!oRequest.IsError)
+                        /*if (!oRequest.IsError)
                         {
                             if (!string.IsNullOrEmpty(token))
                             {
                                 string body = $"Yêu cầu nạp tiền của bạn đã được gửi đi";
                                 await SendFCMAsync(body, token, null);
                             }
-                        }
+                        }*/
                         return oRequest;
                     }
                 }
@@ -897,7 +897,7 @@ namespace KGQT.Mobility
             if (string.IsNullOrEmpty(model.DataRequest)) return false;
             return true;
         }
-        private async Task<object> SendFCMAsync(string body, string token, Dictionary<string, string> data)
+        /*private async Task<object> SendFCMAsync(string body, string token, Dictionary<string, string> data)
         {
             try
             {
@@ -941,7 +941,7 @@ namespace KGQT.Mobility
                 return "";
             }
             
-        }
+        }*/
         #endregion
 
     }
