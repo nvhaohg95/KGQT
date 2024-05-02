@@ -165,6 +165,9 @@ namespace KGQT.Business
                         Status = 2,
                         RoleID = 4, //user
                         IsActive = true,
+                        TokenDevice = data.TokenDevice,
+                        DeviceID = data.DeviceID,
+                        DeviceName = data.DeviceName,
                         CreatedDate = DateTime.Now,
                         CreatedBy = data.Username
                     };
@@ -811,7 +814,8 @@ namespace KGQT.Business
                     {
                         if (fileImg != null)
                         {
-                            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+                            //string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+                            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
                             if (!Directory.Exists(path))
                                 Directory.CreateDirectory(path);
                             var bytes = FileService.ResizeImage(fileImg);

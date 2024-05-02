@@ -1,4 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
+using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using OfficeOpenXml.Table.PivotTable;
 using System.Security.Cryptography.Pkcs;
@@ -38,7 +40,7 @@ namespace KGQT.Business
             }
         }
         
-        public static bool Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, int notiType,string url, string createdBy, bool isForAdmin = false)
+        public static async Task<bool> Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, int notiType,string url, string createdBy, bool isForAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -69,6 +71,11 @@ namespace KGQT.Business
                         data.Url = GetUrlDefault(data.ID, isForAdmin);
                         db.Update(data);
                         db.SaveChanges();
+                    }
+                    var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == reciverID);
+                    if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
+                    {
+                        await Helper.SendFCMAsync(message, user.TokenDevice, null);
                     }
                     return true;
                 }

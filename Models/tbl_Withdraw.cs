@@ -25,7 +25,7 @@ namespace KGQT.Models
         /// 2: Thành công
         /// 3: Hủy
         /// </summary>
-        public int? Status { get; set; }
+        public int Status { get; set; }
         /// <summary>
         /// 1. Nạp tiền
         /// 2. Rút tiền

@@ -18,7 +18,6 @@ namespace KGQT.Models
         /// 
         /// </summary>
         public int Type { get; set; }
-        public int? Status { get; set; }
         /// <summary>
         /// 1: Thanh toán đơn hàng, 
         /// 2: Nhận lại tiền hang, 3: Admin nạp tiền
@@ -28,6 +27,10 @@ namespace KGQT.Models
         /// 
         /// </summary>
         public int TradeType { get; set; }
+        /// <summary>
+        /// 0:chưa active; 1:active
+        /// </summary>
+        public int? Status { get; set; }
         public string? Note { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace KGQT.Models
 {
@@ -7,12 +9,14 @@ namespace KGQT.Models
     {
         public int ID { get; set; }
         public int? UID { get; set; }
-        public string? Title { get; set; }
         /// <summary>
-        /// 0. Khiếu nại hệ thống; 1. Khiếu nại kiện;
-        /// 2. Khiếu nại đơn; 3. Khiếu nại nạp tiền
+        /// 0. Khiếu nại thiếu hàng
+        /// 1. Khiếu nại sai mẫu (bồi thường)
+        /// 2. Khiếu nại sai mẫu (trả hàng)
         /// </summary>
         public int? Type { get; set; }
+
+        [MaxLength(50)]
         public string? TransId { get; set; }
         public string? Context { get; set; }
         public string? IMG { get; set; }
@@ -26,5 +30,16 @@ namespace KGQT.Models
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
+        public string? Title { get; set; }
+
+        //public int? OrderShopID { get; set; }
+        //public string? OrderShopCode { get; set; }
+        //public string? OrderCodeCompare { get; set; }
+        //public string? Amount { get; set; }
+        //public string? ComplainText { get; set; }
+        //public int? SupportID { get; set; }
+        //public string? AmountTruyThu { get; set; }
+        //public bool? IsTruyThu { get; set; }
+
     }
 }
