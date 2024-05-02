@@ -1,0 +1,66 @@
+﻿@model KGQT.Models.tbl_FeeWeight
+
+@{
+    ViewData["Title"] = "Thêm mới bảng giá";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid h-100">
+    <div class="row mb-2">
+        <ul id="breadcrumbs">
+            <li><a href="/">Cấu hình</a></li>
+            <li><a href="index">Phí vận chuyển</a></li>
+            <li><a>Thêm mới</a></li>
+        </ul>
+    </div>
+    <div class="row bg-white p-2">
+        <div class="col-12 ">
+            <h5 class="text-danger text-uppercase m-0">THÊM PHÍ VẬN CHUYỂN</h5>
+        </div>
+        <div class="col-12 mt-2">
+            <form asp-action="create" method="post" class="row" id="formFeeWeight">
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Tuyến vận chuyển</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.DropDownListFor(model => model.Type,null,new { @class="form-control form-control-user border-none rounded" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Trọng lượng từ</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.WeightFrom,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Trọng lượng từ" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Trọng lượng đến</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.WeightTo ,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Trọng lượng đến" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Hiển thị</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.Display ,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Hiện thị đến người dùng" })
+                </div>
+                <div class="col-3 form-group">
+                    <div>
+                        <span class="fw-bold">Giá tiền</span>
+                        <span class="text-danger">(*)</span>
+                    </div>
+                    @Html.TextBoxFor(model => model.Amount,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Giá tiền" })
+                </div>
+                
+                <div class="col-12 d-flex justify-content-end">
+                    <a class="btn btn-primary w-100px mr-4" onclick="insert()">Lưu</a>
+                    <a class="btn btn-warning w-100px" href="index">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

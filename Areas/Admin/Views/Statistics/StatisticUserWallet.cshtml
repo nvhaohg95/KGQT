@@ -1,0 +1,172 @@
+﻿@model List<KGQT.Models.tbl_Account>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using KGQT.Models
+@using KGQT.Commons
+@{
+    ViewData["Title"] = "Thống kê số dư tài khoản khách hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    int pageCurrent = ViewBag.pageCurrent;
+    int numberPage = ViewBag.numberPage;
+    int numberRecord = ViewBag.numberRecord;
+}
+
+<div class="container-fluid w-100 h-100">
+    <div class="row mb-2 w-100 ">
+        <ul id="breadcrumbs">
+            <li class="text-uppercase fw-bold"><a href="/">Trang chủ</a></li>
+            <li class="text-uppercase fw-bold"><a>Thống kê</a></li>
+        </ul>
+    </div>
+    <form class="row mb-2 py-2 w-100 ">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="d-flex align-items-end justify-content-between">
+                <div>
+                    <h5 class="text-danger fw-bold text-uppercase m-0">Thống kê số dư tài khoản khách hàng</h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-end">
+                    <a href="StatisticRevenue" class="mr-2 btn btn-sm btn-info w-100px">
+                        <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+    <div class="row w-100 ">
+        <div class="form-group row">
+            <div class="col-md-12 col-sm-12">
+                <span class="col-form-label">Tổng số dư của khách:</span>
+                @if (Model.Count > 0)
+                {
+                    <label class="col-form-label"><b>@Converted.Double2Money(Model.AsEnumerable().Sum(x=>Converted.ToDouble(x.Wallet)))</b>đ</label>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row bg-white w-100 ">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center">
+                                Tài khoản
+                            </th>
+                            <th class="text-center">
+                                Tên khách
+                            </th>
+                            <th class="text-center">
+                                Số dư ví
+                            </th>
+                            <th class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="table-light font-weight-normal py-2">
+                                <td class="text-left align-middle">
+                                    @Html.DisplayFor(modelItem => item.Username)
+                                </td>
+                                <td class="text-center align-middle">
+                                    @Html.DisplayFor(modelItem => item.FullName)
+                                </td>
+                                <td class="text-center align-middle">
+                                    @Converted.String2Money(item.Wallet)
+                                </td>
+                                <td class="text-center align-middle">
+                                    <a class="btn btn-sm btn-secondary" href="/Admin/account/Detail?id=@item.ID">
+                                        <i class="far fa-eye"></i>
+                                        <span>Xem</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row p-2 w-100 ">
+        <div class="col-4 align-self-center">
+            <span>
+                Tổng số:&nbsp
+                <b>@numberRecord</b>
+            </span>
+        </div>
+        <div class="col-8">
+            @if (numberPage > 1)
+            {
+                <nav class="d-flex justify-content-end">
+                    <ul class="pagination m-0">
+                        @{
+                            int offset = 2; // number display page
+                            if (pageCurrent > 1)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
+                                        <i class="fas fa-fast-backward"></i>
+                                    </button>
+                                </li>
+                                int prevPage = pageCurrent - 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </button>
+                                </li>
+                            }
+
+                            int from = pageCurrent - offset;
+                            int to = pageCurrent + offset;
+                            if (from <= 0)
+                            {
+                                from = 1;
+                                to = offset * 2;
+                            }
+
+                            if (to > numberPage)
+                            {
+                                to = numberPage;
+                            }
+
+                            int i;
+                            for (i = from; i <= to; i++)
+                            {
+                                <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage - (to / 2))
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage)
+                            {
+                                int nextPage = pageCurrent + 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </button>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
+                                        <i class="fas fa-fast-forward"></i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>

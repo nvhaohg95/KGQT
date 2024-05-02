@@ -1,0 +1,450 @@
+﻿@model List<KGQT.Models.tbl_FeeWeight>;
+@using KGQT.Models.temp;
+
+@{
+    ViewData["Title"] = "Phí vận chuyển";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int type = ViewBag.type;
+    int pageCurrent = ViewBag.pageCurrent;
+    int numberPage = ViewBag.numberPage;
+    int numberRecord = ViewBag.numberRecord;
+    List<FeeweightCategory> lstFeeWeightType = ViewBag.lstFeeWeightType;
+
+}
+
+<div class="container-fluid h-100">
+    <div class="row mb-2">
+        <ul id="breadcrumbs">
+            <li class="text-uppercase fw-bold"><a href="/">Thiết lập</a></li>
+            <li class="text-uppercase fw-bold"><a>Phí vận chuyển</a></li>
+        </ul>
+    </div>
+    <div class="row bg-white p-2">
+        <div class="col-12 mb-2">
+            <form class="row d-flex align-items-center" id="myform">
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <h3 class="fw-bold text-danger text-uppercase mb-0">PHÍ VẬN CHUYỂN</h3>
+                </div>
+                <div class="col-lg-8 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
+                    <div class="w-300px mr-4">
+                        <select name="Type" id=" Type" class="form-control">
+                            <option value="" @(type == 0 ? "selected" : "")>Tất cả</option>
+                            <option value="1" @(type == 1 ? "selected" : "")>Tuyến bay nhanh</option>
+                            <option value="2" @(type == 2 ? "selected" : "")>Tuyến bay thường</option>
+                            <option value="3" @(type == 3 ? "selected" : "")>Tuyến bộ</option>
+                            <option value="4" @(type == 4 ? "selected" : "")>Tuyến lô</option>
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <a href="Index" class="btn btn-sm btn-info w-100px">
+                            <i class="fas fa-sync fa-xs"></i> Xóa lọc
+                        </a>
+                        <button type="submit" class="btn btn-sm btn-primary mx-2 w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                        <button type="button" class="btn btn-sm btn-success w-100px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i>&nbspThêm</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-12">
+            <table class="table table-hover">
+                <thead class="thead-light">
+                    <tr class="text-uppercase">
+                        <th class="text-left">STT</th>
+                        <th class="text-center">Cân nặng</th>
+                        <th class="text-center">Giá tiền</th>
+                        <th class="text-center">Gói vận chuyển</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int idx = 0;
+                        foreach (var item in Model)
+                        {
+                            idx = idx + 1;
+                            <tr>
+                                <td class="text-left align-middle">
+                                    <span>@(((pageCurrent - 1) * 10) + idx)</span>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <span>@(item.WeightFrom + "-" + item.WeightTo + " kg")</span>
+                                </td>
+                                <td class="text-center align-middle text-danger">
+                                    @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
+                                </td>
+                                <td class="text-center align-middle">
+                                    @switch (item.Type)
+                                    {
+                                        case 1:
+                                            <span>Tuyến bay nhanh</span>
+                                            break;
+                                        case 2:
+                                            <span>Tuyến bay thường</span>
+                                            break;
+                                        case 3:
+                                            <span>Tuyến bộ</span>
+                                            break;
+                                        case 4:
+                                            <span>Tuyến lô</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center align-middle">
+                                    <a class="btn btn-sm btn-light" onclick="clickUpdate(@item.ID)">
+                                        <i class="fas fa-pencil-alt"></i>
+                                        <span>Sửa</span>
+                                    </a>
+                                    <a class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)">
+                                        <i class="fas fa-trash-alt"></i>
+                                        <span>Xóa</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row p-2">
+        <div class="col-4 align-self-center">
+            <span>
+                Tổng số:&nbsp
+                <b>@numberRecord</b>
+            </span>
+        </div>
+        <div class="col-8">
+            @if (numberPage > 1)
+            {
+                <nav class="d-flex justify-content-end">
+                    <ul class="pagination m-0">
+                        @{
+                            int offset = 2; // number display page
+                            if (pageCurrent > 1)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
+                                        <i class="fas fa-fast-backward"></i>
+                                    </button>
+                                </li>
+                                int prevPage = pageCurrent - 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </button>
+                                </li>
+                            }
+
+                            int from = pageCurrent - offset;
+                            int to = pageCurrent + offset;
+                            if (from <= 0)
+                            {
+                                from = 1;
+                                to = offset * 2;
+                            }
+
+                            if (to > numberPage)
+                            {
+                                to = numberPage;
+                            }
+
+                            int i;
+                            for (i = from; i <= to; i++)
+                            {
+                                <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage - (to / 2))
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link">...</a>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage)
+                            {
+                                int nextPage = pageCurrent + 1;
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </button>
+                                </li>
+                            }
+                            if (pageCurrent < numberPage)
+                            {
+                                <li class="page-item">
+                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
+                                        <i class="fas fa-fast-forward"></i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- popup - add -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="exampleModalLabel">Thêm Phí Vận chuyển</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="container-fluid" id="formFeeWeight">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Tuyến vận chuyển</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+
+                            <select name="Type" class="form-control">
+                                @if(lstFeeWeightType != null)
+                                {
+                                    foreach (var item in lstFeeWeightType)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Cân nặng từ</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Cân nặng đến</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Hiển thị</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input class="form-control form-control-user border-none rounded" name="Display" placeholder="Hiển thị đến người dùng" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Giá tiền</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary w-100px" onclick="insert()">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- popup- edit -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="exampleModalLabel2">Cập nhật Phí Vận chuyển</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#exampleModal2').modal('hide')">
+                    <span aria-hidden="true" class="text-danger">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="container-fluid" id="formEditFeeWeight">
+                    <div class="row d-none">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <input id="ID" class="form-control form-control-user border-none rounded" name="ID"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Tuyến vận chuyển</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+
+                            <select id="Type" name="Type" class="form-control">
+                                @if (lstFeeWeightType != null)
+                                {
+                                    foreach (var item in lstFeeWeightType)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Cân nặng từ</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="WeightFrom" class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Cân nặng đến</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="WeightTo" class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <div>
+                                <span class="fw-bold">Giá tiền</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="Amount" class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary w-100px" onclick="$('#exampleModal2').modal('hide')">Đóng</button>
+                <button type="button" class="btn btn-primary w-100px" onclick="update()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // insert
+    function insert() {
+        var data = helper.form2Object($('#formFeeWeight').serializeArray());
+        if (!data["WeightFrom"]) {
+            helper.showErr('Vui lòng nhập cân nặng nhỏ nhất!');
+            return
+        }
+
+        if (!data["WeightTo"]) {
+            helper.showErr('Vui lòng nhập cân nặng lớn nhất!');
+            return
+        }
+
+        if (!data["Amount"]) {
+            helper.showErr('Vui lòng nhập giá tiền!');
+            return;
+        }
+        $.ajax({
+            url: "/Admin/FeeWeight/create",
+            type: 'POST',
+            data: data,
+            success: function (reponse) {
+                if (reponse)
+                    helper.showSuc('Thêm thành công!');
+                else
+                    helper.showErr('Thêm không thành công. Vui lòng thử lại!');
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
+
+    function clickUpdate(id) {
+        $.ajax({
+            url: "/Admin/FeeWeight/GetByID",
+            type: 'POST',
+            data: { ID: id },
+            success: function (reponse) {
+                if (reponse)
+                {
+                    $("#exampleModal2").modal('show');
+                    $("#ID").val(reponse.id);
+                    $("#Type").val(reponse.type);
+                    $("#WeightFrom").val(reponse.weightFrom);
+                    $("#WeightTo").val(reponse.weightTo);
+                    $("#Amount").val(reponse.amount);
+                }
+                else
+                    helper.showErr('Dữ liệu đã bị xóa!');
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
+    //update
+    function update(){
+        var data = helper.form2Object($('#formEditFeeWeight').serializeArray());
+        if (!data["WeightFrom"]) {
+            helper.showErr('Vui lòng nhập cân nặng nhỏ nhất!');
+            return
+        }
+
+        if (!data["WeightTo"]) {
+            helper.showErr('Vui lòng nhập cân nặng lớn nhất!');
+            return
+        }
+
+        if (!data["Amount"]) {
+            helper.showErr('Vui lòng nhập giá tiền!');
+            return;
+        }
+        $.ajax({
+            url: "/Admin/FeeWeight/update",
+            type: 'POST',
+            data: data,
+            success: function (reponse) {
+                if (reponse)
+                    helper.showSuc('Cập nhật thành công!');
+                else
+                    helper.showErr('Cấp nhật không thành công. Vui lòng thử lại!');
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
+
+    // delete
+    function clickDelete(id){
+        helper.showAlert("Bạn có muốn thực hiện thao tác xóa?")
+        .then((res) => {
+            if (res.isConfirmed) 
+            {
+                $.ajax({
+                    url: "/Admin/FeeWeight/Delete",
+                    type: 'POST',
+                    data: { ID: id },
+                    success: function (reponse) {
+                        if (reponse)
+                            helper.showSuc('Xóa thành công!')
+                        else
+                            helper.showErr('Xóa không thành công!')
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+                    }
+                });
+            }
+        });
+    }
+
+    //
+    function format(e) {
+        helper.getChange(e)
+    }
+</script>

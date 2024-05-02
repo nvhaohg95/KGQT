@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Nhập kho";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="/admin/home">Trang chủ</a></li>
+    <li><a href="/admin/Package/Index">Đơn kí gửi</a></li>
+    <li><a>Nhập kho</a></li>
+</ul>
+<div class="container-fluid bg-white py-4">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+            <h1 class="text-danger">Nhập kho</h1>
+        </div>
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+            <div class="form-group mb-4">
+                <label class="required" for="txtCode">Mã kiện:</label>
+                <input type="text" class="form-control" id="txtCode" placeholder="Nhập 5 số cuối của mã kiện">
+            </div>
+
+            <div id="lstPackage">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#txtCode').focus();
+    });
+    document.addEventListener('keypress', e => {
+        //usually scanners throw an 'Enter' key at the end of read
+        if (e.keyCode === 13) {
+            let code = $('#txtCode').val();
+            if (code) {
+                $.ajax({
+                    url: '/admin/package/PackagePartial',
+                    type: 'GET',
+                    data: { code },
+                    success: function (resonse) {
+                        $('#lstPackage').html(resonse);
+                        autocomplete();
+                    }, error: function (e) {
+                        console.log(e);
+                    }
+                });
+            }
+        }
+    });
+
+
+    function autocomplete() {
+        $(".txtUsername").keypress(function (e) {
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if (code == 13) { //Enter keycode
+                var selectables = $(':focusable'); 
+                var currentIndex = selectables.index($(':focus'));
+                selectables.eq(currentIndex + 1).focus();
+                return false;
+            }
+        });
+        $('.txtUsername').on("focus", function () {
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/admin/package/AutoComplete',
+                        type: 'GET',
+                        data: {
+                            s: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 2,
+                autoFocus: true,
+                delay: 500,
+                select: function (event, ui) {
+                    $(this).val(ui.item.username);
+                    return false;
+                },
+                open: function () {
+                    $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                },
+                close: function () {
+                    $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            }).autocomplete("instance")._renderItem = function (ul, item) {
+                return $("<li>")
+                    .append("<div>" + item.username + (item.phone ? (" - " + item.phone) : '') + "</div>")
+                    .appendTo(ul);
+            };
+        });
+
+        //$('.txtUsername').autocomplete({
+        //    source: function (request, response) {
+        //        $.ajax({
+        //            url: '/admin/package/AutoComplete',
+        //            type: 'GET',
+        //            data: {
+        //                s: request.term
+        //            },
+        //            success: function (data) {
+        //                response(data);
+        //            }
+        //        });
+        //    },
+        //    minLength: 2,
+        //    delay: 500,
+        //    select: function (event, ui) {
+        //        $(this).val(ui.item.username);
+        //        return false;
+        //    },
+        //    open: function () {
+        //        $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+        //    },
+        //    close: function () {
+        //        $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+        //    }
+        //}).autocomplete("instance")._renderItem = function (ul, item) {
+        //    return $("<li>")
+        //        .append("<div>" + item.username + (item.phone ? (" - "+ item.phone) : '') + "</div>")
+        //        .appendTo(ul);
+        //};
+    }
+</script>

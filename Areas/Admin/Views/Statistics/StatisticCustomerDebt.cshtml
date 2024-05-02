@@ -1,0 +1,98 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using KGQT.Commons
+@{
+    ViewData["Title"] = "Thống kê tiền khách phải trả";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var data = ViewBag.Data as Dictionary<string, double>;
+    DateTime? fromDate = ViewBag.fromDate;
+    DateTime? toDate = ViewBag.toDate;
+}
+
+<div class="container-fluid w-100 h-100">
+    <div class="row mb-2 w-100">
+        <ul id="breadcrumbs">
+            <li class="text-uppercase fw-bold"><a href="/">Trang chủ</a></li>
+            <li class="text-uppercase fw-bold"><a>Thống kê</a></li>
+        </ul>
+    </div>
+    <form class="row mb-2 py-2">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="row form-group">
+                <label class="fw-bold mb-0">Từ ngày</label>
+                <input name="fromDate" id="fromDate" class="form-control" type="date" value="@fromDate"/>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="form-group">
+                <label class="fw-bold mb-0">Đến ngày</label>
+                <input name="toDate" id="toDate" class="form-control" type="date" value="@toDate" />
+            </div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="d-flex align-items-end justify-content-between">
+                <div>
+                    <h5 class="text-primary fw-bold text-uppercase m-0">Thống kê tiền khách phải trả</h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-end">
+                    <a href="StatisticRevenue" class="mr-2 btn btn-sm btn-info w-100px">
+                        <i class="fas fa-sync fa-xs"></i>
+                        Xóa lọc
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+    <div class="row">
+        <div class="form-group row">
+            <div class="col-md-12 col-sm-12">
+                <span class="col-form-label">Từ ngày <b>@fromDate.Value.ToString("dd/MM/yyyy")</b> đến ngày <b>@toDate</b></span>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                @if (data.Count > 0)
+                {
+                    <label class="col-form-label">Tổng tiền khách chưa trả: <b>@Converted.Double2Money(data.Sum(x=>x.Value))</b>đ</label>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row bg-white">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center">
+                                Khách hàng
+                            </th>
+                            <th class="text-center">
+                               Tổng tiền
+                            </th>
+                            <th class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in data)
+                        {
+                            <tr class="table-light font-weight-normal py-2">
+                                <td class="text-left align-middle">
+                                    @Html.DisplayFor(modelItem => item.Key)
+                                </td>
+                                <td class="text-center align-middle">
+                                    @Converted.Double2Money(item.Value)
+                                </td>
+                                <td class="text-center align-middle">
+                                    <a class="btn btn-sm btn-secondary" target="_blank" href="/Admin/ShippingOrder/Index?username=@item.Key&status=1">
+                                        <i class="far fa-eye"></i>
+                                        <span>Xem danh sách đơn</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

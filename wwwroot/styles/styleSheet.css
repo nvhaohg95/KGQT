@@ -1,0 +1,188 @@
+﻿.* {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+html {
+    font-size:16px;
+}
+
+/*root*/
+:root {
+    --text-color: #888;
+    --text-hover:#444;
+}
+
+.cursor-pointer:hover{
+    cursor:pointer !important;
+}
+.w-50px {
+    width: 50px!important;
+}
+
+.h-50px {
+    height: 50px!important;
+}
+
+.w-100px {
+    width: 100px !important;
+}
+
+.h-100px {
+    height: 100px !important;
+}
+
+.mh-300 {
+    overflow: auto;
+    max-height: 400px;
+}
+
+.h-100px {
+    height: 100px;
+}
+
+
+
+/*logo*/
+.logo {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:70px;
+    background-color:#fff !important;
+}
+.logo_img{
+    width:80%;
+    height:80%;
+}
+
+/*asside*/
+.asside {
+    background: #FFFFFF !important;
+}
+
+.asside-item {
+    white-space: normal !important;
+    text-transform: uppercase;
+    background-color:transparent!important;
+    color: var(--text-color) !important;
+}
+
+.sidebar-dark .nav-item .nav-link[data-toggle="collapse"]::after {
+    color: #DDDDDD;
+}
+
+.asside-item[data-toggle="collapse"]::after {
+    width: 0rem;
+    text-align: center;
+    float: right;
+    vertical-align: 0;
+    border: 0;
+    content: '\f107';
+    color: var(--text-color);
+    font-weight: 900;
+    font-family: 'Font Awesome 5 Free';
+}
+.asside-item[data-toggle="collapse"].collapsed::after {
+    width: 0rem;
+    text-align: center;
+    float: right;
+    vertical-align: 0;
+    border: 0;
+    content: '\f105';
+    color: var(--text-color);
+    font-weight: 900;
+    font-family: 'Font Awesome 5 Free';
+}
+
+.sidebar-dark hr.sidebar-divider {
+    border-top: 1px solid #FDF6F0 !important;
+}
+.nav-item:hover .asside-item:hover{
+    color:var(--text-hover) !important;
+}
+
+/*input search*/
+.form-control:focus{
+    box-shadow:none;
+}
+
+
+/*login*/
+.btn-login {
+    background-color: #1da1f2 !important;
+}
+    .btn-login:hover {
+        background-color: #2196dd !important;
+    }
+
+.fw-bold{
+    font-weight:bold;
+}
+
+.bg-login-image {
+    background: url(../img/shipper-guy.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat:no-repeat;
+}
+.pass_icon {
+    position: absolute;
+    right: 15px;
+    bottom: 12px;
+}
+
+/*register*/
+.upload-avatar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+    .upload-avatar input {
+        width: 100px;
+    }
+
+/*partial_layout*/
+.bg-partial {
+    background-color: #0093E9;
+    background-image: linear-gradient(180deg, #0093E9 0%, #d0bb80 100%);
+    height: 100vh;
+    overflow:auto;
+}
+/*change password*/
+.r-20px {
+    right: 20px;
+}
+
+.nav-tile {
+    width: 100px;
+}
+
+.nav-sort {
+    width: calc(100%-100px);
+}
+
+.dot {
+    height: 5px;
+    width: 5px;
+    background-color: #2fd64e;
+    border-radius: 50%;
+    display: inline-block;
+}
+/*custom*/
+
+.modal-header {
+    /*background-color: #279EFF!important;*/
+    color: #f8f9fc!important;
+}
+/*--------------------------------------------------------*/
+@media (min-width: 768px) {
+    .sidebar {
+            width: 20rem !important;
+        }
+
+            .sidebar .nav-item .nav-link {
+                width: 18rem;
+            }
+    }

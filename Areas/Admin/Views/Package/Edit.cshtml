@@ -1,0 +1,318 @@
+﻿@model KGQT.Models.tbl_Package
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="/admin/home">Trang chủ</a></li>
+    <li><a href="/admin/Package/Index">Kiện</a></li>
+    <li><a>Cập nhật kiện</a></li>
+</ul>
+<div class="container bg-white py-4">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12 mb-4">
+            <h2 class="lead fw-normal mb-0 text-primary text-uppercase">Cập nhật kiện</h2>
+        </div>
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+            <form method="post" action="Create" id="frmShip">
+                <div class="form-group mb-4">
+                    <label>Tài khoản khách hàng:</label>
+                    <input type="text" class="form-control" id="txtUserName" name="Username" placeholder="Nhập tài khoản khách hàng" value="@Model.Username">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required">Mã vận đơn</label>
+                    <input type="text" class="form-control" id="txtPackage" name="PackageCode" placeholder="Nhập mã vận đơn" onblur="checkPackage()" value="@Model.PackageCode">
+                    <input type="text" name="ID" value="@Model.ID" hidden>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="required mb-0">Phương thức vận chuyển</label>
+                </div>
+                <div class="form-group mb-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingfast" name="MovingMethod" value="1" @(Model.MovingMethod == 1 ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="movingfast">Nhanh</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingslow" name="MovingMethod" value="2" @(Model.MovingMethod == 2 ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="movingslow">Thường</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="3" @(Model.MovingMethod == 3 ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="movingofficial">Bộ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="4" @(Model.MovingMethod == 4 ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="movingofficial">Bộ lô</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="5" @(Model.MovingMethod == 5 ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="movingofficial">Biển</label>
+                    </div>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="mb-0">Kho</label>
+                </div>
+                <div class="form-group mb-4">
+                    <select class="form-control" name="WareHouse">
+                        <option value="1" @(Model.WareHouse == "1" ? "selected" : "")>Đông Quản</option>
+                        <option value="2" @(Model.WareHouse == "2" ? "selected" : "")>Phật Sơn</option>
+                    </select>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="mb-0">Dịch vụ</label>
+                </div>
+                <div class="form-group mb-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsWoodPackage" onchange="toggleWoodPack(this)" id="cbPack" @(Model.IsWoodPackage == true ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="cbPack">Đóng gỗ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsAirPackage" onchange="toggleAirPack(this)" id="cbAirbag" @(Model.IsAirPackage == true ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="cbAirbag">Túi khí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance" onchange="showhideDeclare(this)" @(Model.IsInsurance == true ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsBrand" id="IsBrand" @(Model.IsBrand == true ? "checked=\"checked\"" : "")>
+                        <label class="form-check-label" for="isBrand">Hàng hiệu</label>
+                    </div>
+                </div>
+
+                <div id="frmWoodPack" class="form-group mb-4 @(Model.IsWoodPackage == true ? "d-block" : "d-none")">
+                    <label>Phí đóng gỗ</label>
+                    <input type="text" class="form-control" data-type="formatvnd" id="WoodPackagePrice" onkeyup="format(this)" name="WoodPackagePrice" placeholder="Phí đóng gỗ" value="@Model.WoodPackagePrice">
+                </div>
+
+                <div id="frmAirPack" class="form-group mb-4 @(Model.IsAirPackage == true ? "d-block" : "d-none")">
+                    <label>Phí bọt khí</label>
+                    <input type="text" class="form-control" data-type="formatvnd" id="AirPackagePrice" onkeyup="format(this)" name="AirPackagePrice" placeholder="Phí đóng gỗ" value="@Model.AirPackagePrice">
+                </div>
+
+                <div class="form-group mb-4" id="renderPackages"></div>
+                <div id="frmDeclare" style="display:@(Model.IsInsurance == true ? "block" : "none")">
+                    <div class="form-group mb-2">
+                        <label class="mb-0">Kê khai</label>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>Link sản phẩm</label>
+                        <input type="text" class="form-control" name="Declaration" value="@Model.Declaration">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>Giá</label>
+                        <input type="text" class="form-control" name="DeclarePrice" onkeyup="format(this)" data-type="formatvnd" value="@Model.DeclarePrice">
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtShipID">Thu hộ</label>
+                    <input type="text" class="form-control" id="txtSurCharge" data-type="formatvnd" onkeyup="format(this)" value="@Model.SurCharge" name="SurCharge" placeholder="Nhập mã vận đơn">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtShipID">Mã file lô</label>
+                    <input type="text" class="form-control" id="txtBigPackage" name="BigPackage" placeholder="Nhập mã file lô" value="@Model.BigPackage">
+                </div>
+                <div class="form-group mb-2">
+                    <label class="mb-0">Trạng thái</label>
+                </div>
+                <div class="form-group mb-4">
+                    <select name="Status" class="form-control">
+                        <option value="1" @(Model.Status == 1 ? "selected" : "")>Chưa cập nhật MVĐ</option>
+                        <option value="2" @(Model.Status == 2 ? "selected" : "")>Hàng về kho TQ</option>
+                        <option value="3" @(Model.Status == 3 ? "selected" : "")>Đang trên đường về HCM</option>
+                        <option value="4" @(Model.Status == 4 ? "selected" : "")>Hàng về tới HCM</option>
+                        <option value="5" @(Model.Status == 5 ? "selected" : "")>Đã nhận hàng</option>
+                        <option value="9" @(Model.Status == 9 ? "selected" : "")>Đã hủy</option>
+                        <option value="10" @(Model.Status == 10 ? "selected" : "")>Thất lạc</option>
+                        <option value="11" @(Model.Status == 11 ? "selected" : "")>không nhận dc hàng</option>
+                    </select>
+                </div>
+                <div class="col-md-12 text-center">
+                    <button type="button" class="btn btn-success" onclick="update()">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#txtPackage').off('keypress').on('keypress', function (e) {
+            if (e.which == 13)
+                checkPackage();
+        });
+
+        $('#txtUserName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/Package/AutoComplete',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 3,
+            delay: 500,
+            select: function (event, ui) {
+                $(this).val(ui.item.username);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.username + " - " + item.email + "</div>")
+                .appendTo(ul);
+        };
+
+        $('#txtBigPackage').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/package/BigPackageComplete',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
+                    success: function (data) {
+                        response(data);
+                    },
+                    complete: function () {
+                        stopLoading(true);
+                    },
+                });
+            },
+            minLength: 1,
+            delay: 300,
+            select: function (event, ui) {
+                $(this).val(ui.item.id);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.id + " - " + item.bigPackageCode + "</div>")
+                .appendTo(ul);
+        };
+
+        setTimeout(() => {
+            var inputMoney = document.querySelectorAll('[data-type="formatvnd"]');
+            inputMoney.forEach(function (input, index) {
+                format(input);
+            });
+        }, 100);
+    });
+
+    function checkPackage() {
+        const ip = $('#txtPackage').val();
+        if (ip && id != '@Model.PackageCode') {
+            $.ajax({
+                url: '/admin/Package/CheckPackage',
+                type: 'GET',
+                data: { package: ip },
+                // other AJAX options here
+                success: function (result) {
+                    if (result) {
+                        helper.showErr('Kiện đã tồn tại!');
+                    }
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }
+            });
+        } else {
+            helper.showErr('Vui lòng nhập mã kiện!');
+        }
+    }
+
+    function showhideDeclare(o) {
+        if (!$(o).is(':checked'))
+            $('#frmDeclare').css('display', 'none');
+        else
+            $('#frmDeclare').css('display', 'block');
+    }
+
+    function toggleWoodPack(o) {
+        if (!$(o).is(':checked'))
+            $('#frmWoodPack').addClass('d-none');
+        else
+            $('#frmWoodPack').removeClass('d-none');
+    }
+
+    function toggleAirPack(o) {
+        if (!$(o).is(':checked'))
+            $('#frmAirPack').addClass('d-none');
+        else
+            $('#frmAirPack').removeClass('d-none');
+    }
+
+    function update() {
+        var data = helper.form2Object($('#frmShip').serializeArray());
+        data.ID = @Model.ID;
+
+        if (!data.PackageCode) {
+            helper.showErr('Vui lòng nhập mã kiện!');
+            return
+        }
+
+        if (data.IsInsurance) {
+            if (!data.Declaration || !data.DeclarePrice) {
+                helper.showErr('Vui lòng kê khai thông tin để tính phí bảo hiểm!');
+                return;
+            }
+        }
+
+        if (data.DeclarePrice) {
+            data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
+        }
+        var inputMoney = document.querySelectorAll('[data-type="formatvnd"]');
+        inputMoney.forEach(function (input, index) {
+            let name = input.getAttribute('name');
+            let value = input.getAttribute('data-value');
+            if (name && data.hasOwnProperty(name) && value) {
+                data[name] = value;
+            }
+        });
+
+        if (!data["IsWoodPackage"])
+            data["IsWoodPackage"] = false;
+        if (!data["IsAirPackage"])
+            data["IsAirPackage"] = false;
+        if (!data["IsInsurance"])
+            data["IsInsurance"] = false; 
+            if (!data["IsBrand"])
+            data["IsBrand"] = false;
+
+        $.ajax({
+            url: '/admin/Package/Update',
+            type: 'POST',
+            data: { form: data },
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message)
+                else
+                    helper.showSuc(result.message, false, "Thành công", "/admin/package/index")
+            },
+            error: function (xhr, status, err) {
+            }
+        });
+    }
+
+    function format(e) {
+        helper.getChange(e)
+    }
+</script>

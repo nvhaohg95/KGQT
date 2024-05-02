@@ -1,0 +1,168 @@
+﻿@model KGQT.Models.temp.SignUpModel
+
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = "~/Views/Shared/_PartialView.cshtml";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-9 col-lg-11 col-md-8">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="p-5">
+                                <div class="text-center">
+                                    <h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng ký tài khoản</h1>
+                                </div>
+                                <form class="row" id="formRegister">
+                                    <div class="form-group col-12 d-flex flex-column align-items-center justify-content-center">
+                                        <div class="upload-avatar w-100px h-100px">
+                                            <img class="avatar-img rounded-circle cursor-pointer" id="avatar_upload" width="100" height="100" src="@(!string.IsNullOrWhiteSpace(Model?.IMG) ? Model.IMG : "/img/undraw_profile.svg")" onclick="clickUploadAvatar()">
+                                            <input name="File" id="input_uploader" class="d-none" type="file" onchange="onChange(event)" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Họ tên</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        <input name="FullName" id="FullName" type="text" placeholder="Họ và tên" class="form-control" autofocus />
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Giới tính</span>
+                                        </div>
+                                        <select name="Gender" id="Gender" class="form-control">
+                                            <option value=""></option>
+                                            <option value="true">Nam</option>
+                                            <option value="false">Nữ</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Số điện thoại</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        <input name="Phone" id="Phone" type="text" placeholder="Số điện thoại" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Email</span>
+                                        </div>
+                                        <input name="Email" id="Email" type="email" placeholder="Email" autocomplete="off" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div>
+                                            <span class="fw-bold">Địa chỉ</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        <input name="Address" id="Address" type="text" placeholder="Địa chỉ" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Tài khoản</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        <input name="Username" id="Username" type="text" placeholder="Tài khoản" autocomplete="off" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <div>
+                                            <span class="fw-bold">Mật khẩu</span>
+                                            <span class="text-danger">(*)</span>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end justify-content-center position-relative">
+                                            <input name="Password" type="password" placeholder="Mật khẩu" class="form-control" id="txtPassword" autocomplete="off" />
+                                            <span class="position-absolute mr-2 cursor-pointer" id="show_password" onclick="clickShowPass()">
+                                                <i class="fa fa-eye-slash" id="icon"></i>
+                                            </span>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="form-group col-12 mb-0">
+                                        <div class="row justify-content-center">
+                                            <button type="button" onclick="clickRegister()" class="btn btn-warning btn-user btn-block col-6">Đăng ký</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <hr />
+                                <div class="text-center">
+                                    <a class="small cursor-pointer" href="login">Quay lại trang đăng nhập</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/helper.js" type="text/javascript"></script>
+<script src="~/js/base.js" type="text/javascript"></script>
+<script src="~/vendor/jquery-easing/jquery.easing.js"></script>
+<script src="~/js/sb-admin-2.min.js"></script>
+<script src="~/js/sweetalert2.min.js"></script>
+<script>
+    //Check Show/Hide Password
+    function clickShowPass(){
+        let _input = $('#txtPassword');
+        let _icon = $('#icon');
+        if (_icon.hasClass('fa fa-eye-slash')) {
+            _icon.removeClass('fa fa-eye-slash');
+            _icon.addClass('fa fa-eye');
+            _input.attr('type', 'text');
+        }
+        else {
+            _icon.removeClass('fa fa-eye');
+            _icon.addClass('fa fa-eye-slash');
+            _input.attr('type', 'password');
+        }
+    };
+    function clickUploadAvatar() {
+        document.getElementById("input_uploader")?.click();
+    }
+    function onChange(evt) {
+        let file = evt?.target?.files[0];
+        toBase64(file).then(res => {
+            if (res) {
+                document.getElementById("avatar_upload")?.setAttribute("src", res);
+            }
+        });
+    }
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+    function clickRegister(){
+        let data = helper.form2Object($('#formRegister').serializeArray());
+        let files = $("#input_uploader")[0].files;
+        let form = new FormData();
+        form.append("jsData",JSON.stringify(data));
+        if(files != null && files.length > 0)
+        {
+            form.append("file", files[0]);
+        }
+        $.ajax({
+            url: '/Auth/Registers',
+            type: "POST",
+            data: form,
+            contentType: false,
+            processData: false,
+            success: function (respone) {
+                if (respone && !respone?.isError)
+                {
+                    helper.showSuc(respone.message);
+                }
+                else
+                    helper.showWarn(respone.message);
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }
+        });
+    }
+</script>
+

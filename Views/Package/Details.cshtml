@@ -1,0 +1,254 @@
+﻿@model KGQT.Models.tbl_Package
+@using KGQT.Commons
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="/">Trang chủ</a></li>
+    <li><a href="/package/Index">Danh sách ký gửi</a></li>
+    <li><a>Chi tiết</a></li>
+</ul>
+<div class="container-fluid h-100 gradient-custom">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
+            <div class="card" style="border-radius: 10px;">
+                <div class="card-body">
+                    <div class="row border-bottom border-gray mb-4">
+                        <div class="col-md-6 col-sm-12">
+                            <h3>Mã vận đơn: <span class="text-uppercase text-danger">@Model.PackageCode</span></h3>
+                        </div>
+                        @if (Model.Status < 3)
+                        {
+                            <div class="col-md-6 col-sm-12">
+                                <button type="button" onclick="cancel(@Model.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
+                            </div>
+                        }
+                        <div class="row pb-2">
+                            <div class="col-md-12 col-sm-12">
+                                @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.TransID))
+                            {
+                                <div class="col-md-12 col-sm-12">
+                                    <a href="/admin/shippingorder/detail?id=@Model.TransID">Xem chi tiết đơn</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row border-bottom border-gray mb-4">
+                        <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12">
+                            @if (Model.ExportedCNWH != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Xuất kho Trung Quốc <br> @Model.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Xuất kho Trung Quốc</span>
+                                </li>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.DateExpectation))
+                            {
+                                <li class="active-tl">
+                                    <span>Đang trên đường về HCM - @Model.DateExpectation</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Đang trên đường về HCM</span>
+                                </li>
+                            }
+                            @if (Model.ImportedSGWH != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đã về kho HCM <br> @Model.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Xuất kho Trung Quốc</span>
+                                </li>
+                            }
+                            @if (Model.ReceivedDate != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Đã nhận hàng <br> @Model.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Đã nhận hàng</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="panel panel-primary border-bottom border-gray mb-4 pb-2">
+                        <div class="panel-heading">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Thông tin khách hàng</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div>
+                                        <span>Khách hàng: @Model.Username</span>
+                                    </div>
+                                    <div>
+                                        <span>Số điện thoại: @Model.Phone</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <span>Địa chỉ: @Model.Address</span>
+                                    </div>
+                                    <div>
+                                        <span>Email: @Model.Email</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary border-bottom border-gray mb-4 pb-2">
+                        <div class="panel-heading">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Dịch vụ phụ</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
+                                    {
+                                        <div class="form-check-inline">
+
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Đóng gỗ
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Bọt khí
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (Model.IsInsurance != null && Model.IsInsurance == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Bảo hiểm
+                                            </label>
+                                        </div>
+                                        <!--End:: Kê khai-->
+                                    }
+                                    @if (Model.IsBrand != null && Model.IsBrand == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" checked disabled>Hàng hiệu
+                                            </label>
+                                        </div>
+                                        <!--End:: Kê khai-->
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.IsInsurance == true)
+                    {
+                        <div class="panel panel-primary mb-4">
+                            <div class="panel-heading">
+                                <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Kê khai</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div>
+                                            <span>Sản phẩm: @Model.Declaration</span>
+                                        </div>
+                                        <div>
+                                            <span>Giá sản phẩm: @string.Format("{0:N0}",Model.DeclarePrice).Replace(",",".")đ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <!--Start::Thông tin đơn-->
+                    <div class="panel panel-primary border-bottom border-gray mb-4 pb-2">
+                        <div class="panel-heading">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Tài chính</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="d-flex justify-content-between pt-2">
+                                <p class="text-muted mb-0">Cân nặng:</p>
+                                <p class="text-muted mb-0"><span class="fw-bold">@(Converted.ToDouble(Model.Weight))kg</span></p>
+                            </div>
+                            @if (Converted.ToDouble(Model.WeightExchange) > 0)
+                            {
+                                <div class="d-flex justify-content-between pt-2">
+                                    <p class="text-muted mb-0">Đo lên:</p>
+                                    <p class="text-muted mb-0">
+                                        (@(Model.Length + "x" + Model.Width + "x" + Model.Height)) @(Model.WeightExchange)kg
+                                    </p>
+                                </div>
+                            }
+                            @if (Model.IsWoodPackage != null && Model.IsWoodPackage == true)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí đóng gỗ:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold">@Converted.String2Money(Model.WoodPackagePrice)đ</span></p>
+                                </div>
+                            }
+                            @if (Model.IsAirPackage != null && Model.IsAirPackage == true)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí bọt khí:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold">@Converted.String2Money(Model.AirPackagePrice)đ</span></p>
+                                </div>
+                            }
+                            @if (Model.IsInsurance != null && Model.IsInsurance == true)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí bảo hiểm:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold">@Converted.String2Money(Model.IsInsurancePrice)đ</span></p>
+                                </div>
+                            }
+                            @if (Model.SurCharge != null)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phí thu hộ:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold">@Converted.String2Money(Model.SurCharge)đ</span></p>
+                                </div>
+                            }
+                            <!--End::Thông tin đơn-->
+                        </div>
+                    </div>
+                    <div class="panel panel-primary border-bottom border-gray mb-4 pb-2">
+                        <div class="panel-heading">
+                            <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Mô tả</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div>
+                                        @Html.Raw(Model.Note)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

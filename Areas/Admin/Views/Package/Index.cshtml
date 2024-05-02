@@ -1,0 +1,643 @@
+﻿@model IEnumerable<KGQT.Models.tbl_Package>
+@using KGQT.Commons
+
+@{
+    ViewData["Title"] = "Danh sách kiện";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var ID = ViewBag.ID;
+    int status = ViewBag.status;
+    DateTime? fromDate = ViewBag.fromDate;
+    DateTime? toDate = ViewBag.toDate;
+    int pageCurrent = ViewBag.pageCurrent;
+    int numberPage = ViewBag.numberPage;
+    int numberRecord = ViewBag.numberRecord;
+
+}
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a href="/">Quản lý ký gửi</a></li>
+        <li class="text-uppercase fw-bold"><a>Danh sách kiện</a></li>
+    </ul>
+</div>
+<div class="row bg-white py-1">
+    <form class="col-lg-12 col-md-12 col-sm-12" id="myform" method="get">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                @Html.TextBoxFor(model => ID,"",new { @type="search", @class="form-control", @placeholder="Nhập mã đơn hàng" })
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <select name="Status" id="Status" class="form-control">
+                    <option value="0" selected="@(status == 0)">Tất cả</option>
+                    <option value="1" selected="@(status == 1)">Chưa xác nhận</option>
+                    <option value="2" selected="@(status == 2)">Hàng về kho TQ</option>
+                    <option value="3" selected="@(status == 3)">Đang trên đường về HCM</option>
+                    <option value="4" selected="@(status == 4)">Hàng về tới HCM</option>
+                    <option value="5" selected="@(status == 5)">Đã nhận hàng</option>
+                    <option value="9" selected="@(status == 9)">Đã hủy</option>
+                    <option value="10" selected="@(status == 10)">Thất lạc</option>
+                    <option value="11" selected="@(status == 11)">Không nhận được hàng</option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
+                               onblur="(this.type='text')" />
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
+                               onblur="(this.type='text')" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
+                <div class="d-flex align-items-center justify-content-end">
+                    <a href="Index" class="btn btn-sm btn-info mr-2 w-100px">
+                        <i class="fas fa-sync fa-xs mr-2"></i>Làm mới
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="py-2">
+            <!--Start::Thông tin kiện-->
+            <div class="row mb-2">
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <h3 class="lead fw-bold mb-0 text-danger text-uppercase">DANH SÁCH KIỆN</h3>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 text-md-right text-center">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <a href="/Admin/Package/Create" class="btn btn-sm btn-success pointer-event mr-2 w-100px"><i class="fas fa-plus"></i>&nbspThêm</a>
+                        <button class="btn btn-sm btn-info pointer-event" data-toggle="modal" data-target="#import"><i class="fas fa-file-excel mr-2"></i>Import file</button>
+                    </div>
+                </div>
+            </div>
+            @foreach (var item in Model)
+            {
+                <div class="card shadow-0 border mb-1">
+                    <div class="card-body p-0">
+                        <input type="text" hidden value="@item.PackageCode" class="package-code">
+                        <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                            <div class="col-lg-5 col-md-5 col-sm-12 my-auto">
+                                <span class="cursor-pointer">
+                                    <a href="/admin/package/details?id=@item.ID" class="text-white">@item.PackageCode</a>
+                                    <span class="btn-copy" data-value="@item.PackageCode">
+                                        <i class="fa fa-copy"></i>
+                                    </span>
+                                </span>
+                                <span class="mx-2"> - </span>
+                                <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
+                                <span>Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
+                                @if (item.Status != 5)
+                                {
+                                    <a href="/admin/package/edit?id=@item.ID" class="btn btn-sm bg-warning text-white mr-2">Chỉnh sửa</a>
+                                }
+                                @if (item.Status != 5 && item.Status != 9)
+                                {
+                                    <button class="btn-sm btn bg-dark text-white mr-2" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                }
+                                @if (item.Status < 2)
+                                {
+                                    <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
+                                }
+                                @if (item.Status == 3)
+                                {
+                                    <button class="btn-sm btn bg-info text-white mr-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
+                                }
+                                @if (item.Status != 5)
+                                {
+                                    <button class="btn-sm btn bg-danger text-white mr-2" onclick="Delete(@item.ID)">Xóa</button>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row p-2 mx-0 mt-2">
+                                    <div class="col-md-3 col-sm-12 col-xs-12">
+                                        <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-12 col-xs-12">
+                                        <span>Trạng thái:</span>
+                                        @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
+                                    </div>
+                                    <div class="col-md-3 col-sm-12 col-xs-12">
+                                        Cân nặng: @(item.Weight)kg
+                                    </div>
+                                    @if (Converted.ToDouble(item.WeightExchange) > 0)
+                                    {
+                                        <div class="col-md-3 col-sm-12 col-xs-12">
+                                            @if (Converted.ToDouble(item.Length) > 0 && Converted.ToDouble(item.Width) > 0 && Converted.ToDouble(item.Height) > 0)
+                                            {
+                                                <span>
+                                                    Đo lên:
+                                                    (@(
+                                                       item.Length + "x" + item.Width + "x" + item.Height
+                                                       ))
+                                                </span>
+                                            }
+                                            @(item.WeightExchange)kg
+                                        </div>
+                                    }
+                                </div>
+                                <div class="row px-2 mx-0 mb-2">
+                                    <div class="col-md-4 col-sm-12">
+                                        <span>Khách hàng: @item.Username</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.Phone))
+                                    {
+                                        <div class="col-md-4 d-flex align-items-center">
+                                            <div class="form-group">
+                                                <i class="fa fa-phone mr-2"></i><span>@item.Phone</span>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-md-4 col-sm-12 col-xs-12">
+                                        @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
+                                        {
+                                            <div class="form-check-inline">
+
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Đóng gỗ
+                                                </label>
+                                            </div>
+                                        }
+                                        @if (item.IsAirPackage != null && item.IsAirPackage == true)
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bọt khí
+                                                </label>
+                                            </div>
+                                        }
+                                        @if (item.IsInsurance != null && item.IsInsurance == true)
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                                </label>
+                                            </div>
+                                        }
+                                        @if (item.IsBrand != null && item.IsBrand == true)
+                                        {
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input mt-1" checked disabled>Hàng hiệu
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                                    @if (item.ReceivedDate != null)
+                                    {
+                                        <li class="ml-4">
+                                            <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                        </li>
+                                    }
+
+                                    @if (item.ImportedSGWH != null)
+                                    {
+                                        <li class="ml-4">
+                                            <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(item.DateExpectation))
+                                    {
+                                        <li class="ml-4">
+                                            <span>Đang trên đường về HCM - @item.DateExpectation</span>
+                                        </li>
+                                    }
+
+                                    @if (item.ExportedCNWH != null)
+                                    {
+                                        <li class="ml-4">
+                                            <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="row p-2">
+    <div class="col-4 align-self-center">
+        <span>
+            Tổng số:&nbsp
+            <b>@numberRecord</b>
+        </span>
+    </div>
+    <div class="col-8">
+        @if (numberPage > 1)
+        {
+            <nav class="d-flex justify-content-end">
+                <ul class="pagination m-0">
+                    @{
+                        int offset = 2; // number display page
+                        if (pageCurrent > 1)
+                        {
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
+                                    <i class="fas fa-fast-backward"></i>
+                                </button>
+                            </li>
+                            int prevPage = pageCurrent - 1;
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </button>
+                            </li>
+                        }
+
+                        int from = pageCurrent - offset;
+                        int to = pageCurrent + offset;
+                        if (from <= 0)
+                        {
+                            from = 1;
+                            to = offset * 2;
+                        }
+
+                        if (to > numberPage)
+                        {
+                            to = numberPage;
+                        }
+
+                        int i;
+                        for (i = from; i <= to; i++)
+                        {
+                            <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage - (to / 2))
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link">...</a>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            int nextPage = pageCurrent + 1;
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </button>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
+                                    <i class="fas fa-fast-forward"></i>
+                                </button>
+                            </li>
+                        }
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+<!--Modal import file-->
+<div class="modal fade" id="import" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white text-uppercase fw-bold" id="exampleModalLongTitle"><i class="fas fa-file-excel mr-2"></i>Tạo mã vận đơn bằng file CSV</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadExcel">
+                    <div class="form-group mb-4">
+                        <label class="required">File Excel:</label>
+                        <input type="file" class="form-control" id="importcsv">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtShipID">Tên Sheet:</label>
+                        <input type="text" class="form-control" id="sheetImport" name="txtSheet" placeholder="Nhập tên sheet cần đọc dữ liệu (cần nhập chính xác tên)">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="importCsv()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal import file-->
+<!--Modal instock pack-->
+<div class="modal fade" id="instock" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white text-uppercase fw-bold"><i class="fas fa-file-excel mr-2"></i>Nhập kho kiện:<b id="package-code"></b></h5>
+                <button type="button" class="close" onclick="dismiss('instock')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="package-form">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="dismiss('instock')">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="submitInstock()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal import file-->
+<div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>
+<script>
+    var packId;
+    function importCsv() {
+        let file = $("#importcsv")[0].files;
+        let sheet = $("#sheetImport").val();
+        let form = new FormData();
+        form.append("file", file[0]);
+        form.append("sheet", sheet);
+        $.ajax({
+            url: '/admin/package/CreateWithFile',
+            type: 'POST',
+            dataType: 'json',
+            data: form,
+            contentType: false,
+            processData: false,
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (res) {
+                if (res.isError) {
+                    helper.showErr(res.message);
+                } else {
+                    let html = `<div class="text-success"><span>${res.data.success}</span></div>`;
+                    if (res.data.error)
+                        html += `<div>Mã vận đơn thêm không thành công: <span class="text-danger">${res.data.error}</span></div>`;
+
+                    Swal.fire({
+                        title: "Thông báo",
+                        icon: "info",
+                        html: html,
+                        showCloseButton: true,
+                        showCancelButton: false,
+                        confirmButtonText: "Đóng"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+                }
+            }, error: function (e) {
+                console.log(e);
+            }, complete: function () {
+                stopLoading(true);
+            }
+        });
+    }
+
+    function cancel(id) {
+        $.ajax({
+            url: '/admin/Package/Cancel',
+            type: 'POST',
+            data: { id },
+            // other AJAX options here
+            success: function (result) {
+                if (!result)
+                    helper.showErr('Hủy thất bại!')
+                else
+                    helper.showSuc('Hủy đơn thành công!')
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+    function Delete(id) {
+        Swal.fire({
+            title: "Bạn có chắc muốn xóa kiện này?",
+            icon: "warning",
+            showCancelButton: true,
+            CancelButtonText: "Không",
+            confirmButtonText: "Có",
+            allowOutsideClick: false,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/Package/Delete',
+                    type: 'POST',
+                    data: { id },
+                    // other AJAX options here
+                    success: function (result) {
+                        if (!result)
+                            helper.showErr('Xóa thất bại!')
+                        else
+                            helper.showSuc('Xóa thành công!')
+                    },
+                    error: function (xhr, status, err) {
+                        // error handling
+                    }
+                });
+            }
+        });
+    }
+
+
+
+
+    //<!--------------Start: Nhập kho---------------->
+    function instock(id, code) {
+        $('#package-code').text(code);
+        this.packId = id;
+        $.ajax({
+            url: '/admin/package/InStockPartial',
+            type: 'GET',
+            data: { code },
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (resonse) {
+                $('#package-form').html(resonse);
+                $('#instock').modal({ backdrop: 'static', keyboard: false })
+                $('#instock').modal('show');
+            }, error: function (e) {
+                console.log(e);
+            }, complete: function () {
+                stopLoading(true);
+            }
+        });
+    }
+
+    function submitInstock() {
+        let weight = $('#txtWeight').val();
+        let wood = 0;
+        let air = 0;
+        let username = '';
+        let moving = 0;
+        let surCharge = $("#txtSurCharge").data('value');
+        let $username = $("#txtUsername");
+        let $moving = $('input[name="MovingMethod"]');
+        let $wood = $('#txtFeePack');
+        let $air = $('#txtAirPackage');
+        let $weightEx = $('#txtWeightEx');
+        let $length = $('#txtLength');
+        let $width = $('#txtWidth');
+        let $height = $('#txtHeight');
+        if ($username.length) {
+            username = $username.val()
+            if (!username) {
+                helper.showErr('Vui lòng nhập khách hàng!');
+                return;
+            }
+        }
+        if ($moving.length) {
+            moving = $('input[name="MovingMethod"]:checked').val();
+            if (!moving) {
+                helper.showErr('Vui lòng chọn hình thức vận chuyển!');
+                return;
+            }
+        }
+        if (!weight) {
+            helper.showErr('Vui lòng nhập cân nặng!');
+            return;
+        }
+        if ($wood.length) {
+            wood = $wood.data('value');
+            if (!wood) {
+                helper.showErr('Vui lòng nhập phí đóng gỗ!');
+                return;
+            }
+        }
+        if ($air.length) {
+            air = $air.data('value');
+            if (!air) {
+                helper.showErr('Vui lòng nhập phí quấn bọt khí!');
+                return;
+            }
+        }
+        let data = {
+            id: this.packId,
+            username,
+            movingMethod: moving,
+            weight,
+            woodPrice: wood,
+            airPrice: air,
+            surCharge: surCharge,
+            weightExchange: $weightEx.val(),
+            length: $length.val(),
+            width: $width.val(),
+            height: $height.val()
+        }
+        $.ajax({
+            url: '/admin/Package/InStockPackage',
+            method: 'POST',
+            dataType: 'json',
+            data: { sData: JSON.stringify(data) },
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (res) {
+                if (res)
+                    helper.showSuc("Cập nhật thành công");
+            },
+            error: function (err) {
+                console.log(err)
+            },
+            complete: function () {
+                stopLoading(true);
+            },
+        })
+    }
+    //<!--------------End: Nhập kho---------------->
+
+
+    function checkStatus(code, times) {
+        $.ajax({
+            url: '/admin/Package/CheckAvailableSearch',
+            method: 'GET',
+            dataType: 'json',
+            data: { code },
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (res) {
+                if (res.error == 1) {
+                    helper.showErr(res.msg);
+                    return;
+                }
+                if (res.error == 2) {
+                    Swal.fire({
+                        title: "Chú ý",
+                        text: res.msg,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Đồng ý",
+                        cancelButtonText: "Từ chối"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                        }
+                    });
+                    return;
+                }
+                if (res.error == 3) {
+                    if (res.data == 0) {
+                        Swal.fire({
+                            title: "Chú ý",
+                            text: "Khách hàng đã hết lượt tra cứu miễn phí, tiếp tục sẽ tốn phí 500đ?",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Đồng ý",
+                            cancelButtonText: "Từ chối"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                            }
+                        });
+                    } else
+                        location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                }
+
+            },
+            error: function (err) {
+                console.log(err)
+            },
+            complete: function () {
+                stopLoading(true);
+            },
+        })
+    }
+
+    function dismiss(name) {
+        $("#" + name).modal('hide');
+    }
+    $(document).ready(function () {
+        $('.btn-copy').off('click').on('click', function () {
+            let text = $(this).data('value');
+            copyClipboard(text);
+        })
+    })
+</script>

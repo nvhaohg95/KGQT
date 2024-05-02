@@ -1,0 +1,60 @@
+﻿@model IEnumerable<KGQT.Commons.FileInfoModel>;
+@{
+    ViewData["Title"] = "Danh sách file import";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<ul id="breadcrumbs">
+    <li><a href="/">Quản lý ký gửi</a></li>
+    <li><a>Danh sách file</a></li>
+</ul>
+
+<div class="container-fluid h-100">
+    <div class="row">
+        <div class="col-12 d-flex flex-column p-2">
+            <div class="row bg-white mt-2">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="fw-bold text-danger text-uppercase m-0">Danh sách File</h5>
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead class="thead-light">
+                                <tr class="font-weight-normal">
+                                    <th scope="col">
+                                        Tên file
+                                    </th>
+                                    <th class="text-center" scope="col">
+                                        Ngày upload
+                                    </th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="table-light font-weight-normal">
+                                        <td class="text-left">
+                                            @Html.DisplayFor(modelItem => item.FileName)
+                                        </td>
+                                        <td class="text-center">
+                                            @Html.DisplayFor(modelItem => item.CreatedOn)
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="btn btn-sm btn-info" href="/admin/package/downloadFile?fileName=@item.FilePath">
+                                                <i class="far fa fa-download"></i>
+                                                <span>Tải file</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,165 @@
+﻿@{
+    ViewData["Title"] = "Danh sách ký gửi";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<ul id="breadcrumbs" class="mb-2">
+    <li><a href="/">Trang chủ</a></li>
+    <li><a href="/package/index">Đơn ký gửi</a></li>
+    <li><a class="active">Thêm Mã Vận Đơn</a></li>
+</ul>
+
+<div class="container bg-white py-4">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+            <h1 class="text-primary fw-bold text-uppercase">Thêm Mã Vận Đơn</h1>
+        </div>
+        <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
+            <form method="post" action="Create" id="frmShip">
+                <div class="form-group mb-4">
+                    <label class="required" for="txtShipID">Mã vận đơn</label>
+                    <input type="text" class="form-control" id="txtPackage" name="PackageCode" placeholder="Nhập mã vận đơn">
+                    <i class="fs-7">Có thể tạo nhiều Mã Vận Đơn cùng lúc bằng dấu "," hoặc ":". Ví dụ: mavandon1,mavandon2 hoặc mavandon1;mavandon2</i>
+
+                </div>
+                <div class="form-group mb-2">
+                    <label class="mb-0 text-primary fw-bold">Phương thức vận chuyển</label>
+                </div>
+                <div class="form-group mb-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingfast" name="MovingMethod" value="1">
+                        <label class="form-check-label" for="movingfast">Nhanh</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingslow" name="MovingMethod" value="2">
+                        <label class="form-check-label" for="movingslow">Thường</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="3">
+                        <label class="form-check-label" for="movingofficial">Bộ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="4">
+                        <label class="form-check-label" for="movingofficial">Bộ lô</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="5">
+                        <label class="form-check-label" for="movingofficial">Biển</label>
+                    </div>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="required mb-0">Kho</label>
+                </div>
+                <div class="form-group mb-4">
+                    <select class="form-control" name="WareHouse">
+                        <option value="1">Đông Quản</option>
+                        <option value="2">Phật Sơn</option>
+                    </select>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="mb-0 text-primary fw-bold">Dịch vụ</label>
+                </div>
+                <div class="form-group mb-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsWoodPackage" id="cbPack">
+                        <label class="form-check-label" for="cbPack">Đóng gỗ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsAirPackage" id="cbAirbag">
+                        <label class="form-check-label" for="cbAirbag">Túi khí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance" onchange="showhideDeclare(this)">
+                        <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
+                    </div>
+                </div>
+                <div class="form-group mb-4" id="renderPackages"></div>
+                <div id="frmDeclare" style="display:none">
+                    <div class="form-group mb-2">
+                        <label class="mb-0 required text-primary fw-bold">Kê khai</label>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>Tên sản phẩm</label>
+                        <input type="text" class="form-control" name="Declaration">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>Giá</label>
+                        <input type="text" class="form-control" name="DeclarePrice" onkeyup="format(this)">
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="txtShipID">Mô tả</label>
+                    <textarea class="form-control" id="textEditer" name="Note" placeholder="Nhập mô tả" rows="4"></textarea>
+                </div>
+                <div class="col-md-12 col-sm-12 col-lg-12 text-center">
+                    <button type="button" class="btn btn-success" onclick="add()">Lưu</button>
+                    <button type="reset" class="btn btn-danger mr-4">Nhập lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/summernote-bs4.js"></script>
+<link href="~/lib/summernote-bs4.css" rel="stylesheet" />
+<script src="~/lib/summernote-bs4.min.js"></script>
+<link href="~/lib/summernote-bs4.min.css" rel="stylesheet" />
+<script>
+    $('#textEditer').summernote({
+        placeholder: 'Nhập nội dung',
+        height: 250
+    });
+    function showhideDeclare(o) {
+        if (!$(o).is(':checked'))
+            $('#frmDeclare').css('display', 'none');
+        else
+            $('#frmDeclare').css('display', 'block');
+    }
+
+    function add() {
+        var data = helper.form2Object($('#frmShip').serializeArray());
+        if (!data.PackageCode) {
+            helper.showErr('Vui lòng nhập mã kiện!');
+            return
+        }
+
+        if (!data.WareHouse) {
+            helper.showErr('Hãy chọn kho TQ nhập hàng!');
+            return
+        }
+
+        if (data.IsInsurance) {
+            if (!data.Declaration || !data.DeclarePrice) {
+                helper.showErr('Vui lòng kê khai thông tin để tính phí bảo hiểm!');
+                return;
+            }
+        }
+
+        if (data.DeclarePrice) {
+            data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
+        }
+
+        $.ajax({
+            url: '@Url.Action("Create", "Package")',
+            dataType: "json",
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: data,
+            // other AJAX options here
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message)
+                else
+                    helper.showSuc(result.message, false, "Thành công", "/Package/index");
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+
+    function format(e) {
+        helper.getChange(e)
+    }
+</script>
+

@@ -1,0 +1,429 @@
+﻿@model IEnumerable<KGQT.Models.tbl_Package>
+@using KGQT.Commons
+
+@if (Model != null)
+{
+    @foreach (var item in Model)
+    {
+        <div class="card shadow-0 border mb-4">
+            <div class="card-body p-0 py-2">
+                <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                    <div class="col-md-5 my-auto">
+                        <span class="cursor-pointer">
+                            <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                            <span class="btn-copy" data-value="@item.PackageCode">
+                                <i class="fa fa-copy"></i>
+                            </span>
+                        </span>
+                        <span class="mx-2"> - </span>
+                        <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                    </div>
+                    <div class="col-md-4 my-auto">
+                        <div class="form-inline">
+                            <label class="col-md-4 col-sm-6 col-form-label justify-content-start">Nhập kho:</label>
+                            <div class="col-md-8 col-sm-6">
+                                <input type="text" id="importDate@(item.ID)" class="txtImportDate form-control form-control-sm mb-0 w-100" value="@(item.ImportedSGWH != null? item.ImportedSGWH.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <button class="btn-sm btn bg-orange text-white mr-md-2" onclick="submitFn(@item.ID,@item.MovingMethod)">Cập nhật</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row p-2 mx-0 mt-2">
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                            </div>
+                            <div class="col-md-4 col-sm-12 col-xs-12">
+                                <span>Trạng thái:</span>
+                                @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
+                            </div>
+                            <div class="px-0 col-md-5 col-sm-12 col-xs-12">
+                                <div class="form-inline align-items-lg-start">
+                                    <label class="col-sm-12 col-md-5 col-form-label">Dịch vụ phụ:</label>
+                                    <div class="col-md-7 col-sm-12 row">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsWoodPackage" onchange="updateService(this,1,@item.ID)" id="cbPack@(item.ID)" @(item.IsWoodPackage == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="cbPack">Đóng gỗ</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsAirPackage" onchange="updateService(this,2,@item.ID)" id="cbAirbag@(item.ID)" @(item.IsAirPackage == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="cbAirbag">Túi khí</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsInsurance" id="cbInsurance@(item.ID)" onchange="updateService(this,3,@item.ID)" @(item.IsInsurance == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="IsBrand" id="IsBrand" onchange="updateService(this,4,@item.ID)" @(item.IsBrand == true ? "checked=\"checked\"" : "")>
+                                            <label class="form-check-label" for="isBrand">Hàng hiệu</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row px-0 mx-0 mb-2">
+                            <div class="px-0 col-md-6">
+                                <div class="form-inline">
+                                    <label class="col-md-3 col-sm-4 col-form-label justify-content-start">Khách hàng:</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input id="txtUsername@(item.ID)" class="txtUsername form-control form-control-sm mb-0 w-100" value="@item.Username" />
+                                    </div>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.Phone))
+                            {
+                                <div class="col-md-6 d-flex align-Models-center">
+                                    <div class="form-group">
+                                        <i class="fa fa-phone"></i><span>@item.Phone</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="px-0 col-md-4">
+                        <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                            @if (item.ReceivedDate != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+
+                            @if (item.ImportedSGWH != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+
+                            @if (!string.IsNullOrEmpty(item.DateExpectation))
+                            {
+                                <li class="ml-4">
+                                    <span>Đang trên đường về HCM - @item.DateExpectation</span>
+                                </li>
+                            }
+
+                            @if (item.ExportedCNWH != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            @if (item.OrderDate != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Ngày lên đơn - @item.OrderDate.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="row m-0 mb-2 pt-2 border-top">
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Cân nặng:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWeight@(item.ID)" type="text" class="form-control form-control-sm mb-0" value="@item.Weight" placeholder="Nhập số kilogram">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        kg
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-3 @(item.IsWoodPackage != null && item.IsWoodPackage == true ? "" :"d-none")" id="WoodPackage@(item.ID)">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Đóng gỗ:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWoodPackage@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.WoodPackagePrice" placeholder="Nhập tiền đóng gỗ">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-3 @(item.IsAirPackage != null && item.IsAirPackage == true ? "" :"d-none")" id="AirPackage@(item.ID)">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Bọt khí:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtAirPackage@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.AirPackagePrice" placeholder="Nhập tiền quấn bọt khí">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Thu hộ:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtSurCharge@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.SurCharge" placeholder="Nhập phí thu hộ">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-0 pt-2 border-top">
+
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Đo lên:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWeightEx@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.WeightExchange" placeholder="Nhập khối lượng quy đổi">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        kg
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Dài:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtLength@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.Length" placeholder="Nhập chiều dài">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        cm
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Rộng:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtWidth@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.Width" placeholder="Nhập chiều rộng">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        cm
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Cao:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtHeight@(item.ID)" type="number" class="form-control form-control-sm mb-0" value="@item.Height" placeholder="Nhập chiều cao">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        cm
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-0 pt-2 border-top @(item.IsInsurance != null && item.IsInsurance == true ? "" :"d-none")" id="declarefrom@(item.ID)">
+
+                    <div class="px-0 col-md-5 col-sm-12">
+                        <div class="form-inline">
+                            <label class="col-md-3 col-sm-6 col-form-label justify-content-start">Link sản phẩm:</label>
+                            <div class="col-md-7 col-sm-6">
+                                <input id="txtDeclaration@(item.ID)" class="form-control form-control-sm mb-0 w-100" value="@item.Declaration" placeholder="Nhập link sản phẩm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-0 col-md-5 col-sm-12">
+                        <div class="form-inline">
+                            <label class="col-sm-2 col-form-label justify-content-start">Giá:</label>
+                            <div class="col-sm-10 input-group">
+                                <input id="txtDeclarePrice@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.DeclarePrice" placeholder="Nhập giá khê khai">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <h2 class="text-danger">Không tìm thấy kiện</h2>
+}
+<div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>
+
+<script>
+    jQuery(function ($) {
+        $.datepicker.regional["vi-VN"] =
+        {
+            closeText: "Đóng",
+            prevText: "Trước",
+            nextText: "Sau",
+            currentText: "Hôm nay",
+            monthNames: ["Tháng một", "Tháng hai", "Tháng ba", "Tháng tư", "Tháng năm", "Tháng sáu", "Tháng bảy", "Tháng tám", "Tháng chín", "Tháng mười", "Tháng mười một", "Tháng mười hai"],
+            monthNamesShort: ["Một", "Hai", "Ba", "Bốn", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười một", "Mười hai"],
+            dayNames: ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"],
+            dayNamesShort: ["CN", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy"],
+            dayNamesMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+            weekHeader: "Tuần",
+            dateFormat: "dd/mm/yy",
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ""
+        };
+
+        $.datepicker.setDefaults($.datepicker.regional["vi-VN"]);
+    });
+    $(document).ready(function () {
+        formatVND();
+        $('.btn-copy').off('click').on('click', function () {
+            let text = $(this).data('value');
+            $(this).select();
+            navigator.clipboard.writeText(text);
+            $('#copied-success').css('opacity', '1');
+            setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
+        })
+
+        $(".txtImportDate").datepicker();
+    })
+    function submitFn(id, moving) {
+        debugger
+        let weight = $('#txtWeight' + id).val();
+        let wood = $('#txtWoodPackage' + id).data('value');
+        let air = $('#txtAirPackage' + id).data('value');
+        let isPrice = $('#txtDeclarePrice' + id).data('value')
+        let isLink = $('#txtDeclaration' + id).val();
+        let sub = $('#txtSurCharge' + id).data('value');
+        let username = $('#txtUsername' + id).val();
+        let weightEx = $('#txtWeightEx' + id).val();
+        let length = $('#txtLength' + id).val();
+        let width = $('#txtWidth' + id).val();
+        let height = $('#txtHeight' + id).val();
+        let importDate = $('#importDate' + id).val();
+        let $wood = $('#cbPack' + id).is(":checked");
+        let $air = $('#cbAirbag' + id).is(":checked");
+        let $inSure = $('#cbInsurance' + id).is(":checked");
+
+        if (!weight) {
+            helper.showErr('Vui lòng nhập cân nặng!');
+            return;
+        }
+
+        if ($wood) {
+            if (!wood) {
+                helper.showErr('Vui lòng nhập phí đóng gỗ!');
+                return;
+            }
+        } else {
+            wood = 0;
+        }
+
+        if ($air) {
+            if (!air) {
+                helper.showErr('Vui lòng nhập phí quấn bọt khí!');
+                return;
+            }
+        } else {
+            air = 0;
+        }
+
+        if ($inSure) {
+            if (!isLink || !isPrice) {
+                helper.showErr('Vui lòng nhập kê khai báo hiểm!');
+                return;
+            }
+        } else {
+            isLink = "";
+            isPrice = 0;
+        }
+
+        if (!username) {
+            helper.showErr('Vui lòng khai báo khách hàng!');
+            return;
+        }
+
+        let dateParts = importDate.split("/");
+        let dateObject = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).toUTCString();
+
+        let data = {
+            id,
+            username,
+            movingMethod: moving,
+            weight,
+            woodPrice: wood,
+            airPrice: air,
+            surCharge: sub,
+            link: isLink,
+            declarePrice: isPrice,
+            weightExchange: weightEx,
+            length: length,
+            width: width,
+            height: height,
+            date: dateObject
+        }
+        $.ajax({
+            url: '/admin/Package/InStockPackage',
+            method: 'POST',
+            dataType: 'json',
+            data: { sData: JSON.stringify(data) },
+            success: function (res) {
+                if (!res.isError)
+                    helper.showSuc(res.message);
+                else
+                    helper.showErr(res.message);
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    }
+
+    function updateService(e, type, id) {
+        console.log('asff')
+        let checked = $(e).is(":checked")
+        $.ajax({
+            url: '/admin/Package/UpdateService',
+            method: 'POST',
+            dataType: 'json',
+            data: { id, type, check: checked },
+            success: function (res) {
+                if (res) {
+
+                    if (type == 1)
+                        $('#WoodPackage' + id).toggleClass('d-none');
+
+                    if (type == 2)
+                        $('#AirPackage' + id).toggleClass('d-none');
+
+                    if (type == 3)
+                        $('#declarefrom' + id).toggleClass('d-none');
+
+                    helper.showSuc("Cập nhật thành công", false);
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    }
+</script>

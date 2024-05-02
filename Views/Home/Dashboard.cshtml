@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var p3 = ViewData["pack_st3"];
+    var p4 = ViewData["pack_st4"];
+    var p5 = ViewData["pack_st5"];
+    var s1 = ViewData["order_st1"];
+    var s2 = ViewData["order_st2"];
+    var s = ViewData["ordertotal"];
+}
+<style>
+    .card {
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 10px 10px 10px #bebebe, -15px -15px 15px #ffffff;
+    }
+</style>
+<ul id="breadcrumbs" class="mb-2">
+    <li><a>Trang chủ</a></li>
+</ul>
+
+<div class="row p-4">
+    <div class="col-xl-3 col-md-6 mb-4 cls-watting">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <a href="/shippingorder/index?status=1">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Đang chờ thanh toán
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@s1</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-credit-card text-primary fa-2x"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 cls-done">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <a href="/package/index?status=3">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Kiện đang vận chuyển
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@p3</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-plane fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <a href="/shippingorder/index?status=2">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Đã thanh toán
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@s2</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-square fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <a href="/package/index?status=5">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Đã nhận
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@p5</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,180 @@
+﻿@model KGQT.Models.temp.UserModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "~/Views/Shared/_PartialView.cshtml";
+}
+<link href="~/css/sweetalert2.css" rel="stylesheet" />
+<script src="~/js/helper.js" type="text/javascript"></script>
+<script src="~/js/base.js" type="text/javascript"></script>
+<script src="~/vendor/jquery-easing/jquery.easing.js"></script>
+<script src="~/js/sb-admin-2.min.js"></script>
+<script src="~/js/sweetalert2.min.js"></script>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10 col-md-8">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-4">
+                    <div class="row justify-content-center px-4">
+                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                        <div class="col-lg-6">
+                            <div class="p-0">
+                                <div class="text-center">
+                                    @*<h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng nhập</h1>*@
+                                    <img src="~/img/logoshipping.png" class="w-100 h-100 mb-3 "/>
+                                </div>
+                                <form class="user" id="formLogin">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.UserName,"Tài khoản")
+                                        @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PassWord,"Mật khẩu")
+                                        <div class="position-relative">
+                                            @Html.TextBoxFor(model => model.PassWord, new { @class="form-control form-control-user", @placeholder="Mật khẩu", @type="password", @id="txtPassword"})
+                                            <span class="pass_icon cursor-pointer" id="show_password">
+                                                <i class="fa fa-eye-slash" id="icon"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button onclick="clickLogin()" id="btnLogin" type="button" class="btn btn-primary btn-user btn-block btn-login">ĐĂNG NHẬP</button>
+                                </form>
+                                <hr />
+                                <div class="text-center">
+                                    <a class="small cursor-pointer" data-toggle="modal" data-target="#sendMailModal">Quên mật khẩu</a>
+                                </div>
+                                <div class="text-center">
+                                    <a class="small cursor-pointer" href="/auth/Register">Đăng ký tài khoản</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Send Mail Fogot Password-->
+<div class="modal fade" id="sendMailModal" tabindex="-1" role="dialog" aria-labelledby="sendMailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="sendMailModalLabel">Quên mật khẩu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="form-group col-12">
+                            <div>
+                                <span class="fw-bold">Email</span>
+                                <span class="text-danger">(*)</span>
+                            </div>
+                            <input id="email" name="email" class="form-control form-control-user border-none rounded" type="email" placeholder="Nhập địa chỉ email" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary w-100px" onclick="sendMailFogetPassword()">Gửi</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //Check Show/Hide Password
+    $(document).ready(function () {
+        $('#show_password').click(function () {
+            let _input = $('#txtPassword');
+            let _icon = $('#icon');
+            if (_icon.hasClass('fa fa-eye-slash')) {
+                _icon.removeClass('fa fa-eye-slash');
+                _icon.addClass('fa fa-eye');
+                _input.attr('type', 'text');
+            }
+            else {
+                _icon.removeClass('fa fa-eye');
+                _icon.addClass('fa fa-eye-slash');
+                _input.attr('type', 'password');
+            }
+        });
+    });
+    // Login
+    function clickLogin() {
+        var data = helper.form2Object($('#formLogin').serializeArray());
+        $.ajax({
+            url: '/Auth/Login',
+            type: "POST",
+            data: data,
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (respone) {
+                if (respone.isError)
+                    helper.showErr(respone.message);
+                else {
+                    if (!respone.data) {
+                    stopLoading(true);
+                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+                        return;
+                    }
+                    if (respone?.data?.roleID == 1)
+                        location.href = "/Admin";
+                    else
+                        location.href = "/Home/Dashboard";
+                }
+            },
+            error: function (xhr, status, err) {
+                stopLoading(true);
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }, complete: function () {
+                stopLoading(true);
+            }
+        });
+    }
+    // enter login
+    $("#formLogin").keypress(function (event) {
+        if (event.keyCode == 13) {
+            clickLogin();
+        }
+    });
+    // sendmail foget password
+    function sendMailFogetPassword() {
+        var email = $("#email").val();
+        $.ajax({
+            url: '/auth/SendMailForgetPassword',
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: { email: email },
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (respone) {
+                if (!respone.isError) {
+                    helper.showSuc('Yêu cầu của bạn đã được gửi!');
+                    $(".close").click();
+                }
+                else {
+                    helper.showErr(respone.message)
+                }
+            },
+            error: function () {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+            }, complete: function () {
+                stopLoading(true);
+            }
+        });
+    }
+</script>
+
+
+
+
+
+
+

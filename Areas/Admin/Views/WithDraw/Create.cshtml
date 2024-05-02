@@ -1,0 +1,186 @@
+﻿@model KGQT.Models.tbl_Withdraw
+@{
+    ViewData["Title"] = "Nạp tiền";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string user = ViewBag.user;
+    int type = ViewBag.type;
+}
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a>Quản lý giao dịch</a></li>
+        <li class="text-uppercase fw-bold"><a href="/Admin/Withdraw/Index">@(type == 1 ? "Nạp tiền" : "Rút tiền")</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Thêm</a></li>
+    </ul>
+</div>
+
+<div class="row justify-content-center w-100">
+    <div class="col-8">
+        <form method="post" action="Create" id="frmShip">
+            <div class="form-group">
+                <h5 class="fw-bold text-danger text-uppercase mt-2">@(type == 1 ? "Tạo lệnh Nạp tiền" : "Tạo lệnh Rút tiền")</h5>
+            </div>
+            <div class="form-group mb-4 d-none">
+                <label class="required" for="type">Lệnh:</label>
+                <select class="form-control" name="Type" id="type">
+                    <option value="1" @(type == 1 ? "selected" : "")>Nạp tiền</option>
+                    <option value="2" @(type == 2 ? "selected" : "")>Rút tiền</option>
+                </select>
+            </div>
+            <div class="form-group mb-4">
+                <label class="required" for="txtShipID">Tài khoản khách hàng:</label>
+                <input type="text" class="form-control" id="txtUserName" name="Username" value="@user" placeholder="Nhập tài khoản khách hàng">
+            </div>
+            <div class="form-group mb-4">
+                <label class="required" for="sltPaymentMethod">Hình thức thanh toán:</label>
+                <select class="form-control" name="PaymentMethod" id="sltPaymentMethod" onchange="pmtChanged(this)">
+                    <option value="1" selected>Tiền mặt</option>
+                    <option value="2">Chuyển khoản</option>
+                </select>
+            </div>
+
+            <div id="transfer" class="d-none">
+                <div class="form-group mb-2">
+                    <label class="mb-0 text-primary fw-bold">Thông tin chuyển khoản</label>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtBank">Ngân hàng:</label>
+                    <input type="text" class="form-control" id="txtBank" name="BankName" placeholder="Ngân hàng">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtBank">Chủ tài khoản:</label>
+                    <input type="text" class="form-control" id="txtAccountName" name="AccountName" placeholder="Chủ tài khoản">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtBank">Số tài khoản:</label>
+                    <input type="text" class="form-control" id="txtAccountNumber" name="AccountNumber" placeholder="Số tài khoản">
+                </div>
+            </div>
+            <div class="form-group mb-4">
+                <label class="required" for="txtAmount">Số tiền</label>
+                <input type="text" class="form-control" id="txtAmount" data-type="formatvnd" name="Amount" value="0" placeholder="Nhập số tiền">
+            </div>
+            <div class="form-group mb-4">
+                <label for="txtShipID">Nội dung</label>
+                <textarea class="form-control" id="txtNote" name="Note" placeholder="Nhập nội dung"></textarea>
+            </div>
+
+            <div class="col-md-12 col-sm-12 col-lg-12 text-right">
+                <button type="reset" class="btn btn-sm btn-danger mr-4 w-100px">Nhập lại</button>
+                <button type="button" class="btn btn-sm btn-success w-100px" onclick="insert()">Duyệt</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        window["formatVND"]();
+        $('#txtUserName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/WithDraw/AutoComplete',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 3,
+            delay: 500,
+            select: function (event, ui) {
+                $(this).val(ui.item.username);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.username + " - " + item.email + "</div>")
+                .appendTo(ul);
+        };;
+    });
+
+    function pmtChanged(e) {
+        let v = $(e).find(":selected").val();
+        if (v == 2)
+            $('#transfer').removeClass('d-none');
+        else
+            $('#transfer').addClass('d-none');
+    }
+
+    function insert() {
+        var data = helper.form2Object($('#frmShip').serializeArray());
+        if (!data) {
+            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+            return;
+        }
+
+        if (!data.Type) {
+            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+            return;
+        }
+
+        if (!data.Username) {
+            helper.showErr('Tài khoản khách hàng không được bỏ trống!');
+            return
+        }
+
+        if (!data.Amount)
+            data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
+
+
+        if (!data.PaymentMethod) {
+            helper.showErr('Vui lòng chọn hình thức nạp!');
+            return
+        }
+
+        if (data.PaymentMethod == 2) {
+            if (!data.BankName) {
+                helper.showWarn('Ngân hàng không được bỏ trống!');
+                return;
+            }
+            if (!data.AccountNumber) {
+                helper.showWarn('Số tài khoản không được bỏ trống!');
+                return;
+            }
+            if (!data.AccountName) {
+                helper.showWarn('Chủ tài khoản không được bỏ trống!');
+                return;
+            }
+        }
+
+        if (!data.Amount) {
+            helper.showErr('Vui lòng nhập số tiền!');
+            return;
+        }
+        
+        $.ajax({
+            url: '/Admin/WithDraw/Create',
+            type: 'POST',
+            data: { model: data },
+            success: function (respone) {
+                if (respone.isError)
+                    helper.showErr(respone.message)
+                else
+                {
+                    let url = "";
+                    if(@type == 1)
+                        url = "/Admin/Withdraw/Index";
+                    else if (@type == 2)
+                        url = "/Admin/Withdraw/Refuse";
+                    helper.showSuc('Duyệt thành công!', false, "Thành công", url)
+                }
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+
+            }
+        });
+    }
+</script>

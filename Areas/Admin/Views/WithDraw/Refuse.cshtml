@@ -1,0 +1,262 @@
+﻿@model IEnumerable<KGQT.Models.tbl_Withdraw>
+
+@{
+    ViewData["Title"] = "Rút tiền";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int status = ViewBag.status;
+    string userName = ViewBag.userName;
+    DateTime? fromDate = ViewBag.fromDate;
+    DateTime? toDate = ViewBag.toDate;
+    int pageCurrent = ViewBag.pageCurrent;
+    int numberPage = ViewBag.numberPage;
+    int numberRecord = ViewBag.numberRecord;
+}
+
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a>Quản lý giao dịch</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Rút tiền</a></li>
+    </ul>
+</div>
+<div class="row p-2 mb-2 w-100">
+    <div class="col-12">
+        <form class="row align-items-center align-items-stretch" id="myform">
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <p class="m-0">Khách hàng:</p>
+                @Html.TextBoxFor(model => userName, "", new { @type="text", @class="form-control w-100", @placeholder="Nhập mã định danh" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12">
+                <p class="fw-bold m-0">Từ ngày:</p>
+                @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12">
+                <p class="fw-bold m-0">Đến ngày:</p>
+                @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12">
+                <p class="fw-bold m-0">Trạng thái:</p>
+                <select name="Status" id="Status" class="form-control">
+                    <option value="" @(status == 0 ? "selected" : "")>Tất cả</option>
+                    <option value="1" @(status == 1 ? "selected" : "")>Chưa duyệt</option>
+                    <option value="2" @(status == 2 ? "selected" : "")>Đã duyệt</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="d-flex align-items-end justify-content-end h-100">
+                    <a href="Index" class="btn btn-sm btn-info mr-2 w-100px">
+                        <i class="fas fa-sync fa-xs"></i> Xóa lọc
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row p-2 mb-2 w-100">
+    <div clss="col-12">
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <h3 class="text-uppercase text-danger">RÚT TIỀN</h3>
+            <a class="btn btn-sm btn-success w-100px" href="/Admin/Withdraw/Create?type=2"><i class="fas fa-plus"></i>&nbspThêm</a>
+        </div>
+    </div>
+    <div class="col-12">
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr class="fw-normal text-uppercase">
+                    <th class="text-left">Ngày tạo</th>
+                    <th class="text-left">Mã định danh</th>
+                    <th class="text-left">Khách hàng</th>
+                    <th class="text-left">Nội dung</th>
+                    <th class="text-center">Số tiền</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class=""></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-left">
+                            @if (item.CreatedDate != null)
+                            {
+                                <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                            }
+                            else
+                            {
+                                <span>dd/mm/yyy</span>
+                            }
+                        </td>
+                        <td class="text-left align-middle">
+                            @item.Username
+                        </td>
+                        <td class="text-left align-middle">
+                            @item.Fullname
+                        </td>
+                        <td class="text-left align-middle">
+                            @item.Note
+                        </td>
+                        <td class="text-center align-middle text-danger">
+                            @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
+                        </td>
+                        <td class="text-center align-middle">
+                            @if (item.Status == 1)
+                            {
+                                <span>Chưa duyệt</span>
+                            }
+                            else if (item.Status == 2)
+                            {
+                                <span>Đã duyệt</span>
+                            }
+                            else if (item.Status == 3)
+                            {
+                                <span>Từ chối</span>
+                            }
+                        </td>
+                        <td class="text-right align-middle">
+                            @if (item.Status == 1)
+                            {
+                                <a class="btn btn-sm btn-success" onclick="clickApproval(@item.ID)">
+                                    <i class="fas fa-check"></i>
+                                    <span>Duyệt</span>
+                                </a>
+                                <a class="btn btn-sm btn-danger" onclick="clickRefuse(@item.ID)">
+                                    <i class="fas fa-minus-circle"></i>
+                                    <span>Từ chối</span>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row p-2 w-100">
+    <div class="col-4 align-self-center">
+        <span>
+            Tổng số:&nbsp
+            <b>@numberRecord</b>
+        </span>
+    </div>
+    <div class="col-8">
+        @if (numberPage > 1)
+        {
+            <nav class="d-flex justify-content-end">
+                <ul class="pagination m-0">
+                    @{
+                        int offset = 2; // number display page
+                        if (pageCurrent > 1)
+                        {
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
+                                    <i class="fas fa-fast-backward"></i>
+                                </button>
+                            </li>
+                            int prevPage = pageCurrent - 1;
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </button>
+                            </li>
+                        }
+
+                        int from = pageCurrent - offset;
+                        int to = pageCurrent + offset;
+                        if (from <= 0)
+                        {
+                            from = 1;
+                            to = offset * 2;
+                        }
+
+                        if (to > numberPage)
+                        {
+                            to = numberPage;
+                        }
+
+                        int i;
+                        for (i = from; i <= to; i++)
+                        {
+                            <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage - (to / 2))
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link">...</a>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            int nextPage = pageCurrent + 1;
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </button>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
+                                    <i class="fas fa-fast-forward"></i>
+                                </button>
+                            </li>
+                        }
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+<script>
+    // approval
+    function clickApproval(id) {
+        helper.showAlert("Bạn có muốn thực hiện yêu cầu này?").then((res) => {
+            if (res.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/WithDraw/Approval',
+                    type: "POST",
+                    data: { ID: id },
+                    success: function (reponse) {
+                        if (reponse.isError)
+                            helper.showErr(reponse.message);
+                        else
+                            helper.showSuc(reponse.message);
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
+                    }
+                });
+            }
+        });
+
+    }
+    //refuse
+    function clickRefuse(id) {
+        helper.showAlert("Bạn có muốn từ chối yêu cầu này?").then((res) => {
+            if (res.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/WithDraw/Refuse',
+                    type: "POST",
+                    data: { ID: id },
+                    success: function (reponse) {
+                        if (reponse.isError)
+                            helper.showErr(reponse.message);
+                        else
+                            helper.showSuc(reponse.message);
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr('Hệ thống thực thi không thành công.')
+                    }
+                });
+            }
+        });
+
+    }
+
+</script>
+
+

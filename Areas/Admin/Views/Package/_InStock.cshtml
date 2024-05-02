@@ -1,0 +1,123 @@
+﻿@model KGQT.Models.tbl_Package;
+
+<form id="uploadExcel">
+    @if (string.IsNullOrEmpty(Model.Username))
+    {
+        <div class="form-group mb-4 @(!string.IsNullOrEmpty(Model.Username) ? "invisible" : "visible")">
+            <label class="required">Khách hàng:</label>
+            <input type="text" class="form-control" id="txtUsername">
+        </div>
+    }
+    @if (Model.MovingMethod == null || Model.MovingMethod == 0)
+    {
+        <div class="form-group mb-2">
+            <label class="required mb-0">Phương thức vận chuyển</label>
+        </div>
+        <div class="form-group mb-4">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="movingfast" name="MovingMethod" value="1">
+                <label class="form-check-label" for="movingfast">Nhanh</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="movingslow" name="MovingMethod" value="2">
+                <label class="form-check-label" for="movingslow">Chậm</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="3">
+                <label class="form-check-label" for="movingofficial">Bộ</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="4">
+                <label class="form-check-label" for="movingofficial">Bộ lô</label>
+            </div>
+        </div>
+    }
+    <div class="form-group mb-4">
+        <label class="required">Cân nặng:(kg)</label>
+        <input type="number" class="form-control" id="txtWeight">
+    </div>
+    @if (Model.IsWoodPackage == true)
+    {
+        <div class="form-group mb-4">
+            <label class="required" for="txtWoodPackage">Phí đóng gỗ:(VNĐ)</label>
+            <input type="text" data-type="formatvnd" class="form-control" id="txtFeePack" value="@Model.WoodPackagePrice">
+        </div>
+    }
+    @if (Model.IsAirPackage == true)
+    {
+        <div class="form-group mb-4">
+            <label class="required" for="txtAirPackage">Phí bọt khí:(VNĐ)</label>
+            <input type="text" data-type="formatvnd" class="form-control" id="txtAirPackage" value="@Model.AirPackagePrice">
+        </div>
+    }
+    <div class="form-group mb-4">
+        <label>Phí thu hộ:(VNĐ)</label>
+        <input type="text" data-type="formatvnd" class="form-control" id="txtSurCharge" value="@Model.SurCharge">
+    </div>
+    <div class="form-group mb-4">
+        <label>Đo lên: (kg)</label>
+        <input id="txtWeightEx" class="form-control mb-0" value="@Model.WeightExchange" />
+    </div>
+    <div class="form-group mb-4 row">
+        <div class="col-md-4">
+            <label>Dài: (cm)</label>
+            <input id="txtLength" class="form-control mb-0" value="@Model.Length" />
+        </div>
+        <div class="col-md-4">
+            <label>Rộng: (cm)</label>
+            <input id="txtWidth" class="form-control mb-0" value="@Model.Width" />
+        </div>
+        <div class="col-md-4">
+            <label>Cao: (cm)</label>
+            <input id="txtHeight" class="form-control mb-0" value="@Model.Height" />
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        formatVND();
+        let $username = $('#txtUsername');
+        if ($username.length) _autoComplete();
+    })
+
+    function _autoComplete() {
+        $("#txtUsername").keypress(function (e) {
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if (code == 13) { //Enter keycode
+                return false;
+            }
+        });
+        $('#txtUsername').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/admin/package/AutoComplete',
+                    type: 'GET',
+                    data: {
+                        s: request.term
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            autoFocus: true,
+            minLength: 2,
+            delay: 500,
+            select: function (event, ui) {
+                $(this).val(ui.item.username);
+                return false;
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<div>" + item.username + (item.phone ? (" - " + item.phone) : '') + "</div>")
+                .appendTo(ul);
+        };
+    }
+</script>

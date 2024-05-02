@@ -1,0 +1,111 @@
+﻿/*Start:Admin root*/
+.* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+:root {
+    --text-color: #888;
+    --text-hover: #444;
+}
+
+.cursor-pointer:hover {
+    cursor: pointer !important;
+}
+
+/*End:Admin root*/
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 70px;
+    background-color: #fff !important;
+}
+
+.logo_img {
+    width: 80%;
+    height: 80%;
+}
+
+.asside_admin {
+    background: #6499E9 !important;
+}
+
+.asside-item {
+    white-space: normal !important;
+    text-transform: uppercase;
+    background-color: transparent !important;
+    color: #FFF !important;
+}
+
+.sidebar-dark .nav-item .nav-link[data-toggle="collapse"]::after {
+    color: #FFF;
+}
+
+.asside-item[data-toggle="collapse"]::after {
+    width: 0rem;
+    text-align: center;
+    float: right;
+    vertical-align: 0;
+    border: 0;
+    content: '\f107';
+    color: #888;
+    font-weight: 900;
+    font-family: 'Font Awesome 5 Free';
+}
+
+.asside-item[data-toggle="collapse"].collapsed::after {
+    width: 0rem;
+    text-align: center;
+    float: right;
+    vertical-align: 0;
+    border: 0;
+    content: '\f105';
+    color: #888;
+    font-weight: 900;
+    font-family: 'Font Awesome 5 Free';
+}
+
+.sidebar-dark hr.sidebar-divider {
+    border-top: 1px solid #FDF6F0 !important;
+}
+
+.nav-item:hover .asside-item:hover {
+    color: #FFF !important;
+}
+
+.form-control:focus {
+    box-shadow: none;
+}
+
+
+.pass_icon {
+    position: absolute;
+    right: 15px;
+    bottom: 12px;
+}
+
+.r-20px {
+    right: 20px;
+}
+
+#pageShippingOrder {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+}
+.border-top_dashed {
+    border-top: dashed 1px gray;
+}
+.w-150px{
+    width:150px;
+}
+

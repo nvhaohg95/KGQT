@@ -1,0 +1,152 @@
+﻿@using KGQT.Models.temp;
+@model KGQT.Models.tbl_Account
+
+@{
+    ViewData["Title"] = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var userName = ViewData["userName"];
+    var lstRoles = ViewData["lstRoles"] as List<UserRole>;
+}
+
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold">
+            <a>Thông tin tài khoản</a>
+        </li>
+    </ul>
+</div>
+
+<div class="row justify-content-center py-4 w-100">
+    <div class="col-lg-8 col-md-12 col-sm-12" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
+        <div class="row bg-white justify-content-center p-4">
+            <div class="col-lg-12 col-md-3 col-sm-12">
+                <div class="row justify-content-center mb-2">
+                    <div class="col-lg-3 col-md-12 col-sm-3">
+                        <div class="text-center">
+                            <img id="avatar_upload" class="rounded-circle mb-2" src="@(string.IsNullOrEmpty(Model.IMG) ? "/img/undraw_profile.svg" : Model.IMG)" width="150" height="150" onclick="clickUploadAvatar()" />
+                            <input id="input_uploader" class="d-none" type="file" onchange="onChange(event)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form class="col-lg-12 col-md-9 col-sm-12" id="formUser">
+                <!--Start:Thông tin cá nhân-->
+                <div class="row">
+                    <h6 class="fw-bold text-primary">THÔNG TIN CÁ NHÂN</h6>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="FullName">Họ tên<span class="text-danger">(*)</span></label>
+                            <input name="FullName" id="FullName" value="@Model.FullName" type="text" class="form-control" placeholder="Họ" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="Gender">Giới tính</label>
+                            <select id="Gender" name="Gender" class="form-control">
+                                <option value="" @(Model.Gender == null ? "selected" : "")></option>
+                                <option value="true" @(Model.Gender == true ? "selected" : "")>Nam</option>
+                                <option value="false" @(Model.Gender == false ? "selected" : "")>Nữ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="Email">Email<span class="text-danger">(*)</span></label>
+                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Email" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="Phone">SDT<span class="text-danger">(*)</span></label>
+                            <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="Address">Địa chỉ</label>
+                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <!--Thông tin tài khoản-->
+                <div class="row">
+                    <h6 class="fw-bold text-primary">TÀI KHOẢN</h6>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="UserName">Tài khoản</label>
+                            <input name="UserName" id="UserName" value="@Model.Username" type="text" class="form-control" placeholder="Tài khoản" readonly />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="Password">Mật khẩu</label>
+                            <input name="Password" id="Password" value="@Model.Password" type="text" class="form-control" placeholder="Mật khẩu" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-end mt-2">
+                    <button type="button" class="btn btn-success w-100px" onclick="update()">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // update
+    function update() {
+        debugger
+        let data = helper.form2Object($('#formUser').serializeArray());
+        let files = $("#input_uploader")[0].files;
+        let form = new FormData();
+        form.append("jsData", JSON.stringify(data));
+        if (files != null && files.length > 0) {
+            form.append("file", files[0]);
+        }
+        $.ajax({
+            url: '/Admin/Account/UpdateInfo',
+            type: 'Post',
+            data: form,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message);
+                else
+                    helper.showSuc("Cập nhật thành công");
+            },
+            error: function (xhr, status, err) {
+                helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại sau!");
+            }
+        });
+    }
+    // click change avatar
+    function clickUploadAvatar() {
+        document.getElementById("input_uploader")?.click();
+    }
+    function onChange(evt) {
+        let file = evt?.target?.files[0];
+        toBase64(file).then(res => {
+            if (res) {
+                document.getElementById("avatar_upload")?.setAttribute("src", res);
+            }
+        });
+    }
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+</script>
+
