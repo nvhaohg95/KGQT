@@ -142,7 +142,8 @@ namespace KGQT.Business
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    var isUserName = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
+                    string username = data.Username.ToLower();
+                    var isUserName = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == username);
                     if (isUserName != null)
                     {
                         result.IsError = true;
@@ -152,7 +153,7 @@ namespace KGQT.Business
 
                     var acc = new tbl_Account()
                     {
-                        Username = data.Username,
+                        Username = username,
                         Password = PJUtils.Encrypt("userpass", data.Password),
                         FullName = data.FullName,
                         Gender = data.Gender,
@@ -655,7 +656,7 @@ namespace KGQT.Business
             {
                 using (var db = new nhanshiphangContext())
                 {
-                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.UserName.ToLower());
                     if (acc != null)
                     {
                         acc.FullName = data.FullName;
@@ -802,14 +803,14 @@ namespace KGQT.Business
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email && x.Username != data.Username);
+                    var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email && x.Username.ToLower() != data.Username.ToLower());
                     if (isEmail)
                     {
                         result.IsError = true;
                         result.Message = "Địa chỉ email đã được sử dụng";
                         return result;
                     }
-                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() != data.Username.ToLower());
                     if (acc != null)
                     {
                         if (fileImg != null)

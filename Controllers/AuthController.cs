@@ -42,7 +42,7 @@ namespace KGQT.Controllers
                 if (user != null)
                 {
                     if (user.RoleID == 1)
-                        return Redirect("/Admin/Home/Index");
+                        return Redirect("/admin/package/index");
                     else
                         return RedirectToAction("Dashboard", "Home");
                 }

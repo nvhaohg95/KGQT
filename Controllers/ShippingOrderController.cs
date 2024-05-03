@@ -44,7 +44,8 @@ namespace KGQT.Controllers
         {
             var model = new OrderDetails();
             model.Order = ShippingOrder.GetOne(id);
-            model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
+            if (model.Order != null)
+                model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
             return View(model);
         }
 

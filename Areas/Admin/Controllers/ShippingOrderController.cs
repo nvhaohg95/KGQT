@@ -64,10 +64,11 @@ namespace KGQT.Areas.Admin.Controllers
             if (string.IsNullOrEmpty(recID))
                 model.Order = ShippingOrder.GetOne(id);
             else model.Order = ShippingOrder.GetOne(recID);
-
-            model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
             if (model.Order != null)
+            {
+                model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
                 model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username == model.Order.Username);
+            }
             return View(model);
         }
 

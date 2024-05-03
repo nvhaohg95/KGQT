@@ -445,9 +445,8 @@ namespace KGQT.Business
 
                     int oldStt = p.Status;
                     int oldVc = p.MovingMethod;
-                    bool changePrice = false;
 
-                    if (!string.IsNullOrEmpty(p.Username) || !string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
+                    if (!string.IsNullOrEmpty(p.Username))
                     {
                         var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == form.Username.ToLower());
                         if (user != null)
@@ -466,39 +465,22 @@ namespace KGQT.Business
                     p.IsWoodPackage = form.IsWoodPackage;
 
                     if (p.AirPackagePrice != form.AirPackagePrice)
-                    {
                         p.AirPackagePrice = form.AirPackagePrice;
-                        changePrice = true;
-                    }
 
                     if (p.IsInsurancePrice != form.IsInsurancePrice)
-                    {
                         p.IsInsurancePrice = form.IsInsurancePrice;
-                    }
 
                     if (p.WoodPackagePrice != form.WoodPackagePrice)
-                    {
                         p.WoodPackagePrice = form.WoodPackagePrice;
-                        changePrice = true;
-                    }
 
                     if (p.DeclarePrice != form.DeclarePrice)
-                    {
                         p.DeclarePrice = form.DeclarePrice;
-                        changePrice = true;
-                    }
 
                     if (p.IsBrand != form.IsBrand)
-                    {
                         p.IsBrand = form.IsBrand;
-                        changePrice = true;
-                    }
 
                     if (p.SurCharge != form.SurCharge)
-                    {
                         p.SurCharge = form.SurCharge;
-                        changePrice = true;
-                    }
 
                     p.WareHouse = form.WareHouse;
                     p.Status = form.Status;
@@ -609,7 +591,7 @@ namespace KGQT.Business
 
                     var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
                     tbl_Account user = null;
-                    if (!string.IsNullOrEmpty(data.Username) && pack.Username != data.Username)
+                    if (!string.IsNullOrEmpty(data.Username))
                     {
                         user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.Username.ToLower());
                         pack.Username = data.Username;
@@ -671,7 +653,7 @@ namespace KGQT.Business
                     if (pack.MovingMethod < 3)
                     {
                         var maxWeight = data.Weight * (25 / (float)100);
-                        if (data.WeightExchange > (data.Weight + maxWeight) || data.WeightExchange > (data.Weight + 1))
+                        if (data.WeightExchange > data.Weight || (data.WeightExchange > (data.Weight + maxWeight)) || data.WeightExchange > (data.Weight + 1))
                             pack.WeightReal = data.WeightExchange.ToString();
                         else
                             pack.WeightReal = Converted.ToDouble(data.Weight).ToString();
