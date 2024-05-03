@@ -9,7 +9,7 @@ namespace KGQT.Controllers
         #region Lịch sử giao dịch
         public IActionResult Index(int orderID, int tradeType, DateTime? fromDate, DateTime? toDate, int page = 1)
         {
-            var userName = HttpContext.Session.GetString("user");
+            var userName = HttpContext.Request.Cookies["user"];
             var oData = HistoryPayWallet.GetPage(userName, orderID, tradeType, fromDate, toDate, page, 10);
             var lstData = oData[0] as List<tbl_HistoryPayWallet>;
             var numberRecord = (int)oData[1];

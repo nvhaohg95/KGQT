@@ -10,7 +10,7 @@ namespace KGQT.Controllers
         // gửi yêu cầu nạp tiền
         public DataReturnModel<bool> Create(tbl_Withdraw model)
         {
-            string userLogin = HttpContext.Session.GetString("user");
+            string userLogin = HttpContext.Request.Cookies["user"];
             var user = AccountBusiness.GetInfo(-1, userLogin);
             DataReturnModel<bool> result = new DataReturnModel<bool>();
 
@@ -35,7 +35,7 @@ namespace KGQT.Controllers
         // gửi yêu cầu rút tiền
         public DataReturnModel<bool> Create2(tbl_Withdraw model)
         {
-            string userLogin = HttpContext.Session.GetString("user");
+            string userLogin = HttpContext.Request.Cookies["user"];
             var user = AccountBusiness.GetInfo(-1, userLogin);
             DataReturnModel<bool> result = new DataReturnModel<bool>();
             if (user != null && model != null)

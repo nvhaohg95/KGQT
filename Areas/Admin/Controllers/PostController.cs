@@ -29,7 +29,7 @@ namespace KGQT.Areas.Admin.Controllers
                 return new DataReturnModel<bool>() { IsError = true, Data = false, Message = "Tạo bài viết không thành công!" };
             else
             {
-                data.CraetedBy = HttpContext.Session.GetString("user");
+                data.CraetedBy = HttpContext.Request.Cookies["user"];
                 data.CraetedOn = DateTime.Now;
                 return PostBusiness.Insert(data);
             }    

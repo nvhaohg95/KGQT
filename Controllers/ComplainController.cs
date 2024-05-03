@@ -20,7 +20,7 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<bool> Create(tbl_Complain data)
         {
-            string userName = HttpContext.Session.GetString("user");
+            string userName = HttpContext.Request.Cookies["user"];
             var userLogin = AccountBusiness.GetInfo(-1, userName);
             DataReturnModel<bool> result = new();
             if (userLogin != null)

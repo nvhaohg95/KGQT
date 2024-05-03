@@ -38,7 +38,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Recharge(int ID)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var result = TransactionBusiness.ApprovalRecharge(ID, userLogin);
             return result;
         }

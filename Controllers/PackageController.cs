@@ -14,7 +14,7 @@ namespace KGQT.Controllers
         #region View
         public IActionResult Index(int status, string ID, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10)
         {
-            var username = HttpContext.Session.GetString("user");
+            var username = HttpContext.Request.Cookies["user"];
             var oData = PackagesBusiness.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
             var lstPackage = oData[0];
             int numberRecord = (int)oData[1];
@@ -51,7 +51,7 @@ namespace KGQT.Controllers
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var data = PackagesBusiness.GetStatusOrder(code, userLogin);
             return View(data);
         }
@@ -75,14 +75,14 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<bool> Create(tbl_Package form)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var data = PackagesBusiness.CustomerAdd(form,userLogin);
             return data;
         }
 
         public DataReturnModel<bool> Cancel(int id)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var data = PackagesBusiness.Cancel(id, userLogin);
             return data;
         }
@@ -95,7 +95,7 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<bool> Delete(int id)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var data = PackagesBusiness.Delete(id);
             return data;
         }

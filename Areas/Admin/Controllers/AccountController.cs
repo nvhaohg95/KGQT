@@ -47,7 +47,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public JsonResult Create(AccountInfo data)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var reponse = AccountBusiness.Create(data, userLogin);
             return Json(reponse);
         }
@@ -58,7 +58,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Update(AccountInfo data)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var reponse = AccountBusiness.Update(data, userLogin);
             return reponse;
         }
@@ -79,7 +79,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Info()
         {
-            var userName = HttpContext.Session.GetString("user");
+            var userName = HttpContext.Request.Cookies["user"];
             var accInfo = AccountBusiness.GetInfo(0,userName);
             ViewData["userName"] = userName;
             return View(accInfo);

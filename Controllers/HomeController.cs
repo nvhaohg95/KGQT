@@ -54,7 +54,7 @@ namespace KGQT
         [HttpGet]
         public ActionResult Dashboard()
         {
-            var username = HttpContext.Session.GetString("user");
+            var username = HttpContext.Request.Cookies["user"];
             var pack = PackagesBusiness.GetAllStatus(username);
             ViewData["pack_st3"] = pack[0];
             ViewData["pack_st4"] = pack[1];

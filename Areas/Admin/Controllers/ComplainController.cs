@@ -34,7 +34,7 @@ namespace KGQT.Areas.Admin.Controllers
 
         public DataReturnModel<bool> UpdateStatus(int ID,int Status)
         {
-            string userName = HttpContext.Session.GetString("user");
+            string userName = HttpContext.Request.Cookies["user"];
             var userLogin = AccountBusiness.GetInfo(-1, userName);
             DataReturnModel<bool> result = new();
             if(userLogin != null)

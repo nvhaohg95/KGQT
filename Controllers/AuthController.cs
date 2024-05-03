@@ -1,5 +1,6 @@
 ﻿using KGQT.Base;
 using KGQT.Business;
+using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Mobility;
 using KGQT.Models;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NToastNotify;
+using System.Globalization;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace KGQT.Controllers
@@ -35,10 +37,10 @@ namespace KGQT.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            var sUser = HttpContext.Session.GetString("US_LOGIN");
-            if (!string.IsNullOrEmpty(sUser))
+            var userName = HttpContext.Request.Cookies["user"];
+            if (!string.IsNullOrEmpty(userName))
             {
-                var user = JsonConvert.DeserializeObject<tbl_Account>(sUser);
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
                 if (user != null)
                 {
                     if (user.RoleID == 1)
@@ -52,25 +54,26 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<tbl_Account> Login(UserModel model)
         {
-            if(model == null)
+            if (model == null)
             {
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!" };
             }
             var result = AccountBusiness.Login(model.UserName, model.PassWord);
             if (!result.IsError)
             {
-                HttpContext.Session.SetString("user", model.UserName);
-                HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(result.Data));
+                CookieOptions options = new CookieOptions();
+                options.Expires = DateTime.Now.AddDays(30);
+                HttpContext.Response.Cookies.Append("user", model.UserName, options);
             }
             return result;
         }
-       
+
         #endregion
 
         #region Logout
         public ActionResult Logout()
         {
-            HttpContext.Session.Remove("US_LOGIN");
+            Response.Cookies.Delete("user");
             return Redirect("login");
         }
         #endregion
@@ -88,8 +91,8 @@ namespace KGQT.Controllers
             var data = JsonConvert.DeserializeObject<SignUpModel>(jsData);
             if (data == null)
             {
-                return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!"};
-            }    
+                return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
+            }
             if (file != null)
             {
                 //data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "uploads", "avatars");
@@ -108,8 +111,7 @@ namespace KGQT.Controllers
             var result = AccountBusiness.ChangePassword(data);
             if (!result.IsError)
             {
-                HttpContext.Session.Remove("US_LOGIN");
-                HttpContext.Session.Remove("user");
+                Response.Cookies.Delete("user");
             }
             return Json(result);
         }

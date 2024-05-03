@@ -24,7 +24,7 @@ namespace KGQT.Controllers
         // GET: ShippingOrderController
         public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
             var lstData = oData[0] as List<tbl_ShippingOrder>;
             int numberRecord = (int)oData[1];
@@ -60,7 +60,7 @@ namespace KGQT.Controllers
         [HttpPost]
         public object Cancel(int id)
         {
-            string username = HttpContext.Session.GetString("user");
+            string username = HttpContext.Request.Cookies["user"];
             var dtRetunr = ShippingOrder.Cancel(id, username);
             return dtRetunr;
         }
@@ -68,7 +68,7 @@ namespace KGQT.Controllers
         [HttpPost]
         public object Payment(int id)
         {
-            var username = HttpContext.Session.GetString("user");
+            var username = HttpContext.Request.Cookies["user"];
             DataReturnModel<bool> ret = ShippingOrder.Payment(id, username);
             return ret;
         }

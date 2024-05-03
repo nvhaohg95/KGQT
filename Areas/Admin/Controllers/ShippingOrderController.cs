@@ -89,26 +89,17 @@ namespace KGQT.Areas.Admin.Controllers
             var order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             if (order == null)
                 return false;
+            var userName = HttpContext.Request.Cookies["user"];
             order.Status = 1;
-            order.ModifiedBy = HttpContext.Session.GetString("user");
+            order.ModifiedBy = userName;
             order.ModifiedDate = DateTime.Now;
-            if (BusinessBase.Update(order))
-            {
-                var sUser = HttpContext.Session.GetString("US_LOGIN");
-                if (!string.IsNullOrEmpty(sUser))
-                {
-                    var user = JsonConvert.DeserializeObject<UserLogin>(sUser);
-                    return true;
-                }
-
-            }
-            return false;
+            return BusinessBase.Update(order);
         }
 
         [HttpPost]
         public object Cancel(int id)
         {
-            string username = HttpContext.Session.GetString("user");
+            string username = HttpContext.Request.Cookies["user"];
             var dtRetunr = ShippingOrder.Cancel(id, username);
             return dtRetunr;
         }
@@ -116,7 +107,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Payment(int id)
         {
-            var username = HttpContext.Session.GetString("user");
+            var username = HttpContext.Request.Cookies["user"];
             DataReturnModel<bool> ret = ShippingOrder.Payment(id, username);
             return ret;
         }
@@ -125,7 +116,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object receiver(int id)
         {
-            var username = HttpContext.Session.GetString("user");
+            var username = HttpContext.Request.Cookies["user"];
             DataReturnModel<bool> ret = ShippingOrder.Receiver(id, username);
             return ret;
         }
