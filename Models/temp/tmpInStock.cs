@@ -15,6 +15,7 @@
         public double? DeclarePrice { get; set; }
         public string? Link { get; set; }
         public string Username { get; set; }
+        public DateTime Date { get; set; }
 
     }
 }

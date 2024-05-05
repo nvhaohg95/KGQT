@@ -70,8 +70,7 @@
                     <td class="fw-bold text-left">Loại GD</td>
                     <td class="fw-bold text-left">Nội dung</td>
                     <td class="fw-bold text-center">Số tiền</td>
-                    <td class="fw-bold text-center">Số dư</td>
-                    <td class="fw-bold text-center">Tổng</td>
+                    @*<td class="fw-bold text-center">Số dư ví</td>*@
                 </tr>
             </thead>
             <tbody>
@@ -114,10 +113,7 @@
                                 <span class="text-success">+@Converted.String2Money(item.Amount)đ</span>
                             }
                         </td>
-                        <td class="text-center">
-                            <span class="text-success">@Converted.String2Money(item.MoneyLeft)đ</span>
-                        </td>
-                        <td class="text-center">
+                      @*  <td class="text-center">
                             @if (item.Type == 1)
                             {
                                 <span class="text-success">
@@ -130,7 +126,7 @@
                                     @Converted.Double2Money(Converted.ToDouble(item.MoneyLeft)+ Converted.ToDouble(item.Amount))đ
                                 </span>
                             }
-                        </td>
+                        </td>*@
                     </tr>
                 }
             </tbody>

@@ -8,7 +8,7 @@
         <div class="card shadow-0 border mb-4">
             <div class="card-body p-0 py-2">
                 <div class="row mx-0 py-2 border-bottom bg-success text-white">
-                    <div class="col-md-6 my-auto">
+                    <div class="col-md-5 my-auto">
                         <span class="cursor-pointer">
                             <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
                             <span class="btn-copy" data-value="@item.PackageCode">
@@ -18,8 +18,13 @@
                         <span class="mx-2"> - </span>
                         <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
                     </div>
-                    <div class="col-md-3 my-auto">
-                        <span>  Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @item.OrderDate.Value.ToString("dd/MM/yyyy")</strong></span>
+                    <div class="col-md-4 my-auto">
+                        <div class="form-inline">
+                            <label class="col-md-4 col-sm-6 col-form-label justify-content-start">Nhập kho:</label>
+                            <div class="col-md-8 col-sm-6">
+                                <input type="text" id="importDate@(item.ID)" class="txtImportDate form-control form-control-sm mb-0 w-100" value="@(item.ImportedSGWH != null? item.ImportedSGWH.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"))" />
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-3 text-right">
                         <button class="btn-sm btn bg-orange text-white mr-md-2" onclick="submitFn(@item.ID,@item.MovingMethod)">Cập nhật</button>
@@ -105,6 +110,12 @@
                             {
                                 <li class="ml-4">
                                     <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            @if (item.OrderDate != null)
+                            {
+                                <li class="ml-4">
+                                    <span>Ngày lên đơn - @item.OrderDate.Value.ToString("dd/MM/yyyy")</span>
                                 </li>
                             }
                         </ul>
@@ -261,6 +272,28 @@ else
 <div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>
 
 <script>
+    jQuery(function ($) {
+        $.datepicker.regional["vi-VN"] =
+        {
+            closeText: "Đóng",
+            prevText: "Trước",
+            nextText: "Sau",
+            currentText: "Hôm nay",
+            monthNames: ["Tháng một", "Tháng hai", "Tháng ba", "Tháng tư", "Tháng năm", "Tháng sáu", "Tháng bảy", "Tháng tám", "Tháng chín", "Tháng mười", "Tháng mười một", "Tháng mười hai"],
+            monthNamesShort: ["Một", "Hai", "Ba", "Bốn", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười một", "Mười hai"],
+            dayNames: ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"],
+            dayNamesShort: ["CN", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy"],
+            dayNamesMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+            weekHeader: "Tuần",
+            dateFormat: "dd/mm/yy",
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ""
+        };
+
+        $.datepicker.setDefaults($.datepicker.regional["vi-VN"]);
+    });
     $(document).ready(function () {
         formatVND();
         $('.btn-copy').off('click').on('click', function () {
@@ -270,8 +303,11 @@ else
             $('#copied-success').css('opacity', '1');
             setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
         })
+
+        $(".txtImportDate").datepicker();
     })
     function submitFn(id, moving) {
+        debugger
         let weight = $('#txtWeight' + id).val();
         let wood = $('#txtWoodPackage' + id).data('value');
         let air = $('#txtAirPackage' + id).data('value');
@@ -283,7 +319,7 @@ else
         let length = $('#txtLength' + id).val();
         let width = $('#txtWidth' + id).val();
         let height = $('#txtHeight' + id).val();
-
+        let importDate = $('#importDate' + id).val();
         let $wood = $('#cbPack' + id).is(":checked");
         let $air = $('#cbAirbag' + id).is(":checked");
         let $inSure = $('#cbInsurance' + id).is(":checked");
@@ -326,6 +362,9 @@ else
             return;
         }
 
+        let dateParts = importDate.split("/");
+        let dateObject = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).toUTCString();
+
         let data = {
             id,
             username,
@@ -339,7 +378,8 @@ else
             weightExchange: weightEx,
             length: length,
             width: width,
-            height: height
+            height: height,
+            date: dateObject
         }
         $.ajax({
             url: '/admin/Package/InStockPackage',

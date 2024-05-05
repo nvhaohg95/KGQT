@@ -34,7 +34,7 @@
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" id="movingslow" name="MovingMethod" value="2" @(Model.MovingMethod == 2 ? "checked=\"checked\"" : "")>
-                        <label class="form-check-label" for="movingslow">Chậm</label>
+                        <label class="form-check-label" for="movingslow">Thường</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="3" @(Model.MovingMethod == 3 ? "checked=\"checked\"" : "")>
@@ -219,7 +219,7 @@
 
     function checkPackage() {
         const ip = $('#txtPackage').val();
-        if (ip && id != @Model.PackageCode) {
+        if (ip && id != '@Model.PackageCode') {
             $.ajax({
                 url: '/admin/Package/CheckPackage',
                 type: 'GET',

@@ -14,7 +14,7 @@ namespace KGQT.Controllers
         #region Index
         public ActionResult Index(int status , DateTime? fromDate, DateTime? toDate, int page = 1)
         {
-            var userName = HttpContext.Session.GetString("user");
+            var userName = HttpContext.Request.Cookies["user"];
             var user = AccountBusiness.GetInfo(-1, userName);
             var lstData = new List<tbl_Notification>();
             int numberRecord = 0;
@@ -52,7 +52,7 @@ namespace KGQT.Controllers
         #region Get detail
         public ActionResult Detail(int id)
         {
-            var userName = HttpContext.Session.GetString("user");
+            var userName = HttpContext.Request.Cookies["user"];
             var user = AccountBusiness.GetInfo(-1, userName);
             var lstData = new List<tbl_Notification>();
             var numberRecord = 0;
@@ -79,7 +79,7 @@ namespace KGQT.Controllers
         [HttpPost]
         public bool UpdateStatus(int ID)
         {
-            var userName = HttpContext.Session.GetString("user");
+            var userName = HttpContext.Request.Cookies["user"];
             NotificationBusiness.UpdateStatus(ID, userName);
             return true;
         }

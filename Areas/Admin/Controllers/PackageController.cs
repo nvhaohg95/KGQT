@@ -138,7 +138,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
-            var user = HttpContext.Session.GetString("user");
+            var user = HttpContext.Request.Cookies["user"];
             var data = PackagesBusiness.GetStatusOrder(code, user);
             return View(data);
         }
@@ -167,7 +167,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Create(string sData)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var data = JsonConvert.DeserializeObject<tbl_Package>(sData);
             var oSave = PackagesBusiness.Add(data, userLogin);
             return oSave;
@@ -190,7 +190,7 @@ namespace KGQT.Areas.Admin.Controllers
                 oData.Message = "Không có file nào được chọn!";
                 return oData;
             }
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             oData = PackagesBusiness.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
         }
@@ -240,7 +240,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public DataReturnModel<bool> Update(tbl_Package form)
         {
-            var crrUse = HttpContext.Session.GetString("user");
+            var crrUse = HttpContext.Request.Cookies["user"];
 
             var oSave = PackagesBusiness.Update(form, crrUse);
             return oSave;
@@ -281,7 +281,7 @@ namespace KGQT.Areas.Admin.Controllers
         public object InStockPackage(string sData)
         {
             var dt = new DataReturnModel<bool>();
-            var crrUse = HttpContext.Session.GetString("user");
+            var crrUse = HttpContext.Request.Cookies["user"];
             if (string.IsNullOrEmpty(sData))
             {
                 dt.IsError = true;
@@ -306,7 +306,7 @@ namespace KGQT.Areas.Admin.Controllers
             if (p != null)
             {
                 p.Status = 9;
-                p.ModifiedBy = HttpContext.Session.GetString("user");
+                p.ModifiedBy = HttpContext.Request.Cookies["user"];
                 p.ModifiedDate = DateTime.Now;
                 return BusinessBase.Update(p);
             }

@@ -177,15 +177,17 @@ namespace KGQT.Business
                         if (!data.IsError && data.Data.data != null && data.Data.data.Count > 0)
                         {
                             var exist = data.Data.data.FirstOrDefault(x => x.context.Contains("签收") || x.context.Contains("退回"));
-                            if (oPack.Status < 2)
-                                oPack.Status = 2;
-                            oPack.ExportedCNWH = Converted.ToDate(exist.time);
-                            if (BusinessBase.Update(oPack))
+                            if (exist != null)
                             {
-                                var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == uslogin);
-                                BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
+                                if (oPack.Status < 2)
+                                    oPack.Status = 2;
+                                oPack.ExportedCNWH = Converted.ToDate(exist.time);
+                                if (BusinessBase.Update(oPack))
+                                {
+                                    var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == uslogin);
+                                    BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
+                                }
                             }
-
                             for (int i = 0; i < data.Data.data.Count; i++)
                             {
                                 string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(data.Data.data[i].context, "zh", "vi"));
@@ -432,6 +434,7 @@ namespace KGQT.Business
                 var dt = new DataReturnModel<bool>();
                 try
                 {
+                    var orin = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
                     var p = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
                     if (p == null)
                     {
@@ -442,9 +445,8 @@ namespace KGQT.Business
 
                     int oldStt = p.Status;
                     int oldVc = p.MovingMethod;
-                    bool changePrice = false;
 
-                    if (string.IsNullOrEmpty(p.Username) || !string.IsNullOrEmpty(form.Username) && form.Username.ToLower() != p.Username.ToLower())
+                    if (!string.IsNullOrEmpty(p.Username))
                     {
                         var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == form.Username.ToLower());
                         if (user != null)
@@ -463,39 +465,22 @@ namespace KGQT.Business
                     p.IsWoodPackage = form.IsWoodPackage;
 
                     if (p.AirPackagePrice != form.AirPackagePrice)
-                    {
                         p.AirPackagePrice = form.AirPackagePrice;
-                        changePrice = true;
-                    }
 
                     if (p.IsInsurancePrice != form.IsInsurancePrice)
-                    {
                         p.IsInsurancePrice = form.IsInsurancePrice;
-                    }
 
                     if (p.WoodPackagePrice != form.WoodPackagePrice)
-                    {
                         p.WoodPackagePrice = form.WoodPackagePrice;
-                        changePrice = true;
-                    }
 
                     if (p.DeclarePrice != form.DeclarePrice)
-                    {
                         p.DeclarePrice = form.DeclarePrice;
-                        changePrice = true;
-                    }
 
                     if (p.IsBrand != form.IsBrand)
-                    {
                         p.IsBrand = form.IsBrand;
-                        changePrice = true;
-                    }
 
                     if (p.SurCharge != form.SurCharge)
-                    {
                         p.SurCharge = form.SurCharge;
-                        changePrice = true;
-                    }
 
                     p.WareHouse = form.WareHouse;
                     p.Status = form.Status;
@@ -524,25 +509,32 @@ namespace KGQT.Business
 
                             if (ship != null)
                             {
-                                var shipnew = ShippingOrder.CheckOrderInStock(p.Username, p.MovingMethod, ship.CreatedDate.Value.Date,
-                                    ship.CreatedDate.Value.Date.AddDays(1).AddTicks(-1), p.ExportedCNWH.Value, p.ExportedCNWH.Value.AddDays(1).AddTicks(-1), ship.RecID);
-
-                                if (shipnew != null)
+                                if (ship.Username != p.Username)
                                 {
-                                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == p.Username.ToLower());
-                                    var packe = BusinessBase.GetOne<tbl_Package>(x => x.ID == p.ID);
-                                    p.TransID = shipnew.RecID;
-                                    packe.TransID = shipnew.RecID;
-                                    BusinessBase.Update(packe);
+                                    var shipnew = ShippingOrder.CheckOrderInStock(p.Username, p.MovingMethod, ship.CreatedDate.Value.Date,
+                                    ship.CreatedDate.Value.Date.AddDays(1).AddTicks(-1), p.ExportedCNWH.Value.Date, p.ExportedCNWH.Value.Date.AddDays(1).AddTicks(-1), ship.RecID);
 
-                                    ShippingOrder.CalculatorAllPrice(shipnew.RecID, userLogin);
-
-                                    if (countPackold == 1)
-                                        db.tbl_ShippingOrders.Remove(ship);
+                                    if (shipnew != null)
+                                    {
+                                        var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == p.Username.ToLower());
+                                        var packe = BusinessBase.GetOne<tbl_Package>(x => x.ID == p.ID);
+                                        p.TransID = shipnew.RecID;
+                                        packe.TransID = shipnew.RecID;
+                                        BusinessBase.Update(packe);
+                                        BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chuyển kiện từ đơn " + ship.RecID + " sang đơn " + shipnew.RecID, 0, admin.Username);
+                                    }
                                     else
-                                        ShippingOrder.CalculatorAllPrice(ship.RecID, userLogin);
-
-                                    BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chuyển kiện từ đơn " + ship.RecID + " sang đơn " + shipnew.RecID, 0, admin.Username);
+                                    {
+                                        p = BusinessBase.GetOne<tbl_Package>(x => x.ID == p.ID);
+                                        var s = ShippingOrder.Add(p, userLogin);
+                                        if (!s)
+                                        {
+                                            BusinessBase.Update(orin);
+                                            dt.IsError = true;
+                                            dt.Message = "Cập nhật không thành công!";
+                                            return dt;
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -552,35 +544,18 @@ namespace KGQT.Business
                                         var s = ShippingOrder.Add(p, userLogin);
                                         if (!s)
                                         {
+                                            BusinessBase.Update(orin);
                                             dt.IsError = true;
                                             dt.Message = "Cập nhật không thành công!";
                                             return dt;
                                         }
-                                        if (countPackold == 1)
-                                            db.tbl_ShippingOrders.Remove(ship);
-                                        else
-                                            ShippingOrder.CalculatorAllPrice(ship.RecID, userLogin);
-                                    }
-                                    else
-                                    {
-                                        ship.Username = p.Username;
-                                        var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == p.Username.ToLower());
-                                        if (user != null)
-                                        {
-                                            ship.Email = user.Email;
-                                            ship.FirstName = user.FullName;
-                                            ship.Phone = user.Phone;
-                                            ship.Address = user.Address;
-                                            ship.Username = user.Username;
-                                        }
-                                        db.Update(ship);
-                                        db.SaveChanges();
                                     }
                                 }
                             }
 
                             p = BusinessBase.GetOne<tbl_Package>(x => x.ID == p.ID);
                             ShippingOrder.CalculatorAllPrice(p.TransID, userLogin);
+                            ShippingOrder.UpdateByPackageChanged(p, userLogin);
                         }
 
                         BusinessBase.TrackLog(admin.ID, p.ID, "{0} đã chỉnh sửa kiện", 0, admin.Username);
@@ -598,18 +573,7 @@ namespace KGQT.Business
                 return dt;
             }
         }
-        public static bool UpdateTrans(int id, string transId)
-        {
-            using (var db = new nhanshiphangContext())
-            {
-                var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == id);
-                if (pack == null) return false;
 
-                pack.TransID = transId;
-                db.Update(pack);
-                return db.SaveChanges() > 0;
-            }
-        }
         public static DataReturnModel<bool> InStockHCMWareHouse(tmpInStock data, string accessor)
         {
             using (var db = new nhanshiphangContext())
@@ -627,7 +591,7 @@ namespace KGQT.Business
 
                     var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
                     tbl_Account user = null;
-                    if (!string.IsNullOrEmpty(data.Username) && pack.Username != data.Username)
+                    if (!string.IsNullOrEmpty(data.Username))
                     {
                         user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.Username.ToLower());
                         pack.Username = data.Username;
@@ -683,10 +647,13 @@ namespace KGQT.Business
                     pack.ModifiedDate = DateTime.Now;
                     pack.ImportedSGWH = DateTime.Now;
 
+                    if (data.Date != null && data.Date != DateTime.MinValue)
+                        pack.ImportedSGWH = data.Date.AddHours(7);
+
                     if (pack.MovingMethod < 3)
                     {
                         var maxWeight = data.Weight * (25 / (float)100);
-                        if (data.WeightExchange > (data.Weight + maxWeight) || data.WeightExchange > (data.Weight + 1))
+                        if (data.WeightExchange > data.Weight || (data.WeightExchange > (data.Weight + maxWeight)) || data.WeightExchange > (data.Weight + 1))
                             pack.WeightReal = data.WeightExchange.ToString();
                         else
                             pack.WeightReal = Converted.ToDouble(data.Weight).ToString();
@@ -725,15 +692,16 @@ namespace KGQT.Business
                             cnExportDateFrom = pack.ExportedCNWH.Value.Date;
                         else
                             pack.ExportedCNWH = cnExportDateFrom;
-                        DateTime cnExportDateEnd = pack.ExportedCNWH.Value.AddDays(1).AddTicks(-1);
-                        DateTime startDate = DateTime.Now.Date; //One day 
+
+                        DateTime cnExportDateEnd = cnExportDateFrom.AddDays(1).AddTicks(-1);
+                        DateTime startDate = pack.ImportedSGWH.Value.Date; //One day 
                         DateTime endDate = startDate.AddDays(1).AddTicks(-1);
                         tbl_ShippingOrder check = null;
 
                         if (!string.IsNullOrEmpty(pack.TransID))
                             check = ShippingOrder.GetOne(pack.TransID);
 
-                        if (check == null)
+                        if (check == null || (check != null && check.Username != pack.Username))
                             check = ShippingOrder.CheckOrderInStock(pack.Username, pack.MovingMethod, startDate, endDate, cnExportDateFrom, cnExportDateEnd);
 
                         if (check != null)
@@ -808,6 +776,8 @@ namespace KGQT.Business
                             db.Update(check);
                             if (db.SaveChanges() > 0)
                             {
+                                ShippingOrder.UpdateByPackageChanged(pack, accessor);
+
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
                                 return dt;
@@ -868,7 +838,8 @@ namespace KGQT.Business
                                     oPack.TransID = ship.RecID;
                                     oPack.ModifiedBy = accessor;
                                     oPack.ModifiedDate = DateTime.Now;
-                                    BusinessBase.Update(oPack);
+                                    if (BusinessBase.Update(oPack))
+                                        ShippingOrder.UpdateByPackageChanged(oPack, accessor);
                                 }
                                 string message = "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM";
                                 NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
@@ -892,6 +863,18 @@ namespace KGQT.Business
             }
         }
 
+        public static bool UpdateTrans(int id, string transId)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == id);
+                if (pack == null) return false;
+
+                pack.TransID = transId;
+                db.Update(pack);
+                return db.SaveChanges() > 0;
+            }
+        }
         public static DateTime CaclDateExpectation(tbl_Package item)
         {
             var dt = DateTime.Now;
@@ -972,8 +955,18 @@ namespace KGQT.Business
                                         lstError.Add(new tempExport { Row = row, Column = 3 });
                                         continue;
                                     }
-
+                                    int movingMethod = 1;
                                     int type = Converted.ToInt(dt.Rows[row][2].ToString());
+                                    if (type == 3)
+                                        movingMethod = 1;
+                                    if (type == 5)
+                                        movingMethod = 2;
+                                    if (type == 8)
+                                        movingMethod = 3;
+                                    if (type == 15)
+                                        movingMethod = 4;
+                                    if (type == 20)
+                                        movingMethod = 5;
                                     string note = dt.Rows[row][4].ToString();
                                     var date = DateTime.Parse(dt.Rows[row][0].ToString());
                                     var dateExp = DateTime.Now;
@@ -988,6 +981,7 @@ namespace KGQT.Business
                                         if (oExist.Status <= 3)
                                         {
                                             oExist.Status = 3;
+                                            oExist.MovingMethod = movingMethod;
                                             oExist.Note = note;
                                             oExist.Status = 3;
                                             oExist.BigPackage = big.ID;
@@ -1016,16 +1010,7 @@ namespace KGQT.Business
                                         p.FullName = user.FullName;
                                     }
 
-                                    if (type == 3)
-                                        p.MovingMethod = 1;
-                                    if (type == 5)
-                                        p.MovingMethod = 2;
-                                    if (type == 8)
-                                        p.MovingMethod = 3;
-                                    if (type == 15)
-                                        p.MovingMethod = 4;
-                                    if (type == 20)
-                                        p.MovingMethod = 5;
+                                    p.MovingMethod = movingMethod;
                                     p.PackageCode = code;
                                     p.Note = note;
                                     p.Status = 3;

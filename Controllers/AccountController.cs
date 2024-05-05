@@ -12,7 +12,7 @@ namespace KGQT.Controllers
         #region Info
         public IActionResult Info()
         {
-            var userName = HttpContext.Session.GetString("user");
+            var userName = HttpContext.Request.Cookies["user"];
             var accInfo = AccountBusiness.GetInfo(-1,userName);
             ViewData["userName"] = userName;
             ViewData["lstRoles"] = AccountBusiness.GetListUserRole();

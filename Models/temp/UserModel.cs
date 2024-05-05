@@ -95,7 +95,6 @@ namespace KGQT.Models.temp
         public string? Path { get; set; }
         public string Base64String { get; set; }
         public string FileName { get; set; }
-
     }
 
     public class RequestModel

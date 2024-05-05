@@ -202,6 +202,13 @@ namespace KGQT.Business
                 if (ship == null) return;
 
                 var packages = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();
+                if (packages.Count == 0)
+                {
+                    db.Remove(ship);
+                    db.SaveChanges();
+                    return;
+                }
+
                 var config = db.tbl_Configurations.FirstOrDefault();
                 var lstFee = db.tbl_FeeWeights.Where(x => x.Type == ship.ShippingMethod).ToList();
                 if (lstFee == null || lstFee.Count == 0) return;
@@ -269,6 +276,20 @@ namespace KGQT.Business
                 ship.ModifiedDate = DateTime.Now;
                 db.tbl_ShippingOrders.Update(ship);
                 db.SaveChanges();
+                return;
+            }
+        }
+
+        public static void UpdateByPackageChanged(tbl_Package p, string accessor)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var lstOrder = db.tbl_ShippingOrders.Where(x => x.PackageCode.Contains(p.PackageCode)).ToList();
+                foreach(var item in lstOrder)
+                {
+                    if(item.RecID != p.TransID)
+                        CalculatorAllPrice(item.RecID, accessor);
+                }
                 return;
             }
         }

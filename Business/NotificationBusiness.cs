@@ -1,4 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
+using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using OfficeOpenXml.Table.PivotTable;
 using System.Security.Cryptography.Pkcs;
@@ -70,6 +72,11 @@ namespace KGQT.Business
                         data.Url = GetUrlDefault(data.ID, isForAdmin);
                         db.Update(data);
                         db.SaveChanges();
+                    }
+                    var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == reciverID);
+                    if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
+                    {
+                        await Helper.SendFCMAsync(message, user.TokenDevice, null);
                     }
                     return true;
                 }

@@ -4,7 +4,7 @@
 @using KGQT.Models;
 @using Newtonsoft.Json;
 @{
-    var sUser = Context.Session.GetString("user");
+    var sUser = Context.Request.Cookies["user"];
     tbl_Account user = null;
     var lstNoti = new List<tbl_Notification>();
     int pageNoti = 1;

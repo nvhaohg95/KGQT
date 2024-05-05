@@ -38,7 +38,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public JsonResult Create(tbl_FeeWeight form)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var user = AccountBusiness.GetInfo(-1, userLogin);
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = user.Username;
@@ -86,7 +86,7 @@ namespace KGQT.Areas.Admin.Controllers
         #region Update
         public bool Update(tbl_FeeWeight model)
         {
-            var userLogin = HttpContext.Session.GetString("user");
+            var userLogin = HttpContext.Request.Cookies["user"];
             var user = AccountBusiness.GetInfo(-1, userLogin);
             if (model == null || user == null) return false;
             var result = FeeWeightBusiness.Update(model, user.UserID);
