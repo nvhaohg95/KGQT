@@ -53,6 +53,12 @@ namespace KGQT.Mobility
                 if (!result.IsError)
                 {
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                    if(user == null)
+                    {
+                        oRequest.IsError = true;
+                        oRequest.Message = "Người dùng không tồn tại. Vui lòng thử lại!";
+                        return oRequest;
+                    }
                     if (user.IsActive == false)
                     {
                         oRequest.IsError = true;
@@ -879,6 +885,29 @@ namespace KGQT.Mobility
                     oRequest.Data = false;
                     return oRequest;
                 }
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+        #endregion
+
+        #region FeeWeight
+        [HttpPost]
+        [Route("getfeeweight")]
+        public object GetFeeWeight()
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<List<tbl_FeeWeight>>();
+                List<tbl_FeeWeight> result = BusinessBase.Get<tbl_FeeWeight>().ToList();
+                oRequest.IsError = false;
+                oRequest.Data = result;
+                return oRequest;
             }
             catch (Exception)
             {
