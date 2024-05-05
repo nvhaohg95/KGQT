@@ -1,6 +1,30 @@
 ﻿/*Base*/
-        .bg-nsh2:hover, .bg-nsh2:focus, .hover-nsh2:hover, .hover-nsh2:hover {
-        .bg-nsh2:hover, .bg-nsh2:focus, .hover-nsh2:hover, .hover-nsh2:hover, {
+.bg-nsh1 {
+    background: #f5b821;
+    border: #f5b821;
+    color: white;
+}
+
+    .bg-nsh1:hover, .bg-nsh1:focus, .hover-nsh1:hover, .hover-nsh1:focus {
+        background: #f5b821 !important;
+        color: white !important;
+    }
+
+    .bg-nsh2 {
+        background: #008cd0;
+        border: #008cd0;
+        color: white;
+    }
+        .bg-nsh2:hover, .bg-nsh2:focus, .hover-nsh2:hover, .hover-nsh2:focus{
+            background: #008cd0 !important;
+            color: white !important;
+        }
+
+.editable {
+   height: 80px;
+    padding: 5px;
+    overflow-y:scroll;
+}
 
 .w-50px {
     width: 50px !important;

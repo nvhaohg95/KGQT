@@ -83,9 +83,6 @@
                                 Vận chuyển
                             </th>
                             <th class="text-center">
-                                Dịch vụ
-                            </th>
-                            <th class="text-center">
                                 Trạng thái
                             </th>
                             <th class="text-center">
@@ -101,50 +98,25 @@
                         @foreach (var item in Model)
                         {
                             <tr class="table-light font-weight-normal py-2">
-                                <td class="text-left align-middle">
+                                <td class="text-left ">
                                     @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                 </td>
-                                <td class="text-left w-300px text-break">
+                                <td class="text-left w-300px d-block text-break">
                                         @item.PackageCode
                                 </td>
-                                <td class="text-center align-middle">
+                                <td class="text-center ">
                                     @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                 </td>
-                                <td class="text-left align-middle w-200px">
-                                    <div class="form-group mb-0">
-                                        @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                        {
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" checked>
-                                                <label class="form-check-label" for="cbPack">Đóng gỗ</label>
-                                            </div>
-                                        }
-                                        @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                        {
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" checked>
-                                                <label class="form-check-label" for="cbAirbag">Túi khí</label>
-                                            </div>
-                                        }
-                                        @if (item.InsurancePrice != null && item.IsInsurance == true)
-                                        {
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" checked>
-                                                <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
-                                            </div>
-                                        }
-                                    </div>
-                                </td>
-                                <td class="text-center align-middle w-200px">
+                                <td class="text-center  w-200px d-block">
                                     @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                 </td>
-                                <td class="text-center align-middle">
+                                <td class="text-center ">
                                     @Converted.String2Money(item.TotalPrice)
                                 </td>
-                                <td class="text-center align-middle">
+                                <td class="text-center  w-200px d-block">
                                     @Html.DisplayFor(modelItem => item.CreatedDate)
                                 </td>
-                                <td class="text-center align-middle">
+                                <td class="text-center ">
                                     <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.ID">
                                         <i class="far fa-edit"></i>
                                         <span>Xem</span>

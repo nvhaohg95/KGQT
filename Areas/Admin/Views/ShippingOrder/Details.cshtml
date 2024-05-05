@@ -51,10 +51,10 @@
                     {
                         <div class="card shadow-0 border mb-4">
                             <div class="card-body p-0 py-0">
-                                <div class="row mx-0 py-2 border-bottom bg-success text-white">
+                                <div class="row mx-0 py-2 border-bottom bg-nsh2">
                                     <div class="col-md-6 my-auto">
                                         <span class="cursor-pointer">
-                                            <a href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
+                                            <a class="text-white" href="/admin/package/details?id=@item.ID">@item.PackageCode</a>
                                             <span class="btn-copy" data-value="@item.PackageCode">
                                                 <i class="fa fa-copy"></i>
                                             </span>
@@ -278,6 +278,15 @@
 
                                             </div>
                                         }
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(item.Note))
+                                {
+                                    <div class="row p-2 mx-0 my-2">
+                                        <div class="form-group mb-2">
+                                            <label>Mô tả</label>
+                                            <div contenteditable="true" class="form-control editable" readonly="readonly">@Html.Raw(item.Note)</div>
+                                        </div>
                                     </div>
                                 }
                             </div>

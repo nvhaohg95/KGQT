@@ -83,7 +83,7 @@
                 </div>
                 <div class="col-12 mt-2">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-sm">
+                        <table class="table table-hover table-sm">
                             <thead class="thead-light">
                                 <tr class="font-weight-normal">
                                     <th class="text-center" scope="col">
@@ -97,9 +97,6 @@
                                     </th>
                                     <th class="text-center" scope="col">
                                         Vận chuyển
-                                    </th>
-                                    <th class="text-center">
-                                        Dịch vụ
                                     </th>
                                     <th class="text-center">
                                         Trạng thái
@@ -121,47 +118,22 @@
                                             @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                         </td>
 
-                                        <td class="text-center  align-middle">
+                                        <td class="text-center  ">
                                             @Html.DisplayFor(modelItem => item.Username)
                                         </td>
-                                        <td class="text-left w-300px text-break">
+                                        <td class="text-left w-300px d-flex text-break">
                                                 @item.PackageCode
                                         </td>
                                         <td class="text-center">
                                             @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                         </td>
-                                        <td class="text-left w-200px  align-middle">
-                                            <div class="form-group mb-0">
-                                                @if (item.IsWoodPackage != null && item.IsWoodPackage == true)
-                                                {
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                        <label class="form-check-label" for="cbPack">Đóng gỗ</label>
-                                                    </div>
-                                                }
-                                                @if (item.IsAirPackage != null && item.IsAirPackage == true)
-                                                {
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                        <label class="form-check-label" for="cbAirbag">Túi khí</label>
-                                                    </div>
-                                                }
-                                                @if (item.InsurancePrice != null && item.IsInsurance == true)
-                                                {
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                        <label class="form-check-label" for="cbInsurance">Bảo hiểm</label>
-                                                    </div>
-                                                }
-                                            </div>
-                                        </td>
-                                        <td class="text-center w-200px  align-middle">
+                                        <td class="text-center w-200px d-flex ">
                                             @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                         </td>
-                                        <td class="text-center  align-middle">
+                                        <td class="text-center  ">
                                             @Converted.String2Money(item.TotalPrice)
                                         </td>
-                                        <td class="text-center  align-middle">
+                                        <td class="text-center   w-200px d-flex">
                                             @Html.DisplayFor(modelItem => item.CreatedDate)
                                         </td>
                                         <td class="text-center">

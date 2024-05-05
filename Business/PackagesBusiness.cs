@@ -130,7 +130,8 @@ namespace KGQT.Business
                         IsBrand = p.pack.IsBrand,
                         SearchBaiduTimes = p.pack.SearchBaiduTimes,
                         WareHouse = p.pack.WareHouse,
-                        CreatedDate = p.pack.CreatedDate
+                        CreatedDate = p.pack.CreatedDate,
+                        Note = p.pack.Note
                     }).ToList();
 
                 }
@@ -1169,7 +1170,9 @@ namespace KGQT.Business
                 return data;
             }
         }
+        #endregion
 
+        #region Function
         public static double GetExchangeWeight(int type, tmpInStock data)
         {
             double? w = 0;
@@ -1189,6 +1192,30 @@ namespace KGQT.Business
                     break;
             }
             return Converted.ToDouble(w);
+        }
+        public static DataReturnModel<bool> SaveNote(int id, string note, string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var data = new DataReturnModel<bool>();
+                var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == id);
+                if (pack != null)
+                {
+                    pack.Note = note;
+                    pack.ModifiedBy = username;
+                    pack.ModifiedDate = DateTime.Now;
+                    db.Update(pack);
+                    if (db.SaveChanges() > 0)
+                    {
+                        data.IsError = false;
+                        data.Message = "Cập nhật ghi chú thành công!";
+                        return data;
+                    }
+                }
+                data.IsError = true;
+                data.Message = "Cập nhật thành công, vui lòng thử lại !";
+                return data;
+            }
         }
     }
     #endregion

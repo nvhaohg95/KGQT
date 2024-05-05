@@ -328,9 +328,29 @@ namespace KGQT.Areas.Admin.Controllers
             return false;
         }
 
+        /// <summary>
+        /// Xuất file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="data"></param>
         public void ExportFile(IFormFile file, List<tempExport> data)
         {
             PJUtils.MarkupValueExcel(file, file.FileName, data);
+        }
+
+
+        /// <summary>
+        /// Thêm ghi chú
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public DataReturnModel<bool> SaveNote(int id, string note)
+        {
+           string username = HttpContext.Request.Cookies["user"];
+            var dt = PackagesBusiness.SaveNote(id, note, username);
+            return dt;
         }
         #endregion
     }

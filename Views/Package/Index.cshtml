@@ -23,31 +23,31 @@
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <ul class="nav">
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light @(status == -1 || status == 0 ? "bg-danger text-white" : "")" onclick="sort(0)">Tất cả</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == -1 || status == 0 ? "bg-nsh1 text-white" : "")" onclick="sort(0)">Tất cả</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 1? "bg-danger text-white" : "")" onclick="sort(1)">Chưa xác nhận</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1  @(status == 1? "bg-nsh1 text-white" : "")" onclick="sort(1)">Chưa xác nhận</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 2? "bg-danger text-white" : "")" onclick="sort(2)">Hàng về kho TQ</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 2? "bg-nsh1 text-white" : "")" onclick="sort(2)">Hàng về kho TQ</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 3? "bg-danger text-white" : "")" onclick="sort(3)">Đang trên đường về HCM</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 3? "bg-nsh1 text-white" : "")" onclick="sort(3)">Đang trên đường về HCM</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 4? "bg-danger text-white" : "")" onclick="sort(4)">Hàng về tới HCM</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 4? "bg-nsh1 text-white" : "")" onclick="sort(4)">Hàng về tới HCM</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 5 ? "bg-danger text-white" : "")" onclick="sort(5)">Đã nhận hàng</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 5 ? "bg-nsh1 text-white" : "")" onclick="sort(5)">Đã nhận hàng</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 9 ? "bg-danger text-white" : "")" onclick="sort(9)">Đã hủy</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 9 ? "bg-nsh1 text-white" : "")" onclick="sort(9)">Đã hủy</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 10 ? "bg-danger text-white" : "")" onclick="sort(10)">Thất lạc</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 10 ? "bg-nsh1 text-white" : "")" onclick="sort(10)">Thất lạc</a>
                     </li>
                     <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light  @(status == 11 ? "bg-danger text-white" : "")" onclick="sort(11)">Không nhận được hàng</a>
+                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 11 ? "bg-nsh1 text-white" : "")" onclick="sort(11)">Không nhận được hàng</a>
                     </li>
                 </ul>
             </div>
@@ -85,7 +85,7 @@
                 <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách kiện ký gửi</h3>
             </div>
             <div class="col-md-6 col-sm-12 mb-2 text-md-right text-center">
-                <a href="/package/create" class="btn btn-success btn-sm pointer-event">Thêm Mã Vận Đơn</a>
+                <a href="/package/create" class="btn bg-nsh1 btn-sm pointer-event">Thêm Mã Vận Đơn</a>
             </div>
         </div>
         @foreach (var item in Model)
@@ -93,26 +93,32 @@
             <div class="card shadow-0 border mb-1">
                 <div class="card-body p-0">
                     <input type="text" hidden value="@item.PackageCode" class="package-code">
-                    <div class="row mx-0 py-2 border-bottom bg-success text-white">
-                        <div class="col-lg-5 col-md-5 col-sm-12 my-auto">
-                            <span class="cursor-pointer">
-                                <a href="/package/details?id=@item.ID" class="text-white">@item.PackageCode</a>
-                                <span class="btn-copy" data-value="@item.PackageCode">
-                                    <i class="fa fa-copy"></i>
+                    <div class="row mx-0 py-2 border-bottom bg-nsh2 text-white">
+                        <div class="px-0 col-lg-4 col-md-4 col-sm-12 my-auto">
+                            <div class="col-md-12 col-sm-12">
+                                <span class="cursor-pointer">
+                                    <a href="/admin/package/details?id=@item.ID" class="text-white">@item.PackageCode</a>
+                                    <span class="btn-copy" data-value="@item.PackageCode">
+                                        <i class="fa fa-copy"></i>
+                                    </span>
                                 </span>
-                            </span>
-                            <span class="mx-2"> - </span>
-                            <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.WareHouse))
+                            {
+                                <div class="col-md-12 col-sm-12">
+                                    <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                                </div>
+                            }
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
                             <span>Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
+                        <div class="col-lg-4 col-md-4 col-sm-12  m-auto text-md-right">
                             @if (item.Status < 2)
                             {
-                                <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
-                                <button type="button" onclick="cancel(@item.ID)" class="btn btn-sm bg-dark text-white float-right  mr-2">Hủy đơn</button>
-                                <button class="btn-sm btn bg-danger text-white" onclick="Delete(@item.ID)">Xóa</button>
+                                <button class="btn-sm btn bg-orange text-white mr-2 mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
+                                <button type="button" onclick="cancel(@item.ID) mt-2" class="btn btn-sm bg-dark text-white float-right  mr-2">Hủy đơn</button>
+                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)">Xóa</button>
                             }
                         </div>
                     </div>
@@ -209,6 +215,17 @@
                             </ul>
                         </div>
                     </div>
+                    @if (!string.IsNullOrEmpty(item.Note))
+                    {
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 px-4 mb-2">
+                                <div class="form-group mb-2">
+                                    <label>Mô tả</label>
+                                    <div contenteditable="true" class="form-control editable" readonly="readonly">@Html.Raw(item.Note)</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         }

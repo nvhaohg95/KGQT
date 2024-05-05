@@ -22,10 +22,10 @@
 <div class="row bg-white py-1">
     <form class="col-lg-12 col-md-12 col-sm-12" id="myform" method="get">
         <div class="row">
-            <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
                 @Html.TextBoxFor(model => ID,"",new { @type="search", @class="form-control", @placeholder="Nhập mã đơn hàng" })
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="col-lg-3 col-md-3 col-sm-12 mt-2">
                 <select name="Status" id="Status" class="form-control">
                     <option value="0" selected="@(status == 0)">Tất cả</option>
                     <option value="1" selected="@(status == 1)">Chưa xác nhận</option>
@@ -38,19 +38,19 @@
                     <option value="11" selected="@(status == 11)">Không nhận được hàng</option>
                 </select>
             </div>
-            <div class="col-lg-4 col-md-12 col-sm-12">
+            <div class="col-lg-4 col-md-12 col-sm-12 ">
                 <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mt-2">
                         <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
                                onblur="(this.type='text')" />
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mt-2">
                         <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
                                onblur="(this.type='text')" />
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end">
+            <div class="col-lg-2 col-md-2 col-sm-12 d-flex align-items-end justify-content-end mt-2">
                 <div class="d-flex align-items-center justify-content-end">
                     <a href="Index" class="btn btn-sm btn-info mr-2 w-100px">
                         <i class="fas fa-sync fa-xs mr-2"></i>Làm mới
@@ -66,13 +66,13 @@
         <div class="py-2">
             <!--Start::Thông tin kiện-->
             <div class="row mb-2">
-                <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="col-lg-6 col-md-6 col-sm-12  mt-2">
                     <h3 class="lead fw-bold mb-0 text-danger text-uppercase">DANH SÁCH KIỆN</h3>
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-12 text-md-right text-center">
-                    <div class="d-flex align-items-center justify-content-end">
-                        <a href="/Admin/Package/Create" class="btn btn-sm btn-success pointer-event mr-2 w-100px"><i class="fas fa-plus"></i>&nbspThêm</a>
-                        <button class="btn btn-sm btn-info pointer-event" data-toggle="modal" data-target="#import"><i class="fas fa-file-excel mr-2"></i>Import file</button>
+                <div class="col-lg-6 col-md-6 col-sm-12 text-md-right mt-2">
+                    <div>
+                        <a href="/Admin/Package/Create" class="btn btn-sm bg-nsh1 pointer-event mr-2 w-100px"><i class="fas fa-plus"></i>&nbspThêm</a>
+                        <button class="btn btn-sm bg-nsh2 pointer-event" data-toggle="modal" data-target="#import"><i class="fas fa-file-excel mr-2"></i>Import file</button>
                     </div>
                 </div>
             </div>
@@ -81,41 +81,48 @@
                 <div class="card shadow-0 border mb-1">
                     <div class="card-body p-0">
                         <input type="text" hidden value="@item.PackageCode" class="package-code">
-                        <div class="row mx-0 py-2 border-bottom bg-success text-white">
-                            <div class="col-lg-5 col-md-5 col-sm-12 my-auto">
-                                <span class="cursor-pointer">
-                                    <a href="/admin/package/details?id=@item.ID" class="text-white">@item.PackageCode</a>
-                                    <span class="btn-copy" data-value="@item.PackageCode">
-                                        <i class="fa fa-copy"></i>
+                        <div class="row mx-0 py-2 border-bottom bg-nsh2 text-white">
+                            <div class="px-0 col-lg-4 col-md-4 col-sm-12 my-auto">
+                                <div class="col-md-12 col-sm-12">
+                                    <span class="cursor-pointer">
+                                        <a href="/admin/package/details?id=@item.ID" class="text-white">@item.PackageCode</a>
+                                        <span class="btn-copy" data-value="@item.PackageCode">
+                                            <i class="fa fa-copy"></i>
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mx-2"> - </span>
-                                <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.WareHouse))
+                                {
+                                    <div class="col-md-12 col-sm-12">
+                                        <span>Kho nhận: @PJUtils.WareHouse(item.WareHouse)</span>
+                                    </div>
+                                }
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
+                            <div class="col-lg-4 col-md-4 col-sm-12 my-auto">
                                 <span>Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
+                            <div class="col-lg-4 col-md-4 col-sm-12 m-auto text-md-right">
                                 @if (item.Status != 5)
                                 {
-                                    <a href="/admin/package/edit?id=@item.ID" class="btn btn-sm bg-warning text-white mr-2">Chỉnh sửa</a>
+                                    <a href="/admin/package/edit?id=@item.ID" class="btn mt-2 btn-sm bg-warning text-white mr-2 ">Chỉnh sửa</a>
                                 }
                                 @if (item.Status != 5 && item.Status != 9)
                                 {
-                                    <button class="btn-sm btn bg-dark text-white mr-2" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                    <button class="btn-sm btn bg-dark text-white mr-2 mt-2" onclick="cancel(@item.ID)">Hủy đơn</button>
                                 }
                                 @if (item.Status < 2)
                                 {
-                                    <button class="btn-sm btn bg-orange text-white mr-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
+                                    <button class="btn-sm btn bg-orange text-white mr-2 mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
                                 }
                                 @if (item.Status == 3)
                                 {
-                                    <button class="btn-sm btn bg-info text-white mr-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
+                                    <button class="btn-sm btn bg-info text-white mr-2 mt-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
                                 }
                                 @if (item.Status != 5)
                                 {
-                                    <button class="btn-sm btn bg-danger text-white mr-2" onclick="Delete(@item.ID)">Xóa</button>
+                                    <button class="btn-sm btn bg-danger text-white mr-2 mt-2" onclick="Delete(@item.ID)">Xóa</button>
                                 }
+                                <button class="btn-sm btn bg-success text-white mr-2 mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
                             </div>
                         </div>
                         <div class="row">
@@ -196,36 +203,48 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
-                                    @if (item.ReceivedDate != null)
-                                    {
-                                        <li class="ml-4">
-                                            <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
-                                        </li>
-                                    }
+                            @if (item.ExportedCNWH != null)
+                            {
+                                <div class="col-md-4">
+                                    <ul class="my-2 mr-2 my-2 row col-md-12 col-sm-12 col-xs-12 float-md-right scroll-y-80 timeline">
+                                        @if (item.ReceivedDate != null)
+                                        {
+                                            <li class="ml-4">
+                                                <span>Đã nhận hàng - @item.ReceivedDate.Value.ToString("dd/MM/yyyy")</span>
+                                            </li>
+                                        }
 
-                                    @if (item.ImportedSGWH != null)
-                                    {
-                                        <li class="ml-4">
-                                            <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
-                                        </li>
-                                    }
+                                        @if (item.ImportedSGWH != null)
+                                        {
+                                            <li class="ml-4">
+                                                <span>Đã về kho HCM - @item.ImportedSGWH.Value.ToString("dd/MM/yyyy")</span>
+                                            </li>
+                                        }
 
-                                    @if (!string.IsNullOrEmpty(item.DateExpectation))
-                                    {
-                                        <li class="ml-4">
-                                            <span>Đang trên đường về HCM - @item.DateExpectation</span>
-                                        </li>
-                                    }
+                                        @if (!string.IsNullOrEmpty(item.DateExpectation))
+                                        {
+                                            <li class="ml-4">
+                                                <span>Đang trên đường về HCM - @item.DateExpectation</span>
+                                            </li>
+                                        }
 
-                                    @if (item.ExportedCNWH != null)
-                                    {
-                                        <li class="ml-4">
-                                            <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
-                                        </li>
-                                    }
-                                </ul>
+                                        @if (item.ExportedCNWH != null)
+                                        {
+                                            <li class="ml-4">
+                                                <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                        <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
+                            <div class="col-md-12 col-sm-12 px-4 mb-2">
+                                <div class="form-group mb-2">
+                                    <label>Mô tả</label>
+                                    <div contenteditable="true" class="form-control editable" readonly="readonly" id="note@(item.ID)" rows="2">@Html.Raw(item.Note)</div>
+                                </div>
+                                <button type="button" class="btn bg-nsh1 d-none" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
                             </div>
                         </div>
                     </div>
@@ -569,6 +588,38 @@
     }
     //<!--------------End: Nhập kho---------------->
 
+    function addNote(id) {
+        $('#divNote' + id).removeClass('d-none');
+        $('#note' + id).removeAttr('readonly');
+        $('#btnNote' + id).removeClass('d-none');
+        $('#note' + id).focus();
+    }
+
+    function saveNote(id) {
+        let note = $('#note' + id).html();
+        $.ajax({
+            url: '/admin/Package/SaveNote',
+            method: 'POST',
+            dataType: 'json',
+            data: { id, note },
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (res) {
+                if (res){
+                    $('#note' + id).attr('readonly', 'readonly');
+                    $('#btnNote' + id).addClass('d-none');
+                    helper.showSuc("Cập nhật thành công",false);
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            },
+            complete: function () {
+                stopLoading(true);
+            },
+        })
+    }
 
     function checkStatus(code, times) {
         $.ajax({
