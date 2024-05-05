@@ -38,7 +38,7 @@ namespace KGQT.Business
             }
         }
         
-        public static bool Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, int notiType,string url, string createdBy, bool isForAdmin = false)
+        public static bool Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType,string url, string createdBy, bool isForAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -52,6 +52,7 @@ namespace KGQT.Business
                     OrderID = orderID,
                     OrderCode = orderCode,
                     Message = message,
+                    Message2 = messageMobile,
                     IsForAdmin = isForAdmin,
                     NotifType = notiType,
                     Status = 0,
