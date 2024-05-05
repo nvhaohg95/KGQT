@@ -29,9 +29,10 @@ namespace KGQT.Business
                     var user = AccountBusiness.GetInfo(-1, data.CreatedBy);
                     if (user != null)
                     {
-                        string message = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> đã gửi khiếu nại.",user.FullName);
+                        string message = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> đã gửi 1 khiếu nại.", user.FullName);
+                        string message2 = string.Format("Khách hàng {0} đã gửi 1 khiếu nại.",user.FullName);
                         string url = string.Format("/Admin/Complain/Index?ID={0}",data.ID);
-                        NotificationBusiness.Insert(user.ID, user.FullName, -1, "Admin", -1, data.TransId, message, 5, url, user.Username,true);
+                        NotificationBusiness.Insert(user.ID, user.FullName, -1, "Admin", -1, data.TransId, message, message2, 5, url, user.Username,true);
                     }
                 }
                 else
@@ -123,7 +124,7 @@ namespace KGQT.Business
                             else if(status == 3)
                                 message = "Đơn khiếu nại của bạn đã bị từ chối.";
                             string url = "/Complain/Index";
-                            NotificationBusiness.Insert(admin.ID, "Admin", user.ID, user.FullName, -1, data.TransId, message, 5, "", admin.Username);
+                            NotificationBusiness.Insert(admin.ID, "Admin", user.ID, user.FullName, -1, data.TransId, message, message, 5, "", admin.Username);
                         }    
                     }
                     else

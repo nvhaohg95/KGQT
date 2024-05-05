@@ -842,9 +842,8 @@ namespace KGQT.Business
                                     if (BusinessBase.Update(oPack))
                                         ShippingOrder.UpdateByPackageChanged(oPack, accessor);
                                 }
-
-
-                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM", 1, "/ShippingOrder/Details/" + ship.ID, accessor);
+                                string message = "Đơn hàng " + ship.ShippingOrderCode + " đã nhập kho HCM";
+                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
                                 return dt;

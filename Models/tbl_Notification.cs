@@ -13,6 +13,7 @@ namespace KGQT.Models
         public int? OrderID { get; set; }
         public string? OrderCode { get; set; }
         public string? Message { get; set; }
+        public string? Message2 { get; set; } // view mobile
         /// <summary>
         /// 0. chưa đọc
         /// 1. đã xem
@@ -42,5 +43,7 @@ namespace KGQT.Models
         public bool? IsWait { get; set; }
         public int? ComplainID { get; set; }
         public string? Url { get; set; }
+        
+
     }
 }
