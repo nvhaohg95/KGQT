@@ -40,7 +40,7 @@ namespace KGQT.Business
             }
         }
         
-        public static bool Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType,string url, string createdBy, bool isForAdmin = false)
+        public async static Task<bool> Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType,string url, string createdBy, bool isForAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
