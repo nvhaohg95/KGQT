@@ -94,7 +94,7 @@
                 <div class="card-body p-0">
                     <input type="text" hidden value="@item.PackageCode" class="package-code">
                     <div class="row mx-0 py-2 border-bottom bg-nsh2 text-white">
-                        <div class="px-0 col-lg-4 col-md-4 col-sm-12 my-auto">
+                        <div class="px-0 col-lg-3 col-md-3 col-sm-12 my-auto">
                             <div class="col-md-12 col-sm-12">
                                 <span class="cursor-pointer">
                                     <a href="/admin/package/details?id=@item.ID" class="text-white">@item.PackageCode</a>
@@ -111,20 +111,29 @@
                             }
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
-                            <span>Ngày lên đơn:  &nbsp;<strong class=" mb-0"> @(item.OrderDate.Value.ToString("dd/MM/yyyy"))</strong></span>
+                            <div class="col-md-12 col-md-sm-12 px-0">Ngày lên đơn:  </div>
+                            <div class="col-md-12 col-md-sm-12 px-0">
+                                @(item.OrderDate.Value.ToString("dd/MM/yyyy"))
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-12  m-auto text-md-right">
+                        <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
+                            <div class="form-group mb-2 @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")">
+                                <label class="mb-0">Mô tả</label>
+                                <textarea class="form-control p-1 h-32px" readonly="readonly">@item.Note</textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-12  m-auto text-md-right">
                             @if (item.Status < 2)
                             {
-                                <button class="btn-sm btn bg-orange text-white mr-2 mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
-                                <button type="button" onclick="cancel(@item.ID) mt-2" class="btn btn-sm bg-dark text-white float-right  mr-2">Hủy đơn</button>
-                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)">Xóa</button>
+                                <button class="btn-sm btn bg-orange text-white mr-2 mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
+                                <button class="btn btn-sm bg-dark text-white mr-2 mt-2" type="button" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)" type="button">Xóa</button>
                             }
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-8">
-                            <div class="row p-2 mx-0 mt-2">
+                            <div class="row px-2 mx-0 mt-2">
                                 <div class="col-md-3 col-sm-12 col-xs-12">
                                     <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
                                 </div>
@@ -215,7 +224,7 @@
                             </ul>
                         </div>
                     </div>
-                    @if (!string.IsNullOrEmpty(item.Note))
+                   @* @if (!string.IsNullOrEmpty(item.Note))
                     {
                         <div class="row">
                             <div class="col-md-12 col-sm-12 px-4 mb-2">
@@ -225,7 +234,7 @@
                                 </div>
                             </div>
                         </div>
-                    }
+                    }*@
                 </div>
             </div>
         }

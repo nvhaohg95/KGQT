@@ -76,7 +76,7 @@ namespace KGQT.Business
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == reciverID);
                     if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
                     {
-                        await Helper.SendFCMAsync(message, user.TokenDevice, null);
+                        Helper.SendFCMAsync(message, user.TokenDevice, null);
                     }
                     return true;
                 }

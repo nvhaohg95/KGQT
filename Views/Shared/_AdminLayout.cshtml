@@ -46,9 +46,9 @@
     <!-- Custom fonts for this template-->
     <link href="~/css/styles.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
-    <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
-    <link href="~/styles/admin.css" rel="stylesheet" type="text/css">
-    <link href="~/styles/custom.css" rel="stylesheet" type="text/css">
+    <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css" asp-append-version="true">
+    <link href="~/styles/admin.css" rel="stylesheet" type="text/css" asp-append-version="true">
+    <link href="~/styles/custom.css" rel="stylesheet" type="text/css" asp-append-version="true">
     <link href="~/vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
     <link href="~/css/sweetalert2.css" rel="stylesheet" type="text/css" />
     <link href="~/vendor/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
@@ -68,8 +68,8 @@
     @await RenderSectionAsync("Scripts", required: false)
     @await Component.InvokeAsync("NToastNotify")
     <script src="~/js/sweetalert2.min.js"></script>
-    <script src="~/js/base.js"></script>
-    <script src="~/js/helper.js" type="text/javascript"></script>
+    <script src="~/js/base.js" asp-append-version="true"></script>
+    <script src="~/js/helper.js" type="text/javascript" asp-append-version="true"></script>
 </head>
 <body class="sb-nav-fixed" id="page-top">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark navbar-light bg-white topbar shadow">
