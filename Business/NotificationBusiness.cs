@@ -40,7 +40,7 @@ namespace KGQT.Business
             }
         }
         
-        public static bool Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType,string url, string createdBy, bool isForAdmin = false)
+        public async static Task<bool> Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType,string url, string createdBy, bool isForAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -76,7 +76,7 @@ namespace KGQT.Business
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == reciverID);
                     if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
                     {
-                        await Helper.SendFCMAsync(message, user.TokenDevice, null);
+                        await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null);
                     }
                     return true;
                 }
