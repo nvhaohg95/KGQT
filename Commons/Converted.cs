@@ -34,6 +34,13 @@ namespace KGQT.Commons
 
             return Convert.ToDouble(s);
         }
+        
+        public static double Double(this string s)
+        {
+            if (string.IsNullOrEmpty(s)) return 0;
+
+            return Convert.ToDouble(s);
+        }
         public static double ToDouble(object s)
         {
             if (s == null) return 0;

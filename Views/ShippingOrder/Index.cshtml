@@ -69,6 +69,20 @@
     </form>
     <div class="row bg-white">
         <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-md-2 col-sm-12">
+                    <div class="form-group mb-0">
+                        <label class="col-form-label">Tổng đơn:</label>
+                        <label class="col-form-label"><b>@ViewBag.total</b></label>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group mb-0">
+                        <label class="col-form-label">Tổng tiền chưa thanh toán:</label>
+                        <label class="col-form-label text-danger"><b>@Converted.Double2Money(ViewBag.totalLeft)đ</b></label>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="thead-light">
@@ -102,7 +116,7 @@
                                     @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                 </td>
                                 <td class="text-left w-300px d-block text-break">
-                                        @item.PackageCode
+                                    @item.PackageCode
                                 </td>
                                 <td class="text-center ">
                                     @Html.DisplayFor(modelItem => item.ShippingMethodName)

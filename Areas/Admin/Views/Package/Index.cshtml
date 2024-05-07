@@ -98,7 +98,7 @@
                                     </div>
                                 }
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
+                            <div class="col-lg-2 col-md-2 col-sm-12 my-auto">
                                 <div class="col-md-12 col-md-sm-12 px-0">Ngày lên đơn:  </div>
                                 <div class="col-md-12 col-md-sm-12 px-0">
                                     @(item.OrderDate.Value.ToString("dd/MM/yyyy"))
@@ -112,7 +112,7 @@
                                 </div>
                                 <button type="button" class="btn bg-nsh1 d-none" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 my-auto text-md-right">
+                            <div class="col-lg-4 col-md-4 col-sm-12 my-auto text-md-right">
                                 <button class="btn-sm btn bg-primary text-white mr-2 mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
                                 @if (item.Status != 5)
                                 {

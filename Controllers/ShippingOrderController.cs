@@ -26,6 +26,7 @@ namespace KGQT.Controllers
         {
             var userLogin = HttpContext.Request.Cookies["user"];
             var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
+            var (total, totalLeft) = ShippingOrder.GetTotalAndLeft(userLogin);
             var lstData = oData[0] as List<tbl_ShippingOrder>;
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
@@ -36,6 +37,8 @@ namespace KGQT.Controllers
             ViewBag.pageCurrent = page;
             ViewBag.numberPage = numberPage;
             ViewBag.numberRecord = numberRecord;
+            ViewBag.total = total;
+            ViewBag.totalLeft = totalLeft;
             return View(lstData);
         }
 

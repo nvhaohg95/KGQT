@@ -66,6 +66,16 @@ namespace KGQT.Business
         #endregion
 
         #region Get List
+        public static (int, double) GetTotalAndLeft(string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                IQueryable<tbl_ShippingOrder> queryable = db.tbl_ShippingOrders.Where(x => x.Username == username);
+                int total = queryable.Count();
+                double totalLeft = queryable.Where(x => x.Status == 1 || x.Status == 0).AsEnumerable().Sum(x => x.TotalPrice.Double());
+                return (total, totalLeft);
+            }
+        }
         public static object[] GetPage(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, string? userName = "")
         {
 
@@ -285,9 +295,9 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 var lstOrder = db.tbl_ShippingOrders.Where(x => x.PackageCode.Contains(p.PackageCode)).ToList();
-                foreach(var item in lstOrder)
+                foreach (var item in lstOrder)
                 {
-                    if(item.RecID != p.TransID)
+                    if (item.RecID != p.TransID)
                         CalculatorAllPrice(item.RecID, accessor);
                 }
                 return;
