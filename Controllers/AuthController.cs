@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NToastNotify;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace KGQT.Controllers
@@ -38,18 +39,36 @@ namespace KGQT.Controllers
         public ActionResult Login()
         {
             var userName = HttpContext.Request.Cookies["user"];
-            if (!string.IsNullOrEmpty(userName))
+            var tkck = HttpContext.Request.Cookies["tkck"];
+            //if (!string.IsNullOrEmpty(userName))
+            //{
+            //    var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+            //    if (user != null)
+            //    {
+            //        if (user.RoleID == 1)
+            //            return Redirect("/admin/package/index");
+            //        else
+            //            return RedirectToAction("Dashboard", "Home");
+            //    }
+            //}
+            if(!string.IsNullOrEmpty(tkck))
             {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
-                if (user != null)
+                var json = Helper.Base64Decode(tkck);
+                var userLogin = JsonConvert.DeserializeObject<UserModel>(json);
+                if (userLogin != null)
                 {
-                    if (user.RoleID == 1)
-                        return Redirect("/admin/package/index");
-                    else
-                        return RedirectToAction("Dashboard", "Home");
+                    var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                    if (account != null)
+                    {
+                        if (account.RoleID == 1)
+                            return Redirect("/admin/package/index");
+                        else
+                            return RedirectToAction("Dashboard", "Home");
+                    }
+                    return View(userLogin);
                 }
-            }
-            return View();
+            }    
+            return View(new UserModel());
         }
         [HttpPost]
         public DataReturnModel<tbl_Account> Login(UserModel model)
@@ -64,6 +83,14 @@ namespace KGQT.Controllers
                 CookieOptions options = new CookieOptions();
                 options.Expires = DateTime.Now.AddDays(30);
                 HttpContext.Response.Cookies.Append("user", model.UserName, options);
+                if(model.IsSavePassword)
+                {
+                    Response.Cookies.Delete("tkck");
+                    CookieOptions tkcookie = new CookieOptions();
+                    options.Expires = DateTime.Now.AddDays(30);
+                    string tkck = Helper.Base64Encode(JsonConvert.SerializeObject(model));
+                    HttpContext.Response.Cookies.Append("tkck", tkck, tkcookie);
+                }    
             }
             return result;
         }
@@ -74,6 +101,7 @@ namespace KGQT.Controllers
         public ActionResult Logout()
         {
             Response.Cookies.Delete("user");
+            Response.Cookies.Delete("tkck");
             return Redirect("login");
         }
         #endregion

@@ -19,21 +19,24 @@
                         <div class="col-lg-6">
                             <div class="p-0">
                                 <div class="text-center">
-                                    @*<h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng nhập</h1>*@
                                     <img src="~/img/logoshipping.png" class="w-100 h-100 mb-3 "/>
                                 </div>
                                 <form class="user" id="formLogin">
                                     <div class="form-group">
-                                        @Html.LabelFor(model => model.UserName,"Tài khoản")
-                                        @Html.TextBoxFor(model => model.UserName, new { @class="form-control form-control-user", @placeholder="Tài khoản", @type="text", @autofocus="autofocus" })
+                                        <label class="form-label" for="UserName">Tài khoản</label>
+                                        <input id="UserName" name="UserName" class="form-control form-control-user" type="text" placeholder="Tài khoản" autofocus />
                                     </div>
                                     <div class="form-group">
-                                        @Html.LabelFor(model => model.PassWord,"Mật khẩu")
-                                        <div class="position-relative">
-                                            @Html.TextBoxFor(model => model.PassWord, new { @class="form-control form-control-user", @placeholder="Mật khẩu", @type="password", @id="txtPassword"})
+                                        <div class="position-relative mb-2">
+                                            <label class="form-label" for="PassWord">Mật khẩu</label>
+                                            <input id="txtPassword" name="PassWord" class="form-control form-control-user" type="password" placeholder="Mật khẩu" />
                                             <span class="pass_icon cursor-pointer" id="show_password">
                                                 <i class="fa fa-eye-slash" id="icon"></i>
                                             </span>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" name="IsSavePassword" id="IsSavePassword" class="form-control-check" value="@Model.IsSavePassword" @(@Model.IsSavePassword ? "checked" : "") />
+                                            <label class="form-check-label" for="IsSavePassword">Lưu mật khẩu</label>
                                         </div>
                                     </div>
                                     <button onclick="clickLogin()" id="btnLogin" type="button" class="btn btn-primary btn-user btn-block btn-login">ĐĂNG NHẬP</button>
