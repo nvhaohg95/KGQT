@@ -92,7 +92,12 @@ namespace KGQT.Commons
                             Body = body,
                         },
 						Priority = Priority.High
-                    }
+                    },
+					Notification = new Notification()
+					{
+                        Title = "Trakuaidi xin thông báo!",
+						Body = body
+                    },
                 };
 
                 // Send a message to the device corresponding to the provided
