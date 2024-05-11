@@ -28,6 +28,7 @@ namespace KGQT.Commons
 			return Encoding.UTF8.GetString(planTextBytes);
 		}
 		#endregion
+
 		public static T AsObject<T>(this IFormCollection pairs) where T : class
 		{
 			string jsonString = $"{{{string.Join(",", pairs.Select(x => $"\"{x.Key}\" : \"{x.Value}\""))}}}";
