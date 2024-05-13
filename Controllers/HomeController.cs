@@ -1,4 +1,5 @@
-﻿using KGQT.Business;
+﻿using KGQT.Base;
+using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
@@ -33,7 +34,6 @@ namespace KGQT
         #endregion
 
         #region Home
-
         [HttpGet]
         public ActionResult TestGet([FromQuery] int a, [FromQuery] string b, [FromQuery] DateTime c)
         {
@@ -73,7 +73,7 @@ namespace KGQT
 
         public IActionResult Index()
         {
-            return View();  
+            return View();
         }
 
         public IActionResult Policy()

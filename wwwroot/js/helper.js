@@ -152,8 +152,12 @@ window["copyClipboard"] = function copyClipboard(text) {
     } catch (err) {
         console.log('Oops, unable to copy');
     }
-    $('#copied-success').css('opacity', '1');
-            setTimeout(function () { $('#copied-success').css("opacity", 0) }, 500);
+    $('#copied-success').css('display', 'block');
+    $('#copied-success').css("opacity", 1)
+    setTimeout(function () {
+        $('#copied-success').css("opacity", 0)
+        $('#copied-success').css("display", "none");
+    }, 500);
     document.body.removeChild(textArea);
 }
 

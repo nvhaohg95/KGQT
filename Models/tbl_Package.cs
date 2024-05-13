@@ -68,5 +68,6 @@ namespace KGQT.Models
         public int? SearchBaiduTimes { get; set; }
         public string? DateExpectation { get; set; }
         public bool? Exported { get; set; }
+        public bool? AutoQuery { get; set; }
     }
 }

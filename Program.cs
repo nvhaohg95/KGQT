@@ -37,6 +37,7 @@ builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
     ProgressBar = true,
     Timeout = 3000
 });
+TaskRun.Run();
 #region App
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())

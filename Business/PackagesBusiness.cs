@@ -1,4 +1,5 @@
-﻿using ExcelDataReader;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using ExcelDataReader;
 using Fasterflect;
 using KGQT.Base;
 using KGQT.Business.Base;
@@ -131,7 +132,8 @@ namespace KGQT.Business
                         SearchBaiduTimes = p.pack.SearchBaiduTimes,
                         WareHouse = p.pack.WareHouse,
                         CreatedDate = p.pack.CreatedDate,
-                        Note = p.pack.Note
+                        Note = p.pack.Note,
+                        AutoQuery = p.pack.AutoQuery
                     }).ToList();
 
                 }
@@ -991,7 +993,15 @@ namespace KGQT.Business
                                             oExist.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
                                             oExist.ModifiedDate = DateTime.Now;
                                             oExist.ModifiedBy = accesser;
-                                            if (BusinessBase.Update(oExist)) success++;
+                                            if (BusinessBase.Update(oExist))
+                                            {
+                                                success++;
+                                                if (oExist.AutoQuery == true)
+                                                {
+                                                    string message = "Kiện hàng " + oExist.PackageCode + " đang được vận chuyển về kho Hồ Chí Minh";
+                                                    NotificationBusiness.Insert(1, "admin", oExist.UID, oExist.Username, oExist.ID, oExist.PackageCode, message, message, 1, "/ShippingOrder/Details/" + oExist.ID, "admin");
+                                                }
+                                            }
                                             else
                                             {
                                                 lstError.Add(new tempExport { Row = row, Column = 3 });
@@ -1089,7 +1099,7 @@ namespace KGQT.Business
                         #region Read value
                         foreach (var item in data)
                         {
-                            worksheet.Cells[item.Row + 2, item.Column + 1].Style.Fill.SetBackground(Color.Red);
+                            worksheet.Cells[item.Row + 2, item.Column + 1].Style.Fill.SetBackground(System.Drawing.Color.Red);
                         }
                         #endregion
 
@@ -1169,6 +1179,33 @@ namespace KGQT.Business
                 return data;
             }
         }
+
+        public static DataReturnModel<bool> ChangeAutoQuery(int id, bool check)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                string mess = "Đăng ký";
+                if (!check)
+                    mess = "Hủy đăng ký";
+
+                var data = new DataReturnModel<bool>();
+                var pack = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+                if (pack != null)
+                {
+                    pack.AutoQuery = check;
+                    db.Update(pack);
+                    if (db.SaveChanges() > 0)
+                    {
+                        data.IsError = false;
+                        data.Message = $"{mess} theo đõi sát kiện thành công!";
+                        return data;
+                    }
+                }
+                data.IsError = true;
+                data.Message = $"{mess} theo đõi sát kiện không thành công, vui lòng liên hệ với nhân viên để được giải quyết !";
+                return data;
+            }
+        }
         #endregion
 
         #region Function
@@ -1214,6 +1251,65 @@ namespace KGQT.Business
                 data.IsError = true;
                 data.Message = "Cập nhật thành công, vui lòng thử lại !";
                 return data;
+            }
+        }
+
+        public static void DailyTask()
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var lst = db.tbl_Packages.Where(x => x.AutoQuery == true).ToList();
+                foreach (var item in lst)
+                {
+                    var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == item.Username);
+                    if (user != null)
+                    {
+                        if (user.AvailableSearch == 0)
+                        {
+                            if (string.IsNullOrEmpty(user.Wallet) || Converted.ToDouble(user.Wallet) < 500)
+                                return;
+                            var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
+                            AccountBusiness.UpdateWallet(user.ID, wallet);
+                            #region Logs
+                            HistoryPayWallet.Insert(user.ID, user.Username, item.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + item.PackageCode, "500", 1, 1, wallet, "admin");
+                            #endregion
+                        }
+                        else
+                            AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);
+
+                        using (HttpClient client = new HttpClient())
+                        {
+                            string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, item.PackageCode);
+                            var response = client.GetAsync(url).Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                string sData = response.Content.ReadAsStringAsync().Result;
+                                var oData = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
+                                if (oData != null && oData.data.Count > 0)
+                                {
+                                    var exist = oData.data.FirstOrDefault(x => x.context.Contains("签收") || x.context.Contains("退回"));
+                                    if (exist != null)
+                                    {
+                                        if (item.Status < 2)
+                                            item.Status = 2;
+                                        item.ExportedCNWH = Converted.ToDate(exist.time);
+                                        if (BusinessBase.Update(item))
+                                        {
+                                            BusinessBase.TrackLog(1, item.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, "admin");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        item.SearchBaiduTimes++;
+                        if (BusinessBase.Update(item) && item.Status == 2)
+                        {
+                            string message = "Kiện hàng " + item.PackageCode + " đã nhập kho Trung Quốc";
+                            NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/ShippingOrder/Details/" + item.ID, "admin");
+                        }
+                    }
+                }
             }
         }
     }
