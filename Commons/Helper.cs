@@ -28,6 +28,7 @@ namespace KGQT.Commons
 			return Encoding.UTF8.GetString(planTextBytes);
 		}
 		#endregion
+
 		public static T AsObject<T>(this IFormCollection pairs) where T : class
 		{
 			string jsonString = $"{{{string.Join(",", pairs.Select(x => $"\"{x.Key}\" : \"{x.Value}\""))}}}";
@@ -92,7 +93,12 @@ namespace KGQT.Commons
                             Body = body,
                         },
 						Priority = Priority.High
-                    }
+                    },
+					Notification = new Notification()
+					{
+                        Title = "Trakuaidi xin thông báo!",
+						Body = body
+                    },
                 };
 
                 // Send a message to the device corresponding to the provided

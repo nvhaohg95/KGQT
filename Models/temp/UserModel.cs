@@ -5,11 +5,15 @@ namespace KGQT.Models.temp
 {
     public class UserModel
     {
-        [Required(ErrorMessage = "Tên đăng nhập không được bỏ trống")]
+        public UserModel()
+        {
+            UserName = "";
+            PassWord = "";
+            IsSavePassword = false;
+        }
         public string UserName { get; set; }
-
-        [Required(ErrorMessage = "Mật khẩu không được bỏ trống")]
         public string PassWord { get; set; }
+        public bool IsSavePassword { get; set; }
     }
 
     public class ForgotPassWord : UserModel

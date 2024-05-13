@@ -5,15 +5,20 @@
 @using KGQT.Models;
 @using Newtonsoft.Json;
 @{
-    var sUser = Context.Request.Cookies["user"];
+    var cookieService = new CookieService(Context);
+    var tkck = cookieService.Get("tkck");
     tbl_Account user = null;
     var lstNoti = new List<tbl_Notification>();
     int pageNoti = 1;
     int toalPageNoti = 0;
     int totalNoti = 0;
-    if (!string.IsNullOrEmpty(sUser))
+    if (!string.IsNullOrEmpty(tkck))
     {
-        user = AccountBusiness.GetInfo(-1, sUser);
+        var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+        if(userModel == null)
+            Context.Response.Redirect("/Auth/Login");
+
+        user = AccountBusiness.GetInfo(-1, userModel.UserName);
         if (user == null)
             Context.Response.Redirect("/Auth/Login");
         else
