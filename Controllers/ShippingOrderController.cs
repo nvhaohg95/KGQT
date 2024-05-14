@@ -24,7 +24,10 @@ namespace KGQT.Controllers
         // GET: ShippingOrderController
         public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
             var (total, totalLeft) = ShippingOrder.GetTotalAndLeft(userLogin);
             var lstData = oData[0] as List<tbl_ShippingOrder>;
@@ -63,16 +66,22 @@ namespace KGQT.Controllers
         [HttpPost]
         public object Cancel(int id)
         {
-            string username = HttpContext.Request.Cookies["user"];
-            var dtRetunr = ShippingOrder.Cancel(id, username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var dtRetunr = ShippingOrder.Cancel(id, userLogin);
             return dtRetunr;
         }
 
         [HttpPost]
         public object Payment(int id)
         {
-            var username = HttpContext.Request.Cookies["user"];
-            DataReturnModel<bool> ret = ShippingOrder.Payment(id, username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            DataReturnModel<bool> ret = ShippingOrder.Payment(id, userLogin);
             return ret;
         }
         #endregion

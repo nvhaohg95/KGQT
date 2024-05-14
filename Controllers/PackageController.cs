@@ -1,6 +1,7 @@
 ﻿using KGQT.Base;
 using KGQT.Business;
 using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,11 @@ namespace KGQT.Controllers
         #region View
         public IActionResult Index(int status, string ID, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10)
         {
-            var username = HttpContext.Request.Cookies["user"];
-            var oData = PackagesBusiness.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var oData = PackagesBusiness.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
             var lstPackage = oData[0];
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
@@ -51,7 +55,10 @@ namespace KGQT.Controllers
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var data = PackagesBusiness.GetStatusOrder(code, userLogin);
             return View(data);
         }
@@ -75,14 +82,20 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<bool> Create(tbl_Package form)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var data = PackagesBusiness.CustomerAdd(form,userLogin);
             return data;
         }
 
         public DataReturnModel<bool> Cancel(int id)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var data = PackagesBusiness.Cancel(id, userLogin);
             return data;
         }
@@ -95,7 +108,6 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<bool> Delete(int id)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
             var data = PackagesBusiness.Delete(id);
             return data;
         }

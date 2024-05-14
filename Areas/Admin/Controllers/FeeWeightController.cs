@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
+using KGQT.Commons;
+using Newtonsoft.Json;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -33,12 +35,14 @@ namespace KGQT.Areas.Admin.Controllers
         }
         #endregion
 
-
         #region Create
         [HttpPost]
         public JsonResult Create(tbl_FeeWeight form)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var user = AccountBusiness.GetInfo(-1, userLogin);
             form.CreatedDate = DateTime.Now;
             form.CreatedBy = user.Username;
@@ -64,7 +68,6 @@ namespace KGQT.Areas.Admin.Controllers
         }
         #endregion
 
-
         #region Delete
         [HttpPost]
         public bool Delete(int id) 
@@ -86,11 +89,16 @@ namespace KGQT.Areas.Admin.Controllers
         #region Update
         public bool Update(tbl_FeeWeight model)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
-            var user = AccountBusiness.GetInfo(-1, userLogin);
-            if (model == null || user == null) return false;
-            var result = FeeWeightBusiness.Update(model, user.UserID);
-            return result;
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            if (model != null && !string.IsNullOrEmpty(userLogin))
+            {
+                var result = FeeWeightBusiness.Update(model, userLogin);
+                return result;
+            }
+            return false;
         }
         #endregion
         private List<FeeweightCategory> GetListFeeWeigthCategory()

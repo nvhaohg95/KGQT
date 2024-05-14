@@ -138,8 +138,11 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult QueryOrderStatus(string code)
         {
-            var user = HttpContext.Request.Cookies["user"];
-            var data = PackagesBusiness.GetStatusOrder(code, user);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var data = PackagesBusiness.GetStatusOrder(code, userLogin);
             return View(data);
         }
 
@@ -167,7 +170,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Create(string sData)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var data = JsonConvert.DeserializeObject<tbl_Package>(sData);
             var oSave = PackagesBusiness.Add(data, userLogin);
             return oSave;
@@ -190,7 +196,10 @@ namespace KGQT.Areas.Admin.Controllers
                 oData.Message = "Không có file nào được chọn!";
                 return oData;
             }
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             oData = PackagesBusiness.CreateWithFileExcel(file, sheet, userLogin);
             return oData;
         }
@@ -240,9 +249,12 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public DataReturnModel<bool> Update(tbl_Package form)
         {
-            var crrUse = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
 
-            var oSave = PackagesBusiness.Update(form, crrUse);
+            var oSave = PackagesBusiness.Update(form, userLogin);
             return oSave;
         }
 
@@ -281,7 +293,10 @@ namespace KGQT.Areas.Admin.Controllers
         public object InStockPackage(string sData)
         {
             var dt = new DataReturnModel<bool>();
-            var crrUse = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             if (string.IsNullOrEmpty(sData))
             {
                 dt.IsError = true;
@@ -289,7 +304,7 @@ namespace KGQT.Areas.Admin.Controllers
                 return dt;
             }
             var data = JsonConvert.DeserializeObject<tmpInStock>(sData);
-            var oSave = PackagesBusiness.InStockHCMWareHouse(data, crrUse);
+            var oSave = PackagesBusiness.InStockHCMWareHouse(data, userLogin);
             return oSave;
         }
 
@@ -302,11 +317,15 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public bool Cancel(int id)
         {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
-            if (p != null)
+            if (p != null && !string.IsNullOrEmpty(userLogin))
             {
                 p.Status = 9;
-                p.ModifiedBy = HttpContext.Request.Cookies["user"];
+                p.ModifiedBy = userLogin;
                 p.ModifiedDate = DateTime.Now;
                 return BusinessBase.Update(p);
             }
@@ -348,8 +367,11 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public DataReturnModel<bool> SaveNote(int id, string note)
         {
-           string username = HttpContext.Request.Cookies["user"];
-            var dt = PackagesBusiness.SaveNote(id, note, username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var dt = PackagesBusiness.SaveNote(id, note, userLogin);
             return dt;
         }
         #endregion

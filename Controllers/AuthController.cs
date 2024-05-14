@@ -65,9 +65,7 @@ namespace KGQT.Controllers
         public DataReturnModel<tbl_Account> Login(UserModel model)
         {
             if (model == null)
-            {
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!" };
-            }
             var result = AccountBusiness.Login(model.UserName, model.PassWord);
             if (!result.IsError)
             {
@@ -100,9 +98,7 @@ namespace KGQT.Controllers
         {
             var data = JsonConvert.DeserializeObject<SignUpModel>(jsData);
             if (data == null)
-            {
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
-            }
             if (file != null)
             {
                 data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
@@ -120,7 +116,8 @@ namespace KGQT.Controllers
             var result = AccountBusiness.ChangePassword(data);
             if (!result.IsError)
             {
-                Response.Cookies.Delete("user");
+                var cookieService = new CookieService(HttpContext);
+                cookieService.Remove("tkck");
             }
             return Json(result);
         }

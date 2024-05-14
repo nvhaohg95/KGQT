@@ -193,19 +193,12 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 col-sm-12 form-group">
+                        <div class="col-md-12 col-sm-12 form-group">
                             <label class="control-label">
                                 <span class="fw-bold">Họ</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input name="FirstName" class="form-control" autocomplete="off" />
-                        </div>
-                        <div class="col-md-6 col-sm-12 form-group">
-                            <label class="control-label">
-                                <span v>Tên</span>
-                                <span class="text-danger">(*)</span>
-                            </label>
-                            <input name="LastName" class="form-control" autocomplete="off" />
+                            <input name="FullName" class="form-control" autocomplete="off" />
                         </div>
                     </div>
                     <div class="row">
@@ -294,14 +287,9 @@
             return
         }
 
-        if (!data.FirstName) {
+        if (!data.FullName) {
             helper.showErr('Họ tên người dùng không được bỏ trống!');
             return
-        }
-
-        if (!data.LastName) {
-            helper.showErr('Họ tên người dùng không được bỏ trống!');
-            return;
         }
 
         if (!data.Email) {

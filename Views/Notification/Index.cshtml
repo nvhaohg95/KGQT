@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Thông báo";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
-    var status = ViewBag.status;
+    int status = ViewBag.status;
     DateTime? fromDate = ViewBag.fromDate;
     DateTime? toDate = ViewBag.toDate;
     int pageCurrent = ViewBag.pageCurrent;

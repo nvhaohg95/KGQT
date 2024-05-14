@@ -1,7 +1,9 @@
 ﻿using KGQT.Business;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KGQT.Controllers
 {
@@ -20,12 +22,14 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<bool> Create(tbl_Complain data)
         {
-            string userName = HttpContext.Request.Cookies["user"];
-            var userLogin = AccountBusiness.GetInfo(-1, userName);
             DataReturnModel<bool> result = new();
-            if (userLogin != null)
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userName = userModel != null ? userModel.UserName : "";
+            if (!string.IsNullOrEmpty(userName))
             {
-                data.CreatedBy = userLogin.Username;
+                data.CreatedBy = userName;
                 data.CreatedDate = DateTime.Now;
                 data.Status = 1;
                 result = ComplainBusiness.Insert(data);

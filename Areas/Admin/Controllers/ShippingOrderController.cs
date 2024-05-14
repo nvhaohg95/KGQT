@@ -32,10 +32,13 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
-            var username = HttpContext.Request.Query["username"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             using (var db = new nhanshiphangContext())
             {
-                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, username);
+                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
                 var lstData = oData[0] as List<tbl_ShippingOrder>;
                 int numberRecord = (int)oData[1];
                 int numberPage = (int)oData[2];
@@ -89,9 +92,12 @@ namespace KGQT.Areas.Admin.Controllers
             var order = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id);
             if (order == null)
                 return false;
-            var userName = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             order.Status = 1;
-            order.ModifiedBy = userName;
+            order.ModifiedBy = userLogin;
             order.ModifiedDate = DateTime.Now;
             return BusinessBase.Update(order);
         }
@@ -99,16 +105,22 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Cancel(int id)
         {
-            string username = HttpContext.Request.Cookies["user"];
-            var dtRetunr = ShippingOrder.Cancel(id, username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var dtRetunr = ShippingOrder.Cancel(id, userLogin);
             return dtRetunr;
         }
 
         [HttpPost]
         public object Payment(int id)
         {
-            var username = HttpContext.Request.Cookies["user"];
-            DataReturnModel<bool> ret = ShippingOrder.Payment(id, username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            DataReturnModel<bool> ret = ShippingOrder.Payment(id, userLogin);
             return ret;
         }
 
@@ -116,8 +128,11 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object receiver(int id)
         {
-            var username = HttpContext.Request.Cookies["user"];
-            DataReturnModel<bool> ret = ShippingOrder.Receiver(id, username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            DataReturnModel<bool> ret = ShippingOrder.Receiver(id, userLogin);
             return ret;
         }
         #endregion

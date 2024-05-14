@@ -1,5 +1,6 @@
 ﻿using KGQT.Business;
 using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Components;
@@ -54,18 +55,19 @@ namespace KGQT
         [HttpGet]
         public ActionResult Dashboard()
         {
-            var username = HttpContext.Request.Cookies["user"];
-            var pack = PackagesBusiness.GetAllStatus(username);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userName = userModel != null ? userModel.UserName : "";
+            var pack = PackagesBusiness.GetAllStatus(userName);
             ViewData["pack_st3"] = pack[0];
             ViewData["pack_st4"] = pack[1];
             ViewData["pack_st5"] = pack[2];
-
-            var ship = ShippingOrder.GetAllStatus(username);
+            var ship = ShippingOrder.GetAllStatus(userName);
             ViewData["order_st1"] = ship[0];
             ViewData["order_st2"] = ship[1];
             ViewData["ordertotal"] = ship[2];
             return View();
-
         }
 
         #endregion

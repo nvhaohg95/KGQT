@@ -47,7 +47,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public JsonResult Create(AccountInfo data)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var reponse = AccountBusiness.Create(data, userLogin);
             return Json(reponse);
         }
@@ -58,7 +61,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Update(AccountInfo data)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var reponse = AccountBusiness.Update(data, userLogin);
             return reponse;
         }
@@ -79,9 +85,12 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Info()
         {
-            var userName = HttpContext.Request.Cookies["user"];
-            var accInfo = AccountBusiness.GetInfo(0,userName);
-            ViewData["userName"] = userName;
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var accInfo = AccountBusiness.GetInfo(-1, userLogin);
+            ViewData["userName"] = userLogin;
             return View(accInfo);
         }
 

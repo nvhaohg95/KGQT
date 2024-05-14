@@ -44,6 +44,7 @@
     <link href="~/css/styles.css" rel="stylesheet" />
     @*<script src="https:use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>*@
     <!-- Custom fonts for this template-->
+    <link rel="icon" href="~/img/logo.png"/>
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
     <link href="~/styles/user.css" rel="stylesheet" type="text/css">
@@ -348,7 +349,7 @@
                                     <span class="text-danger">(*)</span>
                                 </div>
                                 <div class="col-9">
-                                    <input type="text" name="UserName" value="@user.Username" placeholder="Tài khoản" class="form-control" />
+                                    <input type="text" name="UserName" value="@user.Username" placeholder="Tài khoản" class="form-control" readonly/>
                                 </div>
                             </div>
                             <div class="row align-items-center my-2 h-50px">
@@ -357,7 +358,7 @@
                                     <span class="text-danger">(*)</span>
                                 </div>
                                 <div class="col-9 d-flex align-items-center position-relative">
-                                    <input id="txtPassword1" type="password" name="OldPassword" placeholder="Mật khẩu" class="form-control" autocomplete="off" />
+                                    <input id="txtPassword1" type="password" name="OldPassword" placeholder="Mật khẩu" class="form-control"/>
                                     <span class="position-absolute r-20px cursor-pointer" id="show_pass1">
                                         <i class="fa fa-eye-slash" id="iconShow1" onclick="showHidePass('#iconShow1','#txtPassword1')"></i>
                                     </span>
