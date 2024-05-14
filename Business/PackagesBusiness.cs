@@ -780,6 +780,7 @@ namespace KGQT.Business
                             check.InsurancePrice = totalInsurPrice.ToString();
                             check.TotalPrice = totalPrice.ToString();
                             check.MoreCharge = totalMoreCharge.ToString();
+                            check.SurCharge = totalCharge.ToString();
                             check.ModifiedBy = accessor;
                             check.ModifiedDate = DateTime.Now;
                             db.Update(check);
