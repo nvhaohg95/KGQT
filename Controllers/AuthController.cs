@@ -38,50 +38,35 @@ namespace KGQT.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            //var cookieService = new CookieService(HttpContext);
-            //var tkck = cookieService.Get("tkck");
-            //if (!string.IsNullOrEmpty(tkck))
-            //{
-            //    var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
-            //    if (userModel != null)
-            //    {
-            //        if(userModel.IsSavePassword)
-            //        {
-            //            var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userModel.UserName);
-            //            if (account != null)
-            //            {
-            //                if (account.RoleID == 1)
-            //                    return Redirect("/admin/package/index");
-            //                else
-            //                    return RedirectToAction("Dashboard", "Home");
-            //            }
-            //        }    
-            //        return View(userModel);
-            //    }
-            //return View(new UserModel());
-
-            var userName = HttpContext.Request.Cookies["user"];
-            if (!string.IsNullOrEmpty(userName))
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            if (!string.IsNullOrEmpty(tkck))
             {
-                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
-                if (user != null)
+                var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+                if (userModel != null)
                 {
-                    if (user.RoleID == 1)
-                        return Redirect("/admin/package/index");
-                    else
-                        return RedirectToAction("Dashboard", "Home");
+                    if(userModel.IsSavePassword)
+                    {
+                        var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userModel.UserName);
+                        if (account != null)
+                        {
+                            if (account.RoleID == 1)
+                                return Redirect("/admin/package/index");
+                            else
+                                return RedirectToAction("Index", "Package");
+                        }
+                    }    
+                    return View(userModel);
                 }
             }
-            return View();
+            return View(new UserModel());
         }
 
         [HttpPost]
         public DataReturnModel<tbl_Account> Login(UserModel model)
         {
             if (model == null)
-            {
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!" };
-            }
             var result = AccountBusiness.Login(model.UserName, model.PassWord);
             if (!result.IsError)
             {
@@ -119,9 +104,7 @@ namespace KGQT.Controllers
         {
             var data = JsonConvert.DeserializeObject<SignUpModel>(jsData);
             if (data == null)
-            {
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
-            }
             if (file != null)
             {
                 data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
@@ -139,7 +122,8 @@ namespace KGQT.Controllers
             var result = AccountBusiness.ChangePassword(data);
             if (!result.IsError)
             {
-                Response.Cookies.Delete("user");
+                var cookieService = new CookieService(HttpContext);
+                cookieService.Remove("tkck");
             }
             return Json(result);
         }

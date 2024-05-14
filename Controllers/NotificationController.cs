@@ -1,20 +1,24 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using KGQT.Business;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 
 namespace KGQT.Controllers
 {
     public class NotificationController : Controller
     {
-        
         #region Index
         public ActionResult Index(int status , DateTime? fromDate, DateTime? toDate, int page = 1)
         {
-            var userName = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userName = userModel != null ? userModel.UserName : "";
             var user = AccountBusiness.GetInfo(-1, userName);
             var lstData = new List<tbl_Notification>();
             int numberRecord = 0;
@@ -38,7 +42,6 @@ namespace KGQT.Controllers
 
         #endregion
 
-
         #region List notification by ID
         [HttpGet]
         public ActionResult GetList(int id, int page, int pageSize = 20)
@@ -52,7 +55,10 @@ namespace KGQT.Controllers
         #region Get detail
         public ActionResult Detail(int id)
         {
-            var userName = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userName = userModel != null ? userModel.UserName : "";
             var user = AccountBusiness.GetInfo(-1, userName);
             var lstData = new List<tbl_Notification>();
             var numberRecord = 0;
@@ -77,11 +83,16 @@ namespace KGQT.Controllers
 
         #region Update status
         [HttpPost]
-        public bool UpdateStatus(int ID)
+        public void UpdateStatus(int ID)
         {
-            var userName = HttpContext.Request.Cookies["user"];
-            NotificationBusiness.UpdateStatus(ID, userName);
-            return true;
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            if(!string.IsNullOrEmpty(tkck))
+            {
+                var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+                string userName = userModel != null ? userModel.UserName : "";
+                NotificationBusiness.UpdateStatus(ID, userName);
+            }
         }
         #endregion
     }

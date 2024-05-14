@@ -1,6 +1,9 @@
 ﻿using KGQT.Business;
+using KGQT.Commons;
 using KGQT.Models;
+using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KGQT.Controllers
 {
@@ -9,7 +12,10 @@ namespace KGQT.Controllers
         #region Lịch sử giao dịch
         public IActionResult Index(int orderID, int tradeType, DateTime? fromDate, DateTime? toDate, int page = 1)
         {
-            var userName = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userName = userModel != null ? userModel.UserName : "";
             var oData = HistoryPayWallet.GetPage(userName, orderID, tradeType, fromDate, toDate, page, 10);
             var lstData = oData[0] as List<tbl_HistoryPayWallet>;
             var numberRecord = (int)oData[1];

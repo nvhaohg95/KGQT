@@ -50,6 +50,13 @@ namespace KGQT.Business
                 var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username);
                 if (acc != null)
                 {
+                    if (Converted.ToDouble(data.Amount) <= 0)
+                    {
+                        result.IsError = true;
+                        result.Message = "Vui lòng nhập số tiền!";
+                        result.Data = false;
+                        return result;
+                    }
                     if (data.Type == 2 && Converted.ToDouble(acc.Wallet) < Converted.ToDouble(data.Amount))
                     {
                         result.IsError = true;

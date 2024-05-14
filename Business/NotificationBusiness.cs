@@ -2,6 +2,7 @@
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
+using KGQT.Models.temp;
 using OfficeOpenXml.Table.PivotTable;
 using System.Security.Cryptography.Pkcs;
 
@@ -76,7 +77,10 @@ namespace KGQT.Business
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == reciverID);
                     if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
                     {
-                        Helper.SendFCMAsync(messageMobile, user.TokenDevice, null);
+                        _ = Task.Run(async () =>
+                        {
+                            await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null);
+                        });
                     }
                     return true;
                 }
@@ -116,20 +120,25 @@ namespace KGQT.Business
             }
         }
 
-        public static void UpdateStatus(int ID, string userName)
+        public static bool UpdateStatus(int ID, string userName)
         {
-            using(var db = new nhanshiphangContext())
+            if (!string.IsNullOrEmpty(userName) || ID < 0)
             {
-                var data = db.tbl_Notifications.FirstOrDefault(x => x.ID == ID);
-                if(data != null)
+                using (var db = new nhanshiphangContext())
                 {
-                    data.Status = 1;
-                    data.ModifiedBy = userName;
-                    data.ModifiedDate = DateTime.Now;
-                    db.Update(data);
-                    db.SaveChanges();
+                    var data = db.tbl_Notifications.FirstOrDefault(x => x.ID == ID);
+                    if (data != null)
+                    {
+                        data.Status = 1;
+                        data.ModifiedBy = userName;
+                        data.ModifiedDate = DateTime.Now;
+                        db.Update(data);
+                        db.SaveChanges();
+                        return true;
+                    }
                 }
             }
+            return false;
         }
 
         public static string GetUrlDefault(int ID,bool isAdmin = false)
@@ -137,6 +146,40 @@ namespace KGQT.Business
             if(isAdmin)
                 return "/Admin/Notification/Detail?ID=" + ID;
             return "/Notification/Detail?ID=" + ID;
+        }
+
+
+        public static DataReturnModel<bool> SendNotiForUser(string strUserNames, string contents, string createdBy)
+        {
+            DataReturnModel<bool> result = new();
+            if(string.IsNullOrEmpty(strUserNames))
+            {
+                result.IsError = true;
+                result.Message = "Người nhận không được bỏ trống";
+                result.Data = false;
+                return result;
+            }
+            if (string.IsNullOrEmpty(contents))
+            {
+                result.IsError = true;
+                result.Message = "Nội dung không được bỏ trống";
+                result.Data = false;
+                return result;
+            }
+            using (var db = new nhanshiphangContext())
+            {
+                List<string> lstUserName = strUserNames.Split(";").ToList();
+                var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == createdBy);
+                foreach (string userName in lstUserName) 
+                {
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                    if(user != null)
+                    {
+                        Insert(admin.ID, admin.FullName, user.ID, user.FullName, 0, "", contents, contents, 1, "", createdBy);
+                    }    
+                }
+            }
+            return result;
         }
     }
 }

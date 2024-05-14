@@ -138,20 +138,26 @@
 </div>
 
 <script>
+    // update
     function update() {
-        var data = helper.form2Object($('#formUser').serializeArray());
+        debugger
+        let data = helper.form2Object($('#formUser').serializeArray());
+        let form = new FormData();
+        form.append("jsData", JSON.stringify(data));
         $.ajax({
             url: '/Admin/Account/UpdateInfo',
-            type: 'POST',
-            data: data,
+            type: 'Post',
+            data: form,
+            contentType: false,
+            processData: false,
             success: function (result) {
-                if (result.isError) {
+                if (result.isError)
                     helper.showErr(result.message);
-                } else
+                else
                     helper.showSuc("Cập nhật thành công");
             },
             error: function (xhr, status, err) {
-                helper.showErr("Hệ thống thực thi không thành công.Vui lòng thử lại");
+                helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại sau!");
             }
         });
     }

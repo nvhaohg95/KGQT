@@ -1,9 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
 using KGQT.Business;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -34,12 +36,15 @@ namespace KGQT.Areas.Admin.Controllers
 
         public DataReturnModel<bool> UpdateStatus(int ID,int Status)
         {
-            string userName = HttpContext.Request.Cookies["user"];
-            var userLogin = AccountBusiness.GetInfo(-1, userName);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var user = AccountBusiness.GetInfo(-1, userLogin);
             DataReturnModel<bool> result = new();
-            if(userLogin != null)
+            if(user != null)
             {
-                result = ComplainBusiness.UpdateStatus(ID, Status, userLogin.Username);
+                result = ComplainBusiness.UpdateStatus(ID, Status, userLogin);
             }
             else
             {

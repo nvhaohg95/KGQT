@@ -1,5 +1,6 @@
 ﻿using KGQT.Business;
 using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Components.Routing;
@@ -46,8 +47,11 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Insert(tbl_Withdraw model)
         {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var user = AccountBusiness.GetInfo(-1, model.Username);
-            var userName = HttpContext.Request.Cookies["user"];
             if (user != null)
             {
                 model.UID = user.ID;
@@ -55,7 +59,7 @@ namespace KGQT.Areas.Admin.Controllers
             }
             model.Status = 2;
             model.Type = 1;
-            model.CreatedBy = userName;
+            model.CreatedBy = userLogin;
             model.CreatedDate = DateTime.Now;
             var s = BusinessBase.Add(model);
             if (s)
@@ -63,10 +67,7 @@ namespace KGQT.Areas.Admin.Controllers
                 var u = BusinessBase.GetOne<tbl_Account>(x => x.ID == user.ID);
                 u.Wallet += model.Amount;
                 s = BusinessBase.Update(u);
-
-                #region Logs
-                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount, 1, 1, u.Wallet, userName);
-                #endregion
+                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount, 1, 1, u.Wallet, userLogin);
             }
             return Ok(s);
         }
@@ -76,7 +77,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Arppoval(int id)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var result = TransactionBusiness.ApprovalRecharge(id, userLogin);
             return result;
         }
@@ -92,7 +96,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public DataReturnModel<bool> Create(tbl_Withdraw model)
         {
-            string userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var user = AccountBusiness.GetInfo(-1, model.Username);
             var result = new DataReturnModel<bool>();
             if (user != null && !string.IsNullOrEmpty(userLogin))
@@ -103,12 +110,6 @@ namespace KGQT.Areas.Admin.Controllers
                 model.CreatedBy = userLogin;
                 model.CreatedDate = DateTime.Now;
                 result = WithDrawBusiness.Insert(model, userLogin);
-                //if (result.Data)
-                //{
-                //    var admin = AccountBusiness.GetInfo(-1, userLogin);
-                //    if (model.UID == admin.ID)
-                //        HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(admin));
-                //}
                 result.Url = Url.Action("Index");
                 return result;
             }
@@ -122,14 +123,11 @@ namespace KGQT.Areas.Admin.Controllers
         #region Duyệt lệnh nạp tiền
         public DataReturnModel<tbl_Withdraw> Approval(int ID)
         {
-            string userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var result = WithDrawBusiness.Approval(ID, userLogin);
-            //if (result.Data != null)
-            //{
-            //    var user = AccountBusiness.GetInfo(-1, userLogin);
-            //    if (result.Data.UID == user.ID)
-            //        HttpContext.Session.SetString("US_LOGIN", JsonConvert.SerializeObject(user));
-            //}
             return result;
         }
         #endregion
@@ -158,7 +156,10 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public DataReturnModel<bool> Refuse(int ID)
         {
-            string userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var result = WithDrawBusiness.Refuse(ID, userLogin);
             return result;
         }

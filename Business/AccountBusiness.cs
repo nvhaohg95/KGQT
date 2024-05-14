@@ -31,7 +31,7 @@ namespace KGQT.Business
             {
                 using (var db = new nhanshiphangContext())
                 {
-                    var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username == userName);
+                    var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username.ToLower() == userName.ToLower());
                     if (acc != null)
                     {
                         var isCorrect = password == PJUtils.Decrypt("userpass", acc.Password);
@@ -100,12 +100,6 @@ namespace KGQT.Business
                     result.Message = "Số điện thoại không hợp lệ!";
                     return result;
                 }
-                //if (string.IsNullOrEmpty(data.Email))
-                //{
-                //    result.IsError = true;
-                //    result.Message = "Vui lòng nhập Email khách hàng!";
-                //    return result;
-                //}
                 if (!string.IsNullOrEmpty(data.Email) && !regexEmail.IsMatch(data.Email))
                 {
                     result.IsError = true;
@@ -150,7 +144,6 @@ namespace KGQT.Business
                         result.Message = "Tên tài khoản đã được sử dụng.";
                         return result;
                     }
-
                     var acc = new tbl_Account()
                     {
                         Username = username,
@@ -278,7 +271,7 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                return db.tbl_Accounts.FirstOrDefault(x => x.Username == userName && x.Token == token);
+                return db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == userName.ToLower() && x.Token == token);
             }
         }
 
@@ -326,7 +319,7 @@ namespace KGQT.Business
             }
             using (var db = new nhanshiphangContext())
             {
-                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName);
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.UserName.ToLower());
                 if (acc != null)
                 {
                     acc.Password = PJUtils.Encrypt("userpass", data.PassWord);
@@ -398,7 +391,7 @@ namespace KGQT.Business
             }
             using (var db = new nhanshiphangContext())
             {
-                var acc = db.tbl_Accounts.FirstOrDefault(ac => ac.Username == data.UserName);
+                var acc = db.tbl_Accounts.FirstOrDefault(ac => ac.Username.ToLower() == data.UserName.ToLower());
                 if (acc != null)
                 {
                     string oldPassword = PJUtils.Encrypt("userpass", data.OldPassword);
@@ -480,7 +473,7 @@ namespace KGQT.Business
                 if (id != null && id > 0)
                     account = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
                 if (!string.IsNullOrEmpty(userName))
-                    account = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName);
+                    account = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == userName.ToLower());
                 if (account != null)
                 {
                     account.Password = PJUtils.Decrypt("userpass", account.Password);
@@ -554,7 +547,6 @@ namespace KGQT.Business
             }
             using (var db = new nhanshiphangContext())
             {
-                // check userID
                 if (!string.IsNullOrEmpty(data.UserID))
                 {
                     var isUser = db.tbl_Accounts.Any(x => x.UserID == data.UserID);
@@ -565,7 +557,7 @@ namespace KGQT.Business
                         return reponse;
                     }
                 }
-                var isUserName = db.tbl_Accounts.Any(x => x.Username == data.UserName);
+                var isUserName = db.tbl_Accounts.Any(x => x.Username.ToLower() == data.UserName.ToLower());
                 if (isUserName)
                 {
                     reponse.IsError = true;
@@ -581,10 +573,13 @@ namespace KGQT.Business
                 }
                 var acc = new tbl_Account()
                 {
-                    UserID = data.UserID,
                     Username = data.UserName,
+                    FullName = data.FullName,
                     Password = PJUtils.Encrypt("userpass", data.Password),
                     Email = data.Email,
+                    Phone = data.Phone,
+                    Gender = data.Gender,
+                    UserID = data.UserID,
                     Wallet = "0",
                     RoleID = data.RoleID,
                     CreatedDate = DateTime.Now,
@@ -758,7 +753,7 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                return db.tbl_Accounts.FirstOrDefault(y => y.Username == username);
+                return db.tbl_Accounts.FirstOrDefault(y => y.Username.ToLower() == username.ToLower());
             }
         }
         #endregion
@@ -803,19 +798,11 @@ namespace KGQT.Business
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email && x.Username.ToLower() != data.Username.ToLower());
-                    if (isEmail)
-                    {
-                        result.IsError = true;
-                        result.Message = "Địa chỉ email đã được sử dụng";
-                        return result;
-                    }
-                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() != data.Username.ToLower());
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.Username.ToLower());
                     if (acc != null)
                     {
                         if (fileImg != null)
                         {
-                            //string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
                             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
                             if (!Directory.Exists(path))
                                 Directory.CreateDirectory(path);

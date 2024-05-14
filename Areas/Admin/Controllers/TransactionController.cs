@@ -1,8 +1,10 @@
 ﻿using KGQT.Business;
 using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -38,14 +40,15 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpPost]
         public object Recharge(int ID)
         {
-            var userLogin = HttpContext.Request.Cookies["user"];
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var result = TransactionBusiness.ApprovalRecharge(ID, userLogin);
             return result;
         }
 
         #endregion
-
-
         
     }
 }
