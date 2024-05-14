@@ -107,10 +107,9 @@
                             <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
                                 <div class="form-group mb-2 @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
                                     <label class="mb-0">Mô tả</label>
-                                    <textarea class="form-control p-1 h-32px" id="note@(item.ID)" readonly="readonly">@item.Note</textarea>
-                                    @*<div contenteditable="true" class="form-control editable" readonly="readonly" id="note@(item.ID)">@Html.Raw(item.Note)</div>*@
+                                    <button type="button" class="btn bg-nsh1 d-none py-0 px-2 float-right" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
+                                    <textarea class="form-control p-1 h-32px bg-transparent text-white border-0" id="note@(item.ID)" readonly="readonly">@item.Note</textarea>
                                 </div>
-                                <button type="button" class="btn bg-nsh1 d-none" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 my-auto text-md-right">
                                 <button class="btn-sm btn bg-primary text-white mr-2 mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
@@ -602,7 +601,9 @@
     function addNote(id) {
         $('#divNote' + id).removeClass('d-none');
         $('#note' + id).removeAttr('readonly');
+        $('#note' + id).removeClass(' bg-transparent text-white border-0');
         $('#btnNote' + id).removeClass('d-none');
+        $('#btnNote' + id).addClass('mb-1');
         $('#note' + id).focus();
     }
 
@@ -619,7 +620,9 @@
             success: function (res) {
                 if (res) {
                     $('#note' + id).attr('readonly', 'readonly');
+                    $('#note' + id).addClass(' bg-transparent text-white border-0');
                     $('#btnNote' + id).addClass('d-none');
+                    $('#btnNote' + id).removeClass('mb-1');
                     helper.showSuc("Cập nhật thành công", false);
                 }
             },

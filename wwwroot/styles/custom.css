@@ -19,11 +19,10 @@
             background: #008cd0 !important;
             color: white !important;
         }
-
 .editable {
-   height: 30px;
+    height: 30px;
     /*padding: 5px;*/
-    overflow-y:scroll;
+    overflow-y: scroll;
 }
 .h-32px{
     height:32px !important;
@@ -345,6 +344,10 @@
 }
 
 .bg-orange {
+    background-color: #f38215;
+}
+
+.bg-orange:hover {
     background-color: #f38215;
 }
 /*End: BG Color*/

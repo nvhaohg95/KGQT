@@ -111,6 +111,18 @@ namespace KGQT.Controllers
             var data = PackagesBusiness.Delete(id);
             return data;
         }
+
+        /// <summary>
+        /// ChangeAutoQuery
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public DataReturnModel<bool> ChangeAutoQuery(int id, bool check)
+        {
+            var data = PackagesBusiness.ChangeAutoQuery(id,check);
+            return data;
+        }
         #endregion
 
     }
