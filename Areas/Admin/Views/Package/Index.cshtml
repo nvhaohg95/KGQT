@@ -111,7 +111,7 @@
                                         <textarea class="form-control p-0 h-48px bg-transparent text-white border-0" id="note@(item.ID)" readonly="readonly">@item.Note</textarea>
                                     </div>
                                     <div class="col-md-2 col-sm-12 d-none" id="divBtnSave@(item.ID)">
-                                        <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>    
+                                        <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
                                     </div>
                                 </div>
                             </div>
@@ -607,6 +607,10 @@
 
     function saveNote(id) {
         let note = $('#note' + id).val();
+        if (note && note.length > 70) {
+            helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+            return
+        }
         $.ajax({
             url: '/admin/Package/SaveNote',
             method: 'POST',

@@ -335,6 +335,10 @@
 
         function saveNote(id) {
             let note = $('#note' + id).val();
+            if (note && note.length > 70) {
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+                return
+            }
             $.ajax({
                 url: '/Package/SaveNote',
                 method: 'POST',

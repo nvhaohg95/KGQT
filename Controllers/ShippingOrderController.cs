@@ -46,12 +46,17 @@ namespace KGQT.Controllers
         }
 
         // GET: ShippingOrderController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int id, string recID)
         {
             var model = new OrderDetails();
-            model.Order = ShippingOrder.GetOne(id);
+            if (string.IsNullOrEmpty(recID))
+                model.Order = ShippingOrder.GetOne(id);
+            else model.Order = ShippingOrder.GetOne(recID);
             if (model.Order != null)
+            {
                 model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
+                model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username == model.Order.Username);
+            }
             return View(model);
         }
 
