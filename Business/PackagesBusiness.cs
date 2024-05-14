@@ -466,6 +466,7 @@ namespace KGQT.Business
                     p.IsAirPackage = form.IsAirPackage;
                     p.Declaration = form.Declaration;
                     p.IsWoodPackage = form.IsWoodPackage;
+                    p.Note = form.Note;
 
                     if (p.AirPackagePrice != form.AirPackagePrice)
                         p.AirPackagePrice = form.AirPackagePrice;
@@ -484,6 +485,9 @@ namespace KGQT.Business
 
                     if (p.SurCharge != form.SurCharge)
                         p.SurCharge = form.SurCharge;
+
+                    if (p.MoreCharge != form.MoreCharge)
+                        p.MoreCharge = form.MoreCharge;
 
                     p.WareHouse = form.WareHouse;
                     p.Status = form.Status;
@@ -645,6 +649,7 @@ namespace KGQT.Business
                     pack.WoodPackagePrice = data.WoodPrice.ToString();
                     pack.AirPackagePrice = data.AirPrice.ToString();
                     pack.SurCharge = data.SurCharge.ToString();
+                    pack.MoreCharge = data.MoreCharge.ToString();
                     pack.Status = 4;
                     pack.ModifiedBy = accessor;
                     pack.ModifiedDate = DateTime.Now;
@@ -762,8 +767,9 @@ namespace KGQT.Business
                             double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => Converted.ToDouble(x.AirPackagePrice));
                             double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => Converted.ToDouble(x.IsInsurancePrice));
                             double totalCharge = lstPack.Sum(x => Converted.ToDouble(x.SurCharge));
+                            double totalMoreCharge = lstPack.Sum(x => Converted.ToDouble(x.MoreCharge));
                             double totalweightPrice = priceBrand + weightPrice;
-                            var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
+                            var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge + totalMoreCharge;
                             var sPackageCode = lstPack.Select(x => x.PackageCode).ToArray();
 
                             check.Weight = Converted.Double2String(weight);
@@ -773,7 +779,7 @@ namespace KGQT.Business
                             check.AirPackagePrice = totalAirPrice.ToString();
                             check.InsurancePrice = totalInsurPrice.ToString();
                             check.TotalPrice = totalPrice.ToString();
-                            check.SurCharge = totalCharge.ToString();
+                            check.MoreCharge = totalMoreCharge.ToString();
                             check.ModifiedBy = accessor;
                             check.ModifiedDate = DateTime.Now;
                             db.Update(check);
@@ -822,11 +828,13 @@ namespace KGQT.Business
                             ship.IsInsurance = pack.IsInsurance;
                             ship.InsurancePrice = pack.IsInsurancePrice;
                             ship.SurCharge = pack.SurCharge;
+                            ship.MoreCharge = pack.MoreCharge;
                             ship.TotalPrice = Converted.Double2String(feeWeight
                                 + Converted.ToDouble(pack.AirPackagePrice)
                                 + Converted.ToDouble(pack.WoodPackagePrice)
                                 + Converted.ToDouble(pack.IsInsurancePrice)
-                                + Converted.ToDouble(pack.SurCharge));
+                                + Converted.ToDouble(pack.SurCharge)
+                                + Converted.ToDouble(pack.MoreCharge));
                             ship.Status = 1;
                             ship.ChinaExportDate = pack.ExportedCNWH;
                             ship.CreatedDate = DateTime.Now;

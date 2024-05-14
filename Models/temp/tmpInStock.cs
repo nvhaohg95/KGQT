@@ -10,6 +10,7 @@
         public double? Width { get; set; }
         public double? Height { get; set; }
         public double? SurCharge { get; set; }
+        public double? MoreCharge { get; set; }
         public double? WoodPrice { get; set; }
         public double? AirPrice { get; set; }
         public double? DeclarePrice { get; set; }

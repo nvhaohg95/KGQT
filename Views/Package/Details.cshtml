@@ -223,11 +223,18 @@
                                     <p class="text-muted mb-0"><span class="fw-bold">@Converted.String2Money(Model.IsInsurancePrice)đ</span></p>
                                 </div>
                             }
-                            @if (Model.SurCharge != null)
+                            @if (!string.IsNullOrEmpty(Model.SurCharge))
                             {
                                 <div class="d-flex justify-content-between">
                                     <p class="text-muted mb-0">Phí thu hộ:</p>
                                     <p class="text-muted mb-0"><span class="fw-bold">@Converted.String2Money(Model.SurCharge)đ</span></p>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.MoreCharge))
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-muted mb-0">Phụ phí:</p>
+                                    <p class="text-muted mb-0"><span class="fw-bold">@Converted.String2Money(Model.MoreCharge)đ</span></p>
                                 </div>
                             }
                             <!--End::Thông tin đơn-->

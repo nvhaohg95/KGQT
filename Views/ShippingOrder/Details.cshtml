@@ -224,17 +224,33 @@
                                             </div>
                                         </div>
                                     }
-                                    @if (Converted.ToDouble(item.SurCharge) > 0)
-                                    {
-                                        <div class="col-md-4 col-sm-12">
-
-                                            <div class="form-inline text-left">
-                                                Phụ phí:  &nbsp;
-                                                <p class=" mb-0">@Converted.String2Money(item.SurCharge)đ</p>
-                                            </div>
-                                        </div>
-                                    }
                                 </div>
+                                @if (Converted.ToDouble(item.SurCharge) > 0 || Converted.ToDouble(item.MoreCharge) > 0)
+                                {
+                                    <div class="row p-2 mx-0 my-2">
+
+                                        @if (Converted.ToDouble(item.SurCharge) > 0)
+                                        {
+                                            <div class="col-md-4 col-sm-12">
+
+                                                <div class="form-inline text-left">
+                                                    Phụ thu hộ:  &nbsp;
+                                                    <p class=" mb-0">@Converted.String2Money(item.SurCharge)đ</p>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (Converted.ToDouble(item.MoreCharge) > 0)
+                                        {
+                                            <div class="col-md-4 col-sm-12">
+
+                                                <div class="form-inline text-left">
+                                                    Phụ phí:  &nbsp;
+                                                    <p class=" mb-0">@Converted.String2Money(item.MoreCharge)đ</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
                                 @if ((item.IsWoodPackage != null && item.IsWoodPackage == true) || (item.IsAirPackage != null && item.IsAirPackage == true) || (item.IsInsurance != null && item.IsInsurance == true))
                                 {
                                     <div class="row p-2 mx-0 my-2">
@@ -326,8 +342,15 @@
                     @if (!string.IsNullOrEmpty(Model.Order.SurCharge))
                     {
                         <div class="d-flex justify-content-between pt-2">
-                            <p class="text-muted mb-0">Phụ phí:</p>
+                            <p class="text-muted mb-0">Phí thu hộ:</p>
                             <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.SurCharge)đ</span></p>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Order.MoreCharge))
+                    {
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="text-muted mb-0">Phụ phí:</p>
+                            <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.String2Money(Model.Order.MoreCharge)đ</span></p>
                         </div>
                     }
                     <!--End::Thông tin đơn-->

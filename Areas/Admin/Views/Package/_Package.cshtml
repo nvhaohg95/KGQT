@@ -163,23 +163,8 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="px-0 col-md-3">
-                        <div class="form-inline">
-                            <label class="col-sm-4 col-form-label justify-content-start">Thu hộ:</label>
-                            <div class="col-sm-8 input-group">
-                                <input id="txtSurCharge@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.SurCharge" placeholder="Nhập phí thu hộ">
-                                <div class="input-group-append">
-                                    <span class="btn btn-sm btn-secondary" type="button">
-                                        đ
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="row m-0 pt-2 border-top">
-
                     <div class="px-0 col-md-3">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Đo lên:</label>
@@ -230,6 +215,34 @@
                                 <div class="input-group-append">
                                     <span class="btn btn-sm btn-secondary" type="button">
                                         cm
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-0 pt-2 border-top">
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Thu hộ:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtSurCharge@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0" value="@item.SurCharge" placeholder="Nhập phí thu hộ">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-0 col-md-3">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Phụ phí:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtMoreCharge@(item.ID)" data-type="formatvnd" type="text" class="form-control form-control-sm mb-0" value="@item.MoreCharge" placeholder="Nhập tiền phụ thu">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
                                     </span>
                                 </div>
                             </div>
@@ -314,6 +327,7 @@ else
         let isPrice = $('#txtDeclarePrice' + id).data('value')
         let isLink = $('#txtDeclaration' + id).val();
         let sub = $('#txtSurCharge' + id).data('value');
+        let charge = $('#txtMoreCharge' + id).data('value');
         let username = $('#txtUsername' + id).val();
         let weightEx = $('#txtWeightEx' + id).val();
         let length = $('#txtLength' + id).val();
@@ -373,6 +387,7 @@ else
             woodPrice: wood,
             airPrice: air,
             surCharge: sub,
+            moreCharge: charge,
             link: isLink,
             declarePrice: isPrice,
             weightExchange: weightEx,

@@ -28,6 +28,7 @@ namespace KGQT.Models
         public bool? IsInsurance { get; set; }
         public string? InsurancePrice { get; set; }
         public string? SurCharge { get; set; }
+        public string? MoreCharge { get; set; }
         public string? TotalPrice { get; set; }
         public DateTime? DateExpectation { get; set; }
         public DateTime? DateExpectationEdit { get; set; }

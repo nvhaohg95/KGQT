@@ -45,7 +45,7 @@ namespace KGQT.Controllers
                 var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
                 if (userModel != null)
                 {
-                    if(userModel.IsSavePassword)
+                    if (userModel.IsSavePassword)
                     {
                         var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userModel.UserName);
                         if (account != null)
@@ -55,13 +55,12 @@ namespace KGQT.Controllers
                             else
                                 return RedirectToAction("Index", "Package");
                         }
-                    }    
+                    }
                     return View(userModel);
                 }
             }
             return View(new UserModel());
         }
-
         [HttpPost]
         public DataReturnModel<tbl_Account> Login(UserModel model)
         {
@@ -70,12 +69,8 @@ namespace KGQT.Controllers
             var result = AccountBusiness.Login(model.UserName, model.PassWord);
             if (!result.IsError)
             {
-                CookieOptions options = new CookieOptions();
-                options.Expires = DateTime.Now.AddDays(30);
-                HttpContext.Response.Cookies.Append("user", model.UserName, options);
-
-                //var cookieService = new CookieService(HttpContext);
-                //cookieService.Set("tkck", JsonConvert.SerializeObject(model));
+                var cookieService = new CookieService(HttpContext);
+                cookieService.Set("tkck", JsonConvert.SerializeObject(model));
             }
             return result;
         }
@@ -87,7 +82,6 @@ namespace KGQT.Controllers
         {
             var cookieService = new CookieService(HttpContext);
             cookieService.Remove("tkck");
-            HttpContext.Response.Cookies.Delete("user");
             return Redirect("login");
         }
         #endregion

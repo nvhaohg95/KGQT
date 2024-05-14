@@ -38,7 +38,7 @@ namespace KGQT.Areas.Admin.Controllers
             string userLogin = userModel != null ? userModel.UserName : "";
             using (var db = new nhanshiphangContext())
             {
-                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
+                var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize);
                 var lstData = oData[0] as List<tbl_ShippingOrder>;
                 int numberRecord = (int)oData[1];
                 int numberPage = (int)oData[2];

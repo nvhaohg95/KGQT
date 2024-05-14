@@ -123,6 +123,24 @@ namespace KGQT.Controllers
             var data = PackagesBusiness.ChangeAutoQuery(id,check);
             return data;
         }
+
+
+        /// <summary>
+        /// Thêm ghi chú
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public DataReturnModel<bool> SaveNote(int id, string note)
+        {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var dt = PackagesBusiness.SaveNote(id, note, userLogin);
+            return dt;
+        }
         #endregion
 
     }

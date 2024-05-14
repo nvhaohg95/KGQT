@@ -24,7 +24,7 @@
         else
         {
             if(user.RoleID != 1)
-                Context.Response.Redirect("/Home/Dashboard");
+                Context.Response.Redirect("/Home/package/index");
             else
             {
                 var oData = NotificationBusiness.GetPage(0, 0, null, null, pageNoti, 20, true);

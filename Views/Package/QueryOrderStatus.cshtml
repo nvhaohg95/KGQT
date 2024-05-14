@@ -1,8 +1,11 @@
-﻿@using KGQT.Models.temp;
+﻿@using KGQT.Business.Base;
+@using KGQT.Models.temp;
+@using KGQT.Models;
 @model DataReturnModel<tmpChinaOrderStatus>
 @{
     ViewData["Title"] = "QueryOrderStatus";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == Model.Key);
 }
 
 <div class="row mb-2">
@@ -65,9 +68,39 @@
             }
         </div>
         <div class="col-md-12 col-sm-12 col-lg-12 text-right">
-            <a class="btn btn-sm btn-success w-100px" href="/admin/package">Quay lại</a>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input autoquery" type="checkbox" id="autoquery" value="@oPack.ID" name="MovingMethod" @(oPack.AutoQuery == true ? "checked" : "")>
+                    <label class="form-check-label text-danger" for="movingfast">Đăng ký theo dõi sát kiện</label>
+                </div>
+            <a class="btn btn-sm btn-success w-100px" href="/package/index">Quay lại</a>
         </div>
     </div>
 </div>
 
 
+<script>
+    $(".autoquery").change(function () {
+        let check = $(this).prop('checked');
+        let id = $(this).val();
+        $.ajax({
+            url: '/Package/ChangeAutoQuery',
+            type: 'POST',
+            data: { id, check },
+            beforeSend: function () {
+                stopLoading();
+            },
+            // other AJAX options here
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message)
+                else
+                    helper.showSuc(result.message, false)
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }, complete: function () {
+                stopLoading(true);
+            }
+        });
+    });
+</script>
