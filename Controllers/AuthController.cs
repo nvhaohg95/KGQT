@@ -89,8 +89,8 @@ namespace KGQT.Controllers
                 options.Expires = DateTime.Now.AddDays(30);
                 HttpContext.Response.Cookies.Append("user", model.UserName, options);
 
-                var cookieService = new CookieService(HttpContext);
-                cookieService.Set("tkck", JsonConvert.SerializeObject(model));
+                //var cookieService = new CookieService(HttpContext);
+                //cookieService.Set("tkck", JsonConvert.SerializeObject(model));
             }
             return result;
         }
@@ -102,6 +102,7 @@ namespace KGQT.Controllers
         {
             var cookieService = new CookieService(HttpContext);
             cookieService.Remove("tkck");
+            HttpContext.Response.Cookies.Delete("user");
             return Redirect("login");
         }
         #endregion
