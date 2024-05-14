@@ -5,20 +5,41 @@
 @using KGQT.Models;
 @using Newtonsoft.Json;
 @{
-    var cookieService = new CookieService(Context);
-    var tkck = cookieService.Get("tkck");
+    //var cookieService = new CookieService(Context);
+    //var tkck = cookieService.Get("tkck");
+    //tbl_Account user = null;
+    //var lstNoti = new List<tbl_Notification>();
+    //int pageNoti = 1;
+    //int toalPageNoti = 0;
+    //int totalNoti = 0;
+    //if (!string.IsNullOrEmpty(tkck))
+    //{
+    //    var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+    //    if(userModel == null)
+    //        Context.Response.Redirect("/Auth/Login");
+
+    //    user = AccountBusiness.GetInfo(-1, userModel.UserName);
+    //    if (user == null)
+    //        Context.Response.Redirect("/Auth/Login");
+    //    else
+    //    {
+    //        var oData = NotificationBusiness.GetPage(user.ID, 0, null, null, pageNoti, 20);
+    //        lstNoti = oData[0] as List<tbl_Notification>;
+    //        toalPageNoti = (int)oData[2];
+    //        totalNoti = NotificationBusiness.GetTotal(user.ID);
+    //    }
+    //}
+    //else
+    //    Context.Response.Redirect("/Auth/Login");
+    var sUser = Context.Request.Cookies["user"];
     tbl_Account user = null;
     var lstNoti = new List<tbl_Notification>();
     int pageNoti = 1;
     int toalPageNoti = 0;
     int totalNoti = 0;
-    if (!string.IsNullOrEmpty(tkck))
+    if (!string.IsNullOrEmpty(sUser))
     {
-        var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
-        if(userModel == null)
-            Context.Response.Redirect("/Auth/Login");
-
-        user = AccountBusiness.GetInfo(-1, userModel.UserName);
+        user = AccountBusiness.GetInfo(-1, sUser);
         if (user == null)
             Context.Response.Redirect("/Auth/Login");
         else

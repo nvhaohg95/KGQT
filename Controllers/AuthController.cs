@@ -38,29 +38,43 @@ namespace KGQT.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            var cookieService = new CookieService(HttpContext);
-            var tkck = cookieService.Get("tkck");
-            if (!string.IsNullOrEmpty(tkck))
+            //var cookieService = new CookieService(HttpContext);
+            //var tkck = cookieService.Get("tkck");
+            //if (!string.IsNullOrEmpty(tkck))
+            //{
+            //    var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            //    if (userModel != null)
+            //    {
+            //        if(userModel.IsSavePassword)
+            //        {
+            //            var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userModel.UserName);
+            //            if (account != null)
+            //            {
+            //                if (account.RoleID == 1)
+            //                    return Redirect("/admin/package/index");
+            //                else
+            //                    return RedirectToAction("Dashboard", "Home");
+            //            }
+            //        }    
+            //        return View(userModel);
+            //    }
+            //return View(new UserModel());
+
+            var userName = HttpContext.Request.Cookies["user"];
+            if (!string.IsNullOrEmpty(userName))
             {
-                var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
-                if (userModel != null)
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                if (user != null)
                 {
-                    if(userModel.IsSavePassword)
-                    {
-                        var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userModel.UserName);
-                        if (account != null)
-                        {
-                            if (account.RoleID == 1)
-                                return Redirect("/admin/package/index");
-                            else
-                                return RedirectToAction("Dashboard", "Home");
-                        }
-                    }    
-                    return View(userModel);
+                    if (user.RoleID == 1)
+                        return Redirect("/admin/package/index");
+                    else
+                        return RedirectToAction("Dashboard", "Home");
                 }
             }
-            return View(new UserModel());
+            return View();
         }
+
         [HttpPost]
         public DataReturnModel<tbl_Account> Login(UserModel model)
         {
