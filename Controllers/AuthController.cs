@@ -71,6 +71,10 @@ namespace KGQT.Controllers
             var result = AccountBusiness.Login(model.UserName, model.PassWord);
             if (!result.IsError)
             {
+                CookieOptions options = new CookieOptions();
+                options.Expires = DateTime.Now.AddDays(30);
+                HttpContext.Response.Cookies.Append("user", model.UserName, options);
+
                 var cookieService = new CookieService(HttpContext);
                 cookieService.Set("tkck", JsonConvert.SerializeObject(model));
             }
