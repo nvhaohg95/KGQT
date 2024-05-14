@@ -53,7 +53,7 @@ namespace KGQT.Controllers
                             if (account.RoleID == 1)
                                 return Redirect("/admin/package/index");
                             else
-                                return RedirectToAction("Dashboard", "Home");
+                                return RedirectToAction("Index", "Package");
                         }
                     }    
                     return View(userModel);
