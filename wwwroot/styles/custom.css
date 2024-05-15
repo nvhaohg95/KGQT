@@ -6,7 +6,7 @@
 }
 
     .bg-nsh1:hover, .bg-nsh1:focus, .hover-nsh1:hover, .hover-nsh1:focus {
-        background: #f5b821 !important;
+        background: #fd9e42 !important;
         color: white !important;
     }
 
@@ -19,13 +19,22 @@
             background: #008cd0 !important;
             color: white !important;
         }
+.bg-orange:hover {
+    background: #bb8c5e !important;
+    color: white !important;
+}
+
+.bg-orange:active {
+    background: #008cd0 !important;
+    color: white !important;
+}
 .editable {
     height: 30px;
     /*padding: 5px;*/
     overflow-y: scroll;
 }
-.h-32px{
-    height:32px !important;
+.h-48px{
+    height:48px !important;
 }
 .w-50px {
     width: 50px !important;

@@ -32,6 +32,7 @@ namespace KGQT.Models
         public string? IsInsurancePrice { get; set; }
         public bool? IsBrand { get; set; }
         public string? SurCharge { get; set; }
+        public string? MoreCharge { get; set; }
         public string? TotalPrice { get; set; }
         public string? Declaration { get; set; }
         public string? DeclarePrice { get; set; }

@@ -109,8 +109,16 @@
                     <input type="text" class="form-control" id="txtSurCharge" data-type="formatvnd" onkeyup="format(this)" value="@Model.SurCharge" name="SurCharge" placeholder="Nhập mã vận đơn">
                 </div>
                 <div class="form-group mb-4">
+                    <label class="required" for="txtShipID">Phụ phí</label>
+                    <input type="text" class="form-control" id="txtMoreCharge" data-type="formatvnd" onkeyup="format(this)" value="@Model.SurCharge" name="MoreCharge" placeholder="Nhập mã vận đơn">
+                </div>
+                <div class="form-group mb-4">
                     <label class="required" for="txtShipID">Mã file lô</label>
                     <input type="text" class="form-control" id="txtBigPackage" name="BigPackage" placeholder="Nhập mã file lô" value="@Model.BigPackage">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="txtShipID">Mô tả</label>
+                    <textarea class="form-control" name="Note" placeholder="Nhập mô tả" rows="4">@Model.Note</textarea>
                 </div>
                 <div class="form-group mb-2">
                     <label class="mb-0">Trạng thái</label>
@@ -279,6 +287,14 @@
         if (data.DeclarePrice) {
             data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
         }
+
+        if (data.Note) {
+            if (data.Note.length > 70) {
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+                return
+            }
+        }
+
         var inputMoney = document.querySelectorAll('[data-type="formatvnd"]');
         inputMoney.forEach(function (input, index) {
             let name = input.getAttribute('name');

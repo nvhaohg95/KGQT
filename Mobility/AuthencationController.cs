@@ -379,22 +379,17 @@ namespace KGQT.Mobility
                 }
                 if (!string.IsNullOrEmpty(result.IMG))
                 {
-                    string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + result.IMG;
-                    byte[] imageBytes = File.ReadAllBytes(path);
-                    string base64String = Convert.ToBase64String(imageBytes);
-                    result.IMG = base64String;
-                    /*using (Image image = Image.FromFile(path))
+                    try
                     {
-                        using (MemoryStream m = new MemoryStream())
-                        {
-                            image.Save(m, image.RawFormat);
-                            byte[] imageBytes = m.ToArray();
-
-                            // Convert byte[] to Base64 String
-                            string base64String = Convert.ToBase64String(imageBytes);
-                            result.IMG = base64String;
-                        }
-                    }*/
+                        string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + result.IMG;
+                        byte[] imageBytes = File.ReadAllBytes(path);
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        result.IMG = base64String;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.IMG = "";
+                    }
                 }
                 return new object[] { false, result };
             }

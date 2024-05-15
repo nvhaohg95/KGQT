@@ -15,7 +15,7 @@
     if (!string.IsNullOrEmpty(tkck))
     {
         var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
-        if(userModel == null)
+        if (userModel == null)
             Context.Response.Redirect("/Auth/Login");
 
         user = AccountBusiness.GetInfo(-1, userModel.UserName);
@@ -45,7 +45,7 @@
     <link href="~/css/styles.css" rel="stylesheet" />
     @*<script src="https:use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>*@
     <!-- Custom fonts for this template-->
-    <link rel="icon" href="~/img/logo.png"/>
+    <link rel="icon" href="~/img/logo.png" />
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
     <link href="~/styles/user.css" rel="stylesheet" type="text/css">
@@ -107,7 +107,7 @@
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Thông báo">
                     <i class="fas fa-bell fa-fw"></i>
-                    @if(totalNoti > 0)
+                    @if (totalNoti > 0)
                     {
                         <span class="badge badge-danger badge-counter">@(totalNoti > 9 ? "9+" : totalNoti)</span>
 
@@ -350,7 +350,7 @@
                                     <span class="text-danger">(*)</span>
                                 </div>
                                 <div class="col-9">
-                                    <input type="text" name="UserName" value="@user.Username" placeholder="Tài khoản" class="form-control" readonly/>
+                                    <input type="text" name="UserName" value="@user.Username" placeholder="Tài khoản" class="form-control" readonly />
                                 </div>
                             </div>
                             <div class="row align-items-center my-2 h-50px">
@@ -359,7 +359,7 @@
                                     <span class="text-danger">(*)</span>
                                 </div>
                                 <div class="col-9 d-flex align-items-center position-relative">
-                                    <input id="txtPassword1" type="password" name="OldPassword" placeholder="Mật khẩu" class="form-control"/>
+                                    <input id="txtPassword1" type="password" name="OldPassword" placeholder="Mật khẩu" class="form-control" />
                                     <span class="position-absolute r-20px cursor-pointer" id="show_pass1">
                                         <i class="fa fa-eye-slash" id="iconShow1" onclick="showHidePass('#iconShow1','#txtPassword1')"></i>
                                     </span>
@@ -566,7 +566,7 @@
         </div>
     }
 
-    <div id="copied-success" class="copied"><span>Đã copy ✅!</span></div>
+    <div id="copied-success" class="copied" style="display:none"><span>Đã copy ✅!</span></div>
     <div id="overlay">
         <div class="cv-spinner">
             <span class="spinner"></span>

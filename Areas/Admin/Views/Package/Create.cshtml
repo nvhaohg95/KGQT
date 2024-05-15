@@ -99,12 +99,12 @@
                     <input type="text" class="form-control" data-type="formatvnd" id="txtSurCharge" onkeyup="format(this)" name="SurCharge" placeholder="Nhập số tiền">
                 </div>
                 <div class="form-group mb-4">
-                    <label  for="txtShipID">Mã file lô</label>
+                    <label for="txtShipID">Mã file lô</label>
                     <input type="text" class="form-control" id="txtBigPackage" name="BigPackage" placeholder="Nhập mã file lô">
                 </div>
                 <div class="form-group mb-4">
                     <label for="txtShipID">Mô tả</label>
-                    <textarea id="textEditer" class="form-control" name="Note" placeholder="Nhập mô tả" rows="4"></textarea>
+                    <textarea class="form-control" name="Note" placeholder="Nhập mô tả (tối đa 70 từ)" rows="4"></textarea>
                 </div>
 
                 <div class="col-md-12 col-sm-12 col-lg-12 text-center">
@@ -244,6 +244,14 @@
         if (data.DeclarePrice) {
             data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
         }
+
+        if (data.Note) {
+            if (data.Note.length > 70) {
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+                return
+            }
+        }
+
         $.ajax({
             url: '/admin/Package/Create',
             type: 'POST',

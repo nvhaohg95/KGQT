@@ -174,6 +174,7 @@ namespace KGQT.Business
                     + Converted.ToDouble(pack.AirPackagePrice)
                     + Converted.ToDouble(pack.WoodPackagePrice)
                     + Converted.ToDouble(pack.IsInsurancePrice)
+                    + Converted.ToDouble(pack.MoreCharge)
                     + Converted.ToDouble(pack.SurCharge));
                 ship.Status = 1;
                 ship.ChinaExportDate = pack.ExportedCNWH;
@@ -270,8 +271,9 @@ namespace KGQT.Business
                 double totalAirPrice = packages.Where(x => x.AirPackagePrice != null).Sum(x => Converted.ToDouble(x.AirPackagePrice));
                 double totalInsurPrice = packages.Where(x => x.IsInsurancePrice != null).Sum(x => Converted.ToDouble(x.IsInsurancePrice));
                 double totalCharge = packages.Sum(x => Converted.ToDouble(x.SurCharge));
+                double totalMoreCharge = packages.Sum(x => Converted.ToDouble(x.MoreCharge));
                 double totalweightPrice = priceBrand + weightPrice;
-                var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge;
+                var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge + totalMoreCharge;
                 var sPack = packages.Select(x => x.PackageCode).ToArray();
 
                 ship.PackageCode = string.Join(", ", sPack);
@@ -282,6 +284,7 @@ namespace KGQT.Business
                 ship.InsurancePrice = totalInsurPrice.ToString();
                 ship.TotalPrice = totalPrice.ToString();
                 ship.SurCharge = totalCharge.ToString();
+                ship.MoreCharge = totalMoreCharge.ToString();
                 ship.ModifiedBy = accessor;
                 ship.ModifiedDate = DateTime.Now;
                 db.tbl_ShippingOrders.Update(ship);

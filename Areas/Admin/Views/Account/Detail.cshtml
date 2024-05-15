@@ -1,4 +1,5 @@
-﻿@using KGQT.Models.temp;
+﻿@using KGQT.Commons;
+@using KGQT.Models.temp;
 @model KGQT.Models.tbl_Account;
 
 @{
@@ -88,7 +89,7 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label for="Wallet">Ví cá nhân</label>
-                            <input name="Wallet" id="Wallet" value="@string.Format("{0:N0}",Model.Wallet).Replace(",",".")đ" class="form-control text-danger" placeholder="0đ" readonly />
+                            <input name="Wallet" id="Wallet" value="@Converted.String2Money(Model.Wallet)đ" class="form-control text-danger" placeholder="0đ" readonly />
                         </div>
                     </div>
                 </div>

@@ -45,7 +45,7 @@ namespace KGQT.Controllers
                 var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
                 if (userModel != null)
                 {
-                    if(userModel.IsSavePassword)
+                    if (userModel.IsSavePassword)
                     {
                         var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userModel.UserName);
                         if (account != null)
@@ -55,7 +55,7 @@ namespace KGQT.Controllers
                             else
                                 return RedirectToAction("Index", "Package");
                         }
-                    }    
+                    }
                     return View(userModel);
                 }
             }
