@@ -1,8 +1,10 @@
-﻿using KGQT.Business;
+﻿using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming;
+using KGQT.Business;
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace KGQT.Areas.Controllers
@@ -23,7 +25,6 @@ namespace KGQT.Areas.Controllers
             ViewData["toDate"] = toDate;
             ViewData["totalRecord"] = totalRecord;
             ViewData["totalPage"] = totalPage;
-
             return View(lstData);
         }
 
@@ -74,8 +75,16 @@ namespace KGQT.Areas.Controllers
         }
         #endregion
 
+        #region Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+        #endregion
+
         #region Add
-        public DataReturnModel<bool> Add(string to, string contents)
+        [HttpPost]
+        public DataReturnModel<bool> Create(NotificationViewModel model)
         {
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
@@ -84,7 +93,7 @@ namespace KGQT.Areas.Controllers
             DataReturnModel<bool> result = new();
             if(!string.IsNullOrEmpty(userLogin))
             {
-                result = NotificationBusiness.SendNotiForUser(to, contents, userLogin);
+                result = NotificationBusiness.SendNotiForUser(model.To, model.Contents, model.SendToAll, userLogin);
             }
             else
             {
@@ -95,6 +104,7 @@ namespace KGQT.Areas.Controllers
             return result;
 
         }
+        
         #endregion
     }
 }

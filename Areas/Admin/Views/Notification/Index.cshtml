@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<KGQT.Models.tbl_Notification>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Thông báo";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -54,6 +55,7 @@
                     <i class="fas fa-sync fa-xs"></i> Xóa lọc
                 </a>
                 <button type="submit" class="btn btn-sm btn-primary mr-2 w-100px"><i class="fas fa-search fa-xs"></i>Tìm kiếm</button>
+                <a class="btn btn-sm btn-success mr-2 w-100px" href="Create"><i class="fas fa-plus"></i>&nbspThêm</a>
                 @*<button type="button" class="btn btn-sm btn-success w-100px" data-bs-toggle="modal" data-bs-target="#popup">
                     <i class="fas fa-plus"></i>&nbspThêm
                 </button>*@
@@ -141,7 +143,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h5 class="modal-title" id="popupModalLabel">THÔNG BÁO</h5>
+                <h5 class="modal-title" id="popupModalLabel">GỬI THÔNG BÁO</h5>
                 <button type="button" class="close" id="btnClose" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -154,11 +156,22 @@
                                 <span>Gửi đến:</span>
                             </div>
                             <div class="d-flex align-items-center w-100">
-                                <input type="text" name="To" id="txtUserName" placeholder="Tài khoản" class="form-control mr-2" />
-                                <button type="button" class="btn btn-sm btn-info w-35 h-35">@@</button>
+                                <select name="To" class="form-control" asp-items="@ViewBag.multiSelectList" multiple>
+                                </select>
                             </div>
                         </div>
                     </div>
+                    @*<div class="row">
+                        <div class="col-12 flex-column mb-2 ">
+                            <div class="fw-bold">
+                                <span>Gửi đến:</span>
+                            </div>
+                            <div class="d-flex align-items-center w-100">
+                                <input type="text" name="To" id="txtUserName" placeholder="Tài khoản" class="form-control mr-2" />
+                                <button type="button" class="btn btn-sm btn-secondary w-35 h-35">@@</button>
+                            </div>
+                        </div>
+                    </div>*@
                     <div class="row">
                         <div class="col-12">
                             <span class="fw-bold">Nội dung:</span>
@@ -191,38 +204,38 @@
             location.href = location.href.replace(`page=${@(page)}`, `page=${pageIndex}`);
     }
 
-    $(document).ready(function () {
-        $('#txtUserName').autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: '/admin/WithDraw/AutoComplete',
-                    type: 'GET',
-                    data: {
-                        s: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 3,
-            delay: 500,
-            select: function (event, ui) {
-                $(this).val(ui.item.username);
-                return false;
-            },
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            return $("<li>")
-                .append("<div>" + item.username + " - " + item.email + "</div>")
-                .appendTo(ul);
-        };;
-    });
+    //$(document).ready(function () {
+    //    $('#txtUserName').autocomplete({
+    //        source: function (request, response) {
+    //            $.ajax({
+    //                url: '/admin/WithDraw/AutoComplete',
+    //                type: 'GET',
+    //                data: {
+    //                    s: request.term
+    //                },
+    //                success: function (data) {
+    //                    response(data);
+    //                }
+    //            });
+    //        },
+    //        minLength: 3,
+    //        delay: 500,
+    //        select: function (event, ui) {
+    //            $(this).val(ui.item.username);
+    //            return false;
+    //        },
+    //        open: function () {
+    //            $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+    //        },
+    //        close: function () {
+    //            $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+    //        }
+    //    }).autocomplete("instance")._renderItem = function (ul, item) {
+    //        return $("<li>")
+    //            .append("<div>" + item.username + " - " + item.email + "</div>")
+    //            .appendTo(ul);
+    //    };;
+    //});
 
     function insert(){
         var data = helper.form2Object($('#formAdd').serializeArray());
@@ -230,32 +243,32 @@
             helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
             return;
         }
-
         if (!data.To) {
-            helper.showWar('Vui lòng chọn người nhận!');
+            helper.showWarn('Vui lòng chọn người nhận!');
             return;
         }
-
         if (!data.Contents) {
-            helper.showWar('Vui lòng nhập nội dung!');
+            helper.showWarn('Vui lòng nhập nội dung!');
             return
         }
-        document.getElementById("formAdd").reset();
-        document.getElementById("btnClose").click();
-        //$.ajax({
-        //    url: '/Admin/WithDraw/Create',
-        //    type: 'POST',
-        //    data: { model: data },
-        //    success: function (respone) {
-        //        if (respone.isError)
-        //            helper.showErr(respone.message)
-        //        else 
-        //            helper.showSuc('Gửi thành công!');
-        //    },
-        //    error: function (xhr, status, err) {
-        //        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+        $.ajax({
+            url: '/Admin/Notification/Add',
+            type: 'POST',
+            data: { to : data.To, contents : data.Contents },
+            success: function (respone) {
+                if (respone.isError)
+                    helper.showErr(respone.message)
+                else 
+                {
+                    helper.showSuc('Gửi thành công!');
+                    document.getElementById("formAdd").reset();
+                    document.getElementById("btnClose").click();
+                }
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
 
-        //    }
-        //});
+            }
+        });
     }
 </script>

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<KGQT.Models.tbl_Withdraw>
+﻿@using KGQT.Commons;
+@model IEnumerable<KGQT.Models.tbl_Withdraw>
 
 @{
     ViewData["Title"] = "Rút tiền";
@@ -96,7 +97,7 @@
                             @item.Note
                         </td>
                         <td class="text-center align-middle text-danger">
-                            @string.Format("{0:N0}",item.Amount).Replace(",",".")đ
+                            @Converted.String2Money(item.Amount)
                         </td>
                         <td class="text-center align-middle">
                             @if (item.Status == 1)
@@ -115,12 +116,10 @@
                         <td class="text-right align-middle">
                             @if (item.Status == 1)
                             {
-                                <a class="btn btn-sm btn-success" onclick="clickApproval(@item.ID)">
-                                    <i class="fas fa-check"></i>
+                                <a class="btn btn-sm btn-success w-100px" onclick="clickApproval(@item.ID)">
                                     <span>Duyệt</span>
                                 </a>
-                                <a class="btn btn-sm btn-danger" onclick="clickRefuse(@item.ID)">
-                                    <i class="fas fa-minus-circle"></i>
+                                <a class="btn btn-sm btn-danger w-100px" onclick="clickRefuse(@item.ID)">
                                     <span>Từ chối</span>
                                 </a>
                             }
