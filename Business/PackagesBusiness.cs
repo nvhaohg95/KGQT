@@ -134,7 +134,8 @@ namespace KGQT.Business
                         WareHouse = p.pack.WareHouse,
                         CreatedDate = p.pack.CreatedDate,
                         Note = p.pack.Note,
-                        AutoQuery = p.pack.AutoQuery
+                        AutoQuery = p.pack.AutoQuery,
+                        CanceledBy = p.pack.CanceledBy
                     }).ToList();
 
                 }
@@ -339,61 +340,46 @@ namespace KGQT.Business
 
                 if (exist != null)
                 {
-                    if (exist.Status == 9 && exist.CanceledBy == userLogin)
+                    if (exist.Username == userLogin || string.IsNullOrEmpty(exist.Username))
                     {
-                        exist.Status = 1;
-                        exist.ModifiedBy = user.Username;
-                        exist.ModifiedDate = DateTime.Now;
-                        var update = BusinessBase.Update(exist);
-                        if (update)
-                            BusinessBase.TrackLog(user.ID, form.ID, "{0} đã khôi phục kiện", 0, user.Username);
-                        data.IsError = false;
-                        data.Message = "Tạo Mã vận đơn thành công!";
+                        exist.UID = user.ID;
+                        exist.Username = user.Username;
+                        exist.FullName = user.FullName;
+                        exist.Address = user.Address;
+                        exist.Phone = user.Phone;
+                        exist.Email = user.Email;
+                    }
+                    else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
+                    {
+                        data.Message = $"Mã vận đơn {item} đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin! <hr>";
+                        fail++;
                         continue;
                     }
-                    else
+
+                    if (form.MovingMethod > 0 && exist.MovingMethod != form.MovingMethod)
+                        equalVC = true;
+
+                    exist.IsAirPackage = form.IsAirPackage;
+                    exist.IsWoodPackage = form.IsWoodPackage;
+                    exist.IsInsurance = form.IsInsurance;
+                    if (form.IsInsurance.HasValue && form.IsInsurance == true)
                     {
-                        if (exist.Username == userLogin || string.IsNullOrEmpty(exist.Username))
-                        {
-                            exist.UID = user.ID;
-                            exist.Username = user.Username;
-                            exist.FullName = user.FullName;
-                            exist.Address = user.Address;
-                            exist.Phone = user.Phone;
-                            exist.Email = user.Email;
-                        }
-                        else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
-                        {
-                            data.Message = $"Mã vận đơn {item} đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin! <hr>";
-                            fail++;
-                            continue;
-                        }
-
-                        if (form.MovingMethod > 0 && exist.MovingMethod != form.MovingMethod)
-                            equalVC = true;
-
-                        exist.IsAirPackage = form.IsAirPackage;
-                        exist.IsWoodPackage = form.IsWoodPackage;
-                        exist.IsInsurance = form.IsInsurance;
-                        if (form.IsInsurance.HasValue && form.IsInsurance == true)
-                        {
-                            exist.Declaration = form.Declaration;
-                            exist.DeclarePrice = form.DeclarePrice;
-                            exist.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
-                        }
-
-                        exist.ModifiedBy = user.Username;
-                        exist.ModifiedDate = DateTime.Now;
-                        var update = BusinessBase.Update(exist);
-                        if (update)
-                            BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
-                        data.IsError = false;
-                        data.Message = "Tạo Mã vận đơn thành công!";
-                        if (equalVC)
-                            data.Message = $"Mã vận đơn {item} đã được nhân viên khai báo phương thức vận chuyển." +
-                                $" Để thay đổi phương thức vận chuyển vui lòng liên hệ nhân viên Nhanshiphang để được giúp đỡ <hr>";
-                        continue;
+                        exist.Declaration = form.Declaration;
+                        exist.DeclarePrice = form.DeclarePrice;
+                        exist.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
                     }
+
+                    exist.ModifiedBy = user.Username;
+                    exist.ModifiedDate = DateTime.Now;
+                    var update = BusinessBase.Update(exist);
+                    if (update)
+                        BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
+                    data.IsError = false;
+                    data.Message = "Tạo Mã vận đơn thành công!";
+                    if (equalVC)
+                        data.Message = $"Mã vận đơn {item} đã được nhân viên khai báo phương thức vận chuyển." +
+                            $" Để thay đổi phương thức vận chuyển vui lòng liên hệ nhân viên Nhanshiphang để được giúp đỡ <hr>";
+                    continue;
                 }
                 else
                 {
@@ -597,6 +583,31 @@ namespace KGQT.Business
             }
         }
 
+        public static DataReturnModel<bool> Restore(int id, string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var dt = new DataReturnModel<bool>();
+                var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == id);
+                if (pack != null && pack.CanceledBy == username)
+                {
+                    pack.Status = 1;
+                    pack.ModifiedBy = username;
+                    pack.ModifiedDate = DateTime.Now;
+                    pack.CanceledBy = "";
+                    db.Update(pack);
+                    if (db.SaveChanges() > 0)
+                    {
+                        dt.IsError = false;
+                        dt.Message = "Mã vận đơn đã được khôi phục";
+                        return dt;
+                    }
+                }
+                dt.IsError = false;
+                dt.Message = "Khôi phục thất bại, vui lòng liên hệ chăm sóc khách hàng đề điều chỉnh!";
+                return dt;
+            }
+        }
         public static DataReturnModel<bool> InStockHCMWareHouse(tmpInStock data, string accessor)
         {
             using (var db = new nhanshiphangContext())
