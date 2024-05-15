@@ -101,13 +101,12 @@
                                             @Html.DisplayFor(modelItem => item.CreatedBy)
                                         </td>
                                         <td class="text-center">
-                                            <a class="btn btn-sm btn-info" href="/Admin/BigPackage/Detail?id=@item.ID">
-                                                <i class="far fa-edit"></i>
+                                            <a class="btn btn-sm btn-info" href="/Admin/BigPackage/Detail?id=@item.ID" title="Xem chi tiết">
                                                 <span>Xem</span>
                                             </a>
-                                            <button class="btn btn-success btn-sm" onclick="exportExcel(@item.ID)">Xuất file excel</button>
-                                            <button class="btn btn-warning btn-sm" onclick="deleteBig(@item.ID)">Xóa file</button>
-                                            <button class="btn btn-danger btn-sm" onclick="deleteBigAndPack(@item.ID)">Xóa file và kiện</button>
+                                            <button class="btn btn-success btn-sm" onclick="exportExcel(@item.ID)" title="Xuất file excel">Xuất file excel</button>
+                                            <button class="btn btn-warning btn-sm" onclick="deleteBig(@item.ID)" title="Xóa file">Xóa file</button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteBigAndPack(@item.ID)" title="Xóa file và kiện">Xóa file và kiện</button>
                                         </td>
                                     </tr>
                                 }

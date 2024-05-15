@@ -1,4 +1,5 @@
-﻿using KGQT.Commons;
+﻿using DocumentFormat.OpenXml.Office.CustomUI;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Serilog;
@@ -851,6 +852,21 @@ namespace KGQT.Business
             }
         }
 
+        #endregion
+
+
+        #region Get All User
+        public static Dictionary<string, string> GetAll()
+        {
+            Dictionary<string, string> lstData = new();
+            using (var db = new nhanshiphangContext())
+            {
+                var datas = db.tbl_Accounts.ToList();
+                if (datas.Count > 0)
+                    lstData = datas.ToDictionary(x => x.Username, y => string.IsNullOrEmpty(y.FullName) ? y.Username : y.FullName);
+            }
+            return lstData;
+        }
         #endregion
     }
 }
