@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using ExcelDataReader;
 using Fasterflect;
 using KGQT.Base;
@@ -338,46 +339,61 @@ namespace KGQT.Business
 
                 if (exist != null)
                 {
-                    if (exist.Username == userLogin || string.IsNullOrEmpty(exist.Username))
+                    if (exist.Status == 9 && exist.CanceledBy == userLogin)
                     {
-                        exist.UID = user.ID;
-                        exist.Username = user.Username;
-                        exist.FullName = user.FullName;
-                        exist.Address = user.Address;
-                        exist.Phone = user.Phone;
-                        exist.Email = user.Email;
-                    }
-                    else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
-                    {
-                        data.Message = $"Mã vận đơn {item} đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin! <hr>";
-                        fail++;
+                        exist.Status = 1;
+                        exist.ModifiedBy = user.Username;
+                        exist.ModifiedDate = DateTime.Now;
+                        var update = BusinessBase.Update(exist);
+                        if (update)
+                            BusinessBase.TrackLog(user.ID, form.ID, "{0} đã khôi phục kiện", 0, user.Username);
+                        data.IsError = false;
+                        data.Message = "Tạo Mã vận đơn thành công!";
                         continue;
                     }
-
-                    if (form.MovingMethod > 0 && exist.MovingMethod != form.MovingMethod)
-                        equalVC = true;
-
-                    exist.IsAirPackage = form.IsAirPackage;
-                    exist.IsWoodPackage = form.IsWoodPackage;
-                    exist.IsInsurance = form.IsInsurance;
-                    if (form.IsInsurance.HasValue && form.IsInsurance == true)
+                    else
                     {
-                        exist.Declaration = form.Declaration;
-                        exist.DeclarePrice = form.DeclarePrice;
-                        exist.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
-                    }
+                        if (exist.Username == userLogin || string.IsNullOrEmpty(exist.Username))
+                        {
+                            exist.UID = user.ID;
+                            exist.Username = user.Username;
+                            exist.FullName = user.FullName;
+                            exist.Address = user.Address;
+                            exist.Phone = user.Phone;
+                            exist.Email = user.Email;
+                        }
+                        else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
+                        {
+                            data.Message = $"Mã vận đơn {item} đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin! <hr>";
+                            fail++;
+                            continue;
+                        }
 
-                    exist.ModifiedBy = user.Username;
-                    exist.ModifiedDate = DateTime.Now;
-                    var update = BusinessBase.Update(exist);
-                    if (update)
-                        BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
-                    data.IsError = false;
-                    data.Message = "Tạo Mã vận đơn thành công!";
-                    if (equalVC)
-                        data.Message = $"Mã vận đơn {item} đã được nhân viên khai báo phương thức vận chuyển." +
-                            $" Để thay đổi phương thức vận chuyển vui lòng liên hệ nhân viên Nhanshiphang để được giúp đỡ <hr>";
-                    continue;
+                        if (form.MovingMethod > 0 && exist.MovingMethod != form.MovingMethod)
+                            equalVC = true;
+
+                        exist.IsAirPackage = form.IsAirPackage;
+                        exist.IsWoodPackage = form.IsWoodPackage;
+                        exist.IsInsurance = form.IsInsurance;
+                        if (form.IsInsurance.HasValue && form.IsInsurance == true)
+                        {
+                            exist.Declaration = form.Declaration;
+                            exist.DeclarePrice = form.DeclarePrice;
+                            exist.IsInsurancePrice = Converted.StringCeiling(Converted.ToDouble(form.DeclarePrice) * 0.05);
+                        }
+
+                        exist.ModifiedBy = user.Username;
+                        exist.ModifiedDate = DateTime.Now;
+                        var update = BusinessBase.Update(exist);
+                        if (update)
+                            BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
+                        data.IsError = false;
+                        data.Message = "Tạo Mã vận đơn thành công!";
+                        if (equalVC)
+                            data.Message = $"Mã vận đơn {item} đã được nhân viên khai báo phương thức vận chuyển." +
+                                $" Để thay đổi phương thức vận chuyển vui lòng liên hệ nhân viên Nhanshiphang để được giúp đỡ <hr>";
+                        continue;
+                    }
                 }
                 else
                 {
@@ -437,8 +453,8 @@ namespace KGQT.Business
                 var dt = new DataReturnModel<bool>();
                 try
                 {
-                    var orin = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
-                    var p = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
+                    var backup = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
+                    var p = backup;
                     if (p == null)
                     {
                         dt.IsError = true;
@@ -536,7 +552,7 @@ namespace KGQT.Business
                                         var s = ShippingOrder.Add(p, userLogin);
                                         if (!s)
                                         {
-                                            BusinessBase.Update(orin);
+                                            BusinessBase.Update(backup);
                                             dt.IsError = true;
                                             dt.Message = "Cập nhật không thành công!";
                                             return dt;
@@ -551,7 +567,7 @@ namespace KGQT.Business
                                         var s = ShippingOrder.Add(p, userLogin);
                                         if (!s)
                                         {
-                                            BusinessBase.Update(orin);
+                                            BusinessBase.Update(backup);
                                             dt.IsError = true;
                                             dt.Message = "Cập nhật không thành công!";
                                             return dt;
@@ -1152,6 +1168,7 @@ namespace KGQT.Business
                 if (pack != null)
                 {
                     pack.Status = 9;
+                    pack.CanceledBy = username;
                     pack.ModifiedBy = username;
                     pack.ModifiedDate = DateTime.Now;
                     db.Update(pack);

@@ -33,6 +33,9 @@
     /*padding: 5px;*/
     overflow-y: scroll;
 }
+.h-28px{
+    height:28px !important;
+}
 .h-48px{
     height:48px !important;
 }
