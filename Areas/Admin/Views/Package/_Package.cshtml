@@ -376,9 +376,6 @@ else
             return;
         }
 
-        let dateParts = importDate.split("/");
-        let dateObject = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]).toUTCString();
-
         let data = {
             id,
             username,
@@ -394,7 +391,7 @@ else
             length: length,
             width: width,
             height: height,
-            date: dateObject
+            date: importDate
         }
         $.ajax({
             url: '/admin/Package/InStockPackage',

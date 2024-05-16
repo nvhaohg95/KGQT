@@ -682,8 +682,12 @@ namespace KGQT.Business
                     pack.ModifiedDate = DateTime.Now;
                     pack.ImportedSGWH = DateTime.Now;
 
-                    if (data.Date != null && data.Date != DateTime.MinValue)
-                        pack.ImportedSGWH = data.Date.AddHours(7);
+                    if (!string.IsNullOrEmpty(data.Date))
+                    {
+                        DateTime dt2 = DateTime.ParseExact(data.Date, "dd/MM/yyyy", null);
+                        pack.ImportedSGWH = dt2;//data.Date.AddHours(7);
+
+                    }
 
                     if (pack.MovingMethod < 3)
                     {
@@ -728,9 +732,9 @@ namespace KGQT.Business
                         else
                             pack.ExportedCNWH = cnExportDateFrom;
 
-                        DateTime cnExportDateEnd = cnExportDateFrom.AddDays(1).AddTicks(-1);
+                        DateTime cnExportDateEnd = cnExportDateFrom.AddDays(1).AddMinutes(-1);
                         DateTime startDate = pack.ImportedSGWH.Value.Date; //One day 
-                        DateTime endDate = startDate.AddDays(1).AddTicks(-1);
+                        DateTime endDate = startDate.AddDays(1).AddMinutes(-1);
                         tbl_ShippingOrder check = null;
 
                         if (!string.IsNullOrEmpty(pack.TransID))
