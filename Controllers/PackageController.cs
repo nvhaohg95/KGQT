@@ -90,6 +90,7 @@ namespace KGQT.Controllers
             return data;
         }
 
+        [HttpPost]
         public DataReturnModel<bool> Cancel(int id)
         {
             var cookieService = new CookieService(HttpContext);
@@ -97,6 +98,17 @@ namespace KGQT.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             var data = PackagesBusiness.Cancel(id, userLogin);
+            return data;
+        }
+
+        [HttpPost]
+        public DataReturnModel<bool> Restore(int id)
+        {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var data = PackagesBusiness.Restore(id, userLogin);
             return data;
         }
 

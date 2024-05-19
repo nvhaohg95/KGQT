@@ -34,9 +34,8 @@ namespace KGQT.Business
             {
                 try
                 {
-                    var query = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower());
-                    query = query.Where(x => x.CreatedDate >= fromDate && x.CreatedDate <= toDate);
-                    query = query.Where(x => x.ChinaExportDate >= exportStart && x.ChinaExportDate <= exportEnd);
+                    var query = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower() 
+                    && (x.CreatedDate >= fromDate && x.CreatedDate <= toDate) && (x.ChinaExportDate >= exportStart && x.ChinaExportDate <= exportEnd));
 
                     if (!string.IsNullOrEmpty(recID))
                         query = query.Where(x => x.RecID != recID);

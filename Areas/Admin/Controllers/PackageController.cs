@@ -322,12 +322,32 @@ namespace KGQT.Areas.Admin.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             var p = BusinessBase.GetOne<tbl_Package>(x => x.ID == id);
+            var backup = p;
             if (p != null && !string.IsNullOrEmpty(userLogin))
             {
                 p.Status = 9;
+                p.CanceledBy = userModel.UserName;
                 p.ModifiedBy = userLogin;
                 p.ModifiedDate = DateTime.Now;
-                return BusinessBase.Update(p);
+                if (BusinessBase.Update(p))
+                {
+                    if (!string.IsNullOrEmpty(p.TransID))
+                    {
+                        var ship = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.RecID == p.TransID);
+                        if (ship != null)
+                        {
+                            ship.Status = 9;
+                            ship.CanceledBy = userLogin;
+                            ship.ModifiedBy = userLogin;
+                            ship.ModifiedDate = DateTime.Now;
+                            if (!BusinessBase.Update(ship))
+                            {
+                                BusinessBase.Update(backup);
+                            }
+                        }
+                    }
+                    return true;
+                }
             }
             return false;
         }

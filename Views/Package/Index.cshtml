@@ -1,9 +1,19 @@
 ﻿@model IEnumerable<KGQT.Models.tbl_Package>;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers;
 @using KGQT.Commons;
+@using KGQT.Models.temp;
+@using Newtonsoft.Json;
 @{
     ViewData["Title"] = "Danh sách ký gửi";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var cookieService = new CookieService(Context);
+    var tkck = cookieService.Get("tkck");
+    UserModel userModel = new UserModel();
+
+    if (!string.IsNullOrEmpty(tkck))
+    {
+        userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+    }
     var ID = ViewBag.ID;
     var status = ViewBag.status;
     DateTime? fromDate = ViewBag.fromDate;
@@ -114,24 +124,29 @@
                                 @(item.OrderDate.Value.ToString("dd/MM/yyyy"))
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
+                        <div class="col-lg-4 col-md-4 col-sm-12 my-auto">
                             <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
-                                <label class="mb-0 col-md-2  col-sm-12">Mô tả</label>
-                                <div class="col-md-10  col-sm-12" id="divTextarea@(item.ID)">
-                                    <textarea class="form-control p-0 h-48px bg-transparent text-white border-0" id="note@(item.ID)" readonly="readonly">@item.Note</textarea>
+                                <label class="mb-0 col-md-12 col-sm-12">Mô tả</label>
+                                <div class="col-md-12 col-sm-12" id="divTextarea@(item.ID)">
+                                    <input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />
                                 </div>
                                 <div class="col-md-2 col-sm-12 d-none" id="divBtnSave@(item.ID)">
                                     <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-12  m-auto text-md-right">
-                            <button class="btn-sm btn bg-primary text-white mr-2 mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
+                        <div class="col-lg-3 col-md-3 col-sm-12  m-auto text-md-right">
+                            <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
                             @if (item.Status < 2)
                             {
-                                <button class="btn-sm btn bg-orange text-white mr-2 mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
-                                <button class="btn btn-sm bg-dark text-white mr-2 mt-2" type="button" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                <button class="btn-sm btn bg-orange text-white mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
+                                <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@item.ID)">Hủy đơn</button>
                                 <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)" type="button">Xóa</button>
+                            }
+
+                            @if(item.Status == 9 && item.CanceledBy == userModel?.UserName)
+                            {
+                                <button class="btn-sm btn bg-success text-white mt-2" onclick="Restore(@item.ID)" type="button">Khôi phục</button>
                             }
                         </div>
                     </div>
@@ -324,8 +339,8 @@
         function addNote(id) {
             $('#divNote' + id).removeClass('d-none');
             $('#note' + id).removeAttr('readonly');
-            $('#divTextarea' + id).addClass('col-md-8');
-            $('#divTextarea' + id).removeClass('col-md-10');
+            $('#divTextarea' + id).addClass('col-md-10');
+            $('#divTextarea' + id).removeClass('col-md-12');
             $('#note' + id).removeClass('bg-transparent text-white border-0');
             $('#divBtnSave' + id).removeClass('d-none');
             $('#note' + id).focus();
@@ -350,8 +365,8 @@
                         $('#note' + id).attr('readonly', 'readonly');
                         $('#note' + id).addClass(' bg-transparent text-white border-0');
                         $('#divBtnSave' + id).addClass('d-none');
-                        $('#divTextarea' + id).addClass('col-md-10');
-                        $('#divTextarea' + id).removeClass('col-md-8');
+                        $('#divTextarea' + id).addClass('col-md-12');
+                        $('#divTextarea' + id).removeClass('col-md-10');
                         helper.showSuc("Cập nhật thành công", false);
                     }
                 },
@@ -428,6 +443,29 @@
         function cancel(id) {
             $.ajax({
                 url: '/Package/Cancel',
+                type: 'POST',
+                data: { id },
+                beforeSend: function () {
+                    stopLoading();
+                },
+                // other AJAX options here
+                success: function (result) {
+                    if (result.isError)
+                        helper.showErr(result.message)
+                    else
+                        helper.showSuc(result.message)
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }, complete: function () {
+                    stopLoading(true);
+                }
+            });
+        }
+        
+        function Restore(id) {
+            $.ajax({
+                url: '/Package/Restore',
                 type: 'POST',
                 data: { id },
                 beforeSend: function () {

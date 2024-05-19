@@ -8,7 +8,7 @@ using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
-using NToastNotify;
+
 using System.Data;
 using System.Drawing.Printing;
 using System.Xml;
@@ -20,10 +20,9 @@ namespace KGQT.Areas.Admin.Controllers
     public class ShippingOrderController : Controller
     {
         #region constructor
-        private IToastNotification _toastNotification;
-        public ShippingOrderController(IToastNotification toastNotification)
+        
+        public ShippingOrderController()
         {
-            this._toastNotification = toastNotification;
         }
 
         #endregion

@@ -3,18 +3,17 @@ using KGQT.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.EntityFrameworkCore;
-using NToastNotify;
+
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-Serilog.Log.Logger = new LoggerConfiguration()
+Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSession();
@@ -26,17 +25,7 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(policy => policy.AllowAnyOrigin
 builder.Services.AddControllersWithViews();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-builder.Services.AddDbContext<nhanshiphangContext>(o =>
-{
-    o.UseSqlServer(builder.Configuration.GetConnectionString("KGQT"));
-});
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
-// NToastNotify
-builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
-{
-    ProgressBar = true,
-    Timeout = 3000
-});
 TaskRun.Run();
 #region App
 var app = builder.Build();
@@ -59,8 +48,6 @@ app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
 
 app.UseSession();
 app.UseStaticFiles();
-if (!Directory.Exists("uploads"))
-    Directory.CreateDirectory("uploads");
 
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -71,7 +58,6 @@ app.UseStaticFiles(new StaticFileOptions
 app.MapControllers();
 app.UseRouting();
 app.UseAuthorization();
-app.UseNToastNotify();
 app.MapRazorPages();
 app.UseEndpoints(endpoints =>
 {

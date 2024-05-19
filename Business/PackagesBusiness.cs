@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using ExcelDataReader;
 using Fasterflect;
 using KGQT.Base;
@@ -133,7 +134,8 @@ namespace KGQT.Business
                         WareHouse = p.pack.WareHouse,
                         CreatedDate = p.pack.CreatedDate,
                         Note = p.pack.Note,
-                        AutoQuery = p.pack.AutoQuery
+                        AutoQuery = p.pack.AutoQuery,
+                        CanceledBy = p.pack.CanceledBy
                     }).ToList();
 
                 }
@@ -436,8 +438,8 @@ namespace KGQT.Business
                 var dt = new DataReturnModel<bool>();
                 try
                 {
-                    var orin = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
-                    var p = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
+                    var backup = db.tbl_Packages.FirstOrDefault(x => x.ID == form.ID);
+                    var p = backup;
                     if (p == null)
                     {
                         dt.IsError = true;
@@ -535,7 +537,7 @@ namespace KGQT.Business
                                         var s = ShippingOrder.Add(p, userLogin);
                                         if (!s)
                                         {
-                                            BusinessBase.Update(orin);
+                                            BusinessBase.Update(backup);
                                             dt.IsError = true;
                                             dt.Message = "Cập nhật không thành công!";
                                             return dt;
@@ -550,7 +552,7 @@ namespace KGQT.Business
                                         var s = ShippingOrder.Add(p, userLogin);
                                         if (!s)
                                         {
-                                            BusinessBase.Update(orin);
+                                            BusinessBase.Update(backup);
                                             dt.IsError = true;
                                             dt.Message = "Cập nhật không thành công!";
                                             return dt;
@@ -580,6 +582,31 @@ namespace KGQT.Business
             }
         }
 
+        public static DataReturnModel<bool> Restore(int id, string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var dt = new DataReturnModel<bool>();
+                var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == id);
+                if (pack != null && pack.CanceledBy == username)
+                {
+                    pack.Status = 1;
+                    pack.ModifiedBy = username;
+                    pack.ModifiedDate = DateTime.Now;
+                    pack.CanceledBy = "";
+                    db.Update(pack);
+                    if (db.SaveChanges() > 0)
+                    {
+                        dt.IsError = false;
+                        dt.Message = "Mã vận đơn đã được khôi phục";
+                        return dt;
+                    }
+                }
+                dt.IsError = false;
+                dt.Message = "Khôi phục thất bại, vui lòng liên hệ chăm sóc khách hàng đề điều chỉnh!";
+                return dt;
+            }
+        }
         public static DataReturnModel<bool> InStockHCMWareHouse(tmpInStock data, string accessor)
         {
             using (var db = new nhanshiphangContext())
@@ -654,8 +681,12 @@ namespace KGQT.Business
                     pack.ModifiedDate = DateTime.Now;
                     pack.ImportedSGWH = DateTime.Now;
 
-                    if (data.Date != null && data.Date != DateTime.MinValue)
-                        pack.ImportedSGWH = data.Date.AddHours(7);
+                    if (!string.IsNullOrEmpty(data.Date))
+                    {
+                        DateTime dt2 = DateTime.ParseExact(data.Date, "dd/MM/yyyy", null);
+                        pack.ImportedSGWH = dt2;//data.Date.AddHours(7);
+
+                    }
 
                     if (pack.MovingMethod < 3)
                     {
@@ -700,9 +731,9 @@ namespace KGQT.Business
                         else
                             pack.ExportedCNWH = cnExportDateFrom;
 
-                        DateTime cnExportDateEnd = cnExportDateFrom.AddDays(1).AddTicks(-1);
+                        DateTime cnExportDateEnd = cnExportDateFrom.AddDays(1).AddMinutes(-1);
                         DateTime startDate = pack.ImportedSGWH.Value.Date; //One day 
-                        DateTime endDate = startDate.AddDays(1).AddTicks(-1);
+                        DateTime endDate = startDate.AddDays(1).AddMinutes(-1);
                         tbl_ShippingOrder check = null;
 
                         if (!string.IsNullOrEmpty(pack.TransID))
@@ -1151,6 +1182,7 @@ namespace KGQT.Business
                 if (pack != null)
                 {
                     pack.Status = 9;
+                    pack.CanceledBy = username;
                     pack.ModifiedBy = username;
                     pack.ModifiedDate = DateTime.Now;
                     db.Update(pack);

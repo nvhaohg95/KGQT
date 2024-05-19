@@ -107,9 +107,9 @@
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
                                 <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
-                                    <label class="mb-0 col-md-2  col-sm-12">Mô tả</label>
-                                    <div class="col-md-10  col-sm-12" id="divTextarea@(item.ID)">
-                                        <textarea class="form-control p-0 h-48px bg-transparent text-white border-0" id="note@(item.ID)" readonly="readonly">@item.Note</textarea>
+                                    <label class="mb-0 col-md-12 col-sm-12">Mô tả</label>
+                                    <div class="col-md-12 col-sm-12" id="divTextarea@(item.ID)">
+                                        <input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />
                                     </div>
                                     <div class="col-md-2 col-sm-12 d-none" id="divBtnSave@(item.ID)">
                                         <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
@@ -117,26 +117,26 @@
                                 </div>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 my-auto text-md-right">
-                                <button class="btn-sm btn bg-primary text-white mr-2 mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
+                                <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
                                 @if (item.Status != 5)
                                 {
-                                    <a href="/admin/package/edit?id=@item.ID" class="btn mt-2 btn-sm bg-warning text-white mr-2 ">Chỉnh sửa</a>
+                                    <a href="/admin/package/edit?id=@item.ID" class="btn mt-2 btn-sm bg-warning text-white">Chỉnh sửa</a>
                                 }
                                 @if (item.Status != 5 && item.Status != 9)
                                 {
-                                    <button class="btn-sm btn bg-dark text-white mr-2 mt-2" onclick="cancel(@item.ID)">Hủy đơn</button>
+                                    <button class="btn-sm btn bg-dark text-white mt-2" onclick="cancel(@item.ID)">Hủy đơn</button>
                                 }
                                 @if (item.Status < 2)
                                 {
-                                    <button class="btn-sm btn bg-orange text-white mr-2 mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
+                                    <button class="btn-sm btn bg-orange text-white mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)">Kiểm tra hàng</button>
                                 }
                                 @if (item.Status == 3)
                                 {
-                                    <button class="btn-sm btn bg-info text-white mr-2 mt-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
+                                    <button class="btn-sm btn bg-info text-white mt-2" onclick="instock(@item.ID,'@item.PackageCode')">Nhập kho</button>
                                 }
                                 @if (item.Status != 5)
                                 {
-                                    <button class="btn-sm btn bg-danger text-white mr-2 mt-2" onclick="Delete(@item.ID)">Xóa</button>
+                                    <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)">Xóa</button>
                                 }
                             </div>
                         </div>
@@ -599,8 +599,8 @@
     function addNote(id) {
         $('#divNote' + id).removeClass('d-none');
         $('#note' + id).removeAttr('readonly');
-        $('#divTextarea' + id).addClass('col-md-8');
-        $('#divTextarea' + id).removeClass('col-md-10');
+        $('#divTextarea' + id).addClass('col-md-10');
+        $('#divTextarea' + id).removeClass('col-md-12');
         $('#note' + id).removeClass('bg-transparent text-white border-0');
         $('#divBtnSave' + id).removeClass('d-none');
         $('#note' + id).focus();
@@ -625,8 +625,8 @@
                     $('#note' + id).attr('readonly', 'readonly');
                     $('#note' + id).addClass(' bg-transparent text-white border-0');
                     $('#divBtnSave' + id).addClass('d-none');
-                    $('#divTextarea' + id).addClass('col-md-10');
-                    $('#divTextarea' + id).removeClass('col-md-8');
+                    $('#divTextarea' + id).addClass('col-md-12');
+                    $('#divTextarea' + id).removeClass('col-md-10');
                     helper.showSuc("Cập nhật thành công", false);
                 }
             },
