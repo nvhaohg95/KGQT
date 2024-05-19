@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Pqc.Crypto.Lms;
+﻿using KGQT.Models.temp;
+using Org.BouncyCastle.Pqc.Crypto.Lms;
 using static System.Net.WebRequestMethods;
 
 namespace KGQT.Base
@@ -31,6 +32,21 @@ namespace KGQT.Base
                     _settings = new Settings();
 
                 return _settings;
+            }
+        }
+        
+        static Zalo _zalo = null;
+        public static Zalo Zalo
+        {
+            get
+            {
+                if (_zalo == null)
+                    _zalo = Configuration.GetSection("Zalo").Get<Zalo>();
+
+                if (_zalo == null)
+                    _zalo = new Zalo();
+
+                return _zalo;
             }
         }
 
