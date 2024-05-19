@@ -172,7 +172,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h5 class="modal-title" id="exampleModalLabel">Thêm người dùng</h5>
+                <h5 class="modal-title text-uppercase" id="exampleModalLabel">Thêm Người Dùng</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -180,29 +180,12 @@
             <div class="modal-body">
                 <form class="container" id="formAddUser" autocomplete="off">
                     <div class="row">
-                        <div class="col-md-12 col-sm-12 form-group">
-                            <label class="control-label">
-                                <span class="fw-bold">Mã định danh</span>
-                                <span class="text-danger">(*)</span>
-                            </label>
-                            <input name="UserID" class="form-control" autocomplete="off" autofocus="true" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 form-group">
-                            <label class="control-label">
-                                <span class="fw-bold">Họ</span>
-                                <span class="text-danger">(*)</span>
-                            </label>
-                            <input name="FullName" class="form-control" autocomplete="off" />
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 col-sm-12 form-group">
                             <label class="control-label">
-                                <span class="fw-bold">Ngày sinh</span>
+                                <span class="fw-bold">Họ Tên</span>
+                                <span class="text-danger">(*)</span>
                             </label>
-                            <input name="BirthDay" class="form-control" type="date" autocomplete="off" />
+                            <input name="FullName" class="form-control" autocomplete="off" autofocus />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <label class="control-label">
@@ -218,17 +201,25 @@
                     <div class="row">
                         <div class="col-md-6 col-sm-12 form-group">
                             <label class="control-label">
-                                <span class="fw-bold">Email</span>
-                                <span class="text-danger">(*)</span>
-                            </label>
-                            <input name="Email" class="form-control" type="email" />
-                        </div>
-                        <div class="col-md-6 col-sm-12 form-group">
-                            <label class="control-label">
                                 <span class="fw-bold">SĐT</span>
                                 <span class="text-danger">(*)</span>
                             </label>
                             <input name="Phone" class="form-control" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label class="control-label">
+                                <span class="fw-bold">Email</span>
+                            </label>
+                            <input name="Email" class="form-control" type="email" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <label class="control-label">
+                                <span class="fw-bold">Địa chỉ</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input name="Address" class="form-control" type="text" autocomplete="off" />
                         </div>
                     </div>
                     <div class="row">
@@ -248,7 +239,13 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12 col-sm-12 form-group">
+                        <div class="col-md-6 col-sm-12 form-group">
+                            <label class="control-label">
+                                <span class="fw-bold">Mã định danh</span>
+                            </label>
+                            <input name="UserID" class="form-control" autocomplete="off" />
+                        </div>
+                        <div class="col-md-6 col-sm-12 form-group">
                             <label class="control-label">
                                 <span class="fw-bold">Loại tài khoản</span>
                                 <span class="text-danger">(*)</span>
@@ -278,52 +275,47 @@
 <script>
     function insert() {
         var data = helper.form2Object($('#formAddUser').serializeArray());
-        if (!data.UserID) {
-            helper.showErr('Mã định danh không được bỏ trống!');
-            return
-        }
-
         if (!data.FullName) {
-            helper.showErr('Họ tên người dùng không được bỏ trống!');
-            return
-        }
-
-        if (!data.Email) {
-            helper.showErr('Địa chỉ Email không được bỏ trống!');
+            helper.showWarn('Họ tên người dùng không được bỏ trống!');
             return
         }
 
         if (!data.Phone) {
-            helper.showErr('Số điện thoại không được bỏ trống!');
+            helper.showWarn('Số điện thoại không được bỏ trống!');
+            return
+        }
+
+        if (!data.Address) {
+            helper.showWarn('Địa chỉ không được bỏ trống!');
             return
         }
 
         if (!data.UserName) {
-            helper.showErr('Tài khoản không được bỏ trống!');
+            helper.showWarn('Tên tài khoản không được bỏ trống!');
             return;
         }
 
         if (!data.Password) {
-            helper.showErr('Mật khẩu không được bỏ trống!');
+            helper.showWarn('Mật khẩu không được bỏ trống!');
             return;
         }
         if (!data.RoleID) {
-            helper.showErr('Loại tài khoản không được bỏ trống!');
+            helper.showWarn('Loại tài khoản không được bỏ trống!');
             return;
         }
+
         $.ajax({
             url: "/Admin/Account/Create",
             type: 'POST',
             data: data,
             success: function (reponse) {
-                if (reponse.isError) {
+                if (reponse.isError)
                     helper.showErr(reponse.message)
-                }
                 else
                     helper.showSuc('Thêm mới thành công!')
             },
             error: function (xhr, status, err) {
-                    helper.showErr('Hệ thống thực thi không thành công!')
+                    helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
             }
         });
     }

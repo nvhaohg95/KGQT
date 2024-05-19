@@ -103,7 +103,6 @@
 </div>
 
 <script>
-    // update
     function update() {
         debugger
         let data = helper.form2Object($('#formUser').serializeArray());
@@ -114,7 +113,7 @@
             form.append("file", files[0]);
         }
         $.ajax({
-            url: '/Admin/Account/UpdateInfo',
+            url: '/Admin/Account/Update',
             type: 'Post',
             data: form,
             contentType: false,

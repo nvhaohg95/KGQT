@@ -5,7 +5,7 @@ using KGQT.Models;
 using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using NToastNotify;
+
 
 namespace KGQT.Controllers
 {
@@ -13,10 +13,10 @@ namespace KGQT.Controllers
     public class ShippingOrderController : Controller
     {
         #region constructor
-        private IToastNotification _toastNotification;
-        public ShippingOrderController(IToastNotification toastNotification)
+        
+        public ShippingOrderController()
         {
-            _toastNotification = toastNotification;
+            
         }
         #endregion
 

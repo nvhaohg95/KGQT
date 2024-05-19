@@ -17,11 +17,8 @@ namespace KGQT.Models
         public string? Phone { get; set; }
         public string? IMG { get; set; }
         /// <summary>
-        /// 0. Admin
-        /// 1. User
-        /// 2. Quản lý văn phòng
-        /// 3. Quản lý kho
-        /// 4. Nhân viên
+        /// 1. Admin
+        /// 4. User
         /// </summary>
         public int? RoleID { get; set; }
         /// <summary>

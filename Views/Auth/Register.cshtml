@@ -88,7 +88,7 @@
                                 </form>
                                 <hr />
                                 <div class="text-center">
-                                    <a class="small cursor-pointer" href="login">Quay lại trang đăng nhập</a>
+                                    <a id="btnBack" class="small cursor-pointer" href="Login">Quay lại trang đăng nhập</a>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +104,6 @@
 <script src="~/js/sb-admin-2.min.js"></script>
 <script src="~/js/sweetalert2.min.js"></script>
 <script>
-    //Check Show/Hide Password
     function clickShowPass(){
         let _input = $('#txtPassword');
         let _icon = $('#icon');
@@ -152,12 +151,10 @@
             contentType: false,
             processData: false,
             success: function (respone) {
-                if (respone && !respone?.isError)
-                {
-                    helper.showSuc(respone.message);
-                }
-                else
+                if (respone.isError)
                     helper.showWarn(respone.message);
+                else
+                    helper.showSuc(respone.message, false, "", respone.url);
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');

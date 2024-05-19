@@ -1,12 +1,14 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using KGQT.Models;
 using System.Linq;
-
+using Serilog;
+using ILogger = Serilog.ILogger;
 namespace KGQT.Business
 {
     public static class FeeWeightBusiness
     {
-        #region Get Page
+        private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
+
         public static object[] GetPage(int type,int page, int pageSize = 10)
         {
             using (var db = new nhanshiphangContext())
@@ -30,9 +32,7 @@ namespace KGQT.Business
                 return new object[] { lstData , total, totalPage };
             }
         }
-        #endregion
 
-        #region Get Detail FeeWeight
         public static tbl_FeeWeight Get(int id)
         {
             using (var db = new nhanshiphangContext())
@@ -40,26 +40,16 @@ namespace KGQT.Business
                 return db.tbl_FeeWeights.FirstOrDefault(x => x.ID == id);
             }
         }
-        #endregion
 
-        #region Get List
         public static List<tbl_FeeWeight> GetList(int type)
         {
             using (var db = new nhanshiphangContext())
             {
-                var lstData = new List<tbl_FeeWeight>();
-                var query = db.tbl_FeeWeights.Where(x => x.Type == type);
-                var total = query.Count();  
-                if(total > 0)
-                {
-                    lstData = query.OrderBy(x => x.WeightFrom).ToList();
-                }  
+                List<tbl_FeeWeight> lstData = db.tbl_FeeWeights.Where(x => x.Type == type).OrderBy(x => x.WeightFrom).ToList();
                 return lstData;
             }
         }
-        #endregion
 
-        #region Delete 
         public static bool Delete(int ID)
         {
             using (var db = new nhanshiphangContext())
@@ -69,17 +59,12 @@ namespace KGQT.Business
                 {
                     db.Remove(data);
                     int kq = db.SaveChanges();
-                    if(kq > 0)
-                    {
-                        return true;
-                    }
+                    return kq > 0;
                 }    
             }
             return false;
         }
-        #endregion
 
-        #region Get By ID
         public static tbl_FeeWeight? GetByID(int ID)
         {
             using (var db = new nhanshiphangContext())
@@ -88,10 +73,8 @@ namespace KGQT.Business
                 return data;
             }
         }
-        #endregion
 
-        #region Update
-        public static bool Update(tbl_FeeWeight model, string modifiedBy)
+        public static bool Update(tbl_FeeWeight model, string userLogin)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -102,15 +85,14 @@ namespace KGQT.Business
                     data.WeightFrom = model.WeightFrom;
                     data.WeightTo = model.WeightTo;
                     data.Amount = model.Amount;
-                    data.ModifiedBy = modifiedBy;
+                    data.ModifiedBy = userLogin.ToLower();
                     data.ModifiedDate = DateTime.Now;
                     db.Update(data);
-                    db.SaveChanges();
-                    return true;
+                    int kq = db.SaveChanges();
+                    return kq > 0;
                 }
                 return false;
             }
         }
-        #endregion
     }
 }

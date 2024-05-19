@@ -42,7 +42,7 @@
         $('#To').autocomplete({
             source: function (request, response) {
                 $.ajax({
-                    url: '/admin/WithDraw/AutoComplete',
+                    url: '/admin/WithDraw/AutoCompleteUser',
                     type: 'GET',
                     data: {
                         s: request.term

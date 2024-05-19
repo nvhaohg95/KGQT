@@ -8,7 +8,7 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using NToastNotify;
+
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -18,17 +18,11 @@ namespace KGQT.Controllers
 
     public class AuthController : Controller
     {
-        private IToastNotification _toastNotification;
+        
         private readonly IHostingEnvironment _hostingEnvironment;
         private MailSettings _mailSettings;
-        public IToastNotification NotificationService
+        public AuthController(IConfiguration configuration, IHostingEnvironment hostingEnvironment, IOptions<MailSettings> mailSettings)
         {
-            get { return _toastNotification; }
-            set { _toastNotification = value; }
-        }
-        public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment, IOptions<MailSettings> mailSettings)
-        {
-            _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
             _mailSettings = mailSettings.Value;
         }
@@ -42,25 +36,26 @@ namespace KGQT.Controllers
             var tkck = cookieService.Get("tkck");
             if (!string.IsNullOrEmpty(tkck))
             {
-                var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
-                if (userModel != null)
+                var user = JsonConvert.DeserializeObject<UserModel>(tkck);
+                if (user != null)
                 {
-                    if (userModel.IsSavePassword)
+                    if (user.IsSavePassword)
                     {
-                        var account = BusinessBase.GetOne<tbl_Account>(x => x.Username == userModel.UserName);
+                        var account = AccountBusiness.GetByUserName(user.UserName);
                         if (account != null)
                         {
                             if (account.RoleID == 1)
-                                return Redirect("/admin/package/index");
+                                return Redirect("/Admin/Package/Index");
                             else
                                 return RedirectToAction("Index", "Package");
                         }
                     }
-                    return View(userModel);
+                    return View(user);
                 }
             }
             return View(new UserModel());
         }
+
         [HttpPost]
         public DataReturnModel<tbl_Account> Login(UserModel model)
         {
@@ -82,7 +77,7 @@ namespace KGQT.Controllers
         {
             var cookieService = new CookieService(HttpContext);
             cookieService.Remove("tkck");
-            return Redirect("login");
+            return RedirectToAction("Login", "Auth");
         }
         #endregion
 
@@ -126,6 +121,12 @@ namespace KGQT.Controllers
 
         #region Forgot Pasword
         [HttpGet]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public ActionResult ForgotPassword(string id, string tk)
         {
             if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(tk))
@@ -146,27 +147,14 @@ namespace KGQT.Controllers
                     }
                 }
             }
-            return RedirectToAction("index", "error");
+            return RedirectToAction("Index", "Error");
         }
 
         [HttpPost]
-        public async Task<ActionResult> ForgotPassword(ForgotPassWord data)
+        public DataReturnModel<bool> ForgotPassword(ForgotPassWord data)
         {
-            if (ModelState.IsValid)
-            {
-                var result = AccountBusiness.ForgotPassword(data);
-                if (result.IsError)
-                {
-                    if (result.Type == 1)
-                        ModelState.AddModelError(result.Key, result.Message);
-                    else
-                        _toastNotification.AddWarningToastMessage(result.Message);
-                    return View();
-                }
-                _toastNotification.AddSuccessToastMessage(result.Message);
-                return Redirect("login");
-            }
-            return View();
+            var result = AccountBusiness.ForgotPassword(data);
+            return result;
         }
 
         #endregion

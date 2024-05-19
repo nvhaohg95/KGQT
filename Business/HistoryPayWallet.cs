@@ -1,39 +1,21 @@
 ﻿using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
-
+using Serilog;
+using ILogger = Serilog.ILogger;
 namespace KGQT.Business
 {
     public static class HistoryPayWallet
     {
-        #region CRUD
-        public static bool Insert(int uid,string username,int orderId,string content,string amount,int type, int tradeType, string moneyleft,string createdBy,int status = 1)
-        {
-            tbl_HistoryPayWallet pay = new tbl_HistoryPayWallet();
-            pay.UID = uid;
-            pay.Username = username;
-            pay.OrderID = orderId;
-            pay.HContent = content;
-            pay.Amount = amount;
-            pay.Type = type;
-            pay.TradeType = tradeType;
-            pay.MoneyLeft = moneyleft;
-            pay.CreatedDate = DateTime.Now;
-            pay.CreatedBy = createdBy;
-            pay.Status = status;
-            return BusinessBase.Add(pay);
-        }
-        #endregion
-
-        #region Get Page
+        private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
         public static object[] GetPage(string userName, int orderID, int tradeType, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             using (var db = new nhanshiphangContext())
             {
-                var lstData = new List<tbl_HistoryPayWallet>();
-                int totalRecod = 0;
+                List<tbl_HistoryPayWallet> datas = new();
+                int total = 0;
                 int totalPage = 0;
-                var query = db.tbl_HistoryPayWallets.Where(x => x.Username == userName && x.Status == 1);
+                var query = db.tbl_HistoryPayWallets.Where(x => x.Username == userName);
                 if (orderID != 0)
                     query = query.Where(x => x.OrderID == orderID);
                 if (tradeType != 0)
@@ -42,21 +24,38 @@ namespace KGQT.Business
                     query = query.Where(x => x.CreatedDate >= fromDate);
                 if (toDate != null)
                     query = query.Where(x => x.CreatedDate <= toDate);
-                totalRecod = query.Count();
-                if(totalRecod > 0)
+                total = query.Count();
+                if(total > 0)
                 {
-                    totalPage = Convert.ToInt32(Math.Ceiling((decimal)totalRecod / pageSize));
-                    lstData = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                    totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
+                    datas = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
                 }
-                return new object[] {lstData,totalRecod,totalPage };
+                return new object[] {datas ,total, page };
             }
         }
-        #endregion
 
-        #region Get detail
-        public static tmpHistoryPayWallet GetByID(int id)
+        public static bool Insert(int uid, string username, int orderId, string content, string amount, int type, int tradeType, string moneyPrevious, string moneyleft, string createdBy, int status = 1, int isActive = 1)
         {
-            tmpHistoryPayWallet data = null;
+            tbl_HistoryPayWallet pay = new tbl_HistoryPayWallet();
+            pay.UID = uid;
+            pay.Username = username;
+            pay.OrderID = orderId;
+            pay.HContent = content;
+            pay.Type = type;
+            pay.TradeType = tradeType;
+            pay.Amount = amount;
+            pay.MoneyPrevious = moneyPrevious;
+            pay.MoneyLeft = moneyleft;
+            pay.CreatedDate = DateTime.Now;
+            pay.CreatedBy = createdBy;
+            pay.Status = status;
+            pay.IsActive = isActive;
+            return BusinessBase.Add(pay);
+        }
+
+        public static tmpHistoryPayWallet? GetByID(int id)
+        {
+            tmpHistoryPayWallet? data = null;
             using (var db = new nhanshiphangContext())
             {
                 var history = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.ID == id);
@@ -76,6 +75,5 @@ namespace KGQT.Business
             }
             return data;
         }
-        #endregion
     }
 }

@@ -5,7 +5,7 @@
     ViewData["Title"] = "Danh sách kiện";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var ID = ViewBag.ID;
-    int status = ViewBag.status;
+    var status = ViewBag.status;
     DateTime? fromDate = ViewBag.fromDate;
     DateTime? toDate = ViewBag.toDate;
     int pageCurrent = ViewBag.pageCurrent;
@@ -41,12 +41,13 @@
             <div class="col-lg-4 col-md-12 col-sm-12 ">
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12 mt-2">
-                        <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
-                               onblur="(this.type='text')" />
+                        @*<input type="date" class="form-control w-100" name="fromDate" value="@fromDate" />*@
+                        @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100",@name="fromDate"})
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 mt-2">
-                        <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
-                               onblur="(this.type='text')" />
+                        @*<input type="date" class="form-control w-100" name="toDate" id="toDate" value="@toDate.Value" />*@
+                        @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100",@name="toDate"})
+
                     </div>
                 </div>
             </div>

@@ -17,8 +17,6 @@ namespace KGQT.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             var accInfo = AccountBusiness.GetInfo(-1, userLogin);
-            ViewData["userName"] = userLogin;
-            ViewData["lstRoles"] = AccountBusiness.GetListUserRole();
             return View(accInfo);
         }
 
@@ -26,14 +24,18 @@ namespace KGQT.Controllers
 
         #region Update Info
         [HttpPost]
-        public object UpdateInfo(string jsData, IFormFile file)
+        public object Update(string jsData, IFormFile file)
         {
             var data = JsonConvert.DeserializeObject<tbl_Account>(jsData);
             if (data == null)
             {
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
             }
-            var reponse = AccountBusiness.UpdateInfo(data, file);
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var reponse = AccountBusiness.Update(data, file, userLogin);
             return reponse;
         }
 
