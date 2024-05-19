@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using NToastNotify;
+
 using System.Xml.Linq;
 
 namespace KGQT
@@ -16,21 +16,12 @@ namespace KGQT
     public class HomeController : Controller
     {
         private IConfiguration _configuration;
-        private IToastNotification _toastNotification;
-
-        public IToastNotification NotificationService
-        {
-            get { return _toastNotification; }
-            set { _toastNotification = value; }
-        }
-
 
 
         #region Contructor
-        public HomeController(IConfiguration configuration, IToastNotification toastNotification)
+        public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
-            _toastNotification = toastNotification;
         }
         #endregion
 
@@ -83,6 +74,7 @@ namespace KGQT
             return View();
         }
 
+       
     }
 
 

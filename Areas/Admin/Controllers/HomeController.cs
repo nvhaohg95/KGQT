@@ -1,6 +1,6 @@
 ﻿using KGQT.Business;
 using Microsoft.AspNetCore.Mvc;
-using NToastNotify;
+
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -8,10 +8,10 @@ namespace KGQT.Areas.Admin.Controllers
     public class HomeController : Controller
     {
         #region constructor
-        private IToastNotification _toastNotification;
-        public HomeController(IToastNotification toastNotification)
+        
+        public HomeController()
         {
-            _toastNotification = toastNotification;
+            
         }
         #endregion
 

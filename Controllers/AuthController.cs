@@ -8,7 +8,7 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using NToastNotify;
+
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -18,17 +18,11 @@ namespace KGQT.Controllers
 
     public class AuthController : Controller
     {
-        private IToastNotification _toastNotification;
+        
         private readonly IHostingEnvironment _hostingEnvironment;
         private MailSettings _mailSettings;
-        public IToastNotification NotificationService
+        public AuthController(IConfiguration configuration, IHostingEnvironment hostingEnvironment, IOptions<MailSettings> mailSettings)
         {
-            get { return _toastNotification; }
-            set { _toastNotification = value; }
-        }
-        public AuthController(IConfiguration configuration, IToastNotification toastNotification, IHostingEnvironment hostingEnvironment, IOptions<MailSettings> mailSettings)
-        {
-            _toastNotification = toastNotification;
             _hostingEnvironment = hostingEnvironment;
             _mailSettings = mailSettings.Value;
         }
@@ -159,11 +153,8 @@ namespace KGQT.Controllers
                 {
                     if (result.Type == 1)
                         ModelState.AddModelError(result.Key, result.Message);
-                    else
-                        _toastNotification.AddWarningToastMessage(result.Message);
                     return View();
                 }
-                _toastNotification.AddSuccessToastMessage(result.Message);
                 return Redirect("login");
             }
             return View();
