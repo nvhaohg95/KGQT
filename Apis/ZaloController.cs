@@ -36,7 +36,7 @@ namespace KGQT.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         string responseBody = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine(responseBody);
+
                     }
                     else
                     {
