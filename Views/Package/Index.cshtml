@@ -58,12 +58,10 @@
                     @Html.TextBoxFor(model => ID ,"",new { @type="search", @class="form-control w-100",@placeholder="Nhập mã đơn hàng" })
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-12">
-                    <input type="text" class="form-control w-100" name="fromDate" placeholder="Từ ngày" onfocus="(this.type='date')"
-                           onblur="(this.type='text')" />
+                    @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control w-100",@name="fromDate"})
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-12">
-                    <input type="text" class="form-control w-100" name="toDate" placeholder="Đến ngày" onfocus="(this.type='date')"
-                           onblur="(this.type='text')" />
+                    @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control w-100",@name="toDate"})
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-12">
                     <div class="d-flex align-items-end justify-content-end">

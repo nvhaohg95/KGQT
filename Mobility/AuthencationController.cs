@@ -239,7 +239,7 @@ namespace KGQT.Mobility
                 data.Phone = model.Phone;
                 data.Address = model.Address;
                 data.Username = model.Username;
-                var result = AccountBusiness.UpdateInfo(data, file);
+                var result = AccountBusiness.Update(data, file,"");
                 return result;
             }
             catch (Exception)

@@ -4,8 +4,8 @@ using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using OfficeOpenXml.Table.PivotTable;
-using Serilog;
 using System.Security.Cryptography.Pkcs;
+using Serilog;
 using ILogger = Serilog.ILogger;
 
 namespace KGQT.Business
@@ -47,65 +47,71 @@ namespace KGQT.Business
         
         public async static Task<bool> Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType,string url, string createdBy, bool isForAdmin = false)
         {
-            using (var db = new nhanshiphangContext())
+            try
             {
-                
-                var data = new tbl_Notification()
+                using (var db = new nhanshiphangContext())
                 {
-                    SenderID = senderID,
-                    SenderUsername = senderName,
-                    ReceivedID = reciverID,
-                    ReceivedUsername = reciverName,
-                    OrderID = orderID,
-                    OrderCode = orderCode,
-                    Message = message,
-                    Message2 = messageMobile,
-                    IsForAdmin = isForAdmin,
-                    NotifType = notiType,
-                    Status = 0,
-                    Url = url,
-                    CreatedBy = createdBy,
-                    CreatedDate = DateTime.Now
-                };
-                
-                db.Add(data);
-                int kq = db.SaveChanges();
-                if (kq > 0)
-                {
-                    if (string.IsNullOrWhiteSpace(data.Url))
+                    var data = new tbl_Notification()
                     {
-                        data.Url = GetUrlDefault(data.ID, isForAdmin);
-                        db.Update(data);
-                        db.SaveChanges();
-                    }
-                    var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == reciverID);
-                    if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
+                        SenderID = senderID,
+                        SenderUsername = senderName,
+                        ReceivedID = reciverID,
+                        ReceivedUsername = reciverName,
+                        OrderID = orderID,
+                        OrderCode = orderCode,
+                        Message = message,
+                        Message2 = messageMobile,
+                        IsForAdmin = isForAdmin,
+                        NotifType = notiType,
+                        Status = 0,
+                        Url = url,
+                        CreatedBy = createdBy,
+                        CreatedDate = DateTime.Now
+                    };
+                    db.Add(data);
+                    int kq = db.SaveChanges();
+                    if (kq > 0)
                     {
-                        _ = Task.Run(async () =>
+                        if (string.IsNullOrEmpty(data.Url))
                         {
-                            await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null);
-                        });
+                            data.Url = GetUrlDefault(data.ID, isForAdmin);
+                            db.Update(data);
+                            db.SaveChanges();
+                        }
+                        var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == reciverID);
+                        if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
+                        {
+                            _ = Task.Run(async () =>
+                            {
+                                await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null);
+                            });
+                        }
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             }
-            return false ;
+            catch (Exception ex)
+            {
+                _log.Error("Lỗi tạo thông báo", ex.Message);
+                return false;
+            }
         }
         
         public static int GetTotal(int id, bool isAdmin = false)
         {
-            int count = 0;
+            int total = 0;
             using (var db = new nhanshiphangContext())
             {
                 if (isAdmin)
-                    count = db.tbl_Notifications.Count(x => x.IsForAdmin == true && x.Status == 0);
+                    total = db.tbl_Notifications.Count(x => x.IsForAdmin == true && x.Status == 0);
                 else
-                    count = db.tbl_Notifications.Count(x => x.ReceivedID == id && x.Status == 0);
+                    total = db.tbl_Notifications.Count(x => x.ReceivedID == id && x.Status == 0);
+                return total;
             }
-            return count;
         }
 
-        public static object[] GetDetail(int id,string userName)
+        public static object[] GetDetail(int id,string userLogin)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -115,7 +121,7 @@ namespace KGQT.Business
                 {
                     data.Status = 1;
                     data.ModifiedDate = DateTime.Now;
-                    data.ModifiedBy = userName;
+                    data.ModifiedBy = userLogin;
                     db.Update(data);
                     db.SaveChanges();
                     lstData.Add(data);
@@ -124,9 +130,9 @@ namespace KGQT.Business
             }
         }
 
-        public static bool UpdateStatus(int ID, string userName)
+        public static bool UpdateStatus(int ID, string userLogin)
         {
-            if (!string.IsNullOrEmpty(userName) || ID < 0)
+            if (!string.IsNullOrEmpty(userLogin) || ID < 0)
             {
                 using (var db = new nhanshiphangContext())
                 {
@@ -134,11 +140,11 @@ namespace KGQT.Business
                     if (data != null)
                     {
                         data.Status = 1;
-                        data.ModifiedBy = userName;
+                        data.ModifiedBy = userLogin;
                         data.ModifiedDate = DateTime.Now;
                         db.Update(data);
-                        db.SaveChanges();
-                        return true;
+                        int kq = db.SaveChanges();
+                        return kq > 0;
                     }
                 }
             }
@@ -152,64 +158,73 @@ namespace KGQT.Business
             return "/Notification/Detail?ID=" + ID;
         }
 
-
-        public static DataReturnModel<bool> SendNotiForUser(string strUserNames, string contents, bool sendToAll , string createdBy)
+        public static DataReturnModel<bool> SendNotiForUser(string strUserNames, string contents, bool sendToAll , string userLogin)
         {
             DataReturnModel<bool> result = new();
-            if(string.IsNullOrEmpty(strUserNames) && !sendToAll)
+            try
             {
-                result.IsError = true;
-                result.Message = "Người nhận không được bỏ trống";
-                result.Data = false;
-                return result;
-            }
-            if (string.IsNullOrEmpty(contents))
-            {
-                result.IsError = true;
-                result.Message = "Nội dung không được bỏ trống";
-                result.Data = false;
-                return result;
-            }
-            using (var db = new nhanshiphangContext())
-            {
-                var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == createdBy);
-                List<tbl_Account> lstUser = new();
-                if(sendToAll)
-                {
-                    lstUser = db.tbl_Accounts.Where(x => x.RoleID != 1).ToList();
-                } 
-                else
-                {
-                    List<string> userNames = strUserNames.Split(";").Select(x => x.ToLower()).ToList();
-                    lstUser = db.tbl_Accounts.Where(x => x.RoleID != 1 && userNames.Contains(x.Username.ToLower())).ToList();
-                }
-                if (lstUser.Count > 0)
-                {
-                    foreach (var user in lstUser)
-                    {
-                        try
-                        {
-                            Insert(admin.ID, admin.FullName, user.ID, user.FullName, 0, "", contents, contents, 10, "", createdBy);
-                        }
-                        catch (Exception ex)
-                        {
-                            _log.Error("Lỗi gửi noti", ex.Message);
-                            continue;
-                        }
-                    }
-                    
-                    result.IsError = false;
-                    result.Message = "Gửi thành công!";
-                    result.Data = true;
-                    return result;
-                }
-                else
+                if (string.IsNullOrEmpty(strUserNames) && !sendToAll)
                 {
                     result.IsError = true;
-                    result.Message = "Không tìm thấy người nhận";
+                    result.Message = "Người nhận không được bỏ trống!";
                     result.Data = false;
                     return result;
                 }
+                if (string.IsNullOrEmpty(contents))
+                {
+                    result.IsError = true;
+                    result.Message = "Nội dung không được bỏ trống!";
+                    result.Data = false;
+                    return result;
+                }
+                using (var db = new nhanshiphangContext())
+                {
+                    var admin = AccountBusiness.GetInfo(-1,userLogin);
+                    List<tbl_Account> lstUser = new();
+                    if (sendToAll)
+                    {
+                        lstUser = db.tbl_Accounts.Where(x => x.RoleID != 1 && x.IsActive == true).ToList();
+                    }
+                    else
+                    {
+                        List<string> userNames = strUserNames.Split(";").Select(x => x.ToLower()).Distinct().ToList();
+                        lstUser = db.tbl_Accounts.Where(x => x.RoleID != 1 && x.IsActive == true && userNames.Contains(x.Username)).ToList();
+                    }
+                    if (lstUser.Count > 0)
+                    {
+                        foreach (var user in lstUser)
+                        {
+                            try
+                            {
+                                Insert(admin.ID, admin.FullName, user.ID, user.FullName, 0, "", contents, contents, 10, "", userLogin);
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.Error("Lỗi gửi thông báo", ex.Message);
+                                continue;
+                            }
+                        }
+                        result.IsError = false;
+                        result.Message = "Gửi thành công!";
+                        result.Data = true;
+                        return result;
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Message = "Không tìm thấy người nhận!";
+                        result.Data = false;
+                        return result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Lỗi gửi thông báo", ex.Message);
+                result.IsError = true;
+                result.Data = false;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                return result;
             }
         }
     }

@@ -65,9 +65,10 @@ namespace KGQT.Areas.Admin.Controllers
             if (s)
             {
                 var u = BusinessBase.GetOne<tbl_Account>(x => x.ID == user.ID);
+                string previousMoney = u.Wallet;
                 u.Wallet += model.Amount;
                 s = BusinessBase.Update(u);
-                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount, 1, 1, u.Wallet, userLogin);
+                HistoryPayWallet.Insert(u.ID, u.Username, model.ID, model.Note, model.Amount, 1, 1, previousMoney, u.Wallet, userLogin);
             }
             return Ok(s);
         }
@@ -88,6 +89,13 @@ namespace KGQT.Areas.Admin.Controllers
         public IActionResult AutoComplete(string s)
         {
             var data = BusinessBase.GetList<tbl_Account>(x => x.Username.Contains(s)).ToList();
+            return Json(data);
+        }
+
+        [HttpGet]
+        public IActionResult AutoCompleteUser(string s)
+        {
+            var data = BusinessBase.GetList<tbl_Account>(x => x.RoleID != 1 && x.Username.Contains(s)).ToList();
             return Json(data);
         }
         #endregion

@@ -146,7 +146,7 @@
 
                                     </div>
                                     <div>
-                                        <div class="@(item.Status == 0 ? "fw-bold":"")">
+                                        <div class="@(item.Status == 0 ? "fw-bold text-uppercase":"")">
                                             @if (item.NotifType == 1)
                                             {
                                                 <span>Thông tin đơn hàng</span>
@@ -170,8 +170,8 @@
                                         </div>
 
                                         <div class="small text-gray-500">
-                                            <div class="d-flex align-items-center justify-content-between small">
-                                                <span class="text-gray-500">@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                                            <div class="d-flex align-items-center justify-content-between smaller">
+                                                <span class="text-gray-700">@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
                                                 @if (item.Status == 0)
                                                 {
                                                     <span class="dot"></span>

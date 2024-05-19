@@ -22,8 +22,8 @@ namespace KGQT.Models
         public string? Note { get; set; }
         /// <summary>
         /// 1: Đang chờ
-        /// 2: Thành công
-        /// 3: Hủy
+        /// 2: Đã duyệt
+        /// 3: Từ chối
         /// </summary>
         public int Status { get; set; }
         /// <summary>

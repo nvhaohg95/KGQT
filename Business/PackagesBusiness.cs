@@ -159,11 +159,10 @@ namespace KGQT.Business
                             data.Message = "Tài khoản khách không đủ tiền";
                             return data;
                         }
+                        var moneyPrevious = user.Wallet;
                         var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
                         AccountBusiness.UpdateWallet(user.ID, wallet);
-                        #region Logs
-                        HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + oPack.PackageCode, "500", 1, 1, wallet, uslogin);
-                        #endregion
+                        HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + oPack.PackageCode, "500", 1, 1, moneyPrevious, wallet, uslogin);
                     }
                     else
                         AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);
@@ -1277,11 +1276,10 @@ namespace KGQT.Business
                         {
                             if (string.IsNullOrEmpty(user.Wallet) || Converted.ToDouble(user.Wallet) < 500)
                                 return;
+                            var moneyPrevious = user.Wallet;
                             var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
                             AccountBusiness.UpdateWallet(user.ID, wallet);
-                            #region Logs
-                            HistoryPayWallet.Insert(user.ID, user.Username, item.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + item.PackageCode, "500", 1, 1, wallet, "admin");
-                            #endregion
+                            HistoryPayWallet.Insert(user.ID, user.Username, item.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + item.PackageCode, "500", 1, 1, moneyPrevious, wallet, "admin");
                         }
                         else
                             AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);

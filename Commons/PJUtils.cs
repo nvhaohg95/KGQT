@@ -507,6 +507,27 @@ namespace KGQT.Commons
             return s;
         }
 
+        public static string HistoryWalletStatus(int status)
+        {
+            string s = "";
+            switch (status)
+            {
+                case 0:
+                    s = "Chờ xác nhận";
+                    break;
+                case 1:
+                    s = "Thành công";
+                    break;
+                case 2:
+                    s = "Bị từ chối";
+                    break;
+                default:
+                    s = "";
+                    break;
+            }
+            return s;
+        }
+
         public static List<ExcelModel> ReadExcelToJson(IFormFile file, string name)
         {
             if (file.ContentType == "application/vnd.ms-excel")

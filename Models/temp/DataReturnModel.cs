@@ -7,8 +7,6 @@
         public string Message { get; set; }
         public string Url { get; set; }
         public string TypeRequest { get; set; }
-
-        public int Type { get; set; } // 1:validate , 2:Alert/noti
         public T Data { get; set; }
 
     }

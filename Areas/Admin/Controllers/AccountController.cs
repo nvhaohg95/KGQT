@@ -26,7 +26,6 @@ namespace KGQT.Areas.Admin.Controllers
             ViewBag.numberPage = numberPage;
             ViewBag.numberRecord = numberRecord;
             ViewBag.lstRoles = AccountBusiness.GetListUserRole();
-
             return View(lstData);
         }
         #endregion
@@ -37,7 +36,7 @@ namespace KGQT.Areas.Admin.Controllers
         {
             var user = AccountBusiness.GetInfo(id,"");
             ViewData["ID"] = id;
-            ViewData["lstRoles"] = AccountBusiness.GetListUserRole();
+            ViewBag.lstRoles = AccountBusiness.GetListUserRole();
             return View(user);
         }
 
@@ -59,16 +58,18 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Update
         [HttpPost]
-        public object Update(AccountInfo data)
+        public object Update(string jsData, IFormFile file)
         {
+            var data = JsonConvert.DeserializeObject<tbl_Account>(jsData);
+            if (data == null)
+                return new DataReturnModel<bool>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
-            var reponse = AccountBusiness.Update(data, userLogin);
+            var reponse = AccountBusiness.Update(data, file, userLogin);
             return reponse;
         }
-
         #endregion
 
         #region Delete
@@ -92,21 +93,6 @@ namespace KGQT.Areas.Admin.Controllers
             var accInfo = AccountBusiness.GetInfo(-1, userLogin);
             ViewData["userName"] = userLogin;
             return View(accInfo);
-        }
-
-        #endregion
-
-        #region Update Info
-        [HttpPost]
-        public object UpdateInfo(string jsData, IFormFile file)
-        {
-            var data = JsonConvert.DeserializeObject<tbl_Account>(jsData);
-            if (data == null)
-            {
-                return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
-            }
-            var reponse = AccountBusiness.UpdateInfo(data,file);
-            return reponse;
         }
 
         #endregion

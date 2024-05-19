@@ -11,75 +11,68 @@ namespace KGQT.Business
     public class AccountBusiness
     {
         private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
-
-        #region Login
         public static DataReturnModel<tbl_Account> Login(string userName, string password)
         {
-            var dtReturn = new DataReturnModel<tbl_Account>();
-            if (string.IsNullOrEmpty(userName))
-            {
-                dtReturn.IsError = true;
-                dtReturn.Message = "Vui lòng nhập tên tài khoản!";
-                return dtReturn;
-            }
-            if (string.IsNullOrEmpty(password))
-            {
-                dtReturn.IsError = true;
-                dtReturn.Message = "Vui lòng nhập mật khẩu!";
-                return dtReturn;
-            }
+            var result = new DataReturnModel<tbl_Account>();
             try
             {
+                if (string.IsNullOrEmpty(userName))
+                {
+                    result.IsError = true;
+                    result.Message = "Vui lòng nhập tên tài khoản!";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(password))
+                {
+                    result.IsError = true;
+                    result.Message = "Vui lòng nhập mật khẩu!";
+                    return result;
+                }
                 using (var db = new nhanshiphangContext())
                 {
-                    var acc = db.tbl_Accounts.FirstOrDefault(a => a.Username.ToLower() == userName.ToLower());
-                    if (acc != null)
+                    var data = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName.ToLower());
+                    if (data != null)
                     {
-                        var isCorrect = password == PJUtils.Decrypt("userpass", acc.Password);
+                        if(data.IsActive == false)
+                        {
+                            result.IsError = true;
+                            result.Message = "Tài khoản của bạn đã bị khóa!";
+                            return result;
+                        }
+                        var isCorrect = password == PJUtils.Decrypt("userpass", data.Password);
                         if (isCorrect)
                         {
-                            dtReturn.IsError = false;
-                            dtReturn.Data = acc;
-                            return dtReturn;
+                            result.IsError = false;
+                            result.Data = data;
                         }
                         else
                         {
-                            dtReturn.IsError = true;
-                            dtReturn.Message = Messages.PasswordNotCorrect;
-                            return dtReturn;
+                            result.IsError = true;
+                            result.Message = "Mật khẩu không chính xác!";
                         }
-
                     }
                     else
                     {
-                        dtReturn.IsError = true;
-                        dtReturn.Message = Messages.UsernameNotCorrect;
-                        return dtReturn;
+                        result.IsError = true;
+                        result.Message = "Tên tài khoản không chính xác!";
                     }
+                    return result;
                 }
             }
             catch (Exception ex)
             {
                 _log.Error("Lỗi đăng nhập", ex.Message);
-
-                return dtReturn;
+                result.IsError = true;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                return result;
             }
         }
 
-        #endregion
-
-        #region Register 
         public static DataReturnModel<tbl_Account> Register(SignUpModel data)
         {
             var result = new DataReturnModel<tbl_Account>();
             try
             {
-                if (data == null)
-                {
-                    result.IsError = true;
-                    result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
-                    return result;
-                }
                 var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 var regexPhone = new Regex(@"^[0-9]{8,20}$");
                 if (string.IsNullOrEmpty(data.FullName))
@@ -97,7 +90,6 @@ namespace KGQT.Business
                 if (!regexPhone.IsMatch(data.Phone))
                 {
                     result.IsError = true;
-                    result.Type = 1;
                     result.Message = "Số điện thoại không hợp lệ!";
                     return result;
                 }
@@ -110,7 +102,7 @@ namespace KGQT.Business
                 if (string.IsNullOrEmpty(data.Address))
                 {
                     result.IsError = true;
-                    result.Message = "Vui lòng nhập địa chỉ khách hàng!";
+                    result.Message = "Địa chỉ không được bỏ trống!";
                     return result;
                 }
                 if (string.IsNullOrEmpty(data.Username))
@@ -125,95 +117,100 @@ namespace KGQT.Business
                     result.Message = "Mật khẩu không được bỏ trống!";
                     return result;
                 }
-                if (data.File != null)
-                {
-                    if (!Directory.Exists(data.Path))
-                        Directory.CreateDirectory(data.Path);
-                    var bytes = FileService.ResizeImage(data.File);
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
-                    string path = Path.Combine(data.Path, fileName);
-                    File.WriteAllBytes(path, bytes);
-                    data.IMG = "\\" + Path.Combine("uploads", "avatars", fileName); ;
-                }
+                
                 using (var db = new nhanshiphangContext())
                 {
-                    string username = data.Username.ToLower();
-                    var isUserName = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == username);
-                    if (isUserName != null)
+                    var isUserName = db.tbl_Accounts.Any(x => x.Username == data.Username.ToLower());
+                    if (isUserName)
                     {
                         result.IsError = true;
-                        result.Message = "Tên tài khoản đã được sử dụng.";
+                        result.Message = "Tên tài khoản đã được sử dụng!";
                         return result;
                     }
+                    if(!string.IsNullOrEmpty(data.Email))
+                    {
+                        var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email);
+                        if(isEmail)
+                        {
+                            result.IsError = true;
+                            result.Message = "Địa chỉ Email đã được sử dụng!";
+                            return result;
+                        }
+                    }    
                     var acc = new tbl_Account()
                     {
-                        Username = username,
+                        Username = data.Username.ToLower(),
                         Password = PJUtils.Encrypt("userpass", data.Password),
                         FullName = data.FullName,
                         Gender = data.Gender,
                         Phone = data.Phone,
                         Email = data.Email,
                         Address = data.Address,
-                        IMG = data.IMG,
                         Wallet = "0",
                         AvailableSearch = 20,
                         Status = 2,
-                        RoleID = 4, //user
+                        RoleID = 4, 
                         IsActive = true,
                         TokenDevice = data.TokenDevice,
                         DeviceID = data.DeviceID,
                         DeviceName = data.DeviceName,
-                        CreatedDate = DateTime.Now,
-                        CreatedBy = data.Username
+                        CreatedBy = data.Username.ToLower(),
+                        CreatedDate = DateTime.Now
                     };
                     db.Add(acc);
                     int kq = db.SaveChanges();
                     if (kq > 0)
                     {
-
+                        if (data.File != null)
+                        {
+                            if (!Directory.Exists(data.Path)) 
+                                Directory.CreateDirectory(data.Path);
+                            var bytes = FileService.ResizeImage(data.File);
+                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
+                            string path = Path.Combine(data.Path, fileName);
+                            File.WriteAllBytes(path, bytes);
+                            acc.IMG = "\\" + Path.Combine("uploads", "avatars", fileName);
+                            db.Update(acc);
+                            db.SaveChanges();
+                        }
                         result.IsError = false;
-                        result.Type = 2;
+                        result.Url = "/Auth/Login";
                         result.Message = "Tạo tài khoản thành công!";
                         result.Data = acc;
-                        return result;
                     }
                     else
                     {
                         result.IsError = true;
-                        result.Type = 2;
-                        result.Message = "Tạo tài khoản không thành công.";
-                        return result;
+                        result.Message = "Đăng ký tài khoản không thành công. Vui lòng thử lại!";
                     }
+                    return result;
                 }
             }
             catch (Exception ex)
             {
+                _log.Error("Lỗi đăng ký tài khoản", ex.Message);
                 result.IsError = true;
-                result.Type = 2;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
                 return result;
             }
         }
 
-        #endregion
-
-        #region Send Mail Forget Password
         public static async Task<DataReturnModel<object>> SendMailForgetPassword(MailSettings mailSetting, string email)
         {
             DataReturnModel<object> result = new DataReturnModel<object>();
             try
             {
+                var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 if (string.IsNullOrEmpty(email))
                 {
                     result.IsError = true;
-                    result.Message = "Vui lòng nhập địa chỉ email.";
+                    result.Message = "Vui lòng nhập địa chỉ email!";
                     return result;
                 }
-                var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 if (!regexEmail.IsMatch(email))
                 {
                     result.IsError = true;
-                    result.Message = "Địa chỉ email không hợp lệ.";
+                    result.Message = "Địa chỉ email không hợp lệ!";
                     return result;
                 }
                 using (var db = new nhanshiphangContext())
@@ -221,6 +218,13 @@ namespace KGQT.Business
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Email == email);
                     if (acc != null)
                     {
+                        if(acc.IsActive == false)
+                        {
+                            result.IsError = true;
+                            result.Message = "Tài khoản của bạn đã bị khóa!";
+                            return result;
+                        }    
+
                         acc.Token = Guid.NewGuid().ToString();
                         var name = acc.FullName;
                         string sToken = acc.Token + "|" + DateTime.Now.ToString();
@@ -232,12 +236,11 @@ namespace KGQT.Business
                         link = $"https://localhost:44330/auth/forgotpassword?id={id}&tk={token}";
                         body = string.Format(body, name, link);
 
-                        //send mail
                         var status = await MailService.SendMailAsync(mailSetting, email, subject, body);
                         if (status)
                         {
                             result.IsError = false;
-                            result.Message = "Yêu cầu của bạn đã được gửi đi.Vui lòng kiểm tra email!";
+                            result.Message = "Yêu cầu của bạn đã được gửi.Vui lòng kiểm tra Email!";
                             db.Update(acc);
                             db.SaveChanges();
                             return result;
@@ -245,118 +248,106 @@ namespace KGQT.Business
                         else
                         {
                             result.IsError = true;
-                            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                            result.Message = "Hệ thống gửi mail đang tạm dừng hoạt động. Vui lòng thử lại sau!";
                             return result;
                         }
                     }
                     else
                     {
                         result.IsError = true;
-                        result.Message = "Địa chỉ Email chưa đăng ký. Vui lòng kiểm tra lại!";
+                        result.Message = "Địa chỉ Email không tồn tại!";
                         return result;
                     }
                 }
             }
             catch (Exception ex)
             {
+                _log.Error("Lỗi gửi mail quên mật khẩu", ex.Message);
                 result.IsError = true;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
                 return result;
             }
         }
 
-        #endregion
-
-        #region Get Username & Token
         public static tbl_Account? GetByUsernameAndToken(string userName, string token)
         {
             using (var db = new nhanshiphangContext())
             {
-                return db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == userName.ToLower() && x.Token == token);
+                return db.tbl_Accounts.FirstOrDefault(x => x.Username == userName.ToLower() && x.Token == token);
             }
         }
 
-        #endregion
-
-        #region Forgot Password
-        public static DataReturnModel<object> ForgotPassword(ForgotPassWord data)
+        public static DataReturnModel<bool> ForgotPassword(ForgotPassWord data)
         {
-            DataReturnModel<object> result = new DataReturnModel<object>();
-            var regex = new Regex("^[a-zA-Z0-9 ]*$");
-            if (string.IsNullOrEmpty(data.PassWord))
+            DataReturnModel<bool> result = new();
+            try
             {
-                result.IsError = true;
-                result.Type = 1;
-                result.Message = "Mật khẩu không được bỏ trống";
-                return result;
-            }
-            if (string.IsNullOrEmpty(data.ConfirmPassword))
-            {
-                result.IsError = true;
-                result.Type = 1;
-                result.Message = "Mật khẩu không được bỏ trống";
-                return result;
-            }
-            if (!regex.IsMatch(data.PassWord) || PJUtils.CheckUnicode(data.PassWord))
-            {
-                result.IsError = true;
-                result.Type = 1;
-                result.Message = "Mật khẩu không chứa ký tự đặc biệt";
-                return result;
-            }
-            if (!regex.IsMatch(data.ConfirmPassword) || PJUtils.CheckUnicode(data.ConfirmPassword))
-            {
-                result.IsError = true;
-                result.Type = 1;
-                result.Message = "Mật khẩu không chứa ký tự đặc biệt";
-                return result;
-            }
-            if (data.ConfirmPassword != data.PassWord)
-            {
-                result.IsError = true;
-                result.Type = 1;
-                result.Message = "Mật khẩu không chính xác";
-                return result;
-            }
-            using (var db = new nhanshiphangContext())
-            {
-                var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.UserName.ToLower());
-                if (acc != null)
+                var regex = new Regex("^[a-zA-Z0-9 ]*$");
+                if (string.IsNullOrEmpty(data.PassWord) || string.IsNullOrEmpty(data.ConfirmPassword))
                 {
-                    acc.Password = PJUtils.Encrypt("userpass", data.PassWord);
-                    acc.Token = null;
-                    acc.ModifiedBy = acc.Username;
-                    acc.ModifiedDate = DateTime.Now;
-                    db.Update(acc);
-                    int kq = db.SaveChanges();
-                    if (kq > 0)
+                    result.IsError = true;
+                    result.Message = "Mật khẩu không được bỏ trống!";
+                    return result;
+                }
+                if (!regex.IsMatch(data.PassWord) || PJUtils.CheckUnicode(data.PassWord))
+                {
+                    result.IsError = true;
+                    result.Message = "Mật khẩu không chứa ký tự đặc biệt!";
+                    return result;
+                }
+                if (!regex.IsMatch(data.ConfirmPassword) || PJUtils.CheckUnicode(data.ConfirmPassword))
+                {
+                    result.IsError = true;
+                    result.Message = "Mật khẩu không chứa ký tự đặc biệt!";
+                    return result;
+                }
+                if (data.ConfirmPassword != data.PassWord)
+                {
+                    result.IsError = true;
+                    result.Message = "Mật khẩu không chính xác!";
+                    return result;
+                }
+                using (var db = new nhanshiphangContext())
+                {
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.UserName.ToLower());
+                    if (acc != null)
                     {
-                        result.IsError = false;
-                        result.Type = 2;
-                        result.Message = "Cập nhật mật khẩu thành công!";
+                        acc.Password = PJUtils.Encrypt("userpass", data.PassWord);
+                        acc.Token = null;
+                        acc.ModifiedBy = acc.Username;
+                        acc.ModifiedDate = DateTime.Now;
+                        db.Update(acc);
+                        int kq = db.SaveChanges();
+                        if (kq > 0)
+                        {
+                            result.IsError = false;
+                            result.Data = true;
+                            result.Message = "Cập nhật mật khẩu thành công!";
+                        }
+                        else
+                        {
+                            result.IsError = true;
+                            result.Message = "Hệ thống thực thi không thành công.Vui lòng thử lại!";
+                        }
                         return result;
                     }
                     else
                     {
                         result.IsError = true;
-                        result.Type = 2;
-                        result.Message = "Hệ thống thực thi không thành công.Vui lòng thử lại";
+                        result.Message = "Không tìm thấy thông tin tài khoản!";
                         return result;
                     }
                 }
-                else
-                {
-                    result.IsError = true;
-                    result.Type = 2;
-                    result.Message = "Không tìm thấy thông tin tài khoản.";
-                    return result;
-                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Lỗi đăng đổi mật khẩu", ex.Message);
+                result.IsError = true;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                return result;
             }
         }
 
-        #endregion
-
-        #region Change Password
         public static DataReturnModel<object> ChangePassword(ChangePassword data)
         {
             var result = new DataReturnModel<object>();
@@ -395,8 +386,8 @@ namespace KGQT.Business
                 var acc = db.tbl_Accounts.FirstOrDefault(ac => ac.Username.ToLower() == data.UserName.ToLower());
                 if (acc != null)
                 {
-                    string oldPassword = PJUtils.Encrypt("userpass", data.OldPassword);
-                    if (acc.Password == oldPassword)
+                    string password = PJUtils.Decrypt("userpass", acc.Password);
+                    if (password == data.OldPassword)
                     {
                         acc.Password = PJUtils.Encrypt("userpass", data.NewPassword);
                         acc.ModifiedBy = acc.Username;
@@ -431,9 +422,6 @@ namespace KGQT.Business
 
         }
 
-        #endregion
-
-        #region Get Page
         public static object[] GetPage(string searchText = "", int page = 1, int pageSize = 10)
         {
             using (var db = new nhanshiphangContext())
@@ -441,7 +429,7 @@ namespace KGQT.Business
                 var lst = new List<tbl_Account>();
                 int total = 0;
                 int totalPage = 0;
-                var query = db.tbl_Accounts.AsQueryable();
+                var query = db.tbl_Accounts.Where(x => x.IsActive == true);
                 if (!string.IsNullOrEmpty(searchText))
                     query = query.Where(x => x.Username.Contains(searchText) || x.FullName.Contains(searchText) || x.Email.Contains(searchText));
                 total = query.Count();
@@ -462,19 +450,16 @@ namespace KGQT.Business
             }
         }
 
-        #endregion
-
-        #region Get Info By ID || UserName
         public static tbl_Account? GetInfo(int? id, string? userName)
         {
-
             using (var db = new nhanshiphangContext())
             {
-                tbl_Account account = null;
+                tbl_Account? account = null;
+                var query = db.tbl_Accounts.Where(x => x.IsActive == true);
                 if (id != null && id > 0)
-                    account = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
+                    account = query.FirstOrDefault(x => x.ID == id);
                 if (!string.IsNullOrEmpty(userName))
-                    account = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == userName.ToLower());
+                    account = query.FirstOrDefault(x => x.Username == userName.ToLower());
                 if (account != null)
                 {
                     account.Password = PJUtils.Decrypt("userpass", account.Password);
@@ -483,212 +468,148 @@ namespace KGQT.Business
             }
         }
 
-        #endregion
-
-        #region Create
         public static DataReturnModel<AccountInfo> Create(AccountInfo data, string createdBy)
         {
             var reponse = new DataReturnModel<AccountInfo>();
-            if (string.IsNullOrEmpty(data.FullName))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Tên người dùng không được bỏ trống!";
-                return reponse;
-            }
-            if (string.IsNullOrEmpty(data.Email))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Địa chỉ email không được bỏ trống!";
-                return reponse;
-            }
-            if (string.IsNullOrEmpty(data.Phone))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Số điện thoại không được bỏ trống!";
-                return reponse;
-            }
-            if (string.IsNullOrEmpty(data.UserName))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Tài khoản không được bỏ trống!";
-                return reponse;
-            }
-            if (string.IsNullOrEmpty(data.Password))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Mật khẩu không được bỏ trống!";
-                return reponse;
-            }
-            var regex = new Regex("^[a-zA-Z0-9 ]*$");
-            var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-            var regexPhone = new Regex(@"^[0-9]{8,20}$");
-            if (!regexEmail.IsMatch(data.Email))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Địa chỉ email không hợp lệ.";
-                return reponse;
-            }
-            if (!regexPhone.IsMatch(data.Phone))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Số điện thoại không hợp lệ.";
-                return reponse;
-            }
-            if (!regex.IsMatch(data.UserName) || PJUtils.CheckUnicode(data.UserName))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Tài khoản không chứa ký tự đặc biệt.";
-                return reponse;
-            }
-            if (!regex.IsMatch(data.Password) || PJUtils.CheckUnicode(data.Password))
-            {
-                reponse.IsError = true;
-                reponse.Message = "Mật khẩu không chứa ký tự đặc biệt.";
-                return reponse;
-            }
-            using (var db = new nhanshiphangContext())
-            {
-                if (!string.IsNullOrEmpty(data.UserID))
-                {
-                    var isUser = db.tbl_Accounts.Any(x => x.UserID == data.UserID);
-                    if (isUser)
-                    {
-                        reponse.IsError = true;
-                        reponse.Message = $"Mã định danh {data.UserID} đã tồn tại!";
-                        return reponse;
-                    }
-                }
-                var isUserName = db.tbl_Accounts.Any(x => x.Username.ToLower() == data.UserName.ToLower());
-                if (isUserName)
-                {
-                    reponse.IsError = true;
-                    reponse.Message = $"Tên tài khoản {data.UserName} đã tồn tại!";
-                    return reponse;
-                }
-                var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email);
-                if (isEmail)
-                {
-                    reponse.IsError = true;
-                    reponse.Message = $"Địa chỉ email {data.Email} đã tồn tại!";
-                    return reponse;
-                }
-                var acc = new tbl_Account()
-                {
-                    Username = data.UserName,
-                    FullName = data.FullName,
-                    Password = PJUtils.Encrypt("userpass", data.Password),
-                    Email = data.Email,
-                    Phone = data.Phone,
-                    Gender = data.Gender,
-                    UserID = data.UserID,
-                    Wallet = "0",
-                    RoleID = data.RoleID,
-                    CreatedDate = DateTime.Now,
-                    CreatedBy = createdBy
-                };
-                db.Add(acc);
-                var kq1 = db.SaveChanges();
-                if (kq1 > 0)
-                {
-                    reponse.IsError = false;
-                    reponse.Message = "Tạo tài khoản thành công!";
-                    reponse.Data = data;
-                    return reponse;
-                }
-                else
-                {
-                    reponse.IsError = true;
-                    reponse.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
-                    return reponse;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Delete
-        public static DataReturnModel<bool> Delete(int id)
-        {
-            var result = new DataReturnModel<bool>();
             try
             {
+                if (string.IsNullOrEmpty(data.FullName))
+                {
+                    reponse.IsError = true;
+                    reponse.Message = "Họ tên không được bỏ trống!";
+                    return reponse;
+                }
+                if (string.IsNullOrEmpty(data.Phone))
+                {
+                    reponse.IsError = true;
+                    reponse.Message = "Số điện thoại không được bỏ trống!";
+                    return reponse;
+                }
+                if (string.IsNullOrEmpty(data.UserName))
+                {
+                    reponse.IsError = true;
+                    reponse.Message = "Tài khoản không được bỏ trống!";
+                    return reponse;
+                }
+                if (string.IsNullOrEmpty(data.Password))
+                {
+                    reponse.IsError = true;
+                    reponse.Message = "Mật khẩu không được bỏ trống!";
+                    return reponse;
+                }
+                if (string.IsNullOrEmpty(data.Address))
+                {
+                    reponse.IsError = true;
+                    reponse.Message = "Địa chỉ không được bỏ trống!";
+                    return reponse;
+                }
+                var regex = new Regex("^[a-zA-Z0-9 ]*$");
+                var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+                var regexPhone = new Regex(@"^[0-9]{8,20}$");
+                if (!string.IsNullOrEmpty(data.Email) && !regexEmail.IsMatch(data.Email))
+                {
+                    reponse.IsError = true;
+                    reponse.Message = "Địa chỉ email không hợp lệ.";
+                    return reponse;
+                }
+                if (!regexPhone.IsMatch(data.Phone))
+                {
+                    reponse.IsError = true;
+                    reponse.Message = "Số điện thoại không hợp lệ.";
+                    return reponse;
+                }
+                
                 using (var db = new nhanshiphangContext())
                 {
-                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
-                    if (acc != null)
+                    if (!string.IsNullOrEmpty(data.UserID))
                     {
-                        db.Remove(acc);
-                        var kq = db.SaveChanges();
-                        if (kq > 0)
+                        var isUser = db.tbl_Accounts.Any(x => x.UserID == data.UserID);
+                        if (isUser)
                         {
-                            result.IsError = false;
-                            result.Message = "Xóa thành công!";
-                            result.Data = true;
-                            return result;
+                            reponse.IsError = true;
+                            reponse.Message = $"Mã định danh {data.UserID} đã tồn tại!";
+                            return reponse;
                         }
                     }
-                    result.IsError = true;
-                    result.Message = "Xóa không thành công!";
-                    result.Data = false;
-                    return result;
-                }
-            }
-            catch (Exception)
-            {
-                result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
-                result.Data = false;
-                return result;
-            }
-        }
-
-        #endregion
-
-        #region Update
-        public static DataReturnModel<AccountInfo> Update(AccountInfo data, string userModifiedBy)
-        {
-            var result = new DataReturnModel<AccountInfo>();
-            if (data != null)
-            {
-                using (var db = new nhanshiphangContext())
-                {
-                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.UserName.ToLower());
-                    if (acc != null)
+                    var isUserName = db.tbl_Accounts.Any(x => x.Username == data.UserName.ToLower());
+                    if (isUserName)
                     {
-                        acc.FullName = data.FullName;
-                        acc.Phone = data.Phone;
-                        acc.RoleID = data.RoleID;
-                        acc.Email = data.Email;
-                        acc.ModifiedBy = userModifiedBy;
-                        acc.ModifiedDate = DateTime.Now;
-                        db.Update(acc);
-                        var kq = db.SaveChanges();
-                        if (kq > 0)
-                        {
-                            result.IsError = false;
-                            result.Data = data;
-                            result.Message = "Cập nhật thành công";
-                            return result;
-                        }
-                        else
-                        {
-                            result.IsError = true;
-                            result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
-                            return result;
-                        }
+                        reponse.IsError = true;
+                        reponse.Message = $"Tên tài khoản {data.UserName} đã tồn tại!";
+                        return reponse;
+                    }
+                    var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email);
+                    if (isEmail)
+                    {
+                        reponse.IsError = true;
+                        reponse.Message = $"Địa chỉ email {data.Email} đã tồn tại!";
+                        return reponse;
+                    }
+                    var acc = new tbl_Account()
+                    {
+                        FullName = data.FullName,
+                        Gender = data.Gender,
+                        Email = data.Email,
+                        Phone = data.Phone,
+                        Address = data.Address,
+                        Wallet = "0",
+                        Username = data.UserName.ToLower(),
+                        Password = PJUtils.Encrypt("userpass", data.Password),
+                        UserID = data.UserID,
+                        RoleID = data.RoleID,
+                        IsActive = true,
+                        CreatedDate = DateTime.Now,
+                        CreatedBy = createdBy
+                    };
+                    db.Add(acc);
+                    var kq = db.SaveChanges();
+                    if (kq > 0)
+                    {
+                        reponse.IsError = false;
+                        reponse.Message = "Tạo tài khoản thành công!";
+                        reponse.Data = data;
+                        return reponse;
                     }
                     else
                     {
-                        result.IsError = true;
-                        result.Message = "Không tìm thấy thông tin tài khoản";
-                        return result;
+                        reponse.IsError = true;
+                        reponse.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                        return reponse;
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
+                _log.Error("Lỗi tạo người dùng",ex.Message);
+                reponse.IsError = true;
+                reponse.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                return reponse;
+            }
+        }
+
+        public static DataReturnModel<bool> Delete(int id)
+        {
+            var result = new DataReturnModel<bool>();
+            using (var db = new nhanshiphangContext())
+            {
+                var acc = db.tbl_Accounts.FirstOrDefault(x => x.ID == id);
+                if (acc != null)
+                {
+                    acc.IsActive = false;
+                    acc.ModifiedDate = DateTime.Now;
+                    db.Update(acc);
+                    var kq = db.SaveChanges();
+                    if (kq > 0)
+                    {
+                        result.IsError = false;
+                        result.Message = "Xóa thành công!";
+                        result.Data = true;
+                        return result;
+                    }
+                }
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Message = "Xóa không thành công!";
+                result.Data = false;
                 return result;
             }
         }
@@ -722,9 +643,7 @@ namespace KGQT.Business
             }
             return false;
         }
-        #endregion
 
-        #region Get List User Role
         public static List<UserRole> GetListUserRole()
         {
             List<UserRole> lst = new List<UserRole>();
@@ -739,10 +658,8 @@ namespace KGQT.Business
             return lst;
         }
 
-        #endregion
 
-        #region Get one
-        public static tbl_Account GetOne(int id)
+        public static tbl_Account? GetOne(int id)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -750,58 +667,86 @@ namespace KGQT.Business
             }
         }
 
-        public static tbl_Account GetOne(string username)
+        public static tbl_Account? GetOne(string username)
         {
             using (var db = new nhanshiphangContext())
             {
-                return db.tbl_Accounts.FirstOrDefault(y => y.Username.ToLower() == username.ToLower());
+                return db.tbl_Accounts.FirstOrDefault(y => y.Username == username.ToLower());
             }
         }
-        #endregion
 
         #region Update Info
-        public static DataReturnModel<tbl_Account> UpdateInfo(tbl_Account data, IFormFile fileImg)
+        public static DataReturnModel<tbl_Account> Update(tbl_Account data, IFormFile fileImg, string createdBy)
         {
             var result = new DataReturnModel<tbl_Account>();
-            if (data != null)
+            try
             {
+                var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+                var regexPhone = new Regex(@"^[0-9]{8,20}$");
                 if (string.IsNullOrEmpty(data.FullName))
                 {
                     result.IsError = true;
-                    result.Message = "Họ tên không được bỏ trống";
+                    result.Message = "Họ tên khác hàng không được bỏ trống!";
                     return result;
                 }
-                if (string.IsNullOrEmpty(data.Email))
+                if (string.IsNullOrEmpty(data.Address))
                 {
                     result.IsError = true;
-                    result.Message = "Địa chỉ Email không được bỏ trống";
+                    result.Message = "Địa chỉ không được bỏ trống!";
+                    return result;
+                }
+                if (!string.IsNullOrEmpty(data.Email) && !regexEmail.IsMatch(data.Email))
+                {
+                    result.IsError = true;
+                    result.Message = "Địa chỉ Email không hợp lệ!";
                     return result;
                 }
                 if (string.IsNullOrEmpty(data.Phone))
                 {
                     result.IsError = true;
-                    result.Message = "Số điện thoại không được bỏ trống";
-                    return result;
-                }
-                var regexEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-                var regexPhone = new Regex(@"^[0-9]{8,20}$");
-                if (!regexEmail.IsMatch(data.Email))
-                {
-                    result.IsError = true;
-                    result.Message = "Địa chỉ email không hợp lệ.";
+                    result.Message = "Số điện thoại không được bỏ trống!";
                     return result;
                 }
                 if (!regexPhone.IsMatch(data.Phone))
                 {
                     result.IsError = true;
-                    result.Message = "Số điện thoại không hợp lệ.";
+                    result.Message = "Số điện thoại không hợp lệ!";
                     return result;
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == data.Username.ToLower());
+                    
+                    var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username.ToLower());
                     if (acc != null)
                     {
+                        if (!string.IsNullOrEmpty(data.Email) && acc.Email != data.Email)
+                        {
+                            var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email);
+                            if (isEmail)
+                            {
+                                result.IsError = true;
+                                result.Message = string.Format("Địa chỉ Email {0} đã được sử dụng!", data.Email);
+                                return result;
+                            }
+                            else
+                                acc.Email = data.Email;
+                        }
+                        if (!string.IsNullOrEmpty(data.UserID) && acc.UserID != data.UserID)
+                        {
+                            var isUserID = db.tbl_Accounts.Any(x => x.Username == data.UserID);
+                            if(isUserID)
+                            {
+                                result.IsError = true;
+                                result.Message = string.Format("Mã định danh {0} đã được sử dụng!", data.UserID);
+                                return result;
+                            }
+                            else
+                                acc.UserID = data.UserID;
+                        }
+                        if(data.RoleID != null)
+                        {
+                            acc.RoleID = data.RoleID;
+                        }
                         if (fileImg != null)
                         {
                             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
@@ -815,10 +760,9 @@ namespace KGQT.Business
                         }
                         acc.FullName = data.FullName;
                         acc.Gender = data.Gender;
-                        acc.Email = data.Email;
                         acc.Phone = data.Phone;
                         acc.Address = data.Address;
-                        acc.ModifiedBy = data.Username;
+                        acc.ModifiedBy = createdBy;
                         acc.ModifiedDate = DateTime.Now;
                         db.Update(acc);
                         var kq = db.SaveChanges();
@@ -826,7 +770,7 @@ namespace KGQT.Business
                         {
                             result.IsError = false;
                             result.Data = data;
-                            result.Message = "Cập nhật thành công";
+                            result.Message = "Cập nhật thành công!";
                             return result;
                         }
                         else
@@ -839,13 +783,14 @@ namespace KGQT.Business
                     else
                     {
                         result.IsError = true;
-                        result.Message = "Không tìm thấy thông tin tài khoản";
+                        result.Message = "Không tìm thấy thông tin tài khoản!";
                         return result;
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
+                _log.Error("Lỗi cập nhật thông tin người dùng.", ex.Message);
                 result.IsError = true;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
                 return result;
@@ -855,18 +800,14 @@ namespace KGQT.Business
         #endregion
 
 
-        #region Get All User
-        public static Dictionary<string, string> GetAll()
+        public static tbl_Account? GetByUserName(string userName)
         {
-            Dictionary<string, string> lstData = new();
+            if (string.IsNullOrEmpty(userName)) return null;
             using (var db = new nhanshiphangContext())
             {
-                var datas = db.tbl_Accounts.ToList();
-                if (datas.Count > 0)
-                    lstData = datas.ToDictionary(x => x.Username, y => string.IsNullOrEmpty(y.FullName) ? y.Username : y.FullName);
+                return db.tbl_Accounts.FirstOrDefault(x => x.Username == userName.ToLower() && x.IsActive == true);
             }
-            return lstData;
         }
-        #endregion
+
     }
 }
