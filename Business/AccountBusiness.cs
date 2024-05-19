@@ -728,8 +728,6 @@ namespace KGQT.Business
                                 result.Message = string.Format("Địa chỉ Email {0} đã được sử dụng!", data.Email);
                                 return result;
                             }
-                            else
-                                acc.Email = data.Email;
                         }
                         if (!string.IsNullOrEmpty(data.UserID) && acc.UserID != data.UserID)
                         {
@@ -761,6 +759,7 @@ namespace KGQT.Business
                         acc.FullName = data.FullName;
                         acc.Gender = data.Gender;
                         acc.Phone = data.Phone;
+                        acc.Email = data.Email;
                         acc.Address = data.Address;
                         acc.ModifiedBy = createdBy;
                         acc.ModifiedDate = DateTime.Now;

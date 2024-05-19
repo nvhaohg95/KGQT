@@ -8,9 +8,6 @@ namespace KGQT.Business
     public static class HistoryPayWallet
     {
         private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
-
-        
-
         public static object[] GetPage(string userName, int orderID, int tradeType, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 10)
         {
             using (var db = new nhanshiphangContext())
@@ -18,7 +15,7 @@ namespace KGQT.Business
                 List<tbl_HistoryPayWallet> datas = new();
                 int total = 0;
                 int totalPage = 0;
-                var query = db.tbl_HistoryPayWallets.Where(x => x.Username == userName && x.Status != 0);
+                var query = db.tbl_HistoryPayWallets.Where(x => x.Username == userName);
                 if (orderID != 0)
                     query = query.Where(x => x.OrderID == orderID);
                 if (tradeType != 0)
