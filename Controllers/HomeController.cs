@@ -17,7 +17,6 @@ namespace KGQT
     {
         private IConfiguration _configuration;
 
-
         #region Contructor
         public HomeController(IConfiguration configuration)
         {
@@ -43,6 +42,11 @@ namespace KGQT
             return Ok(data);
         }
 
+
+
+        #endregion
+
+        #region Dashboard
         [HttpGet]
         public ActionResult Dashboard()
         {
@@ -60,9 +64,7 @@ namespace KGQT
             ViewData["ordertotal"] = ship[2];
             return View();
         }
-
         #endregion
-
 
         public IActionResult Index()
         {

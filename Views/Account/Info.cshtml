@@ -5,9 +5,9 @@
     ViewData["Title"] = "Thông tin tài khoản";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
-
 <ul id="breadcrumbs" class="mb-2">
-    <li><a>Thông tin tài khoản</a></li>
+    <li class="text-uppercase fw-bold"><a>Tài khoản</a></li>
+    <li class="text-uppercase fw-bold"><a>Thông tin tài khoản</a></li>
 </ul>
 <div class="row justify-content-center py-4">
     <div class="col-lg-8 col-md-12 col-sm-12" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
@@ -16,7 +16,7 @@
                 <div class="row justify-content-center mb-2">
                     <div class="col-lg-3 col-md-12 col-sm-3">
                         <div class="text-center">
-                            <img id="avatar_upload" class="rounded-circle mb-2" src="@(string.IsNullOrEmpty(Model.IMG) ? "/img/undraw_profile.svg" : Model.IMG)" width="150" height="150" onclick="clickUploadAvatar()" />
+                            <img id="avatar_upload" class="cursor pointer rounded-circle mb-2" src="@(string.IsNullOrEmpty(Model.IMG) ? "/img/undraw_profile.svg" : Model.IMG)" width="150" height="150" onclick="clickUploadAvatar()" />
                             <input id="input_uploader" class="d-none" type="file" onchange="onChange(event)" />
                         </div>
                     <div/>
@@ -54,8 +54,8 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Email">Email<span class="ml-1 text-danger">(*)</span></label>
-                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Email" />
+                            <label for="Email">Email</label>
+                            <input name="Email" id="Email" value="@Model.Email" type="email" class="form-control" placeholder="Địa chỉ Email" />
                         </div>
                     </div>
                 </div>
@@ -67,9 +67,7 @@
                         </div>
                     </div>
                 </div>
-                
                 <br />
-
                 <!--Thông tin tài khoản-->
                 <div class="row">
                     <h6 class="fw-bold text-primary">TÀI KHOẢN</h6>
@@ -115,7 +113,7 @@
             form.append("file", files[0]);
         }
         $.ajax({
-            url: '/Account/UpdateInfo',
+            url: '/Account/Update',
             type: 'Post',
             data: form,
             contentType: false,

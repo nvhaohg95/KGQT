@@ -31,8 +31,8 @@ namespace KGQT.Controllers
             else
             {
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
                 result.Data = false;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
                 return result;
             }
         }

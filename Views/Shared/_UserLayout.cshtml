@@ -74,8 +74,8 @@
 <body class="sb-nav-fixed" id="page-top">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark navbar-light bg-white topbar shadow">
         <!-- Navbar Brand-->
-        <a class="navbar-brand" href="https://www.nhanshiphang.vn/" target="_blank">
-            <img class="logo_img" src="/img/logoshipping.png" alt="Nhận Ship Hàng – Một chữ tín, vạn niềm tin" title="Nhận Ship Hàng – Một chữ tín, vạn niềm tin">
+        <a class="navbar-brand" href="/Home/Dashboard">
+            <img class="logo_img" src="/img/logoshipping.png" alt="Nhận Ship Hàng" title="Trang chủ">
         </a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
@@ -94,7 +94,7 @@
                 @if (user != null)
                 {
                     <span class="nav-link">
-                        <span class="text-dark">Ví cá nhân&nbsp:&nbsp</span>
+                        <span class="text-dark mr-1">Ví cá nhân:</span>
                         <span class="fw-bold text-danger">@Converted.String2Money(user.Wallet)đ</span>
                     </span>
                 }
@@ -153,7 +153,7 @@
 
                                     </div>
                                     <div>
-                                        <div class="@(item.Status == 0 ? "fw-bold":"")">
+                                        <div class="@(item.Status == 0 ? "fw-bold text-uppercase":"")">
                                             @if (item.NotifType == 1)
                                             {
                                                 <span>Thông tin đơn hàng</span>
@@ -174,8 +174,8 @@
                                         <div>
                                             @Html.Raw(item.Message)
                                         </div>
-                                        <div class="d-flex align-items-center justify-content-between small">
-                                            <span class="text-gray-500">@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                                        <div class="d-flex align-items-center justify-content-between smaller">
+                                            <span class="text-gray-700">@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
                                             @if (item.Status == 0)
                                             {
                                                 <span class="dot"></span>
@@ -422,13 +422,13 @@
                                     <div class="form-group">
                                         <label class="fw-bold">Hình thức thanh toán<span class="text-danger">(*)</span></label>
                                         <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this,1)">
-                                            <option value="2" selected>Chuyển khoản</option>
-                                            <option value="1">Tiền mặt</option>
+                                            <option value="1" selected>Tiền mặt</option>
+                                            <option value="2" >Chuyển khoản</option>
                                         </select>
                                     </div>
                                 </div>
                                 <!-- thông tin chuyển khoản -->
-                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendBank">
+                                <div class="col-lg-12 col-md-12 col-sm-12 d-none" id="extendBank">
                                     <div class="row">
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
@@ -505,13 +505,13 @@
                                     <div class="form-group">
                                         <label class="fw-bold">Hình thức thanh toán<span class="text-danger">(*)</span></label>
                                         <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this,2)">
-                                            <option value="2" selected>Chuyển khoản</option>
-                                            <option value="1">Tiền mặt</option>
+                                            <option value="1" selected>Tiền mặt</option>
+                                            <option value="2">Chuyển khoản</option>
                                         </select>
                                     </div>
                                 </div>
                                 <!-- thông tin chuyển khoản -->
-                                <div class="col-lg-12 col-md-12 col-sm-12" id="extendBank2">
+                                <div class="col-lg-12 col-md-12 col-sm-12 d-none" id="extendBank2">
                                     <div class="row">
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
@@ -558,7 +558,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary w-100px" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
                             <button type="button" class="btn btn-primary w-100px" onclick="clickAddWithDraw2()">Gửi</button>
                         </div>
                     </form>
@@ -580,7 +580,6 @@
     <script src="~/js/demo/chart-bar-demo.js"></script>*@
     <script src="~/js/datatables-simple-demo.js"></script>
     <script>
-        // scrolling load page noti
         function onScroll(e, id) {
             if (e.scrollHeight - (e.clientHeight + e.scrollTop) == 0) {
                 let page = parseInt($("#notifications")[0].dataset.page) + 1;
@@ -600,7 +599,6 @@
             }
         }
 
-        // change password
         function clickChangePass() {
             var data = helper.form2Object($('#formChangePass').serializeArray());
             if (!data) {
@@ -682,7 +680,6 @@
             helper.getChange(e)
         }
 
-        // gửi yêu cầu nạp tiền
         function clickAddWithDraw() {
             var data = helper.form2Object($('#formWithDraw').serializeArray());
             if (!data) {
@@ -704,15 +701,15 @@
 
             if (data.PaymentMethod == 2) {
                 if (!data.BankName) {
-                    helper.showWarn('Ngân hàng không được bỏ trống!');
+                    helper.showWarn('Vui lòng nhập thông tin Ngân hàng!');
                     return;
                 }
                 if (!data.AccountNumber) {
-                    helper.showWarn('Số tài khoản không được bỏ trống!');
+                    helper.showWarn('Vui lòng nhập Số tài khoản!');
                     return;
                 }
                 if (!data.AccountName) {
-                    helper.showWarn('Chủ tài khoản không được bỏ trống!');
+                    helper.showWarn('Vui lòng nhập Chủ tài khoản!');
                     return;
                 }
             }
@@ -722,8 +719,8 @@
                 return;
             }
 
-            if (Number(data.Amount.replaceAll(",", "")) < 50000) {
-                helper.showWarn('Số tiền nạp tối thiếu phải lớn hơn 50,000đ!');
+            if (Number(data.Amount.replaceAll(",", "")) < 1000) {
+                helper.showWarn('Số tiền nạp tối thiếu phải lớn hơn 1000đ!');
                 return;
             }
             if (!data.Note) {
@@ -746,7 +743,6 @@
             });
         }
 
-        // gửi yêu cầu rút tiền
         function clickAddWithDraw2() {
             var data = helper.form2Object($('#formWithDraw2').serializeArray());
             if (!data) {
@@ -768,15 +764,15 @@
 
             if (data.PaymentMethod == 2) {
                 if (!data.BankName) {
-                    helper.showWarn('Ngân hàng không được bỏ trống!');
+                    helper.showWarn('Vui lòng nhập thông tin Ngân hàng!');
                     return;
                 }
                 if (!data.AccountNumber) {
-                    helper.showWarn('Số tài khoản không được bỏ trống!');
+                    helper.showWarn('Vui lòng nhập Số tài khoản!');
                     return;
                 }
                 if (!data.AccountName) {
-                    helper.showWarn('Chủ tài khoản không được bỏ trống!');
+                    helper.showWarn('Vui lòng nhập Chủ tài khoản!');
                     return;
                 }
             }
@@ -784,8 +780,8 @@
                 helper.showWarn('Vui lòng nhập số tiền!');
                 return;
             }
-            if (Number(data.Amount.replaceAll(",", "")) < 50000) {
-                helper.showWarn('Số tiền rút tối thiếu phải lớn hơn 50,000đ!');
+            if (Number(data.Amount.replaceAll(",", "")) < 1000) {
+                helper.showWarn('Số tiền rút tối thiếu phải lớn hơn 1000đ!');
                 return;
             }
 

@@ -352,6 +352,7 @@ namespace KGQT.Business
                         {
 
                             var u = db.tbl_Accounts.FirstOrDefault(x => x.ID == oUser.ID);
+                            var moneyPrevious = Converted.Double2Money(wallet);
                             var pay = Converted.StringCeiling(wallet - totalPrice);
                             u.Wallet = pay;
                             db.Update(u);
@@ -362,8 +363,7 @@ namespace KGQT.Business
                                 dt.Message = "Thanh toán thất bại. Vui lòng kiểm tra lại!";
                                 return dt;
                             }
-
-                            HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Thanh toán cho đơn {oOrder.ShippingOrderCode}", oOrder.TotalPrice, 1, 1, pay, accessor);
+                            HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Thanh toán cho đơn {oOrder.ShippingOrderCode}", oOrder.TotalPrice, 1, 1, moneyPrevious, pay, accessor);
                             var packs = db.tbl_Packages.Where(x => x.TransID == oOrder.ShippingOrderCode).ToList();
                             foreach (var pack in packs)
                             {

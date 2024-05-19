@@ -22,7 +22,7 @@
 <div class="row p-2">
     <div class="col-lg-12 col-md-12 col-sm-12">
         <form class="row" id="myform">
-            <div class="col-lg-4 col-md-4 col-sm-12">
+            <div class="col-lg-3 col-md-3 col-sm-12">
                 <p class="fw-bold m-0">Loại giao dịch:</p>
                 <select name="TradeType" id="TradeType" class="form-control">
                     <option value="0" selected="@(tradeType == 0)">Tất cả</option>
@@ -35,27 +35,23 @@
                     <option value="7" selected="@(tradeType == 7)">Rút tiền tại kho</option>*@
                 </select>
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-12">
+            <div class="col-lg-3 col-md-3 col-sm-12">
                 <p class="fw-bold m-0">Từ ngày:</p>
                 @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control" })
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-12">
+            <div class="col-lg-3 col-md-3 col-sm-12">
                 <p class="fw-bold m-0">Đến ngày:</p>
                 @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control" })
             </div>
-            <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h5 class="fw-bold text-primary text-uppercase">LỊCH SỬ GIAO DỊCH</h5>
-                    </div>
-                    <div>
-                        <a href="Index" class="btn btn-sm btn-info mr-2 w-100px">
-                            <i class="fas fa-sync fa-xs"></i>
-                            Xóa lọc
-                        </a>
-                        <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
-                    </div>
-                </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 d-flex align-items-end justify-content-end">
+                <a href="Index" class="btn btn-sm btn-info mr-2 w-100px">
+                    <i class="fas fa-sync fa-xs"></i>
+                    Xóa lọc
+                </a>
+                <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
+            </div>
+            <div class="col-lg-12 mt-4">
+                <h5 class="fw-bold text-primary text-uppercase">LỊCH SỬ GIAO DỊCH</h5>
             </div>
         </form>
     </div>
@@ -70,7 +66,11 @@
                     <td class="fw-bold text-left">Loại GD</td>
                     <td class="fw-bold text-left">Nội dung</td>
                     <td class="fw-bold text-center">Số tiền</td>
-                    @*<td class="fw-bold text-center">Số dư ví</td>*@
+                    <td class="fw-bold text-center">Số dư ví</td>
+                    <td class="fw-bold text-center">Trạng thái</td>
+
+                    @*<td class="fw-bold text-center"></td>*@
+
                 </tr>
             </thead>
             <tbody>
@@ -88,7 +88,7 @@
                             }
                         </td>
                         <td class="text-left " title="@(PJUtils.TradeType(item.TradeType))">
-                            @(PJUtils.TradeType(item.TradeType))
+                            @PJUtils.TradeType(item.TradeType)
                         </td>
                         <td class="text-center text-truncate" title="@item.HContent">
                             @if (!string.IsNullOrEmpty(item.HContent))
@@ -106,27 +106,23 @@
                         <td class="text-left">
                             @if (item.Type == 1)
                             {
-                                <span class="text-danger">-@Converted.String2Money(item.Amount)đ</span>
+                                <span class="text-danger">-@Converted.String2Money(item.Amount)</span>
                             }
                             else
                             {
-                                <span class="text-success">+@Converted.String2Money(item.Amount)đ</span>
+                                <span class="text-success">+@Converted.String2Money(item.Amount)</span>
                             }
                         </td>
-                      @*  <td class="text-center">
-                            @if (item.Type == 1)
-                            {
-                                <span class="text-success">
-                                    @Converted.Double2Money(Converted.ToDouble(item.MoneyLeft) - Converted.ToDouble(item.Amount))đ
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="text-success">
-                                    @Converted.Double2Money(Converted.ToDouble(item.MoneyLeft)+ Converted.ToDouble(item.Amount))đ
-                                </span>
-                            }
+                        <td class="text-left">
+                            <span class="">@Converted.String2Money(item.MoneyLeft)</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="">@PJUtils.HistoryWalletStatus(item.Status)</span>
+                        </td>
+                        @*<td class="text-center">
+                            <a href="/HistoryPayWallet/Detail?ID=@item.ID" class="btn btn-sm btn-secondary">Xem</a>
                         </td>*@
+                     
                     </tr>
                 }
             </tbody>
