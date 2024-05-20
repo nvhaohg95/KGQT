@@ -1,8 +1,6 @@
 
 using KGQT.Base;
-using KGQT.Models;
 using KGQT.Models.temp;
-using Microsoft.EntityFrameworkCore;
 
 using Microsoft.Extensions.FileProviders;
 using Serilog;

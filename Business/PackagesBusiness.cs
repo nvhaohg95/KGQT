@@ -215,7 +215,8 @@ namespace KGQT.Business
                         return data;
                     }
                 }
-
+                if (oPack.SearchBaiduTimes == null)
+                    oPack.SearchBaiduTimes = 0;
                 oPack.SearchBaiduTimes++;
                 BusinessBase.Update(oPack);
             }
@@ -1304,17 +1305,18 @@ namespace KGQT.Business
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == item.Username);
                     if (user != null)
                     {
-                        if (user.AvailableSearch == 0)
-                        {
-                            if (string.IsNullOrEmpty(user.Wallet) || Converted.ToDouble(user.Wallet) < 500)
-                                return;
-                            var moneyPrevious = user.Wallet;
-                            var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
-                            AccountBusiness.UpdateWallet(user.ID, wallet);
-                            HistoryPayWallet.Insert(user.ID, user.Username, item.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + item.PackageCode, "500", 1, 1, moneyPrevious, wallet, "admin");
-                        }
-                        else
-                            AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);
+                        //if (user.AvailableSearch == 0)
+                        //{
+                        //    if (string.IsNullOrEmpty(user.Wallet) || Converted.ToDouble(user.Wallet) < 500)
+                        //        return;
+                        //    var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
+                        //    AccountBusiness.UpdateWallet(user.ID, wallet);
+                        //    #region Logs
+                        //    HistoryPayWallet.Insert(user.ID, user.Username, item.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + item.PackageCode, "500", 1, 1, wallet, "admin");
+                        //    #endregion
+                        //}
+                        //else
+                        //    AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);
 
                         using (HttpClient client = new HttpClient())
                         {
@@ -1340,7 +1342,8 @@ namespace KGQT.Business
                                 }
                             }
                         }
-
+                        if (item.SearchBaiduTimes == null)
+                            item.SearchBaiduTimes = 0;
                         item.SearchBaiduTimes++;
                         if (BusinessBase.Update(item) && item.Status == 2)
                         {
