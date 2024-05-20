@@ -10,6 +10,7 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace KGQT.Mobility
@@ -1043,6 +1044,22 @@ namespace KGQT.Mobility
                     return new object[] { true, oRequest };
                 }
                 var oData = HistoryPayWallet.GetPage(userName, ID, status, null, null, pageNum, pageSize);
+                var s = oData[0] as List<tbl_HistoryPayWallet>;
+                if(s.Count > 0)
+                {
+                    var s2 = s.Select(x => new
+                    {
+                        Data = x,
+                        Month = x.CreatedDate.Value.Month,
+                        Year = x.CreatedDate.Value.Year,
+                    }).GroupBy(x => new { x.Month, x.Year })
+                    .Select((g, i) => new
+                    {
+                    Key = g.Key.Month + "/" + g.Key.Year,
+                    Datas = g.ToList()
+                    });
+                    oData[0] = s2;
+                }
                 return new object[] { false, oData };
             }
             catch (Exception)
