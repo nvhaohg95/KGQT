@@ -62,9 +62,9 @@
         <table class="table table-bordered table-hover">
             <thead>
                 <tr class="bg-info text-white">
-                    <td class="fw-bold text-left">Ngày GD</td>
-                    <td class="fw-bold text-left">Loại GD</td>
-                    <td class="fw-bold text-left">Nội dung</td>
+                    <td class="fw-bold text-center">Ngày GD</td>
+                    <td class="fw-bold text-center">Loại GD</td>
+                    <td class="fw-bold text-center">Nội dung</td>
                     <td class="fw-bold text-center">Số tiền</td>
                     <td class="fw-bold text-center">Số dư ví</td>
                     <td class="fw-bold text-center">Trạng thái</td>
@@ -78,14 +78,7 @@
                 {
                     <tr>
                         <td class="text-left">
-                            @if (item.CreatedDate != null)
-                            {
-                                <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
-                            }
-                            else
-                            {
-                                <span>dd/mm/yyy</span>
-                            }
+                                <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
                         </td>
                         <td class="text-left " title="@(PJUtils.TradeType(item.TradeType))">
                             @PJUtils.TradeType(item.TradeType)
@@ -114,7 +107,14 @@
                             }
                         </td>
                         <td class="text-left">
-                            <span class="">@Converted.String2Money(item.MoneyLeft)</span>
+                            @if(item.Status == 2)
+                            {
+                                <span class="">@Converted.String2Money(item.MoneyPrevious)</span>
+                            }
+                            else
+                            {
+                                <span class="">@Converted.String2Money(item.MoneyLeft)</span>
+                            }
                         </td>
                         <td class="text-center">
                             <span class="">@PJUtils.HistoryWalletStatus(item.Status)</span>

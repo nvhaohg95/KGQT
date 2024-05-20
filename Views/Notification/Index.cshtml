@@ -65,7 +65,7 @@
                         <th class="text-center">
                             Nội dung
                         </th>
-                        @*<th class="text-center"></th>*@
+                        <th class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -76,14 +76,18 @@
                                 @item.CreatedDate.Value.ToString("dd/MM/yyy")
                             </td>
                             <td class="text-left align-middle">
-                                @Html.Raw(item.Message)
+                               <div class="line-clamp line-clamp-2">
+                                    @Html.Raw(item.Message)
+                               </div>
                             </td>
-                            @*<td class="text-center align-middle">
-                                <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.ID">
-                                    <i class="far fa-edit"></i>
-                                    <span>Xem</span>
-                                </a>
-                            </td>*@
+                            <td class="text-center align-middle">
+                                @if(item.NotifType == 10)
+                                {
+                                    <button data-bs-toggle="modal" data-bs-target="#popupNoti" class="btn btn-sm btn-secondary" onclick="getNoti(@item.ID)">
+                                        <span>Xem</span>
+                                    </button>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -171,3 +175,49 @@
         }
     </div>
 </div>
+
+<div class="modal fade" id="popupNoti" tabindex="-1" aria-labelledby="exampleNotiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width:800px">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="exampleNotiLabel">THÔNG BÁO</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="w-100 h-100" style="resize:none" id="noti-body"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary w-100px" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getNoti(id){
+        let element = $("#noti-body");
+        if (element) 
+        {
+            element[0].innerHTML = "";
+        }
+        $.ajax({
+            url: '/Notification/GetByID',
+            type: 'POST',
+            data: { id: id },
+            success: function (respone) 
+            {
+                if (respone.data)
+                {
+                    let element = $("#noti-body");
+                    if(element)
+                    {
+                        element[0].innerHTML = respone.data.message;
+                    }
+                }
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+            }
+        });
+    }
+</script>

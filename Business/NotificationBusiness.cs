@@ -7,6 +7,7 @@ using OfficeOpenXml.Table.PivotTable;
 using System.Security.Cryptography.Pkcs;
 using Serilog;
 using ILogger = Serilog.ILogger;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace KGQT.Business
 {
@@ -158,6 +159,25 @@ namespace KGQT.Business
             return "/Notification/Detail?ID=" + ID;
         }
 
+        public static DataReturnModel<tbl_Notification> GetByID(int id, string userLogin)
+        {
+            var result = new DataReturnModel<tbl_Notification>();
+            using (var db = new nhanshiphangContext())
+            {
+                var data = db.tbl_Notifications.FirstOrDefault(x => x.ID == id);
+                if (data != null)
+                {
+                    data.Status = 1;
+                    data.ModifiedBy = userLogin;
+                    data.ModifiedDate = DateTime.Now;
+                    db.Update(data);
+                    db.SaveChanges();
+                }
+                result.IsError = false;
+                result.Data = data;
+                return result;
+            }
+        }
         public static DataReturnModel<bool> SendNotiForUser(string strUserNames, string contents, bool sendToAll , string userLogin)
         {
             DataReturnModel<bool> result = new();
@@ -183,12 +203,12 @@ namespace KGQT.Business
                     List<tbl_Account> lstUser = new();
                     if (sendToAll)
                     {
-                        lstUser = db.tbl_Accounts.Where(x => x.RoleID != 1 && x.IsActive == true).ToList();
+                        lstUser = db.tbl_Accounts.Where(x => x.IsActive == true).ToList();
                     }
                     else
                     {
                         List<string> userNames = strUserNames.Split(";").Select(x => x.ToLower()).Distinct().ToList();
-                        lstUser = db.tbl_Accounts.Where(x => x.RoleID != 1 && x.IsActive == true && userNames.Contains(x.Username)).ToList();
+                        lstUser = db.tbl_Accounts.Where(x => x.IsActive == true && userNames.Contains(x.Username)).ToList();
                     }
                     if (lstUser.Count > 0)
                     {
