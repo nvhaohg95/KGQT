@@ -515,6 +515,17 @@ th
     animation: sp-anime 0.8s infinite linear;
 }
 
+.line-clamp {
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-2 {
+    -webkit-line-clamp: 2;
+}
+
 @keyframes sp-anime {
     100% {
         transform: rotate(360deg);

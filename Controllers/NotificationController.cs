@@ -79,6 +79,7 @@ namespace KGQT.Controllers
 
             return View("Index", lstData);
         }
+
         #endregion
 
         #region Update status
@@ -93,6 +94,20 @@ namespace KGQT.Controllers
                 string userName = userModel != null ? userModel.UserName : "";
                 NotificationBusiness.UpdateStatus(ID, userName);
             }
+        }
+        #endregion
+
+        #region Get By ID
+        [HttpPost]
+        public DataReturnModel<tbl_Notification> GetByID(int id)
+        {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var result = NotificationBusiness.GetByID(id, userLogin);
+            return result;
+
         }
         #endregion
     }
