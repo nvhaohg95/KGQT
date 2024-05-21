@@ -104,7 +104,14 @@ namespace KGQT.Areas.Controllers
             return result;
 
         }
-        
+
+        #endregion
+
+        #region Test zalo
+        public IActionResult TestZalo()
+        {
+            return View();
+        }
         #endregion
     }
 }

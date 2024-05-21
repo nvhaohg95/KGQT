@@ -9,9 +9,6 @@ namespace KGQT.Models
         public int? UID { get; set; }
         public int? ShipID { get; set; }
         public string? Context { get; set; }
-        /// <summary>
-        /// 0: admin, 1: khách
-        /// </summary>
         public int? Type { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

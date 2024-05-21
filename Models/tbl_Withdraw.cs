@@ -22,10 +22,10 @@ namespace KGQT.Models
         public string? Note { get; set; }
         /// <summary>
         /// 1: Đang chờ
-        /// 2: Đã duyệt
-        /// 3: Từ chối
+        /// 2: Thành công
+        /// 3: Hủy
         /// </summary>
-        public int Status { get; set; }
+        public int? Status { get; set; }
         /// <summary>
         /// 1. Nạp tiền
         /// 2. Rút tiền

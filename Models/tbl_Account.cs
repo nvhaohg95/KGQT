@@ -9,16 +9,47 @@ namespace KGQT.Models
         public string? UserID { get; set; }
         public string? Username { get; set; }
         public string? Password { get; set; }
+        /// <summary>
+        /// 0. Admin
+        /// 1. User
+        /// 2. Quản lý văn phòng
+        /// 3. Quản lý kho
+        /// 4. Nhân viên
+        /// </summary>
         public string? FullName { get; set; }
         public DateTime? BirthDay { get; set; }
+        /// <summary>
+        /// 0. Admin
+        /// 1. User
+        /// 2. Quản lý văn phòng
+        /// 3. Quản lý kho
+        /// 4. Nhân viên
+        /// </summary>
         public bool? Gender { get; set; }
+        /// <summary>
+        /// 0. Admin
+        /// 1. User
+        /// 2. Quản lý văn phòng
+        /// 3. Quản lý kho
+        /// 4. Nhân viên
+        /// </summary>
         public string? Address { get; set; }
         public string? Email { get; set; }
+        /// <summary>
+        /// 0. Admin
+        /// 1. User
+        /// 2. Quản lý văn phòng
+        /// 3. Quản lý kho
+        /// 4. Nhân viên
+        /// </summary>
         public string? Phone { get; set; }
         public string? IMG { get; set; }
         /// <summary>
-        /// 1. Admin
-        /// 4. User
+        /// 0. Admin
+        /// 1. User
+        /// 2. Quản lý văn phòng
+        /// 3. Quản lý kho
+        /// 4. Nhân viên
         /// </summary>
         public int? RoleID { get; set; }
         /// <summary>
@@ -40,7 +71,6 @@ namespace KGQT.Models
         /// 3. Banned
         /// </summary>
         public int? Status { get; set; }
-        public int AvailableSearch { get; set; }
         public string? Wallet { get; set; }
         public bool? IsNotReceiveMail { get; set; }
         public bool? IsOutCityCustomer { get; set; }
@@ -48,12 +78,13 @@ namespace KGQT.Models
         public int? SaleID { get; set; }
         public string? SaleUsername { get; set; }
         public string? Token { get; set; }
-        public string? TokenDevice { get; set; }
-        public string? DeviceName { get; set; }
-        public string? DeviceID { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
+        public int? AvailableSearch { get; set; }
+        public string? TokenDevice { get; set; }
+        public string? DeviceID { get; set; }
+        public string? DeviceName { get; set; }
     }
 }

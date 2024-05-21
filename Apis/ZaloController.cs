@@ -1,8 +1,11 @@
 ﻿using KGQT.Base;
+using KGQT.Models;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Net.Http.Headers;
 using System.Net.Security;
+using System.Security.Policy;
+using System.Web;
 
 namespace KGQT.Apis
 {
@@ -12,50 +15,21 @@ namespace KGQT.Apis
     {
         [HttpGet]
         [Route("callback")]
-        public async Task<bool> CallbackZaloAsync()
+        public async Task<IActionResult> CallbackAsync()
         {
             var code = Request.Query["code"].ToString();
-            string appID = Config.Zalo.AppID;
-            string secret = Config.Zalo.Secret;
-            string url = Config.Zalo.GetTokenUrl;
-            using (HttpClient client = new HttpClient())
-            {
-                try
-                {
-                    HttpContent requestContent = new FormUrlEncodedContent(new[]
-                    {
-                    new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                    new KeyValuePair<string, string>("app_id", appID),
-                    new KeyValuePair<string, string>("code", code)
-                    });
-
-                    client.DefaultRequestHeaders.Add("secret_key", secret);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-                    HttpResponseMessage response = await client.PostAsync(url, requestContent);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string responseBody = await response.Content.ReadAsStringAsync();
-
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Request failed with status code {response.StatusCode}");
-                    }
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine($"Request exception: {e.Message}");
-                }
-            }
-            return true;
+            var result = await ZaloCommon.GetTokenAsync(code);
+            return Redirect("/admin/package/index");
         }
 
+
         [HttpGet]
-        public void CreateCode()
+        [Route("checktoken")]
+        public IActionResult CheckToken()
         {
-            string url = string.Format(Config.Zalo.PerUrl, Config.Zalo.AppID, Config.Zalo.Redirect_Uri);
-            Redirect(url);
+            string uri = HttpUtility.UrlEncodeUnicode(Config.Zalo.Redirect_Uri);
+            string url = string.Format(Config.Zalo.PerUrl, Config.Zalo.AppID, uri);
+            return Redirect(url);
         }
     }
 }

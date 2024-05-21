@@ -1,4 +1,6 @@
-﻿using KGQT.Business;
+﻿using KGQT.Base;
+using KGQT.Business;
+using KGQT.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -8,10 +10,10 @@ namespace KGQT.Areas.Admin.Controllers
     public class HomeController : Controller
     {
         #region constructor
-        
+
         public HomeController()
         {
-            
+
         }
         #endregion
 

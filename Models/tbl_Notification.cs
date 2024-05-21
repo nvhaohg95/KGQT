@@ -13,7 +13,7 @@ namespace KGQT.Models
         public int? OrderID { get; set; }
         public string? OrderCode { get; set; }
         public string? Message { get; set; }
-        public string? Message2 { get; set; } // view mobile
+        public string? Message2 { get; set; }
         /// <summary>
         /// 0. chưa đọc
         /// 1. đã xem
@@ -30,8 +30,6 @@ namespace KGQT.Models
         /// 7. Rút tiền tại kho
         /// 8. Truy thu
         /// 9. Phí giao hàng
-        /// 10. Thông báo hệ thống
-        /// 
         /// </summary>
         public int? NotifType { get; set; }
         public DateTime? CreatedDate { get; set; }
@@ -45,7 +43,5 @@ namespace KGQT.Models
         public bool? IsWait { get; set; }
         public int? ComplainID { get; set; }
         public string? Url { get; set; }
-        
-
     }
 }

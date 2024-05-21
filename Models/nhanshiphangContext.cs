@@ -31,12 +31,15 @@ namespace KGQT.Models
         public virtual DbSet<tbl_SystemLog> tbl_SystemLogs { get; set; } = null!;
         public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_Withdraw> tbl_Withdraws { get; set; } = null!;
+        public virtual DbSet<tbl_Zalo> tbl_Zalos { get; set; } = null!;
+        public virtual DbSet<tbl_ZaloFollewer> tbl_ZaloFollewers { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer(Config.Connections["KGQT"]);
             }
         }
@@ -47,31 +50,33 @@ namespace KGQT.Models
             {
                 entity.ToTable("tbl_Account");
 
-                entity.Property(e => e.BirthDay).HasColumnType("datetime");
+                entity.Property(e => e.Address).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
-                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+                entity.Property(e => e.AvailableSearch).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.BirthDay).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Email).HasMaxLength(100);
 
-                entity.Property(e => e.FullName).HasMaxLength(50);
+                entity.Property(e => e.FullName)
+                    .HasMaxLength(50)
+                    .HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
-                entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+                entity.Property(e => e.Gender).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Password).HasMaxLength(50);
 
-                entity.Property(e => e.Phone).HasMaxLength(15);
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(15)
+                    .HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
                 entity.Property(e => e.RoleID).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
-                entity.Property(e => e.SaleUsername).HasMaxLength(50);
-
                 entity.Property(e => e.Status).HasComment("1. Not Active\r\n2. Active\r\n3. Banned");
-
-                entity.Property(e => e.Token).HasMaxLength(50);
 
                 entity.Property(e => e.UserID).HasMaxLength(50);
 
@@ -116,7 +121,9 @@ namespace KGQT.Models
 
                 entity.Property(e => e.Status).HasComment("1. Chờ duyệt\r\n2. Đã duyệt\r\n3. Hủy");
 
-                entity.Property(e => e.Type).HasComment("0. Khiếu nại thiếu hàng\r\n1. Khiếu nại sai mẫu (bồi thường)\r\n2. Khiếu nại sai mẫu (trả hàng)");
+                entity.Property(e => e.TransId).HasMaxLength(50);
+
+                entity.Property(e => e.Type).HasComment("0. Khiếu nại hệ thống; 1. Khiếu nại kiện;\r\n2. Khiếu nại đơn; 3. Khiếu nại nạp tiền");
             });
 
             modelBuilder.Entity<tbl_Configuration>(entity =>
@@ -153,9 +160,9 @@ namespace KGQT.Models
 
                 entity.Property(e => e.MoneyLeft).HasMaxLength(20);
 
-                entity.Property(e => e.Status).HasComment("0:chưa active; 1:active");
+                entity.Property(e => e.MoneyPrevious).HasMaxLength(20);
 
-                entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n");
+                entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r\n, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n");
 
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });
@@ -179,7 +186,11 @@ namespace KGQT.Models
 
                 entity.Property(e => e.AirPackagePrice).HasMaxLength(10);
 
+                entity.Property(e => e.CanceledBy).HasMaxLength(100);
+
                 entity.Property(e => e.ComfirmDate).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(100);
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -205,7 +216,11 @@ namespace KGQT.Models
 
                 entity.Property(e => e.Length).HasMaxLength(5);
 
+                entity.Property(e => e.ModifiedBy).HasMaxLength(100);
+
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.MoreCharge).HasMaxLength(10);
 
                 entity.Property(e => e.OrderDate).HasColumnType("datetime");
 
@@ -263,6 +278,8 @@ namespace KGQT.Models
 
                 entity.Property(e => e.AirPackagePrice).HasMaxLength(20);
 
+                entity.Property(e => e.CanceledBy).HasMaxLength(100);
+
                 entity.Property(e => e.ChinaExportDate).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(150);
@@ -278,6 +295,8 @@ namespace KGQT.Models
                 entity.Property(e => e.InsurancePrice).HasMaxLength(20);
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.MoreCharge).HasMaxLength(20);
 
                 entity.Property(e => e.RecID).HasMaxLength(50);
 
@@ -317,9 +336,7 @@ namespace KGQT.Models
 
                 entity.Property(e => e.ModifieldOn).HasColumnType("datetime");
 
-                entity.Property(e => e.Type)
-                    .HasDefaultValueSql("((0))")
-                    .HasComment("0: admin, 1: khách");
+                entity.Property(e => e.Type).HasDefaultValueSql("((0))");
             });
 
             modelBuilder.Entity<tbl_Withdraw>(entity =>
@@ -349,6 +366,38 @@ namespace KGQT.Models
                 entity.Property(e => e.Type).HasComment("1. Nạp tiền\r\n2. Rút tiền\r\n3. Truy thu\r\n4. Truy thu khác\r\n5. Chi\r\n6. Nạp tiền tại kho\r\n7. Rút tiền tại kho\r\n8. Chi công ty\r\n9. Thu công ty");
 
                 entity.Property(e => e.Username).HasMaxLength(250);
+            });
+
+            modelBuilder.Entity<tbl_Zalo>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.ToTable("tbl_Zalo");
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.accesstoken_expire).HasColumnType("datetime");
+
+                entity.Property(e => e.expires_in).HasMaxLength(50);
+
+                entity.Property(e => e.freshtoken_expire).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_ZaloFollewer>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.ToTable("tbl_ZaloFollewer");
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+
+                entity.Property(e => e.phone).HasMaxLength(12);
+
+                entity.Property(e => e.user_id).HasMaxLength(50);
+
+                entity.Property(e => e.display_name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>

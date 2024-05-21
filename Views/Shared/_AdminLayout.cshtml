@@ -1,5 +1,6 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using KGQT.Business;
+@using KGQT.Business.Base;
 @using KGQT.Commons;
 @using KGQT.Models.temp;
 @using KGQT.Models;
@@ -23,7 +24,7 @@
             Context.Response.Redirect("/Auth/Login");
         else
         {
-            if(user.RoleID != 1)
+            if (user.RoleID != 1)
                 Context.Response.Redirect("/Home/package/index");
             else
             {
@@ -36,6 +37,10 @@
     }
     else
         Context.Response.Redirect("/Auth/Login");
+    bool isAuthorized = false;
+    var zalo = BusinessBase.GetFirst<tbl_Zalo>();
+    if (zalo != null && zalo.freshtoken_expire > DateTime.Now)
+        isAuthorized = true;
 }
 <!DOCTYPE html>
 <html>
@@ -50,7 +55,7 @@
     @*<script src="https:use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>*@
     <!-- Custom fonts for this template-->
     <link rel="icon" type="image/png" href="~/img/favicon.ico" sizes="32x32">
-    <link href="~/css/styles.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/styles.css" rel="stylesheet" type="text/css" />
     <link href="~/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css" asp-append-version="true">
     <link href="~/styles/admin.css" rel="stylesheet" type="text/css" asp-append-version="true">
@@ -193,7 +198,7 @@
                 </div>
             </li>
 
-           
+
             <li class="topbar-divider d-none d-sm-block"></li>
 
             <!-- Nav Item - User Information -->
@@ -209,7 +214,7 @@
                     }
                     else
                     {
-                        <img class="img-profile rounded-circle"src="~/img/undraw_profile.svg">
+                        <img class="img-profile rounded-circle" src="~/img/undraw_profile.svg">
                     }
                 </a>
                 <!-- Dropdown - User Information -->
@@ -315,7 +320,7 @@
                                 <a class="nav-link text-uppercase" href="/Admin/FeeWeight/index?page=1" title="Phí vận chuyển">PHÍ VẬN CHUYỂN</a>
                             </nav>
                         </div>
-                        <a class="nav-link collapsed"  data-bs-toggle="collapse" data-bs-target="#collapseLayouts6" aria-expanded="false" aria-controls="collapseLayouts6" title="Hỗ trợ">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts6" aria-expanded="false" aria-controls="collapseLayouts6" title="Hỗ trợ">
                             <span><i class="fas fa-headset icon-16"></i></span>
                             <span class="ml-2 text-uppercase">HỖ TRỢ</span>
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
@@ -323,8 +328,8 @@
                         <div class="collapse" id="collapseLayouts6" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link text-uppercase" href="/Admin/Notification/Index?page=1" title="Thông báo">THÔNG BÁO</a>
-                                <a class="nav-link text-uppercase"href="/Admin/Complain/Index?page=1" title="Khiếu nại">KHIẾU NẠI</a>
-                            </nav
+                                <a class="nav-link text-uppercase" href="/Admin/Complain/Index?page=1" title="Khiếu nại">KHIẾU NẠI</a>
+                            </nav>
                         </div>
                     </div>
                 </div>
@@ -333,15 +338,22 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-2">
+                @if(!isAuthorized){
+                    <div class="row">
+                        <div class="w-100 mb-2 py-1" style="background-color:red">
+                                <span class="text-white">Zalo chưa được cấp quyền. Không thể sử dụng tính năng thống báo của zalo.</span> <a href="/zalo/Authorization" class="text-white text-decoration-underline">Bấm vào đây để cấp quyền</a>
+                        </div>
+                    </div>
+                }
                     @RenderBody()
                 </div>
             </main>
         </div>
     </div>
-    @*<a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>*@
-    @if(user != null)
+    <!--<a class="scroll-to-top rounded" href="#page-top">
+         <i class="fas fa-angle-up"></i>
+    </a> -->
+    @if (user != null)
     {
         <!-- form change password -->
         <div class="modal fade" id="changePassWordModal" tabindex="-1" role="dialog" aria-labelledby="changePassWordModal" aria-hidden="true">
@@ -441,11 +453,11 @@
             }
         }
         // click update status noti
-        function clickNoti(id){
+        function clickNoti(id) {
             $.ajax({
                 url: '/Admin/Notification/UpdateStatus',
                 type: "POST",
-                data: {ID:id}
+                data: { ID: id }
             });
         }
 

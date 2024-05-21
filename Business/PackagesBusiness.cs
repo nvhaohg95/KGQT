@@ -167,7 +167,7 @@ namespace KGQT.Business
                         HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + oPack.PackageCode, "500", 1, 1, moneyPrevious, wallet, uslogin);
                     }
                     else
-                        AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);
+                        AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch.Value - 1);
                 }
                 using (HttpClient client = new HttpClient())
                 {
@@ -451,7 +451,7 @@ namespace KGQT.Business
                     int oldStt = p.Status;
                     int oldVc = p.MovingMethod;
 
-                    if (!string.IsNullOrEmpty(p.Username))
+                    if (!string.IsNullOrEmpty(form.Username))
                     {
                         var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == form.Username.ToLower());
                         if (user != null)
@@ -723,7 +723,12 @@ namespace KGQT.Business
                     if (db.SaveChanges() > 0)
                     {
                         if (user != null)
-                            AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch + 1);
+                        {
+                            if (user.AvailableSearch == null)
+                                user.AvailableSearch = 0;
+                            AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch.Value + 1);
+
+                        }
 
                         //Ktra xem khach da co don chua.
                         DateTime cnExportDateFrom = DateTime.Now;
