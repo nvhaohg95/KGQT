@@ -270,7 +270,7 @@ namespace KGQT.Base
                 if (token.accesstoken_expire < DateTime.Now)
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.sendTextMessageToUserId("7553678334610336355", "day la tin nhan\r\ntest \r\nthoi");
+                JObject result = client.sendTextMessageToUserIdV3("7553678334610336355", "day la tin nhan\r\ntest \r\nthoi");
             }
             return false;
         }
