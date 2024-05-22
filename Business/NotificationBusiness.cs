@@ -225,7 +225,11 @@ namespace KGQT.Business
                                 continue;
                             }
                         }
-                        ZaloCommon.SendMessageToAll(contents);
+                        Task task = new Task(() =>
+                        {
+                            ZaloCommon.SendMessageToAll(contents);
+                        });
+                        task.Start();
                         result.IsError = false;
                         result.Message = "Gửi thành công!";
                         result.Data = true;
