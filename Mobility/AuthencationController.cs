@@ -1186,6 +1186,33 @@ namespace KGQT.Mobility
         }
         #endregion
 
+        #region Complain
+        [HttpPost]
+        [Route("createcomplain")]
+        public async Task<object> CreateComplain([FromBody] tbl_Complain model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (model == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                var result = ComplainBusiness.Insert(model);
+                return result;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+        #endregion
+
         #region FeeWeight
         [HttpPost]
         [Route("getfeeweight")]
