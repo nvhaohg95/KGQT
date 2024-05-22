@@ -33,6 +33,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Withdraw> tbl_Withdraws { get; set; } = null!;
         public virtual DbSet<tbl_Zalo> tbl_Zalos { get; set; } = null!;
         public virtual DbSet<tbl_ZaloFollewer> tbl_ZaloFollewers { get; set; } = null!;
+        public virtual DbSet<tbl_ZaloLog> tbl_ZaloLogs { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -393,11 +394,26 @@ namespace KGQT.Models
 
                 entity.Property(e => e.RecID).ValueGeneratedNever();
 
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Username).HasMaxLength(50);
+
+                entity.Property(e => e.display_name).HasMaxLength(50);
+
                 entity.Property(e => e.phone).HasMaxLength(12);
 
                 entity.Property(e => e.user_id).HasMaxLength(50);
+            });
 
-                entity.Property(e => e.display_name).HasMaxLength(50);
+            modelBuilder.Entity<tbl_ZaloLog>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.user_id).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>

@@ -1,4 +1,6 @@
-﻿using KGQT.Business.Base;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Google.Api.Gax;
+using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Newtonsoft.Json;
@@ -11,11 +13,13 @@ namespace KGQT.Base
 {
     public static class ZaloCommon
     {
-        static Timer timer;
+        static Timer refreshToken;
+        static Timer getListFollower;
 
         public static void CallRefresh()
         {
-            timer = new Timer(RefreshToken, null, TimeSpan.FromHours(1), TimeSpan.FromHours(2));
+            refreshToken = new Timer(RefreshToken, null, TimeSpan.FromHours(1), TimeSpan.FromHours(2));
+            getListFollower = new Timer(GetListFollower, null, TimeSpan.FromMinutes(3), TimeSpan.FromHours(12));
         }
         public static async Task<bool> GetTokenAsync(string code)
         {
@@ -194,6 +198,11 @@ namespace KGQT.Base
             return null;
         }
 
+        public static async void GetListFollower(object obj)
+        {
+            await GetListFollower();
+        }
+
         public static async Task GetListFollower(int page = 1, int pageSize = 20)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
@@ -206,12 +215,12 @@ namespace KGQT.Base
                 var oData = JsonConvert.DeserializeObject<Followers>(result.ToString());
                 if (oData.message.ToLower() == "success")
                 {
-                    int totalPage = oData.data.total / 20;
+                    int totalPage = oData.data.total / pageSize;
 
                     if (totalPage * pageSize < oData.data.total)
                         totalPage = totalPage + 1;
 
-                    BackGroundWorker(oData.data.followers, client);
+                    SaveListFollower(oData.data.followers, client);
 
                     if (page < totalPage)
                     {
@@ -222,7 +231,7 @@ namespace KGQT.Base
             }
         }
 
-        private static void BackGroundWorker(List<Follower> data, ZaloClient client)
+        private static void SaveListFollower(List<Follower> data, ZaloClient client)
         {
             BackgroundWorker bw = new BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
@@ -262,7 +271,7 @@ namespace KGQT.Base
             bw.RunWorkerAsync();
         }
 
-        public static async Task<bool> SendMessage()
+        public static async Task<bool> SendMessage(string uid, string message)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
@@ -270,9 +279,82 @@ namespace KGQT.Base
                 if (token.accesstoken_expire < DateTime.Now)
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.sendTextMessageToUserIdV3("7553678334610336355", "day la tin nhan\r\ntest \r\nthoi");
+                JObject result = client.sendTextMessageToUserIdV3(uid, message);
+                
             }
             return false;
+        }
+
+        public static async Task SendMessageToAll(string message, int page = 1, int pageSize = 50)
+        {
+            var token = BusinessBase.GetFirst<tbl_Zalo>();
+            if (token != null)
+            {
+                if (token.accesstoken_expire < DateTime.Now)
+                    token = await RefreshToken();
+                ZaloClient client = new ZaloClient(token.access_token);
+                JObject result = client.getListFollower((page - 1) * pageSize, pageSize);
+                var oData = JsonConvert.DeserializeObject<Followers>(result.ToString());
+                if (oData != null && oData?.message.ToLower() == "success")
+                {
+                    int totalPage = oData.data.total / pageSize;
+
+                    if (totalPage * pageSize < oData.data.total)
+                        totalPage = totalPage + 1;
+
+                    SendMessageToUID(message, oData.data.followers, client);
+
+                    if (page < totalPage)
+                    {
+                        page++;
+                        await GetListFollower(page, pageSize);
+                    }
+                }
+            }
+        }
+
+        public static void SendMessageToUID(string message, List<Follower> followers, ZaloClient client)
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.WorkerSupportsCancellation = true;
+            bw.DoWork += new DoWorkEventHandler(
+            delegate (object o, DoWorkEventArgs args)
+            {
+                BackgroundWorker b = o as BackgroundWorker;
+
+                foreach (var item in followers)
+                {
+                    JObject result = client.sendTextMessageToUserIdV3(item.user_id, message);
+                    var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
+                    if (oData.error != 0)
+                    {
+                        var log = new tbl_ZaloLog();
+                        log.action = 1;
+                        log.error = oData.error;
+                        log.message = oData.message;
+                        log.user_id = item.user_id;
+                        log.context = message;
+                        log.CreatedDate = DateTime.Now;
+                        var info = BusinessBase.GetOne<tbl_ZaloFollewer>(x => x.user_id == item.user_id);
+                        if (info != null)
+                            log.user_name = info.display_name;
+                        BusinessBase.Add(log);
+                    }
+                }
+
+            });
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+               delegate (object o, RunWorkerCompletedEventArgs args)
+               {
+                   bw.CancelAsync();
+               });
+            bw.RunWorkerAsync();
+        }
+
+        public static void RequestMoreInfo(string uid)
+        {
+            //JObject result = client.sendRequestUserProfileToUserId("2468458835296197922", "Yêu cầu cung cấp thông tin", "Chúng tôi", "https://stc-developers.zdn.vn/zalo.png");
+            return;
         }
     }
 }

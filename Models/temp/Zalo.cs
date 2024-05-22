@@ -52,4 +52,19 @@ namespace KGQT.Models.temp
 
 
     #endregion
+
+    #region Message
+    public class Info
+    {
+        public string message_id { get; set; }
+        public string user_id { get; set; }
+    }
+
+    public class SendMessageResponse
+    {
+        public Info data { get; set; }
+        public int error { get; set; }
+        public string message { get; set; }
+    }
+    #endregion
 }

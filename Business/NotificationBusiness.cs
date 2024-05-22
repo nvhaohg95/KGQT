@@ -8,6 +8,7 @@ using System.Security.Cryptography.Pkcs;
 using Serilog;
 using ILogger = Serilog.ILogger;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using KGQT.Base;
 
 namespace KGQT.Business
 {
@@ -224,6 +225,7 @@ namespace KGQT.Business
                                 continue;
                             }
                         }
+                        ZaloCommon.SendMessageToAll(contents);
                         result.IsError = false;
                         result.Message = "Gửi thành công!";
                         result.Data = true;

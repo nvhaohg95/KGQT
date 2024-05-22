@@ -11,5 +11,6 @@ namespace KGQT.Models
         public string? phone { get; set; }
         public string? address { get; set; }
         public string? Username { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }

@@ -1,8 +1,7 @@
 
 using KGQT.Base;
 using KGQT.Models.temp;
-
-using Microsoft.Extensions.FileProviders;
+using KGQT.WebHook;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSession();
+builder.Services.AddSingleton<IReceiveWebhook, ReceiveWebhook>();
 builder.Services.AddMvc().AddRazorPagesOptions(options =>
 {
     options.Conventions.AddPageRoute("/Login/Index", "");
@@ -47,13 +47,6 @@ app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
 
 app.UseSession();
 app.UseStaticFiles();
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-           Path.Combine(builder.Environment.ContentRootPath, "uploads")),
-    RequestPath = "/uploads"
-});
 app.MapControllers();
 app.UseRouting();
 app.UseAuthorization();
@@ -69,5 +62,13 @@ app.UseEndpoints(endpoints =>
       pattern: "admin/{controller}/{action}/{id?}", new { controller = "home", action = "index" }
     );
 });
+
+app.MapPost("/webhook", async (HttpContext context, IReceiveWebhook receiveWebook) =>
+{
+    using StreamReader stream = new StreamReader(context.Request.Body);
+    return await receiveWebook.UpdateTransactionStatus(await stream.ReadToEndAsync());
+});
+
+
 app.Run();
 #endregion

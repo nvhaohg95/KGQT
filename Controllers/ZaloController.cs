@@ -23,7 +23,6 @@ namespace KGQT.Controllers
         }
 
         public IActionResult Test() {
-            ZaloCommon.SendMessage();
             return View();
         }
     }
