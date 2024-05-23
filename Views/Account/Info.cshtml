@@ -1,4 +1,5 @@
-﻿@using KGQT.Models.temp;
+﻿@using KGQT.Commons;
+@using KGQT.Models.temp;
 @model KGQT.Models.tbl_Account
 
 @{
@@ -59,6 +60,7 @@
                         </div>
                     </div>
                 </div>
+                    
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
@@ -91,6 +93,20 @@
                         </div>
                     </div>
                 </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="Wallet">Số dư ví</label>
+                                <input name="Wallet" id="Wallet" value="@Converted.String2Money(Model.Wallet)" type="text" class="form-control text-danger" readonly />
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="AvailableSearch">Lượt tìm kiếm</label>
+                                <input name="AvailableSearch" id="AvailableSearch" value="@Model.AvailableSearch" type="text" class="form-control text-primary" placeholder="Lượt tìm kiếm baidu" readonly />
+                            </div>
+                        </div>
+                    </div>
                 <div class="row justify-content-end mt-2">
                     <button type="button" class="btn btn-success w-100px" onclick="update()">Cập nhật</button>
                 </div>
