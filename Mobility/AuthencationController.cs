@@ -1200,6 +1200,7 @@ namespace KGQT.Mobility
                     oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                     return oRequest;
                 }
+                model.CreatedDate = DateTime.Now;
                 var result = ComplainBusiness.Insert(model);
                 return result;
             }
