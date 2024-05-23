@@ -78,18 +78,24 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Address">Địa chỉ <span class="ml-1 text-danger">(*)</span></label>
-                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ"/>
+                            <label for="Wallet">Ví cá nhân</label>
+                            <input name="Wallet" id="Wallet" value="@Converted.String2Money(Model.Wallet)" class="form-control text-danger" placeholder="0đ" readonly />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="AvailableSearch">Lượt tìm kiếm baidu</label>
+                            <input name="AvailableSearch" id="Wallet" value="@Model.AvailableSearch" class="form-control text-primary" placeholder="0đ" readonly />
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
-                            <label for="Wallet">Ví cá nhân</label>
-                            <input name="Wallet" id="Wallet" value="@Converted.String2Money(Model.Wallet)đ" class="form-control text-danger" placeholder="0đ" readonly />
+                            <label for="Address">Địa chỉ <span class="ml-1 text-danger">(*)</span></label>
+                            <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
                         </div>
                     </div>
                 </div>
@@ -102,20 +108,6 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
-                            <label for="UserID">Mã định danh<span class="ml-1 text-danger">(*)</span></label>
-                            <input name="UserID" id="UserID" value="@Model.UserID" type="text" class="form-control" placeholder="Mã định danh" />
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12">
-                        <div class="form-group">
-                            <label for="RoleID">Loại tài khoản<span class="ml-1 text-danger">(*)</span></label>
-                            @Html.DropDownListFor(model => model.RoleID, new SelectList(ViewBag.lstRoles,"RoleID","RoleName"),"",new { @class="form-control", @name="RoleID"})
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6 col-md-12 col-sm-12">
-                        <div class="form-group">
                             <label for="Username">Tài khoản</label>
                             <input name="Username" id="Username" value="@Model.Username" type="text" class="form-control" placeholder="Tài khoản" readonly />
                         </div>
@@ -124,6 +116,20 @@
                         <div class="form-group">
                             <label for="Password">Mật khẩu</label>
                             <input name="Password" id="Password" value="@Model.Password" type="text" class="form-control" placeholder="Mật khẩu" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="UserID">Mã định danh</label>
+                            <input name="UserID" id="UserID" value="@Model.UserID" type="text" class="form-control" placeholder="Mã định danh" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label for="RoleID">Loại tài khoản<span class="ml-1 text-danger">(*)</span></label>
+                            @Html.DropDownListFor(model => model.RoleID, new SelectList(ViewBag.lstRoles,"RoleID","RoleName"),"",new { @class="form-control", @name="RoleID"})
                         </div>
                     </div>
                 </div>
