@@ -44,6 +44,21 @@ namespace KGQT.Mobility
                 string? token = dataRequest.ContainsKey("token") ? dataRequest["token"]?.ToString() : null;
                 string? deviceName = dataRequest.ContainsKey("deviceName") ? dataRequest["deviceName"]?.ToString() : "";
                 string? deviceID = dataRequest.ContainsKey("deviceID") ? dataRequest["deviceID"]?.ToString() : "";
+
+                var config = BusinessBase.GetOne<tbl_Configuration>(x => x.Websitename == "Trakuaidi");
+                if(config != null)
+                {
+                    if ((bool)config.IsMobileReview)
+                    {
+                        if(userName.ToLower() != "admintan")
+                        {
+                            oRequest.IsError = true;
+                            oRequest.Message = "Hệ thống đang trong quá trình bảo trì! Vui lòng thử lại sau";
+                            return oRequest;
+                        }
+                    }
+                }
+
                 if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(passWord))
                 {
                     oRequest.IsError = true;
@@ -117,6 +132,21 @@ namespace KGQT.Mobility
                 string? deviceName = dataRequest.ContainsKey("deviceName") ? dataRequest["deviceName"]?.ToString() : "";
                 string? deviceID = dataRequest.ContainsKey("deviceID") ? dataRequest["deviceID"]?.ToString() : "";
                 string? token = dataRequest.ContainsKey("token") ? dataRequest["token"]?.ToString() : null;
+
+                var config = BusinessBase.GetOne<tbl_Configuration>(x => x.Websitename == "Trakuaidi");
+                if (config != null)
+                {
+                    if ((bool)config.IsMobileReview)
+                    {
+                        if (userName.ToLower() != "admintan")
+                        {
+                            oRequest.IsError = true;
+                            oRequest.Message = "Hệ thống đang trong quá trình bảo trì! Vui lòng thử lại sau";
+                            return oRequest;
+                        }
+                    }
+                }
+
                 if (string.IsNullOrEmpty(deviceID))
                 {
                     oRequest.IsError = true;
@@ -188,6 +218,16 @@ namespace KGQT.Mobility
                     oRequest.IsError = true;
                     oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                     return oRequest;
+                }
+                var config = BusinessBase.GetOne<tbl_Configuration>(x => x.Websitename == "Trakuaidi");
+                if (config != null)
+                {
+                    if ((bool)config.IsMobileReview)
+                    {
+                        oRequest.IsError = true;
+                        oRequest.Message = "Hệ thống đang trong quá trình bảo trì! Vui lòng thử lại sau";
+                        return oRequest;
+                    }
                 }
                 if (!string.IsNullOrEmpty(model.Base64String))
                 {
