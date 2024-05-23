@@ -1,4 +1,5 @@
 ﻿using KGQT.Business.Base;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Serilog;
@@ -43,9 +44,9 @@ namespace KGQT.Business
             pay.HContent = content;
             pay.Type = type;
             pay.TradeType = tradeType;
-            pay.Amount = amount;
-            pay.MoneyPrevious = moneyPrevious;
-            pay.MoneyLeft = moneyleft;
+            pay.Amount = Converted.String2Money(amount);
+            pay.MoneyPrevious = Converted.String2Money(moneyPrevious);
+            pay.MoneyLeft = Converted.String2Money(moneyleft);
             pay.CreatedDate = DateTime.Now;
             pay.CreatedBy = createdBy;
             pay.Status = status;

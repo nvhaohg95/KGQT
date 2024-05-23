@@ -225,6 +225,7 @@ namespace KGQT.Business
                                 continue;
                             }
                         }
+
                         Task task = new Task(() =>
                         {
                             ZaloCommon.SendMessageToAll(contents);
