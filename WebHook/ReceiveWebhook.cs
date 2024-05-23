@@ -1,11 +1,14 @@
-﻿namespace KGQT.WebHook
+﻿using Serilog;
+using System.Net;
+
+namespace KGQT.WebHook
 {
     public class ReceiveWebhook : IReceiveWebhook
     {
-        public Task<string> UpdateTransactionStatus(string root)
+        public Task<HttpStatusCode> UpdateTransactionStatus(string json)
         {
-            string result = "";
-            return Task.FromResult(result);
+            Log.Information("Webhook:" + json);
+            return Task.FromResult(HttpStatusCode.OK);
         }
     }
 }

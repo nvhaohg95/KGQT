@@ -280,7 +280,7 @@ namespace KGQT.Base
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.sendTextMessageToUserIdV3(uid, message);
-                
+
             }
             return false;
         }
@@ -351,10 +351,50 @@ namespace KGQT.Base
             bw.RunWorkerAsync();
         }
 
-        public static void RequestMoreInfo(string uid)
+        public static async Task<string> RequestMoreInfoAsync(string uid)
         {
-            //JObject result = client.sendRequestUserProfileToUserId("2468458835296197922", "Yêu cầu cung cấp thông tin", "Chúng tôi", "https://stc-developers.zdn.vn/zalo.png");
-            return;
+            var token = BusinessBase.GetFirst<tbl_Zalo>();
+            if (token != null)
+            {
+                if (token.accesstoken_expire < DateTime.Now)
+                    token = await RefreshToken();
+                ZaloClient client = new ZaloClient(token.access_token);
+                JObject result = client.sendRequestUserProfileToUserId(uid, "Yêu cầu cung cấp thông tin", "Chúng tôi cần thêm thông tin từ bạn để được hỗ trợ tốt hơn", "https://stc-developers.zdn.vn/zalo.png");
+                return result.ToString();
+            }
+            return "";
         }
+
+        public static async Task<string> GetInfoFlowerAsync(string uid)
+        {
+            var token = BusinessBase.GetFirst<tbl_Zalo>();
+            if (token != null)
+            {
+                if (token.accesstoken_expire < DateTime.Now)
+                    token = await RefreshToken();
+
+                using (HttpClient client = new HttpClient())
+                {
+                    try
+                    {
+                        client.DefaultRequestHeaders.Add("access_token", token.access_token);
+                        var response = await client.GetAsync("https://openapi.zalo.me/v3.0/oa/user/detail?data={\"user_id\":" + uid + "}");
+                        if(response.IsSuccessStatusCode)
+                        {
+                            string content = await response.Content.ReadAsStringAsync();
+                            return content;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"GetInfoFlower {JsonConvert.SerializeObject(e)}");
+                    }
+                }
+            }
+            return "";
+        }
+
+        #region Common
+        #endregion
     }
 }
