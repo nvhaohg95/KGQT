@@ -359,7 +359,7 @@ namespace KGQT.Base
                 if (token.accesstoken_expire < DateTime.Now)
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.sendRequestUserProfileToUserId(uid, "Yêu cầu cung cấp thông tin", "Chúng tôi cần thêm thông tin từ bạn để được hỗ trợ tốt hơn", "https://stc-developers.zdn.vn/zalo.png");
+                JObject result = client.sendRequestUserProfileToUserIdV3(uid, "Yêu cầu cung cấp thông tin", "Chúng tôi cần thêm thông tin từ bạn để được hỗ trợ tốt hơn", "https://stc-developers.zdn.vn/zalo.png");
                 return result.ToString();
             }
             return "";
