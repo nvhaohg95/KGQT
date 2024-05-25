@@ -14,12 +14,9 @@ namespace KGQT.Base
     public static class ZaloCommon
     {
         static Timer refreshToken;
-        static Timer getListFollower;
-
         public static void CallRefresh()
         {
             refreshToken = new Timer(RefreshToken, null, TimeSpan.FromHours(1), TimeSpan.FromHours(2));
-            getListFollower = new Timer(GetListFollower, null, TimeSpan.FromMinutes(3), TimeSpan.FromHours(12));
         }
         public static async Task<bool> GetTokenAsync(string code)
         {
@@ -186,7 +183,6 @@ namespace KGQT.Base
                     }
                     else
                     {
-
                         Log.Error($"Request failed with status code {response.StatusCode}");
                     }
                 }
@@ -394,6 +390,19 @@ namespace KGQT.Base
             return "";
         }
 
+        public static async Task<string> UpdateInfoFollower(string uid, Info info)
+        {
+            var token = BusinessBase.GetFirst<tbl_Zalo>();
+            if (token != null)
+            {
+                if (token.accesstoken_expire < DateTime.Now)
+                    token = await RefreshToken();
+                ZaloClient client = new ZaloClient(token.access_token);
+                JObject result = client.updateFollowerInfo(uid,info.name,info.phone,info.address,0,0);
+                return result.ToString();
+            }
+            return "";
+        }
         #region Common
         #endregion
     }

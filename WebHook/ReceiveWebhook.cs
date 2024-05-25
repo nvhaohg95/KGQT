@@ -1,4 +1,8 @@
-﻿using Serilog;
+﻿using KGQT.Base;
+using KGQT.Models;
+using KGQT.Models.temp;
+using Newtonsoft.Json;
+using Serilog;
 using System.Net;
 
 namespace KGQT.WebHook
@@ -7,8 +11,149 @@ namespace KGQT.WebHook
     {
         public Task<HttpStatusCode> UpdateTransactionStatus(string json)
         {
-            Log.Information("Webhook:" + json);
+            var data = JsonConvert.DeserializeObject<WebHookReceive>(json);
+            Task task = new Task(() =>
+            {
+                switch (data.event_name)
+                {
+                    case "user_submit_info":
+                        UpdateFollowerInfo(data);
+                        break;
+                    case "unfollow":
+                        RemoveFollower(data);
+                        break;
+                    case "follow":
+                        AddFollower(data);
+                        break;
+                }
+
+            });
+            task.Start();
             return Task.FromResult(HttpStatusCode.OK);
+        }
+
+        public async Task UpdateFollowerInfo(WebHookReceive data)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var token = db.tbl_Zalos.FirstOrDefault();
+                if (token?.accesstoken_expire < DateTime.Now)
+                    token = await ZaloCommon.RefreshToken();
+
+                var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.sender.id);
+                if (f == null)
+                {
+                    f = new tbl_ZaloFollewer();
+                    f.RecID = Guid.NewGuid();
+                    f.user_id = data.sender.id;
+                    f.phone = data.info.phone;
+                    f.display_name = data.info.name;
+                    f.address = data.info.address;
+                    f.CreatedDate = DateTime.Now;
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == f.phone);
+                    if (user != null)
+                        f.Username = user.Username;
+                    db.Add(f);
+                }
+                else
+                {
+                    f.phone = data.info.phone;
+                    f.address = data.info.address;
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == f.phone);
+                    if (user != null)
+                        f.Username = user.Username;
+                    db.Update(f);
+                }
+
+                if (db.SaveChanges() > 0)
+                {
+                    var log = new tbl_ZaloLog();
+                    log.RecID = Guid.NewGuid();
+                    log.context = $"Cập nhật thông tin người quan tâm {f.user_id} thành công";
+                }
+                else
+                {
+                    var w = new tbl_ZaloWebHook();
+                    w.RecID = Guid.NewGuid();
+                    w.app_id = data.app_id;
+                    w.event_name = data.event_name;
+                    w.timestamp = data.timestamp;
+                    w.sender = data.sender?.id;
+                    w.recipient = data.recipient?.id;
+                    w.phone = data.info?.phone;
+                    w.address = data.info?.address;
+                    w.name = data.info?.name;
+                    w.status = 0;
+                    w.CreatedDate = DateTime.Now;
+                    db.Add(w);
+                    await db.SaveChangesAsync();
+                    await ZaloCommon.UpdateInfoFollower(data.sender.id, data.info);
+                }
+            }
+        }
+
+        public async void AddFollower(WebHookReceive data)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+
+                var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.follower.id);
+                if (f == null)
+                {
+                    f = new tbl_ZaloFollewer();
+                    f.RecID = Guid.NewGuid();
+                    f.user_id = data.follower.id;
+                    f.CreatedDate = DateTime.Now;
+                    db.Add(f);
+
+                    if (db.SaveChanges() > 0)
+                    {
+                        ZaloCommon.RequestMoreInfoAsync(data.sender.id);
+                    }
+                    else
+                    {
+                        var w = new tbl_ZaloWebHook();
+                        w.RecID = Guid.NewGuid();
+                        w.app_id = data.app_id;
+                        w.event_name = data.event_name;
+                        w.timestamp = data.timestamp;
+                        w.sender = data.follower?.id;
+                        w.status = 0;
+                        w.CreatedDate = DateTime.Now;
+                        db.Add(w);
+                        await db.SaveChangesAsync();
+                    }
+                }
+            }
+        }
+
+        public void RemoveFollower(WebHookReceive data)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.follower.id);
+                if (f != null)
+                {
+                    db.Remove(f);
+                    if (db.SaveChanges() == 0)
+                    {
+                        var w = new tbl_ZaloWebHook();
+                        w.RecID = Guid.NewGuid();
+                        w.app_id = data.app_id;
+                        w.event_name = data.event_name;
+                        w.timestamp = data.timestamp;
+                        w.sender = data.sender?.id;
+                        w.recipient = data.recipient?.id;
+                        w.phone = data.info?.phone;
+                        w.address = data.info?.address;
+                        w.name = data.info?.name;
+                        w.status = 0;
+                        w.CreatedDate = DateTime.Now;
+                        db.Add(w);
+                        db.SaveChanges();
+                    }
+                }
+            }
         }
     }
 }

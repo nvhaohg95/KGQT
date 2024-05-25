@@ -41,11 +41,17 @@ namespace KGQT.Base
             if (isRuning)
                 return;
             isRuning = true;
-            Instance.ScheduleTask(16, 0, 0,
+            new TaskRun().ScheduleTask(16, 0, 0,
+               () =>
+               {
+                   //here write the code that you want to schedule
+                   PackagesBusiness.DailyTask();
+               });
+            new TaskRun().ScheduleTask(23, 0, 0,
              () =>
              {
                  //here write the code that you want to schedule
-                 PackagesBusiness.DailyTask();
+                 ZaloCommon.GetListFollower();
              });
         }
     }
