@@ -53,6 +53,11 @@ namespace KGQT.Base
                  //here write the code that you want to schedule
                  ZaloCommon.GetListFollower();
              });
+
+            new TaskRun().ScheduleTask(22, 0, 0, () =>
+            {
+                ZaloCommon.SendRequestAuto();
+            });
         }
     }
 }

@@ -49,7 +49,13 @@ namespace KGQT.WebHook
                     f.phone = data.info.phone;
                     f.display_name = data.info.name;
                     f.address = data.info.address;
+                    f.SendRequest = true;
+                    f.SendRequestTimes = 1;
+                    f.SendRequestDate = DateTime.Now;
                     f.CreatedDate = DateTime.Now;
+                    string phone = f.phone;
+                    if (phone.StartsWith("84"))
+                        phone = phone.Replace("84", "0");
                     var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == f.phone);
                     if (user != null)
                         f.Username = user.Username;
@@ -103,6 +109,8 @@ namespace KGQT.WebHook
                     f = new tbl_ZaloFollewer();
                     f.RecID = Guid.NewGuid();
                     f.user_id = data.follower.id;
+                    f.SendRequest = false;
+                    f.SendRequestTimes = 0;
                     f.CreatedDate = DateTime.Now;
                     db.Add(f);
 
