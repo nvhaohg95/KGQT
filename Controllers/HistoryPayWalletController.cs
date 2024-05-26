@@ -40,5 +40,7 @@ namespace KGQT.Controllers
             return View(data);
         }
         #endregion
+
+
     }
 }

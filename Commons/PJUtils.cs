@@ -498,10 +498,7 @@ namespace KGQT.Commons
                     s = "Hủy rút tiền";
                     break;
                 case 6:
-                    s = "Nạp tiền tại kho";
-                    break;
-                case 7:
-                    s = "Rút tiền tại kho";
+                    s = "Đổi lượt tìm kiếm trên Baidu";
                     break;
             }
             return s;

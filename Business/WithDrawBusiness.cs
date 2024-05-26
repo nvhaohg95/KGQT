@@ -488,5 +488,90 @@ namespace KGQT.Business
                 return result;
             }
         }
+
+        public static DataReturnModel<bool> BuySearches(string userName,int amount, string createdBy = "")
+        {
+            DataReturnModel<bool> result = new DataReturnModel<bool>();
+            try
+            {
+                if (amount < 1)
+                {
+                    result.IsError = true;
+                    result.Message = "Vui lòng nhập số lượt quy đổi!";
+                    return result;
+                }
+                using (var db = new nhanshiphangContext())
+                {
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName.ToLower());
+
+                    if (user != null)
+                    {
+                        double money = amount * 500;
+                        double wallet = Converted.ToDouble(user.Wallet) - money;
+                        if (wallet < 0)
+                        {
+                            result.IsError = true;
+                            result.Message = "Số dư ví không đủ!";
+                            return result;
+                        }
+                        else
+                        {
+                            string moneyPrevious = Converted.String2Money(user.Wallet);
+                            string moneyLeft = Converted.Double2Money(wallet);
+                            user.Wallet = moneyLeft;
+                            user.AvailableSearch = user.AvailableSearch + amount;
+                            user.ModifiedBy = userName;
+                            user.ModifiedDate = DateTime.Now;
+                            if (!string.IsNullOrEmpty(createdBy))
+                            {
+                                tbl_Account? admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == createdBy.ToLower());
+                                if (admin != null)
+                                {
+                                    user.ModifiedBy = admin.Username;
+                                    _ = Task.Run(async () =>
+                                    {
+                                        string message = $"Đổi {amount} lượt tìm kiếm hàng trên Baidu.";
+                                        await NotificationBusiness.Insert(admin.ID,admin.FullName,user.ID,user.FullName,0,"",message, message, 10,"",createdBy);
+                                    });
+                                }
+                            }
+                            else
+                                createdBy = userName;   
+                            db.Update(user);
+                            int kq = db.SaveChanges();
+                            if (kq > 0)
+                            {
+                                string content = $"Đổi {amount} lượt tìm kiếm hàng trên Baidu.";
+                                HistoryPayWallet.Insert(user.ID, user.Username, 0, content, Converted.Double2Money(money), 1, 6, moneyPrevious, moneyLeft, createdBy);
+                                result.IsError = false;
+                                result.Data = true;
+                                result.Message = "Đổi thành công!";
+                                return result;
+                            }
+                            else
+                            {
+                                result.IsError = true;
+                                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
+                                return result;
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Message = "Hệ thống không tìm thấy thống tin tài khoản!";
+                        return result;
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Lỗi đổi lượt tìm kiếm baidu.", ex);
+                result.IsError = true;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
+                return result;
+            }
+        }
     }
 }

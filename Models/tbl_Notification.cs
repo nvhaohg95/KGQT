@@ -30,6 +30,8 @@ namespace KGQT.Models
         /// 7. Rút tiền tại kho
         /// 8. Truy thu
         /// 9. Phí giao hàng
+        /// 10. Phí lượt tìm kiếm baidu
+        /// 
         /// </summary>
         public int? NotifType { get; set; }
         public DateTime? CreatedDate { get; set; }
