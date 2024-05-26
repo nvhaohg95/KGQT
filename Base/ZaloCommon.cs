@@ -142,7 +142,10 @@ namespace KGQT.Base
             string url = Config.Zalo.GetTokenUrl;
             var token = BusinessBase.GetFirst<tbl_Zalo>();
 
-            if (token == null) return null;
+            if (token == null) {
+                Log.Error("Không có token");
+                return null; 
+            }
 
             if (token.freshtoken_expire <= DateTime.Now) return null;
 

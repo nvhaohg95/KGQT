@@ -12,6 +12,7 @@ namespace KGQT.WebHook
         public Task<HttpStatusCode> UpdateTransactionStatus(string json)
         {
             var data = JsonConvert.DeserializeObject<WebHookReceive>(json);
+            Log.Information($"ReceiveWebhook  {json}");
             Task task = new Task(() =>
             {
                 switch (data.event_name)
@@ -39,33 +40,38 @@ namespace KGQT.WebHook
                 var token = db.tbl_Zalos.FirstOrDefault();
                 if (token?.accesstoken_expire < DateTime.Now)
                     token = await ZaloCommon.RefreshToken();
+               
+                string phone = data.info.phone;
+              
+                if (phone.StartsWith("84"))
+                    phone = phone.Replace("84", "0");
 
                 var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.sender.id);
                 if (f == null)
                 {
+                   
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
+
                     f = new tbl_ZaloFollewer();
                     f.RecID = Guid.NewGuid();
                     f.user_id = data.sender.id;
-                    f.phone = data.info.phone;
+                    f.phone = phone;
                     f.display_name = data.info.name;
                     f.address = data.info.address;
                     f.SendRequest = true;
                     f.SendRequestTimes = 1;
                     f.SendRequestDate = DateTime.Now;
                     f.CreatedDate = DateTime.Now;
-                    string phone = f.phone;
-                    if (phone.StartsWith("84"))
-                        phone = phone.Replace("84", "0");
-                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == f.phone);
+                 
                     if (user != null)
                         f.Username = user.Username;
                     db.Add(f);
                 }
                 else
                 {
-                    f.phone = data.info.phone;
+                    f.phone = phone;
                     f.address = data.info.address;
-                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == f.phone);
+                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
                     if (user != null)
                         f.Username = user.Username;
                     db.Update(f);
