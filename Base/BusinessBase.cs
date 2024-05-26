@@ -22,7 +22,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Lỗi thêm mới table :" + typeof(T).Name, ex.Message,JsonConvert.SerializeObject(entity));
+                    _log.Error($"Lỗi thêm mới table :{typeof(T).Name} - {ex.Message} -{JsonConvert.SerializeObject(entity)}");
                     return false;
                 }
             }
@@ -55,7 +55,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Lỗi thêm mới table :" + typeof(T).Name, ex.Message, JsonConvert.SerializeObject(entity));
+                    _log.Error($"Lỗi thêm mới table :{typeof(T).Name} - {ex.Message} -{JsonConvert.SerializeObject(entity)}");
                     return -1;
                 }
             }
@@ -73,7 +73,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Cập nhật không thành công :" + typeof(T).Name, ex.Message, JsonConvert.SerializeObject(entity));
+                    _log.Error($"Cập nhật không thành công :{typeof(T).Name} - {ex.Message} -{JsonConvert.SerializeObject(entity)}");
                     return false;
                 }
             }
@@ -90,7 +90,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Xóa không thành công :" + typeof(T).Name, ex.Message);
+                    _log.Error($"Xóa không thành công :{typeof(T).Name} - {ex.Message}");
                     return false;
                 }
             }
@@ -107,7 +107,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Xóa không thành công :" + typeof(T).Name, ex, JsonConvert.SerializeObject(entity));
+                    _log.Error($"Xóa không thành công :{typeof(T).Name} - {ex.Message} -{JsonConvert.SerializeObject(entity)}");
                     return false;
                 }
             }
@@ -126,7 +126,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
+                    _log.Error($"Lỗi query : {typeof(T).Name} - {ex.Message}");
                     return 0;
                 }
             }
@@ -143,7 +143,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
+                    _log.Error($"Lỗi query : {typeof(T).Name} - {ex.Message}");
                     return null;
                 }
             }
@@ -160,7 +160,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
+                    _log.Error($"Lỗi query : {typeof(T).Name} - {ex.Message}");
                     return null;
                 }
             }
@@ -179,7 +179,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
+                    _log.Error($"Lỗi query : {typeof(T).Name} - {ex.Message}");
                     return null;
                 }
             }
@@ -196,7 +196,7 @@ namespace KGQT.Business.Base
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
+                    _log.Error($"Lỗi query : {typeof(T).Name} - {ex.Message}");
                     return false;
                 }
             }
@@ -212,7 +212,7 @@ namespace KGQT.Business.Base
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi query :" + typeof(T).Name, ex.Message);
+                _log.Error($"Lỗi query : {typeof(T).Name} - {ex.Message}");
                 return null;
             }
         }

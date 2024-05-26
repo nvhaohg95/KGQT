@@ -54,7 +54,7 @@ namespace KGQT.Models.temp
     #endregion
 
     #region Message
-    public class Info
+    public class MessageInfo
     {
         public string message_id { get; set; }
         public string user_id { get; set; }
@@ -62,9 +62,49 @@ namespace KGQT.Models.temp
 
     public class SendMessageResponse
     {
-        public Info data { get; set; }
+        public MessageInfo data { get; set; }
         public int error { get; set; }
         public string message { get; set; }
     }
+    #endregion
+
+    #region WebHook
+    public class Info
+    {
+        public string address { get; set; }
+        public string phone { get; set; }
+        public string city { get; set; }
+        public string district { get; set; }
+        public string name { get; set; }
+        public string ward { get; set; }
+    }
+
+    public class Recipient
+    {
+        public string id { get; set; }
+    }
+
+    public class WebHookReceive
+    {
+        public string app_id { get; set; }
+        public string user_id_by_app { get; set; }
+        public string event_name { get; set; }
+        public string timestamp { get; set; }
+        public Sender sender { get; set; }
+        public Recipient recipient { get; set; }
+        public WebHook_Follower follower { get; set; }
+        public Info info { get; set; }
+    }
+
+    public class Sender
+    {
+        public string id { get; set; }
+    }
+    
+    public class WebHook_Follower
+    {
+        public string id { get; set; }
+    }
+
     #endregion
 }

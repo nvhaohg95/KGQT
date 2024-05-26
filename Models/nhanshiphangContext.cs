@@ -34,6 +34,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Zalo> tbl_Zalos { get; set; } = null!;
         public virtual DbSet<tbl_ZaloFollewer> tbl_ZaloFollewers { get; set; } = null!;
         public virtual DbSet<tbl_ZaloLog> tbl_ZaloLogs { get; set; } = null!;
+        public virtual DbSet<tbl_ZaloWebHook> tbl_ZaloWebHooks { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -414,6 +415,35 @@ namespace KGQT.Models
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.user_id).HasMaxLength(50);
+
+                entity.Property(e => e.user_name).HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<tbl_ZaloWebHook>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.ToTable("tbl_ZaloWebHook");
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.app_id).HasMaxLength(50);
+
+                entity.Property(e => e.event_name).HasMaxLength(50);
+
+                entity.Property(e => e.msg_id).HasMaxLength(50);
+
+                entity.Property(e => e.name).HasMaxLength(150);
+
+                entity.Property(e => e.phone).HasMaxLength(12);
+
+                entity.Property(e => e.recipient).HasMaxLength(50);
+
+                entity.Property(e => e.sender).HasMaxLength(50);
+
+                entity.Property(e => e.timestamp).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>

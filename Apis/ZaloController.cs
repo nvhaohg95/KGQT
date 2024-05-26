@@ -31,5 +31,22 @@ namespace KGQT.Apis
             string url = string.Format(Config.Zalo.PerUrl, Config.Zalo.AppID, uri);
             return Redirect(url);
         }
+
+
+        [HttpGet]
+        [Route("info")]
+        public async Task<IActionResult> Test(string uid)
+        {
+            string data = await ZaloCommon.GetInfoFlowerAsync(uid);
+            return Ok(data);
+        }
+        
+        [HttpGet]
+        [Route("request")]
+        public async Task<IActionResult> Test2(string uid)
+        {
+            string data = await ZaloCommon.RequestMoreInfoAsync(uid);
+            return Ok(data);
+        }
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace KGQT.WebHook
+﻿using System.Net;
+
+namespace KGQT.WebHook
 {
     public interface IReceiveWebhook
     {
-        public Task<string> UpdateTransactionStatus(string requestBody);
+        public Task<HttpStatusCode> UpdateTransactionStatus(string requestBody);
     }
 }
