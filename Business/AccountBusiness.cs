@@ -441,7 +441,7 @@ namespace KGQT.Business
                     UserID = x.UserID,
                     Username = x.Username,
                     Phone = x.Phone,
-                    Password = x.Password,
+                    Password = PJUtils.Decrypt("userpass", x.Password),
                     FullName = x.FullName,
                     Wallet = x.Wallet,
                     IMG = x.IMG

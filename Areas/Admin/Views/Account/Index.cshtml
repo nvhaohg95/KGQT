@@ -20,9 +20,9 @@
 </div>
 <div class="row p-2 mb-2 w-100">
     <div class="col-12 mb-2">
-        <form method="get" class="row">
+        <form method="get" class="row align-items-center">
             <div class="col-6">
-                <h3 class="text-uppercase text-danger mb-0">DANH SÁCH NGƯỜI DÙNG</h3>
+                <h5 class="fw-bold text-uppercase text-danger mb-0">DANH SÁCH NGƯỜI DÙNG</h5>
             </div>
             <div class="col-6">
                 <div class="d-flex align-items-end justify-content-end">
@@ -41,8 +41,9 @@
             <thead class="thead-light">
                 <tr class="fw-bold text-uppercase">
                     <th class="text-left">Khách hàng</th>
-                    <th class="text-left">Tài khoản</th>
                     <th class="text-left">SĐT</th>
+                    <th class="text-left">Tài khoản</th>
+                    <th class="text-left">Mật khẩu</th>
                     <th class="text-center">Số dư ví</th>
                     <th class="text-center"></th>
                 </tr>
@@ -51,31 +52,36 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        
-                        <td class="text-left text-truncate">
+                        <td class="align-middle text-left text-truncate">
                             <div class="d-flex align-items-center">
                                 <img src="@(string.IsNullOrEmpty(item.IMG) ? "/img/avt-user-emty.jpg" : item.IMG)" title="@item.FullName" width="40" height="40" class="rounded-circle" />
                                 <span class="ml-2" title="@item.FullName">@item.FullName</span>
                             </div>
                         </td>
-                        <td class="text-left">
+                        <td class="align-middle text-left">
+                            <span title="Số diện thoại">@item.Phone</span>
+                        </td>
+                        <td class="align-middle text-left">
                             <span title="Tài khoản">@item.Username</span>
                         </td>
-                        <td class="text-left">
-                            <span title="Mật khẩu">@item.Phone</span>
+                        <td class="align-middle text-left">
+                            <span title="Mật khẩu">@item.Password</span>
                         </td>
-                        <td class="text-center text-truncate">
-                            <span title="@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ" class="text-danger">@string.Format("{0:N0}",item.Wallet).Replace(",",".")đ</span>
+                        <td class="align-middle text-center text-truncate">
+                            <span title="@Converted.String2Money(item.Wallet)đ" class="text-danger">@Converted.String2Money(item.Wallet)đ</span>
                         </td>
-                        <td class="text-right">
+                        <td class="align-middle text-right">
                             <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.Username&type=1" title="Nạp tiền">
                                 <span>Nạp tiền</span>
                             </a>
                             <a class="btn btn-sm btn-warning" href="/Admin/Withdraw/Create?user=@item.Username&type=2" title="Rút tiền">
                                 <span>Rút tiền</span>
                             </a>
-                            <a class="btn btn-sm btn-secondary" href="/Admin/Account/Detail?id=@item.ID" title="Xem chi tiết">
-                                <span>Xem</span>
+                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#baiduModal" onclick="openPopup('@item.Username','@item.Wallet')">
+                                <span>Cộng điểm</span>
+                            </button>
+                            <a class="btn btn-sm btn-secondary" href="/Admin/Account/Detail?id=@item.ID" title="Xem">
+                                <span>Chi tiết</span>
                             </a>
                             <span class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)" title="Xóa">
                                 <span>Xóa</span>
@@ -185,7 +191,7 @@
                                 <span class="fw-bold">Họ Tên</span>
                                 <span class="text-danger">(*)</span>
                             </label>
-                            <input name="FullName" class="form-control" autocomplete="off" autofocus />
+                            <input type="text" name="FullName" class="form-control" autocomplete="off" autofocus />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <label class="control-label">
@@ -272,6 +278,65 @@
     </div>
 </div>
 
+<!-- form baidu -->
+<div class="modal fade" id="baiduModal" tabindex="-1" role="dialog" aria-labelledby="baiduModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">ĐỔI LƯỢT TÌM KIẾM BAIDU</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formBaidu">
+                <div class="modal-body">
+                    <div class="row align-items-center my-2 h-50px">
+                        <div class="col-3">
+                            <span class="fw-bold">Tài khoản</span>
+                            <span class="text-danger">(*)</span>
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" id="txtUserName" name="UserName" placeholder="Tài khoản" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="row align-items-center my-2 h-50px">
+                        <div class="col-3">
+                            <span class="fw-bold">Số dư ví</span>
+                            <span class="text-danger">(*)</span>
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" id="txtWallet"  name="Wallet" placeholder="0đ" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="row align-items-center my-2 h-50px">
+                        <div class="col-3">
+                            <span class="fw-bold">Số lượt</span>
+                            <span class="text-danger">(*)</span>
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="number" name="Amount" class="form-control" min="1" max="9999" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="alert alert-warning d-flex" role="alert">
+                                <i class="fas fa-exclamation-triangle icon-16 mr-2"></i>
+                                <div>
+                                    <p class="mb-0"><b>Lưu ý:</b></p>
+                                    <p class="mb-0">Hệ thống quy đổi lượt tìm kiếm đơn hàng trên kênh Baidu với mức phí 500đ/1lượt!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary w-100px" onclick="clickBaidu()">Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
     function insert() {
         var data = helper.form2Object($('#formAddUser').serializeArray());
@@ -319,6 +384,7 @@
             }
         });
     }
+
     function clickDelete(id) {
         helper.showAlert("Bạn có muốn thực hiện thao tác xóa?").then((res) => {
             if (res.isConfirmed) 
@@ -334,6 +400,45 @@
                             helper.showSuc('Xóa thành công!')
                     }
                 });
+            }
+        });
+    }
+
+    function openPopup(userName, wallet){
+        $("#txtUserName").val(userName);
+        $("#txtWallet").val(wallet);
+    }
+    
+    function clickBaidu(){
+        var data = helper.form2Object($('#formBaidu').serializeArray());
+        if (!data) {
+            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+            return;
+        }
+        if (!data.UserName) {
+            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+            return;
+        }
+        if (!data.Amount) {
+            helper.showWarn('Vui lòng nhập số lượt quy đổi!');
+            return;
+        }
+        if (data.Amount > 9999) {
+            helper.showWarn('Số lượt quy đổi không quá 10000 lượt!');
+            return;
+        }
+        $.ajax({
+            url: '/Admin/WithDraw/BuySearches',
+            type: 'POST',
+            data: { userName: data.UserName, amount: data.Amount },
+            success: function (respone) {
+                if (respone && respone?.isError)
+                    helper.showErr(respone.message)
+                else
+                    helper.showSuc(respone.message);
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
             }
         });
     }

@@ -172,5 +172,26 @@ namespace KGQT.Areas.Admin.Controllers
             return result;
         }
         #endregion
+
+        #region Đổi điểm Search
+        public DataReturnModel<bool> BuySearches(string userName,int amount)
+        {
+            DataReturnModel<bool> result = new();
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            if(!string.IsNullOrEmpty(userLogin))
+            {
+                result = WithDrawBusiness.BuySearches(userName, amount,userLogin);
+            }   
+            else
+            {
+                result.IsError = true;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+            }    
+            return result;
+        }
+        #endregion
     }
 }

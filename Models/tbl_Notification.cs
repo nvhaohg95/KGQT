@@ -15,8 +15,8 @@ namespace KGQT.Models
         public string? Message { get; set; }
         public string? Message2 { get; set; }
         /// <summary>
-        /// 0. chưa đọc
-        /// 1. đã xem
+        /// 0. Chưa xem
+        /// 1. Đã xem
         /// </summary>
         public int? Status { get; set; }
         public bool? IsForAdmin { get; set; }
@@ -26,12 +26,8 @@ namespace KGQT.Models
         /// 3. Rút tiền
         /// 4. Yêu cầu giao
         /// 5. Khiếu nại
-        /// 6. Nạp tiền tại kho
-        /// 7. Rút tiền tại kho
-        /// 8. Truy thu
-        /// 9. Phí giao hàng
-        /// 10. Phí lượt tìm kiếm baidu
-        /// 
+        /// 6. Đổi lượt tìm kiếm baidu
+        /// 10. Thông báo chung
         /// </summary>
         public int? NotifType { get; set; }
         public DateTime? CreatedDate { get; set; }
