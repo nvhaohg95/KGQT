@@ -16,7 +16,7 @@ namespace KGQT.Business
     {
         private static readonly ILogger _log = Log.ForContext(typeof(NotificationBusiness));
 
-        public static object[] GetPage(int receivedID, int status, DateTime? fromDate, DateTime? toDate, int page = 1 , int pageSize = 20,bool isAdmin = false)
+        public static object[] GetPage(int receivedID, int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, bool isAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -24,9 +24,9 @@ namespace KGQT.Business
                 int count = 0;
                 int totalPage = 0;
                 var query = db.tbl_Notifications.AsQueryable();
-                if(isAdmin)
+                if (isAdmin)
                     query = db.tbl_Notifications.Where(x => x.IsForAdmin == true);
-                else 
+                else
                     query = query.Where(x => x.ReceivedID == receivedID);
 
                 if (status > -1)
@@ -46,8 +46,8 @@ namespace KGQT.Business
                 return new object[] { datas, count, totalPage };
             }
         }
-        
-        public async static Task<bool> Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType,string url, string createdBy, bool isForAdmin = false)
+
+        public async static Task<bool> Insert(int senderID, string senderName, int? reciverID, string reciverName, int orderID, string? orderCode, string message, string messageMobile, int notiType, string url, string createdBy, bool isForAdmin = false)
         {
             try
             {
@@ -88,6 +88,14 @@ namespace KGQT.Business
                                 await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null);
                             });
                         }
+                        var follower = db.tbl_ZaloFollewers.FirstOrDefault(x => x.Username == user.Username);
+                        if (follower != null)
+                        {
+                            _ = Task.Run(async () =>
+                            {
+                                _ = ZaloCommon.SendMessage(follower?.user_id, messageMobile);
+                            });
+                        }
                         return true;
                     }
                     return false;
@@ -99,7 +107,7 @@ namespace KGQT.Business
                 return false;
             }
         }
-        
+
         public static int GetTotal(int id, bool isAdmin = false)
         {
             int total = 0;
@@ -113,7 +121,7 @@ namespace KGQT.Business
             }
         }
 
-        public static object[] GetDetail(int id,string userLogin)
+        public static object[] GetDetail(int id, string userLogin)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -153,9 +161,9 @@ namespace KGQT.Business
             return false;
         }
 
-        public static string GetUrlDefault(int ID,bool isAdmin = false)
+        public static string GetUrlDefault(int ID, bool isAdmin = false)
         {
-            if(isAdmin)
+            if (isAdmin)
                 return "/Admin/Notification/Detail?ID=" + ID;
             return "/Notification/Detail?ID=" + ID;
         }
@@ -179,7 +187,7 @@ namespace KGQT.Business
                 return result;
             }
         }
-        public static DataReturnModel<bool> SendNotiForUser(string strUserNames, string contents, bool sendToAll , string userLogin)
+        public static DataReturnModel<bool> SendNotiForUser(string strUserNames, string contents, bool sendToAll, string userLogin)
         {
             DataReturnModel<bool> result = new();
             try
@@ -200,7 +208,7 @@ namespace KGQT.Business
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    var admin = AccountBusiness.GetInfo(-1,userLogin);
+                    var admin = AccountBusiness.GetInfo(-1, userLogin);
                     List<tbl_Account> lstUser = new();
                     if (sendToAll)
                     {

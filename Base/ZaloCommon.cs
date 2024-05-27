@@ -142,7 +142,10 @@ namespace KGQT.Base
             string url = Config.Zalo.GetTokenUrl;
             var token = BusinessBase.GetFirst<tbl_Zalo>();
 
-            if (token == null) return null;
+            if (token == null) {
+                Log.Error("Không có token");
+                return null; 
+            }
 
             if (token.freshtoken_expire <= DateTime.Now) return null;
 
@@ -247,7 +250,8 @@ namespace KGQT.Base
                             var f = new tbl_ZaloFollewer();
                             f.RecID = Guid.NewGuid();
                             f.user_id = item.user_id;
-
+                            f.SendRequest = false;
+                            f.SendRequestTimes = 0;
                             JObject oDetail = client.getProfileOfFollower(item.user_id);
                             var info = JsonConvert.DeserializeObject<RootUserInfo>(oDetail.ToString());
                             if (info.error == 0 || info.message.ToLower() == "success")
@@ -276,7 +280,21 @@ namespace KGQT.Base
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.sendTextMessageToUserIdV3(uid, message);
-
+                var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
+                if (oData.error != 0)
+                {
+                    var log = new tbl_ZaloLog();
+                    log.action = 1;
+                    log.error = oData.error;
+                    log.message = oData.message;
+                    log.user_id = uid;
+                    log.context = message;
+                    log.CreatedDate = DateTime.Now;
+                    var info = BusinessBase.GetOne<tbl_ZaloFollewer>(x => x.user_id == uid);
+                    if (info != null)
+                        log.user_name = info.display_name;
+                    return BusinessBase.Add(log);
+                }
             }
             return false;
         }
@@ -375,7 +393,7 @@ namespace KGQT.Base
                     {
                         client.DefaultRequestHeaders.Add("access_token", token.access_token);
                         var response = await client.GetAsync("https://openapi.zalo.me/v3.0/oa/user/detail?data={\"user_id\":" + uid + "}");
-                        if(response.IsSuccessStatusCode)
+                        if (response.IsSuccessStatusCode)
                         {
                             string content = await response.Content.ReadAsStringAsync();
                             return content;
@@ -398,12 +416,28 @@ namespace KGQT.Base
                 if (token.accesstoken_expire < DateTime.Now)
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.updateFollowerInfo(uid,info.name,info.phone,info.address,0,0);
+                JObject result = client.updateFollowerInfo(uid, info.name, info.phone, info.address, 0, 0);
                 return result.ToString();
             }
             return "";
         }
         #region Common
+        public static async void SendRequestAuto()
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var followers = db.tbl_ZaloFollewers.Where(x => string.IsNullOrEmpty(x.phone));
+                foreach (var item in followers)
+                {
+                    RequestMoreInfoAsync(item.user_id);
+                    item.SendRequest = true;
+                    item.SendRequestTimes++;
+                    item.SendRequestDate = DateTime.Now;
+                    db.Update(item);
+                }
+                db.SaveChanges();
+            }
+        }
         #endregion
     }
 }
