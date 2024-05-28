@@ -531,7 +531,7 @@ namespace KGQT.Business
                                     _ = Task.Run(async () =>
                                     {
                                         string message = $"Đổi {amount} lượt tìm kiếm hàng trên Baidu.";
-                                        await NotificationBusiness.Insert(admin.ID,admin.FullName,user.ID,user.FullName,0,"",message, message, 10,"",createdBy);
+                                        await NotificationBusiness.Insert(admin.ID,admin.FullName,user.ID,user.FullName,0,"",message, message, 6,"",createdBy);
                                     });
                                 }
                             }

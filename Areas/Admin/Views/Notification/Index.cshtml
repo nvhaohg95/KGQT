@@ -85,10 +85,10 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="text-left align-middle">
+                            <td class="text-center align-middle">
                                 @item.CreatedDate.Value.ToString("dd/MM/yyy")
                             </td>
-                            <td class="text-center align-middle">
+                            <td class="text-left align-middle">
                                 @Html.Raw(item.Message)
                             </td>
                             @*<td class="text-center align-middle">

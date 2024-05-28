@@ -23,7 +23,7 @@
         <div class="col-12 mb-2">
             <form class="row d-flex align-items-center" id="myform">
                 <div class="col-lg-4 col-md-4 col-sm-12">
-                    <h3 class="fw-bold text-danger text-uppercase mb-0">PHÍ VẬN CHUYỂN</h3>
+                    <h5 class="fw-bold text-danger text-uppercase mb-0">PHÍ VẬN CHUYỂN</h5>
                 </div>
                 <div class="col-lg-8 col-md-4 col-sm-12 d-flex align-items-center justify-content-end">
                     <div class="w-300px mr-4">
@@ -53,7 +53,7 @@
                         <th class="text-center">Cân nặng</th>
                         <th class="text-center">Giá tiền</th>
                         <th class="text-center">Gói vận chuyển</th>
-                        <th class="text-center">Thao tác</th>
+                        <th class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,13 +89,11 @@
                                             break;
                                     }
                                 </td>
-                                <td class="text-center align-middle">
-                                    <a class="btn btn-sm btn-light" onclick="clickUpdate(@item.ID)">
-                                        <i class="fas fa-pencil-alt"></i>
-                                        <span>Sửa</span>
+                                <td class="text-right align-middle">
+                                    <a class="btn btn-sm btn-secondary w-100px" onclick="clickUpdate(@item.ID)">
+                                        <span>Cập nhật</span>
                                     </a>
-                                    <a class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)">
-                                        <i class="fas fa-trash-alt"></i>
+                                    <a class="btn btn-sm btn-danger w-100px" onclick="clickDelete(@item.ID)">
                                         <span>Xóa</span>
                                     </a>
                                 </td>
