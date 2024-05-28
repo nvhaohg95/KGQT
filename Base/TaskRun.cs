@@ -38,23 +38,20 @@ namespace KGQT.Base
 
         public static void Run()
         {
-            if (isRuning)
-                return;
-            isRuning = true;
-            new TaskRun().ScheduleTask(16, 0, 0,
+            Instance.ScheduleTask(16, 0, 0,
                () =>
                {
                    //here write the code that you want to schedule
                    PackagesBusiness.DailyTask();
                });
-            new TaskRun().ScheduleTask(23, 0, 0,
+            Instance.ScheduleTask(23, 59, 0,
              () =>
              {
                  //here write the code that you want to schedule
                  ZaloCommon.GetListFollower();
              });
 
-            new TaskRun().ScheduleTask(22, 0, 0, () =>
+            Instance.ScheduleTask(9, 0, 0, () =>
             {
                 ZaloCommon.SendRequestAuto();
             });

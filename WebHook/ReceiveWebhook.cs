@@ -38,7 +38,7 @@ namespace KGQT.WebHook
             using (var db = new nhanshiphangContext())
             {
                 var token = db.tbl_Zalos.FirstOrDefault();
-                if (token?.accesstoken_expire < DateTime.Now)
+                if (token?.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await ZaloCommon.RefreshToken();
                
                 string phone = data.info.phone;

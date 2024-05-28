@@ -1,4 +1,5 @@
-﻿using KGQT.Business;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using KGQT.Business;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
@@ -13,10 +14,10 @@ namespace KGQT.Controllers
     public class ShippingOrderController : Controller
     {
         #region constructor
-        
+
         public ShippingOrderController()
         {
-            
+
         }
         #endregion
 
@@ -87,6 +88,40 @@ namespace KGQT.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             DataReturnModel<bool> ret = ShippingOrder.Payment(id, userLogin);
+            return ret;
+        }
+
+        [HttpPost]
+        public object PaymentSelected(string data)
+        {
+            DataReturnModel<bool> ret = new DataReturnModel<bool>();
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            if (userModel == null)
+            {
+                ret.IsError = true;
+                ret.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                return ret;
+            }
+            ret = ShippingOrder.PaymentSelected(data, userModel.UserName);
+            return ret;
+        }
+
+        [HttpPost]
+        public object PaymentAll()
+        {
+            DataReturnModel<bool> ret = new DataReturnModel<bool>();
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            if (userModel == null)
+            {
+                ret.IsError = true;
+                ret.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                return ret;
+            }
+            ret = ShippingOrder.PaymentAll(userModel.UserName);
             return ret;
         }
         #endregion

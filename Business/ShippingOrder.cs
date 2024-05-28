@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
@@ -34,7 +35,7 @@ namespace KGQT.Business
             {
                 try
                 {
-                    var query = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower() 
+                    var query = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower()
                     && (x.CreatedDate >= fromDate && x.CreatedDate <= toDate) && (x.ChinaExportDate >= exportStart && x.ChinaExportDate <= exportEnd));
 
                     if (!string.IsNullOrEmpty(recID))
@@ -397,6 +398,192 @@ namespace KGQT.Business
                 }
                 dt.IsError = true;
                 dt.Message = "Lỗi, vui lòng tải lại trang!";
+                return dt;
+            }
+        }
+        public static DataReturnModel<bool> PaymentSelected(string data, string accessor)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var dt = new DataReturnModel<bool>();
+                var lst = data.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                var ships = db.tbl_ShippingOrders.Where(x => lst.Contains(x.RecID) && x.Username == accessor).ToList();
+
+                var totalMoney = ships.Sum(x => x.TotalPrice.Double());
+                var userWallet = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                if (userWallet == null)
+                {
+                    dt.IsError = true;
+                    dt.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                    return dt;
+                }
+
+                if (userWallet.Wallet.Double() < totalMoney)
+                {
+                    dt.IsError = true;
+                    dt.Message = $"Bạn cần phải nạp thêm {Converted.Double2Money(totalMoney - userWallet.Wallet.Double())} để thanh toán đơn hàng";
+                    return dt;
+                }
+                List<string> msg = new List<string>();
+                foreach (var item in ships)
+                {
+                    var oldOrder = item;
+                    if (item.Status == 2)
+                        continue;
+
+                    var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
+                    var oldUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
+
+                    try
+                    {
+                        double totalPrice = Convert.ToDouble(item.TotalPrice);
+                        double wallet = Convert.ToDouble(oUser.Wallet);
+                        if (wallet >= totalPrice)
+                        {
+                            item.Status = 2;
+                            item.ModifiedBy = accessor;
+                            item.ModifiedDate = DateTime.Now;
+                            db.tbl_ShippingOrders.Update(item);
+                            if (db.SaveChanges() > 0)
+                            {
+                                var u = db.tbl_Accounts.FirstOrDefault(x => x.ID == oUser.ID);
+                                var moneyPrevious = Converted.Double2Money(wallet);
+                                var pay = Converted.StringCeiling(wallet - totalPrice);
+                                u.Wallet = pay;
+                                db.Update(u);
+                                var save = db.SaveChanges() > 0;
+                                if (!save)
+                                {
+                                    dt.IsError = true;
+                                    msg.Add($"Thanh toán đơn {item.ShippingOrderCode} thất bại!");
+                                    continue;
+                                }
+                                HistoryPayWallet.Insert(oUser.ID, oUser.Username, item.ID, $"Thanh toán cho đơn {item.ShippingOrderCode}", item.TotalPrice, 1, 1, moneyPrevious, pay, accessor);
+                                var packs = db.tbl_Packages.Where(x => x.TransID == item.RecID).ToList();
+                                foreach (var pack in packs)
+                                {
+                                    pack.Status = 5;
+                                    pack.ModifiedBy = accessor;
+                                    pack.ModifiedDate = DateTime.Now;
+                                    db.Update(pack);
+                                    BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, item.Username);
+                                }
+                                db.SaveChanges();
+                            }
+                        }
+                        else
+                        {
+                            var pay = Converted.StringCeiling(totalPrice - wallet);
+                            dt.IsError = true;
+                            dt.Message = $"Tài khoản {item.Username} không đủ tiền, cần phải nạp thêm {Converted.String2Money(pay)}đ";
+                            return dt;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.Error("Payment", ex.Message);
+                        db.tbl_ShippingOrders.Update(oldOrder);
+                        db.tbl_Accounts.Update(oldUser);
+                        db.SaveChanges();
+                        dt.IsError = true;
+                        msg.Add($"Thanh toán đơn {item.ShippingOrderCode} thất bại!");
+                    }
+                }
+                dt.IsError = msg.Count > 0 ? true : false;
+                dt.Message = msg.Count > 0 ? string.Join("</br>", msg) : "Thanh toán đơn hàng thành công";
+                return dt;
+            }
+        }
+
+        public static DataReturnModel<bool> PaymentAll(string accessor)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var dt = new DataReturnModel<bool>();
+                var ships = db.tbl_ShippingOrders.Where(x => x.Username == accessor && x.Status < 2).ToList();
+
+                var totalMoney = ships.Sum(x => x.TotalPrice.Double());
+                var userWallet = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                if (userWallet == null)
+                {
+                    dt.IsError = true;
+                    dt.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                    return dt;
+                }
+
+                if (userWallet.Wallet.Double() < totalMoney)
+                {
+                    dt.IsError = true;
+                    dt.Message = $"Bạn cần phải nạp thêm {Converted.Double2Money(totalMoney - userWallet.Wallet.Double())} để thanh toán đơn hàng";
+                    return dt;
+                }
+                List<string> msg = new List<string>();
+                foreach (var item in ships)
+                {
+                    var oldOrder = item;
+                    if (item.Status == 2)
+                        continue;
+
+                    var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
+                    var oldUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
+
+                    try
+                    {
+                        double totalPrice = Convert.ToDouble(item.TotalPrice);
+                        double wallet = Convert.ToDouble(oUser.Wallet);
+                        if (wallet >= totalPrice)
+                        {
+                            item.Status = 2;
+                            item.ModifiedBy = accessor;
+                            item.ModifiedDate = DateTime.Now;
+                            db.tbl_ShippingOrders.Update(item);
+                            if (db.SaveChanges() > 0)
+                            {
+                                var u = db.tbl_Accounts.FirstOrDefault(x => x.ID == oUser.ID);
+                                var moneyPrevious = Converted.Double2Money(wallet);
+                                var pay = Converted.StringCeiling(wallet - totalPrice);
+                                u.Wallet = pay;
+                                db.Update(u);
+                                var save = db.SaveChanges() > 0;
+                                if (!save)
+                                {
+                                    dt.IsError = true;
+                                    msg.Add($"Thanh toán đơn {item.ShippingOrderCode} thất bại!");
+                                    continue;
+                                }
+                                HistoryPayWallet.Insert(oUser.ID, oUser.Username, item.ID, $"Thanh toán cho đơn {item.ShippingOrderCode}", item.TotalPrice, 1, 1, moneyPrevious, pay, accessor);
+                                var packs = db.tbl_Packages.Where(x => x.TransID == item.RecID).ToList();
+                                foreach (var pack in packs)
+                                {
+                                    pack.Status = 5;
+                                    pack.ModifiedBy = accessor;
+                                    pack.ModifiedDate = DateTime.Now;
+                                    db.Update(pack);
+                                    BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, item.Username);
+                                }
+                                db.SaveChanges();
+                            }
+                        }
+                        else
+                        {
+                            var pay = Converted.StringCeiling(totalPrice - wallet);
+                            dt.IsError = true;
+                            dt.Message = $"Tài khoản {item.Username} không đủ tiền, cần phải nạp thêm {Converted.String2Money(pay)}đ";
+                            return dt;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.Error("Payment", ex.Message);
+                        db.tbl_ShippingOrders.Update(oldOrder);
+                        db.tbl_Accounts.Update(oldUser);
+                        db.SaveChanges();
+                        dt.IsError = true;
+                        msg.Add($"Thanh toán đơn {item.ShippingOrderCode} thất bại!");
+                    }
+                }
+                dt.IsError = msg.Count > 0 ? true : false;
+                dt.Message = msg.Count > 0 ? string.Join("</br>", msg) : "Thanh toán đơn hàng thành công";
                 return dt;
             }
         }

@@ -207,7 +207,7 @@ namespace KGQT.Base
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
             {
-                if (token.accesstoken_expire < DateTime.Now)
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.getListFollower((page - 1) * pageSize, pageSize);
@@ -276,7 +276,7 @@ namespace KGQT.Base
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
             {
-                if (token.accesstoken_expire < DateTime.Now)
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.sendTextMessageToUserIdV3(uid, message);
@@ -304,7 +304,7 @@ namespace KGQT.Base
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
             {
-                if (token.accesstoken_expire < DateTime.Now)
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.getListFollower((page - 1) * pageSize, pageSize);
@@ -370,7 +370,7 @@ namespace KGQT.Base
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
             {
-                if (token.accesstoken_expire < DateTime.Now)
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.sendRequestUserProfileToUserIdV3(uid, "Yêu cầu cung cấp thông tin", "Chúng tôi cần thêm thông tin từ bạn để được hỗ trợ tốt hơn", "https://stc-developers.zdn.vn/zalo.png");
@@ -384,7 +384,7 @@ namespace KGQT.Base
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
             {
-                if (token.accesstoken_expire < DateTime.Now)
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
 
                 using (HttpClient client = new HttpClient())
@@ -413,7 +413,7 @@ namespace KGQT.Base
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
             {
-                if (token.accesstoken_expire < DateTime.Now)
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.updateFollowerInfo(uid, info.name, info.phone, info.address, 0, 0);

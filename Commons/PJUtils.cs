@@ -124,7 +124,7 @@ namespace KGQT.Commons
                 return content;
 
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
                 _log.Error(e.Message);
                 return input;
@@ -686,6 +686,8 @@ namespace KGQT.Commons
         #region Kiểm tra ngày lễ or chủ nhật
         public static bool IsHoliday(DateTime date)
         {
+            if (date.DayOfWeek == DayOfWeek.Sunday || date.DayOfWeek == DayOfWeek.Saturday)
+                return false;
             // 1-1;30-4;1-5;2-9
             string ddmm = date.Day + "/" + date.Month;
             switch (ddmm)
@@ -725,15 +727,17 @@ namespace KGQT.Commons
             {
                 case 1: // nhanh từ 3-6 ngày
                     date = date.AddDays(4);
+                    if (date.DayOfWeek > DayOfWeek.Tuesday)
+                        date = date.AddDays(2);
                     break;
                 case 2: // thường từ 5-10 ngày
-                    date = date.AddDays(7);
+                    date = date.AddDays(9); // + thêm t7&cn
                     break;
-                case 3: // bộ
-                    date = date.AddDays(11);
+                case 3: // bộ 11 ngày + 2 ngày t7 & cn
+                    date = date.AddDays(13);
                     break;
-                case 4: // lô
-                    date = date.AddDays(20);
+                case 4: // lô 20 ngày + 8 ngày (4x t7&cn)
+                    date = date.AddDays(28);
                     break;
             }
 
@@ -743,13 +747,6 @@ namespace KGQT.Commons
                 date = date.AddDays(1);
                 isHoliday = IsHoliday(date);
             }
-
-            if (date.DayOfWeek == DayOfWeek.Saturday)
-                date = date.AddDays(1);
-
-
-            if (date.DayOfWeek == DayOfWeek.Sunday)
-                date = date.AddDays(1);
 
             date = LunnarDay(date);
 

@@ -21,9 +21,5 @@ namespace KGQT.Controllers
             var result = await ZaloCommon.GetTokenAsync(code);
             return Redirect("/admin/package/index");
         }
-
-        public IActionResult Test() {
-            return View();
-        }
     }
 }

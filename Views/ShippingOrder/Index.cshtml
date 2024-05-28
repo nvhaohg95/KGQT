@@ -82,11 +82,17 @@
                         <label class="col-form-label text-danger"><b>@Converted.Double2Money(ViewBag.totalLeft)đ</b></label>
                     </div>
                 </div>
+                <div class="col-md-4 col-sm-12 text-end">
+                    <button class="btn btn-sm bg-nsh2 d-none" id="btnPaymentSelected" onclick="paymentSelected()">Thanh toán <span class="checkCount"></span> đơn đã chọn</button>
+                    <button class="btn btn-sm bg-nsh1" onclick="paymentAll()">Thanh toán tất cả</button>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="thead-light">
                         <tr>
+                            <th>
+                            </th>
                             <th class="text-center">
                                 Mã đơn
                             </th>
@@ -112,6 +118,12 @@
                         @foreach (var item in Model)
                         {
                             <tr class="table-light font-weight-normal py-2">
+                                <td>
+                                    @if (item.Status == 1)
+                                    {
+                                        <input class="payment-check" type="checkbox" value="@item.RecID" />
+                                    }
+                                </td>
                                 <td class="text-left ">
                                     @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                 </td>
@@ -224,3 +236,70 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('.payment-check:checkbox').change(function () {
+            let check = $('.payment-check:checkbox:checked').length;
+            if (check > 0)
+                $('#btnPaymentSelected').removeClass('d-none');
+            else
+                $('#btnPaymentSelected').removeClass('d-block');
+            $('.checkCount').html('(' + check + ')');
+        });
+    })
+
+    function paymentSelected() {
+        let ids = [];
+        let check = $('.payment-check:checkbox:checked');
+        if (check <= 0) return;
+        for (let i = 0; i < check.length; i++) {
+            let value = $(check[i]).val();
+            ids.push(value);
+        }
+
+        if (ids.length == 0) return;
+
+        $.ajax({
+            url: '/ShippingOrder/PaymentSelected',
+            type: 'Post',
+            data: { data: ids.join(',') },
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message);
+                else
+                    helper.showSuc(result.message);
+            },
+            error: function (xhr, status, err) {
+                helper.showErr(err);
+            },
+            complete: function () {
+                stopLoading(true);
+            }
+        })
+    }
+    
+    function paymentAll() {
+        $.ajax({
+            url: '/ShippingOrder/PaymentAll',
+            type: 'Post',
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (result) {
+                if (result.isError)
+                    helper.showErr(result.message);
+                else
+                    helper.showSuc(result.message);
+            },
+            error: function (xhr, status, err) {
+                helper.showErr(err);
+            },
+            complete: function () {
+                stopLoading(true);
+            }
+        })
+    }
+</script>
