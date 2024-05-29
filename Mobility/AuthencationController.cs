@@ -555,13 +555,15 @@ namespace KGQT.Mobility
                 int pageNum = dataRequest.ContainsKey("pageNum") ? Int32.Parse(dataRequest["pageNum"].ToString()) : 0;
                 int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
                 string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                DateTime? fromDate = dataRequest.ContainsKey("fromDate") ? (DateTime?)dataRequest["fromDate"] : null;
+                DateTime? toDate = dataRequest.ContainsKey("toDate") ? (DateTime?)dataRequest["toDate"] : null;
                 if (string.IsNullOrEmpty(userName))
                 {
                     oRequest.IsError = true;
                     oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                     return new object[] { true, oRequest };
                 }
-                var oData = PackagesBusiness.GetPage(status, ID, null, null, pageNum, pageSize, userName);
+                var oData = PackagesBusiness.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
                 return new object[] { false, oData };
             }
             catch (Exception)
