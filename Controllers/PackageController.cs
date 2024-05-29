@@ -40,7 +40,17 @@ namespace KGQT.Controllers
 
         public IActionResult Details(int id)
         {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
             var model = PackagesBusiness.GetOne(id);
+            if (model.Username != userLogin)
+            {
+                model = null;
+                return View(model);
+            }
+
             var user = BusinessBase.GetOne<tbl_Account>(x => x.ID == model.UID);
             if (user != null)
             {
@@ -86,7 +96,7 @@ namespace KGQT.Controllers
             var tkck = cookieService.Get("tkck");
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
-            var data = PackagesBusiness.CustomerAdd(form,userLogin);
+            var data = PackagesBusiness.CustomerAdd(form, userLogin);
             return data;
         }
 
@@ -132,7 +142,7 @@ namespace KGQT.Controllers
         [HttpPost]
         public DataReturnModel<bool> ChangeAutoQuery(int id, bool check)
         {
-            var data = PackagesBusiness.ChangeAutoQuery(id,check);
+            var data = PackagesBusiness.ChangeAutoQuery(id, check);
             return data;
         }
 

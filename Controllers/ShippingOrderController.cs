@@ -49,12 +49,26 @@ namespace KGQT.Controllers
         // GET: ShippingOrderController/Details/5
         public ActionResult Details(int id, string recID)
         {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+
             var model = new OrderDetails();
             if (string.IsNullOrEmpty(recID))
                 model.Order = ShippingOrder.GetOne(id);
-            else model.Order = ShippingOrder.GetOne(recID);
+            else
+                model.Order = ShippingOrder.GetOne(recID);
+            
             if (model.Order != null)
             {
+
+                if (model.Order.Username != userLogin)
+                {
+                    model = null;
+                    return View(model);
+                }
+
                 model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
                 model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username == model.Order.Username);
             }
