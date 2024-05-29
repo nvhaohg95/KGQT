@@ -12,7 +12,7 @@
     <li><a href="/ShippingOrder/Index">Danh sách ký gửi</a></li>
     <li><a>Chi tiết</a></li>
 </ul>
-@if (Model.Order != null)
+@if (Model != null && Model.Order != null)
 {
     <div class="row d-flex justify-content-center align-items-center py-2">
         <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
@@ -452,4 +452,10 @@
             $('#txtAmount').val(obj.ProductPrice);
         }
     </script>
+}
+else
+{
+    <div class="row p-4 text-center">
+        <h2 class="text-danger">Không tìm thấy thông tin</h2>
+    </div>
 }
