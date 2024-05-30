@@ -12,6 +12,7 @@ using OfficeOpenXml;
 using Serilog;
 using System.Data;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using ILogger = Serilog.ILogger;
 
 namespace KGQT.Business
@@ -91,16 +92,21 @@ namespace KGQT.Business
                 int count = 0;
                 int totalPage = 0;
                 IQueryable<tbl_Package> qry = db.tbl_Packages;
-                if (status > 0)
-                    qry = qry.Where(x => x.Status == status);
-                if (!string.IsNullOrEmpty(ID))
-                    qry = qry.Where(x => x.PackageCode.Contains(ID));
-                if (fromDate != null)
-                    qry = qry.Where(x => x.CreatedDate >= fromDate);
-                if (toDate != null)
-                    qry = qry.Where(x => x.CreatedDate <= toDate.Value.AddDays(1).AddTicks(-1));
                 if (!string.IsNullOrEmpty(userName))
                     qry = qry.Where(x => x.Username == userName);
+
+                if (status > 0)
+                    qry = qry.Where(x => x.Status == status);
+
+                if (!string.IsNullOrEmpty(ID))
+                    qry = qry.Where(x => x.PackageCode.Contains(ID) || x.Note.Contains(ID));
+                
+                if (fromDate != null)
+                    qry = qry.Where(x => x.ImportedSGWH >= fromDate);
+
+                if (toDate != null)
+                    qry = qry.Where(x => x.ImportedSGWH < toDate.Value.AddDays(1).AddTicks(-1));
+             
                 count = qry.Count();
                 if (count > 0)
                 {
@@ -251,7 +257,7 @@ namespace KGQT.Business
                 if (toDate != null && toDate != DateTime.MinValue)
                 {
                     toDate = toDate.Value.AddDays(1).AddTicks(-1);
-                    query = query.Where(x => x.ExportedCNWH <= toDate);
+                    query = query.Where(x => x.ExportedCNWH < toDate);
                 }
                 data.IsError = false;
                 data.Data = query.ToList();

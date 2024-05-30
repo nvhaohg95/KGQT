@@ -73,9 +73,12 @@ namespace KGQT.Business
                     query = query.Where(x => x.CreatedDate >= fromDate);
 
                 if (toDate != null)
-                    query = query.Where(x => x.CreatedDate <= toDate);
+                {
+                    toDate = toDate.Value.Date.AddDays(1).AddTicks(-1);
+                    query = query.Where(x => x.CreatedDate < toDate);
+                }
 
-                if(status > 0)
+                if (status > 0)
                     query = query.Where(x => x.Status == status);
                 count = query.Count();
                 if(count > 0)

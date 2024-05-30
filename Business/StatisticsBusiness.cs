@@ -27,7 +27,7 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders
-                    .Where(x => x.Status == 2 && x.CreatedDate >= startDate && x.CreatedDate <= endDate);
+                    .Where(x => x.Status == 2 && x.CreatedDate >= startDate && x.CreatedDate < endDate);
 
                 int total = query.Count();
                 var lstData = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
@@ -42,7 +42,7 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 IQueryable<tbl_Package> query = db.tbl_Packages
-                    .Where(x => (!string.IsNullOrEmpty(x.Weight) && x.Weight != "0") && x.CreatedDate >= startDate && x.CreatedDate <= endDate);
+                    .Where(x => (!string.IsNullOrEmpty(x.Weight) && x.Weight != "0") && x.CreatedDate >= startDate && x.CreatedDate < endDate);
 
                 int total = query.Count();
                 var lstData = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
@@ -57,7 +57,7 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders
-                    .Where(x => x.Status == 1 && x.CreatedDate >= startDate && x.CreatedDate <= endDate);
+                    .Where(x => x.Status == 1 && x.CreatedDate >= startDate && x.CreatedDate < endDate);
 
                 var a = query.AsEnumerable().GroupBy(x => x.Username).ToDictionary(x => x.Key, y => y.AsEnumerable().Sum(x => Converted.ToDouble(x.TotalPrice)));
                 return a;

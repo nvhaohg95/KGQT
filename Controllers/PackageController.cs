@@ -45,7 +45,7 @@ namespace KGQT.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             var model = PackagesBusiness.GetOne(id);
-            if (model.Username != userLogin)
+            if (model.Username.ToLower() != userLogin.ToLower())
             {
                 model = null;
                 return View(model);

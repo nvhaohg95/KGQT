@@ -48,9 +48,7 @@
     <None Include="Views\Auth\ForgotPassword.cshtml" />
     <None Include="Views\Auth\Login.cshtml" />
     <None Include="Views\Auth\Register.cshtml" />
-    <None Include="Views\Home\Create.cshtml" />
     <None Include="Views\Home\Dashboard.cshtml" />
-    <None Include="Views\Home\Details.cshtml" />
     <None Include="Views\Home\Index.cshtml" />
     <None Include="Views\Shared\_UserLayout.cshtml" />
     <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />

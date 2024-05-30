@@ -63,7 +63,7 @@ namespace KGQT.Controllers
             if (model.Order != null)
             {
 
-                if (model.Order.Username != userLogin)
+                if (model.Order.Username.ToLower() != userLogin.ToLower())
                 {
                     model = null;
                     return View(model);
