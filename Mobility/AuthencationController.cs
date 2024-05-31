@@ -927,6 +927,54 @@ namespace KGQT.Mobility
                 return oRequest;
             }
         }
+        [HttpPost]
+        [Route("gettotalpackage")]
+        public object GetTotalPackage([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+
+                List<tbl_Package> query = BusinessBase.GetList<tbl_Package>(x => x.Username == userName).ToList();
+                var total0 = query.Where(x => x.Status == 0).Count();
+                var total1 = query.Where(x => x.Status == 1).Count();
+                var total2 = query.Where(x => x.Status == 2).Count();
+                var total3 = query.Where(x => x.Status == 3).Count();
+                var total4 = query.Where(x => x.Status == 4).Count();
+                var total5 = query.Where(x => x.Status == 5).Count();
+                var total9 = query.Where(x => x.Status == 9).Count();
+                var total10 = query.Where(x => x.Status == 10).Count();
+                var total11 = query.Where(x => x.Status == 11).Count();
+                return new object[] { false, total0,total1,total2,total3,total4,total5,total9,total10,total11 };
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
         #endregion
 
         #region OrderPage
