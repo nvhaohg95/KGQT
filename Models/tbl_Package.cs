@@ -71,6 +71,6 @@ namespace KGQT.Models
         public string? DateExpectation { get; set; }
         public bool? Exported { get; set; }
         public bool? AutoQuery { get; set; }
-        public int TrackingShipping { get; set; }
+        public int? TrackingShipping { get; set; }
     }
 }
