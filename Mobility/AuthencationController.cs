@@ -992,8 +992,8 @@ namespace KGQT.Mobility
         }
 
         [HttpPost]
-        [Route("getlistpackage")]
-        public object GetListPackage([FromBody] RequestModel model)
+        [Route("getdetail")]
+        public object GetDetail([FromBody] RequestModel model)
         {
             try
             {
@@ -1012,8 +1012,9 @@ namespace KGQT.Mobility
                     return new object[] { true, oRequest };
                 }
                 string recID = dataRequest.ContainsKey("recID") ? dataRequest["recID"].ToString() : "";
+                var Oorder = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.RecID == recID);
                 var lstPacks = BusinessBase.GetList<tbl_Package>(x => x.TransID == recID);
-                return new object[] { false, lstPacks };
+                return new object[] { false, Oorder, lstPacks };
             }
             catch (Exception)
             {
