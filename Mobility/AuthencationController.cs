@@ -511,7 +511,30 @@ namespace KGQT.Mobility
                 string? sUser = dataRequest.ContainsKey("lstUser") ? dataRequest["lstUser"].ToString() : "";
                 var lstUser = sUser.Split(";");
                 var query = BusinessBase.GetList<tbl_Account>(x => lstUser.Contains(x.Username)).ToList();
-                return new object[] { false, query };
+                List<tempUser> lstTemp = new List<tempUser>();
+                foreach (var item in query)
+                {
+                    var user = new tempUser();
+                    user.Username = item.Username;
+                    user.FullName = item.FullName;
+                    user.Password = PJUtils.Decrypt("userpass", item.Password);
+                    if (!string.IsNullOrEmpty(item.IMG))
+                    {
+                        try
+                        {
+                            string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + item.IMG;
+                            byte[] imageBytes = File.ReadAllBytes(path);
+                            string base64String = Convert.ToBase64String(imageBytes);
+                            user.IMG = base64String;
+                        }
+                        catch (Exception ex)
+                        {
+                            user.IMG = "";
+                        }
+                    }
+                    lstTemp.Add(user);
+                }
+                return new object[] { false, lstTemp };
             }
             catch (Exception)
             {
@@ -1464,6 +1487,16 @@ namespace KGQT.Mobility
             }
             
         }*/
+        #endregion
+
+        #region temp
+        public class tempUser
+        {
+            public string? Username { get; set; }
+            public string? Password { get; set; }
+            public string? FullName { get; set; }
+            public string? IMG { get; set; }
+        }
         #endregion
 
     }
