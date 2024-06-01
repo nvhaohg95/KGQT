@@ -489,6 +489,40 @@ namespace KGQT.Mobility
         }
 
         [HttpPost]
+        [Route("getlistuser")]
+        public object[] GetListUser([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                string? sUser = dataRequest.ContainsKey("lstUser") ? dataRequest["lstUser"].ToString() : "";
+                var lstUser = sUser.Split(";");
+                var query = BusinessBase.GetList<tbl_Account>(x => lstUser.Contains(x.Username)).ToList();
+                return new object[] { false, query };
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+        }
+
+        [HttpPost]
         [Route("dashboard")]
         public object[] GetDashBoard([FromBody] RequestModel model)
         {
