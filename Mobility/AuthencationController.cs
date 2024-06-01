@@ -974,7 +974,13 @@ namespace KGQT.Mobility
                     return new object[] { true, oRequest };
                 }
                 var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
-                return new object[] { false, oData };
+                List<tbl_ShippingOrder> query = BusinessBase.GetList<tbl_ShippingOrder>(x => x.Username == userName).ToList();
+                var total0 = query.Count();
+                var total1 = query.Where(x => x.Status == 1).Count();
+                var total2 = query.Where(x => x.Status == 2).Count();
+                var total3 = query.Where(x => x.Status == 3).Count();
+                var total4 = query.Where(x => x.Status == 4).Count();
+                return new object[] { false, oData, total0, total1, total2, total3, total4 };
             }
             catch (Exception)
             {
