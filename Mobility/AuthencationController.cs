@@ -1236,8 +1236,10 @@ namespace KGQT.Mobility
                 string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
                 int pageNum = dataRequest.ContainsKey("pageNum") ? Int32.Parse(dataRequest["pageNum"].ToString()) : 0;
                 int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
+                DateTime? fromDate = dataRequest.ContainsKey("fromDate") ? (DateTime?)dataRequest["fromDate"] : null;
+                DateTime? toDate = dataRequest.ContainsKey("toDate") ? (DateTime?)dataRequest["toDate"] : null;
                 var user = AccountBusiness.GetInfo(-1, userName);
-                var oData = NotificationBusiness.GetPage(user.ID, status, null, null, pageNum, pageSize);
+                var oData = NotificationBusiness.GetPage(user.ID, status, fromDate, toDate, pageNum, pageSize);
                 return new object[] { false, oData };
             }
             catch (Exception)
