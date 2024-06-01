@@ -390,6 +390,51 @@ namespace KGQT.Mobility
         }
 
         [HttpPost]
+        [Route("changeaccount")]
+        public async Task<object> ChangeAccount([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                string? currUsername = dataRequest.ContainsKey("currUsername") ? dataRequest["currUsername"].ToString() : "";
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == currUsername);
+                if (user != null)
+                {
+                    user.TokenDevice = "";
+                    user.DeviceID = "";
+                    user.DeviceName = "";
+                }
+                DataReturnModel<tbl_Account> result = (DataReturnModel<tbl_Account>)await Login(model);
+                if (!result.IsError)
+                {
+                    BusinessBase.Update(user);
+                    oRequest.IsError = false;
+                }
+                return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+
+        [HttpPost]
         [Route("changepassword")]
         public object ChangePassword([FromBody] ChangePassword model)
         {
