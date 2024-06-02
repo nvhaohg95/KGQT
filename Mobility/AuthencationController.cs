@@ -1248,6 +1248,47 @@ namespace KGQT.Mobility
             }
             
         }
+
+        [HttpPost]
+        [Route("getoneorderfromcode")]
+        public object GetOneOrderFromCode([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+
+                var result = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id && x.Username == userName);
+                return new object[] { false, result };
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
         #endregion
 
         #region HistoryWallet
