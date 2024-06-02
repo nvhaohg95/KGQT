@@ -915,7 +915,7 @@ namespace KGQT.Business
                                 }
                                 string message = "Đơn hàng {0}{1} đã nhập kho HCM";
                                 message = string.Format(message, ship.ShippingOrderCode, string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
-                                //NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
+                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
                                 return dt;
