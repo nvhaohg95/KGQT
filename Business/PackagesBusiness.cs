@@ -100,13 +100,13 @@ namespace KGQT.Business
 
                 if (!string.IsNullOrEmpty(ID))
                     qry = qry.Where(x => x.PackageCode.Contains(ID) || x.Note.Contains(ID));
-                
+
                 if (fromDate != null)
                     qry = qry.Where(x => x.ImportedSGWH >= fromDate);
 
                 if (toDate != null)
                     qry = qry.Where(x => x.ImportedSGWH < toDate.Value.AddDays(1).AddTicks(-1));
-             
+
                 count = qry.Count();
                 if (count > 0)
                 {
@@ -685,6 +685,7 @@ namespace KGQT.Business
 
                     pack.Weight = Converted.ToDouble(data.Weight).ToString();
                     pack.WeightExchange = Converted.ToDouble(data.WeightExchange).ToString();
+                    pack.TotalPrice = data.SetPrice.ToString();
                     pack.Height = data.Height.ToString();
                     pack.Width = data.Width.ToString();
                     pack.Length = data.Length.ToString();
@@ -746,7 +747,7 @@ namespace KGQT.Business
                         }
 
                         //Ktra xem khach da co don chua.
-                        DateTime cnExportDateFrom = DateTime.Now;
+                        DateTime cnExportDateFrom = DateTime.Now.Date;
                         if (pack.ExportedCNWH != null)
                             cnExportDateFrom = pack.ExportedCNWH.Value.Date;
                         else
@@ -773,12 +774,19 @@ namespace KGQT.Business
                             double weightPrice = 0;
                             double priceBrand = 0;
                             double weightBrand = 0;
+                            double priceOver = 0;
+                            double weightOver = 0;
                             foreach (var item in lstPack)
                             {
                                 if (item.IsBrand == true)
                                     weightBrand += Converted.ToDouble(item.WeightReal);
-                                else
+                                else if (item.WeightReal.Double() < 500)
                                     weight += Converted.ToDouble(item.WeightReal);
+                                else
+                                {
+                                    weightOver += Converted.ToDouble(item.WeightReal);
+                                    priceOver += item.TotalPrice.Double();
+                                }
                             }
 
                             if (weightBrand > 0 && weightBrand < minPackage)
@@ -811,12 +819,15 @@ namespace KGQT.Business
                                 }
                             }
 
+
+                            weight += weightOver;
+
                             double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => Converted.ToDouble(x.WoodPackagePrice));
                             double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => Converted.ToDouble(x.AirPackagePrice));
                             double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => Converted.ToDouble(x.IsInsurancePrice));
                             double totalCharge = lstPack.Sum(x => Converted.ToDouble(x.SurCharge));
                             double totalMoreCharge = lstPack.Sum(x => Converted.ToDouble(x.MoreCharge));
-                            double totalweightPrice = priceBrand + weightPrice;
+                            double totalweightPrice = priceBrand + weightPrice + priceOver;
                             var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge + totalMoreCharge;
                             var sPackageCode = lstPack.Select(x => x.PackageCode).ToArray();
 
@@ -848,9 +859,10 @@ namespace KGQT.Business
 
                             if (weightRound < minOrder)
                                 weightRound = minOrder;
-
-                            feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
-
+                            if (weightRound < 500)
+                                feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
+                            else
+                                feeWeight = pack.TotalPrice.Double();
                             if (pack.IsBrand == true)
                             {
                                 feeWeight = Converted.DoubleCeiling((Converted.ToDouble(fee.PriceBrand) + Converted.ToDouble(fee.Amount)) * weightRound);
@@ -903,7 +915,7 @@ namespace KGQT.Business
                                 }
                                 string message = "Đơn hàng {0}{1} đã nhập kho HCM";
                                 message = string.Format(message, ship.ShippingOrderCode, string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
-                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
+                                //NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
                                 return dt;
@@ -1043,8 +1055,7 @@ namespace KGQT.Business
                                         {
                                             oExist.Status = 3;
                                             oExist.MovingMethod = movingMethod;
-                                            oExist.Note = note;
-                                            oExist.Status = 3;
+                                            oExist.Note = !string.IsNullOrEmpty(note) ? note : oExist.Note;
                                             oExist.BigPackage = big.ID;
                                             oExist.OrderDate = date;
                                             oExist.ExportedCNWH = date;
@@ -1381,7 +1392,7 @@ namespace KGQT.Business
                         if (BusinessBase.Update(item) && item.Status == 2)
                         {
                             string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
-                            message = string.Format(message, item.PackageCode, string.IsNullOrEmpty(item.Note) ? " - "+item.Note:"");
+                            message = string.Format(message, item.PackageCode, string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "");
                             NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/Package/Details/" + item.ID, "admin");
                         }
                     }

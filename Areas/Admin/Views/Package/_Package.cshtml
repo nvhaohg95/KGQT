@@ -126,7 +126,7 @@
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Cân nặng:</label>
                             <div class="col-sm-8 input-group">
-                                <input id="txtWeight@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput" value="@item.Weight" placeholder="Nhập số kilogram">
+                                <input id="txtWeight@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput inputWeight" data-id="@item.ID" value="@item.Weight" placeholder="Nhập số kilogram">
                                 <div class="input-group-append">
                                     <span class="btn btn-sm btn-secondary" type="button">
                                         kg
@@ -135,7 +135,19 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="px-0 col-md-3 sethardprice@(item.ID) d-none">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Số tiền:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtSetHardPrice@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0 onInput" value="@item.TotalPrice" placeholder="Nhập số tiền vượt mức">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="px-0 col-md-3 @(item.IsWoodPackage != null && item.IsWoodPackage == true ? "" :"d-none")" id="WoodPackage@(item.ID)">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Đóng gỗ:</label>
@@ -164,7 +176,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row m-0 pt-2 border-top">
+                <div class="row m-0 mb-2 pt-2 border-top">
                     <div class="px-0 col-md-3">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Đo lên:</label>
@@ -221,7 +233,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row m-0 pt-2 border-top">
+                <div class="row m-0 mb-2 pt-2 border-top">
                     <div class="px-0 col-md-3">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Thu hộ:</label>
@@ -308,6 +320,8 @@ else
         $.datepicker.setDefaults($.datepicker.regional["vi-VN"]);
     });
     $(document).ready(function () {
+        var timeout;
+        var delay = 1000;
         formatVND();
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
@@ -329,11 +343,27 @@ else
                 return false;
             }
         })
+
+        $('.inputWeight').off('keyup').on('keyup',function(e) {
+            let _t =this;
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(function () { checkValue(_t); }, delay);         
+        })
     })
+
+    function checkValue(e){
+        let id = $(e).data('id');
+        if (parseFloat($(e).val()) >= 500) {
+            $('.sethardprice' + id).removeClass('d-none')
+        } else {
+            $('.sethardprice' + id).addClass('d-none');
+        }
+    }
 
     function submitFn(id, moving) {
         debugger
         let weight = $('#txtWeight' + id).val();
+        let setPrice = $('#txtSetHardPrice' + id).val();
         let wood = $('#txtWoodPackage' + id).data('value');
         let air = $('#txtAirPackage' + id).data('value');
         let isPrice = $('#txtDeclarePrice' + id).data('value')
@@ -391,6 +421,9 @@ else
         if (parseFloat(weight) <= 0) {
             helper.showErr('Vui lòng nhập cân nặng!');
             return;
+        } else if (parseFloat(weight) >= 500 && !setPrice) {
+            helper.showErr('Số kí vượt quá 500. Vui lòng nhập giá tiền!');
+            return;
         }
 
         let data = {
@@ -398,6 +431,7 @@ else
             username,
             movingMethod: moving,
             weight,
+            setPrice,
             woodPrice: wood,
             airPrice: air,
             surCharge: sub,
