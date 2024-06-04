@@ -948,26 +948,6 @@ namespace KGQT.Business
                 return db.SaveChanges() > 0;
             }
         }
-        public static DateTime CaclDateExpectation(tbl_Package item)
-        {
-            var dt = DateTime.Now;
-
-            if (item.MovingMethod == 1)
-            {
-                return dt.AddDays(6);
-            }
-
-            if (item.MovingMethod == 2)
-            {
-                return dt.AddDays(10);
-            }
-
-            if (item.MovingMethod == 3)
-            {
-                return dt.AddDays(15);
-            }
-            return dt;
-        }
 
         public static DataReturnModel<object> CreateWithFileExcel(IFormFile file, string name, string accesser)
         {
