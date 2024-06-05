@@ -219,7 +219,7 @@
                                             <div class="form-inline text-left">
                                                 Cân nặng:  &nbsp;
                                                 <p class=" mb-0">
-                                                    @(item.Weight)kg
+                                                    @(item.Weight.ChangeFormat())kg
                                                 </p>
                                             </div>
                                         </div>
@@ -229,7 +229,7 @@
 
                                                 <div class="form-inline text-left">
                                                     Đo lên:  &nbsp;
-                                                    <p class=" mb-0">   (@(item.Length + "x" + item.Width + "x" + item.Height)) @(item.WeightExchange)kg</p>
+                                                    <p class=" mb-0">   (@(item.Length.ChangeFormat() + "x" + item.Width.ChangeFormat() + "x" + item.Height.ChangeFormat())) @(item.WeightExchange.ChangeFormat())kg</p>
                                                 </div>
                                             </div>
                                         }
@@ -329,7 +329,7 @@
                     </div>
                     <div class="d-flex justify-content-between pt-2">
                         <p class="text-muted mb-0">Cân nặng:</p>
-                        <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.ToDouble(Model.Order.Weight)kg</span></p>
+                        <p class="text-muted mb-0"><span class="fw-bold me-4">@Converted.ToDouble(Model.Order.Weight).ChangeFormat()kg</span></p>
                     </div>
                     <div class="d-flex justify-content-between pt-2">
                         <p class="text-muted mb-0">Phí vận chuyển:</p>

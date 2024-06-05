@@ -91,10 +91,10 @@
                                     @Html.DisplayFor(modelItem => item.PackageCode)
                                 </td>
                                 <td class="text-center align-middle">
-                                    @Converted.ToDouble(item.Weight)
+                                    @item.Weight.ChangeFormat()
                                 </td>
                                 <td class="text-center align-middle">
-                                    @Converted.ToDouble(item.WeightExchange)
+                                    @item.WeightExchange.ChangeFormat()
                                 </td>
                                 <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.CreatedDate)

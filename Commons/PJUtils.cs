@@ -291,9 +291,12 @@ namespace KGQT.Commons
 
         public static string ShippingMethodName(int status)
         {
-            string text = "Nhanh";
+            string text = "Chưa thiết lập";
             switch (status)
             {
+                case 1:
+                    text = "Nhanh";
+                    break;
                 case 2:
                     text = "Thường";
                     break;
@@ -307,7 +310,7 @@ namespace KGQT.Commons
                     text = "Biển";
                     break;
                 default:
-                    text = "Nhanh";
+                    text = "Chưa thiết lập";
                     break;
             }
             return text;

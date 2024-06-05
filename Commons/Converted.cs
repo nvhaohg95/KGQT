@@ -34,7 +34,7 @@ namespace KGQT.Commons
 
             return Convert.ToDouble(s);
         }
-        
+
         public static double Double(this string s)
         {
             if (string.IsNullOrEmpty(s)) return 0;
@@ -164,6 +164,14 @@ namespace KGQT.Commons
             if (value.ToString().IndexOf(".") > 0)
                 return string.Format("{0:N0}", Math.Round(num, 1, MidpointRounding.AwayFromZero)).Replace(".", ",");
             return string.Format("{0:N0}", value).Replace(".", ",");
+        }
+
+        public static string ChangeFormat(this object value, string curr = ".", string to = ",")
+        {
+            if (value == null)
+                return "";
+            string v = value.ToString();
+            return v.Replace(curr, to);
         }
     }
 }

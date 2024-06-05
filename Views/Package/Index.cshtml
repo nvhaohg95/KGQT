@@ -163,7 +163,7 @@
                                     @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                                 </div>
                                 <div class="col-md-3 col-sm-12 col-xs-12">
-                                    Cân nặng: @(item.Weight)kg
+                                    Cân nặng: @(item.Weight.ChangeFormat())kg
                                 </div>
                                 @if (Converted.ToDouble(item.WeightExchange) > 0)
                                 {
@@ -173,11 +173,11 @@
                                             <span>
                                                 Đo lên:
                                                 (@(
-                                                   item.Length + "x" + item.Width + "x" + item.Height
+                                                   item.Length.ChangeFormat() + "x" + item.Width.ChangeFormat() + "x" + item.Height.ChangeFormat()
                                                    ))
                                             </span>
                                         }
-                                        @(item.WeightExchange)kg
+                                        @(item.WeightExchange.ChangeFormat())kg
                                     </div>
                                 }
                             </div>

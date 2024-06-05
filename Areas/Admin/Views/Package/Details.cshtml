@@ -189,14 +189,14 @@
                         <div class="panel-body">
                             <div class="d-flex justify-content-between pt-2">
                                 <p class="text-muted mb-0">Cân nặng:</p>
-                                <p class="text-muted mb-0">@(Model.Weight)kg</p>
+                                <p class="text-muted mb-0">@(Model.Weight.ChangeFormat())kg</p>
                             </div>
                             @if (Converted.ToDouble(Model.WeightExchange) > 0)
                             {
                                 <div class="d-flex justify-content-between pt-2">
                                     <p class="text-muted mb-0">Đo lên:</p>
                                     <p class="text-muted mb-0">
-                                        (@(Model.Length + "x" + Model.Width + "x" + Model.Height)) @(Model.WeightExchange)kg
+                                        (@(Model.Length.ChangeFormat() + "x" + Model.Width.ChangeFormat() + "x" + Model.Height.ChangeFormat())) @(Model.WeightExchange.ChangeFormat())kg
                                     </p>
                                 </div>
                             }
