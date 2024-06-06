@@ -447,6 +447,8 @@ else
             return;
         }
 
+        weight = weight.replace(",", ".");
+
         if (parseFloat(weight) <= 0) {
             helper.showErr('Vui lòng nhập cân nặng!');
             return;
@@ -454,7 +456,6 @@ else
             helper.showErr('Số kí vượt quá 500. Vui lòng nhập giá tiền!');
             return;
         }
-        weight = weight.replace(",", ".");
         weightEx = weightEx.replace(",", ".");
         length = length.replace(",", ".");
         width = width.replace(",", ".");
