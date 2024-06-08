@@ -21,7 +21,7 @@ namespace KGQT.Commons
 
             return Convert.ToInt32(s);
         }
-        public static int ToInt(string s)
+        public static int ToInt(this string s)
         {
             if (string.IsNullOrEmpty(s)) return 0;
 

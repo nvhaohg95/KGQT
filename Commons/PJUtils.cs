@@ -728,32 +728,20 @@ namespace KGQT.Commons
         {
             switch (type)
             {
-                case 1: // nhanh từ 3-6 ngày + 2 ngày cuối tuần
-                    date = date.AddDays(8);
+                case 1: // nhanh từ 3-6 ngày -> lấy 5 ngày
+                    date = isWeeken(date,5);
                     break;
-                case 2: // thường từ 5-10 ngày + thêm t7&cn
-                    date = date.AddDays(12);
-                    if (date.DayOfWeek > DayOfWeek.Monday)
-                        date = date.AddDays(2);
+                case 2: // thường từ 5-10 ngày -> lấy 7 ngày + thêm t7&cn
+                    date = isWeeken(date, 5);
 
-                    if (date.DayOfWeek == DayOfWeek.Saturday) date = date.AddDays(2);
-
-                    if (date.DayOfWeek == DayOfWeek.Sunday) date = date.AddDays(1);
-                    
                     break;
                 case 3: // bộ 11 ngày + 2 ngày t7 & cn
-                    date = date.AddDays(15);
+                    date = isWeeken(date, 11);
 
-                    if (date.DayOfWeek == DayOfWeek.Saturday) date = date.AddDays(2);
-
-                    if (date.DayOfWeek == DayOfWeek.Sunday) date = date.AddDays(1);
 
                     break;
                 case 4: // lô 20 ngày + 8 ngày (4x t7&cn)
-                    date = date.AddDays(28);
-                    if (date.DayOfWeek == DayOfWeek.Saturday) date = date.AddDays(2);
-
-                    if (date.DayOfWeek == DayOfWeek.Sunday) date = date.AddDays(1);
+                    date = isWeeken(date,20);
                     break;
             }
 
@@ -766,6 +754,19 @@ namespace KGQT.Commons
 
             date = LunnarDay(date);
 
+            return date;
+        }
+
+        public static DateTime isWeeken(DateTime date, int day)
+        {
+            for (int i = 0; i < day; i++)
+            {
+                date = date.AddDays(1);
+                if (date.DayOfWeek == DayOfWeek.Saturday)
+                    date = date.AddDays(1);
+                if (date.DayOfWeek == DayOfWeek.Sunday)
+                    date = date.AddDays(1);
+            }
             return date;
         }
 

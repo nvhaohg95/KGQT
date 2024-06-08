@@ -150,7 +150,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="px-0 col-md-3 sethardprice@(item.ID) d-none">
+                    <div class="px-0 col-md-3 sethardprice@(item.ID) @(item.Weight.Double() < 500 ? "d-none" :"")">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Số tiền:</label>
                             <div class="col-sm-8 input-group">

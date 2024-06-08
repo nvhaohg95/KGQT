@@ -12,6 +12,7 @@ using OfficeOpenXml;
 using Serilog;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using ILogger = Serilog.ILogger;
 
@@ -778,7 +779,7 @@ namespace KGQT.Business
                             double weightOver = 0;
                             foreach (var item in lstPack)
                             {
-                                if (item.IsBrand == true)
+                                if (item.IsBrand == true && item.WeightReal.Double() < 500)
                                     weightBrand += Converted.ToDouble(item.WeightReal);
                                 else if (item.WeightReal.Double() < 500)
                                     weight += Converted.ToDouble(item.WeightReal);
@@ -863,7 +864,7 @@ namespace KGQT.Business
                                 feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
                             else
                                 feeWeight = pack.TotalPrice.Double();
-                            if (pack.IsBrand == true)
+                            if (pack.IsBrand == true && weightRound < 500)
                             {
                                 feeWeight = Converted.DoubleCeiling((Converted.ToDouble(fee.PriceBrand) + Converted.ToDouble(fee.Amount)) * weightRound);
                             }
@@ -1021,13 +1022,27 @@ namespace KGQT.Business
                                     if (type == 20)
                                         movingMethod = 5;
                                     string note = dt.Rows[row][4].ToString();
-                                    var date = DateTime.Parse(dt.Rows[row][0].ToString());
-                                    var dateExp = DateTime.Now;
-                                    if (date != null || date != DateTime.MinValue && type != null || type > 0)
+                                    var sDate = dt.Rows[row][0].ToString();
+                                    DateTime date = DateTime.Now;
+                                    DateTime d = DateTime.Now;
+                                    if (!string.IsNullOrEmpty(sDate))
                                     {
-                                        dateExp = date.AddDays(type);
+                                        string[] split = sDate.Split("/", StringSplitOptions.RemoveEmptyEntries);
+
+                                        if (split.Length >= 3)
+                                        {
+                                            split[2] = split[2].Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
+                                            date = new DateTime(split[2].ToInt(), split[1].ToInt(), split[0].ToInt());
+                                            d = PJUtils.GetDeliveryDate(date, movingMethod);
+                                        }
                                     }
-                                    var d = PJUtils.GetDeliveryDate(dateExp);
+                                    //var date = DateTime.ParseExact(dt.Rows[row][0].ToString(),"dd/MM/yyyy",null);
+                                    //var dateExp = DateTime.Now;
+                                    //if (date != null || date != DateTime.MinValue && type != null || type > 0)
+                                    //{
+                                    //    dateExp = date.AddDays(type);
+                                    //}
+                                    //var d = PJUtils.GetDeliveryDate(dateExp);
                                     var oExist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
                                     if (oExist != null)
                                     {
