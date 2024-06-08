@@ -732,7 +732,7 @@ namespace KGQT.Commons
                     date = isWeeken(date,5);
                     break;
                 case 2: // thường từ 5-10 ngày -> lấy 7 ngày + thêm t7&cn
-                    date = isWeeken(date, 5);
+                    date = isWeeken(date, 7);
 
                     break;
                 case 3: // bộ 11 ngày + 2 ngày t7 & cn
