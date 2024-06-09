@@ -1247,7 +1247,51 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
             }
-            
+        }
+
+        [HttpPost]
+        [Route("paymentselected")]
+        public async Task<object> PaymentSelected([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                string? id = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                var result = ShippingOrder.PaymentSelected(id, userName);
+                oRequest.IsError = result.IsError;
+                oRequest.Message = result.Message;
+                if (!oRequest.IsError)
+                {
+                    var lst = id.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var lstOrder = BusinessBase.GetList<tbl_ShippingOrder>(x => lst.Contains(x.RecID) && x.Username == userName);
+                    if (lstOrder.Count > 0)
+                    {
+                        oRequest.Data = lstOrder;
+                    }
+                }
+                return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
         }
 
         [HttpPost]
