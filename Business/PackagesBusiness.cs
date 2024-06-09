@@ -377,6 +377,7 @@ namespace KGQT.Business
                     exist.IsAirPackage = form.IsAirPackage;
                     exist.IsWoodPackage = form.IsWoodPackage;
                     exist.IsInsurance = form.IsInsurance;
+                    exist.IsBrand = form.IsBrand;
                     if (form.IsInsurance.HasValue && form.IsInsurance == true)
                     {
                         exist.Declaration = form.Declaration;
@@ -405,6 +406,7 @@ namespace KGQT.Business
                     pack.IsAirPackage = form.IsAirPackage;
                     pack.IsWoodPackage = form.IsWoodPackage;
                     pack.IsInsurance = form.IsInsurance;
+                    pack.IsBrand = form.IsBrand;
                     pack.Status = 1;
                     pack.UID = user.ID;
                     pack.Username = user.Username;

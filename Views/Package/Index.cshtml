@@ -53,8 +53,8 @@
                     <li class="nav-item py-2 mr-2">
                         <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 9 ? "bg-nsh1 text-white" : "")" onclick="sort(9)">Đã hủy</a>
                     </li>
-                   @* <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 10 ? "bg-nsh1 text-white" : "")" onclick="sort(10)">Thất lạc</a>
+                    @* <li class="nav-item py-2 mr-2">
+                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 10 ? "bg-nsh1 text-white" : "")" onclick="sort(10)">Thất lạc</a>
                     </li>*@
                     <li class="nav-item py-2 mr-2">
                         <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 11 ? "bg-nsh1 text-white" : "")" onclick="sort(11)">Không nhận được hàng</a>
@@ -138,19 +138,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12  m-auto text-md-right">
+                        <div class="col-lg-3 col-md-3 col-sm-12 m-auto">
                             <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
-
-                            @if (item.Status < 2)
-                            {
-                                <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@item.ID)">Hủy kiện</button>
-                                <button class="btn-sm btn bg-orange text-white mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
-                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)" type="button">Xóa</button>
-                            }
-
                             @if (item.Status == 9 && item.CanceledBy == userModel?.UserName)
                             {
                                 <button class="btn-sm btn bg-success text-white mt-2" onclick="Restore(@item.ID)" type="button">Khôi phục</button>
+                            }
+                            @if (item.Status < 2)
+                            {
+                                <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@item.ID)">Hủy kiện</button>
+                                <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
+                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)" type="button">Xóa</button>
                             }
                         </div>
                     </div>
@@ -209,6 +207,14 @@
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
                                                 <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (item.IsBrand != null && item.IsBrand == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input mt-1" checked disabled>Hàng hiệu
                                             </label>
                                         </div>
                                     }
@@ -334,15 +340,27 @@
     </div>
 </div>
 <script>
+    function reportWindowSize() {
+        let w = window.innerWidth
+        if ((874 < w && w < 992) || (1033 < w && w < 1539)) {
+            $('.checkStatus').addClass('mr-3');
+        }else
+            $('.checkStatus').removeClass('mr-3');
+    }
+
+    window.onresize = reportWindowSize;
+
+
     $(document).ready(function () {
+        reportWindowSize();
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
             copyClipboard(text);
         })
 
-           $('.inputNode').off().on('keypress',function(){
-           if($(this).val().length >= 70)
-            helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+        $('.inputNode').off().on('keypress', function () {
+            if ($(this).val().length >= 70)
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
         })
     })
 
