@@ -86,5 +86,6 @@ namespace KGQT.Models
         public string? TokenDevice { get; set; }
         public string? DeviceID { get; set; }
         public string? DeviceName { get; set; }
+        public bool? IsBiometrics { get; set; }
     }
 }

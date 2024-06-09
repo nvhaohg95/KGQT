@@ -478,6 +478,46 @@ namespace KGQT.Mobility
                 return oRequest;
             }
         }
+
+        [HttpPost]
+        [Route("updatebiometrics")]
+        public object UpdateBiometrics([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
+                bool check = dataRequest.ContainsKey("check") ? (bool)dataRequest["check"] : false;
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                if (user != null)
+                {
+                    user.IsBiometrics = check;
+                    BusinessBase.Update(user);
+                }
+                oRequest.IsError = false;
+                return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
         #endregion
 
         #region HomePage
