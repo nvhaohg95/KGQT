@@ -10,6 +10,7 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Protocol.Core.Types;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -1391,6 +1392,102 @@ namespace KGQT.Mobility
                 oRequest.IsError = true;
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
+            }
+        }
+
+        [HttpPost]
+        [Route("gettotalnotification")]
+        public object GetTotalNotification([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                var total = 0;
+                if (user != null)
+                {
+                    List<tbl_Notification> query = BusinessBase.GetList<tbl_Notification>(x => x.ReceivedID == user.ID && x.Status == 0).ToList();
+                    total = query.Count();
+                }
+                return new object[] { false, total};
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+
+        [HttpPost]
+        [Route("updatenotification")]
+        public object UpdateNotification([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                if (user != null)
+                {
+                    List<tbl_Notification> query = BusinessBase.GetList<tbl_Notification>(x => x.ReceivedID == user.ID && x.Status == 0).ToList();
+                    if (query.Count > 0)
+                    {
+                        foreach (var item in query)
+                        {
+                            item.Status = 1;
+                            BusinessBase.Update(item);
+                        }
+                    }
+                }
+                return new object[] { false };
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
             }
         }
         #endregion
