@@ -84,8 +84,8 @@ namespace KGQT.Models
         public string? ModifiedBy { get; set; }
         public int? AvailableSearch { get; set; }
         public string? TokenDevice { get; set; }
-        public string? DeviceID { get; set; }
         public string? DeviceName { get; set; }
+        public string? DeviceID { get; set; }
         public bool? IsBiometrics { get; set; }
     }
 }
