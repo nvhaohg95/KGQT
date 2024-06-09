@@ -177,6 +177,7 @@ namespace KGQT.Business
                         result.Url = "/Auth/Login";
                         result.Message = "Tạo tài khoản thành công!";
                         result.Data = acc;
+                        PointsBusiness.Insert(acc.ID, acc.Username, "", "Được tặng khi đăng ký tài khoản tracking.nhanshiphang.vn", 20, 0, 20, data.Username);
                     }
                     else
                     {

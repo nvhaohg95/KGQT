@@ -8,9 +8,16 @@ namespace KGQT.Models
         public int ID { get; set; }
         public int? UID { get; set; }
         public string Username { get; set; } = null!;
-        public string Point { get; set; } = null!;
+        public string OrderID { get; set; } = null!;
+        public int Point { get; set; }
         public string? HContent { get; set; }
-        public string PointLeft { get; set; } = null!;
+        public int PointLeft { get; set; }
+        /// <summary>
+        /// 1: trừ
+        /// 2: cộng
+        /// 
+        /// </summary>
+        public int Type { get; set; }
         public int? Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }

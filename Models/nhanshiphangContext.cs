@@ -258,9 +258,9 @@ namespace KGQT.Models
             {
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Point).HasMaxLength(20);
+                entity.Property(e => e.OrderID).HasMaxLength(100);
 
-                entity.Property(e => e.PointLeft).HasMaxLength(20);
+                entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });
 
             modelBuilder.Entity<tbl_Role>(entity =>
