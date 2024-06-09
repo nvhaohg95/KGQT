@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
@@ -1651,6 +1652,42 @@ namespace KGQT.Mobility
                 oRequest.IsError = false;
                 oRequest.Data = result;
                 return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+        #endregion
+
+        #region Exchange
+        [HttpPost]
+        [Route("exchange")]
+        public async Task<object> Exchange([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                int amount = dataRequest.ContainsKey("amount") ? Int32.Parse(dataRequest["amount"].ToString()) : 0;
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                var result = WithDrawBusiness.BuySearches(userName, amount, "");
+                return result;
             }
             catch (Exception)
             {
