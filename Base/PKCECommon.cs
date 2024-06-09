@@ -10,12 +10,6 @@ namespace KGQT.Base
 
         public static string CodeChallenge;
 
-        //public static void Init()
-        //{
-        //    CodeVerifier = GenerateCodeVerifier();
-        //    CodeChallenge = GenerateCodeChallenge(CodeVerifier);
-        //}
-
         public static string GenerateCodeVerifier()
         {
             SecureRandom random = new SecureRandom();

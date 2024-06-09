@@ -227,14 +227,21 @@ namespace KGQT.Business
                 double minOrder = 1;
                 double weight = 0;
                 double weightPrice = 0;
+                double priceOver = 0;
+                double weightOver = 0;
                 double priceBrand = 0;
                 double weightBrand = 0;
                 foreach (var item in packages)
                 {
                     if (item.IsBrand == true)
                         weightBrand += Converted.ToDouble(item.WeightReal);
-                    else
+                    else if (weight < 500)
                         weight += Converted.ToDouble(item.WeightReal);
+                    else
+                    {
+                        weightOver += Converted.ToDouble(item.WeightReal);
+                        priceOver += item.TotalPrice.Double();
+                    }
                 }
 
                 if (weightBrand > 0 && weightBrand < minPackage)
@@ -267,12 +274,15 @@ namespace KGQT.Business
                     }
                 }
 
+                weight += weightOver;
+
+
                 double totalWoodPrice = packages.Where(x => x.WoodPackagePrice != null).Sum(x => Converted.ToDouble(x.WoodPackagePrice));
                 double totalAirPrice = packages.Where(x => x.AirPackagePrice != null).Sum(x => Converted.ToDouble(x.AirPackagePrice));
                 double totalInsurPrice = packages.Where(x => x.IsInsurancePrice != null).Sum(x => Converted.ToDouble(x.IsInsurancePrice));
                 double totalCharge = packages.Sum(x => Converted.ToDouble(x.SurCharge));
                 double totalMoreCharge = packages.Sum(x => Converted.ToDouble(x.MoreCharge));
-                double totalweightPrice = priceBrand + weightPrice;
+                double totalweightPrice = priceBrand + weightPrice + priceOver;
                 var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge + totalMoreCharge;
                 var sPack = packages.Select(x => x.PackageCode).ToArray();
 

@@ -12,6 +12,7 @@ using OfficeOpenXml;
 using Serilog;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using ILogger = Serilog.ILogger;
 
@@ -100,13 +101,13 @@ namespace KGQT.Business
 
                 if (!string.IsNullOrEmpty(ID))
                     qry = qry.Where(x => x.PackageCode.Contains(ID) || x.Note.Contains(ID));
-                
+
                 if (fromDate != null)
                     qry = qry.Where(x => x.ImportedSGWH >= fromDate);
 
                 if (toDate != null)
                     qry = qry.Where(x => x.ImportedSGWH < toDate.Value.AddDays(1).AddTicks(-1));
-             
+
                 count = qry.Count();
                 if (count > 0)
                 {
@@ -685,6 +686,7 @@ namespace KGQT.Business
 
                     pack.Weight = Converted.ToDouble(data.Weight).ToString();
                     pack.WeightExchange = Converted.ToDouble(data.WeightExchange).ToString();
+                    pack.TotalPrice = data.SetPrice.ToString();
                     pack.Height = data.Height.ToString();
                     pack.Width = data.Width.ToString();
                     pack.Length = data.Length.ToString();
@@ -746,7 +748,7 @@ namespace KGQT.Business
                         }
 
                         //Ktra xem khach da co don chua.
-                        DateTime cnExportDateFrom = DateTime.Now;
+                        DateTime cnExportDateFrom = DateTime.Now.Date;
                         if (pack.ExportedCNWH != null)
                             cnExportDateFrom = pack.ExportedCNWH.Value.Date;
                         else
@@ -773,12 +775,19 @@ namespace KGQT.Business
                             double weightPrice = 0;
                             double priceBrand = 0;
                             double weightBrand = 0;
+                            double priceOver = 0;
+                            double weightOver = 0;
                             foreach (var item in lstPack)
                             {
-                                if (item.IsBrand == true)
+                                if (item.IsBrand == true && item.WeightReal.Double() < 500)
                                     weightBrand += Converted.ToDouble(item.WeightReal);
-                                else
+                                else if (item.WeightReal.Double() < 500)
                                     weight += Converted.ToDouble(item.WeightReal);
+                                else
+                                {
+                                    weightOver += Converted.ToDouble(item.WeightReal);
+                                    priceOver += item.TotalPrice.Double();
+                                }
                             }
 
                             if (weightBrand > 0 && weightBrand < minPackage)
@@ -811,12 +820,15 @@ namespace KGQT.Business
                                 }
                             }
 
+
+                            weight += weightOver;
+
                             double totalWoodPrice = lstPack.Where(x => x.WoodPackagePrice != null).Sum(x => Converted.ToDouble(x.WoodPackagePrice));
                             double totalAirPrice = lstPack.Where(x => x.AirPackagePrice != null).Sum(x => Converted.ToDouble(x.AirPackagePrice));
                             double totalInsurPrice = lstPack.Where(x => x.IsInsurancePrice != null).Sum(x => Converted.ToDouble(x.IsInsurancePrice));
                             double totalCharge = lstPack.Sum(x => Converted.ToDouble(x.SurCharge));
                             double totalMoreCharge = lstPack.Sum(x => Converted.ToDouble(x.MoreCharge));
-                            double totalweightPrice = priceBrand + weightPrice;
+                            double totalweightPrice = priceBrand + weightPrice + priceOver;
                             var totalPrice = totalweightPrice + totalWoodPrice + totalAirPrice + totalInsurPrice + totalCharge + totalMoreCharge;
                             var sPackageCode = lstPack.Select(x => x.PackageCode).ToArray();
 
@@ -848,10 +860,11 @@ namespace KGQT.Business
 
                             if (weightRound < minOrder)
                                 weightRound = minOrder;
-
-                            feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
-
-                            if (pack.IsBrand == true)
+                            if (weightRound < 500)
+                                feeWeight = Converted.DoubleCeiling(weightRound * Converted.ToDouble(fee.Amount));
+                            else
+                                feeWeight = pack.TotalPrice.Double();
+                            if (pack.IsBrand == true && weightRound < 500)
                             {
                                 feeWeight = Converted.DoubleCeiling((Converted.ToDouble(fee.PriceBrand) + Converted.ToDouble(fee.Amount)) * weightRound);
                             }
@@ -936,26 +949,6 @@ namespace KGQT.Business
                 return db.SaveChanges() > 0;
             }
         }
-        public static DateTime CaclDateExpectation(tbl_Package item)
-        {
-            var dt = DateTime.Now;
-
-            if (item.MovingMethod == 1)
-            {
-                return dt.AddDays(6);
-            }
-
-            if (item.MovingMethod == 2)
-            {
-                return dt.AddDays(10);
-            }
-
-            if (item.MovingMethod == 3)
-            {
-                return dt.AddDays(15);
-            }
-            return dt;
-        }
 
         public static DataReturnModel<object> CreateWithFileExcel(IFormFile file, string name, string accesser)
         {
@@ -1029,13 +1022,27 @@ namespace KGQT.Business
                                     if (type == 20)
                                         movingMethod = 5;
                                     string note = dt.Rows[row][4].ToString();
-                                    var date = DateTime.Parse(dt.Rows[row][0].ToString());
-                                    var dateExp = DateTime.Now;
-                                    if (date != null || date != DateTime.MinValue && type != null || type > 0)
+                                    var sDate = dt.Rows[row][0].ToString();
+                                    DateTime date = DateTime.Now;
+                                    DateTime d = DateTime.Now;
+                                    if (!string.IsNullOrEmpty(sDate))
                                     {
-                                        dateExp = date.AddDays(type);
+                                        string[] split = sDate.Split("/", StringSplitOptions.RemoveEmptyEntries);
+
+                                        if (split.Length >= 3)
+                                        {
+                                            split[2] = split[2].Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
+                                            date = new DateTime(split[2].ToInt(), split[1].ToInt(), split[0].ToInt());
+                                            d = PJUtils.GetDeliveryDate(date, movingMethod);
+                                        }
                                     }
-                                    var d = PJUtils.GetDeliveryDate(dateExp);
+                                    //var date = DateTime.ParseExact(dt.Rows[row][0].ToString(),"dd/MM/yyyy",null);
+                                    //var dateExp = DateTime.Now;
+                                    //if (date != null || date != DateTime.MinValue && type != null || type > 0)
+                                    //{
+                                    //    dateExp = date.AddDays(type);
+                                    //}
+                                    //var d = PJUtils.GetDeliveryDate(dateExp);
                                     var oExist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
                                     if (oExist != null)
                                     {
@@ -1043,8 +1050,7 @@ namespace KGQT.Business
                                         {
                                             oExist.Status = 3;
                                             oExist.MovingMethod = movingMethod;
-                                            oExist.Note = note;
-                                            oExist.Status = 3;
+                                            oExist.Note = !string.IsNullOrEmpty(note) ? note : oExist.Note;
                                             oExist.BigPackage = big.ID;
                                             oExist.OrderDate = date;
                                             oExist.ExportedCNWH = date;
@@ -1381,7 +1387,7 @@ namespace KGQT.Business
                         if (BusinessBase.Update(item) && item.Status == 2)
                         {
                             string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
-                            message = string.Format(message, item.PackageCode, string.IsNullOrEmpty(item.Note) ? " - "+item.Note:"");
+                            message = string.Format(message, item.PackageCode, string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "");
                             NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/Package/Details/" + item.ID, "admin");
                         }
                     }
