@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
@@ -10,6 +11,7 @@ using KGQT.Models.temp;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Protocol.Core.Types;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -390,6 +392,51 @@ namespace KGQT.Mobility
         }
 
         [HttpPost]
+        [Route("changeaccount")]
+        public async Task<object> ChangeAccount([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                string? currUsername = dataRequest.ContainsKey("currUsername") ? dataRequest["currUsername"].ToString() : "";
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == currUsername);
+                if (user != null)
+                {
+                    user.TokenDevice = "";
+                    user.DeviceID = "";
+                    user.DeviceName = "";
+                }
+                DataReturnModel<tbl_Account> result = (DataReturnModel<tbl_Account>)await Login(model);
+                if (!result.IsError)
+                {
+                    BusinessBase.Update(user);
+                    oRequest.IsError = false;
+                }
+                return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+
+        [HttpPost]
         [Route("changepassword")]
         public object ChangePassword([FromBody] ChangePassword model)
         {
@@ -422,6 +469,46 @@ namespace KGQT.Mobility
             {
                 var result = BusinessBase.GetOne<tbl_Configuration>(x => x.Websitename == "Trakuaidi");
                 return result;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+
+        [HttpPost]
+        [Route("updatebiometrics")]
+        public object UpdateBiometrics([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : "";
+                bool check = dataRequest.ContainsKey("check") ? (bool)dataRequest["check"] : false;
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                if (user != null)
+                {
+                    user.IsBiometrics = check;
+                    BusinessBase.Update(user);
+                }
+                oRequest.IsError = false;
+                return oRequest;
             }
             catch (Exception)
             {
@@ -1201,7 +1288,92 @@ namespace KGQT.Mobility
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return oRequest;
             }
-            
+        }
+
+        [HttpPost]
+        [Route("paymentselected")]
+        public async Task<object> PaymentSelected([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return oRequest;
+                }
+                string? id = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                var result = ShippingOrder.PaymentSelected(id, userName);
+                oRequest.IsError = result.IsError;
+                oRequest.Message = result.Message;
+                if (!oRequest.IsError)
+                {
+                    var lst = id.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var lstOrder = BusinessBase.GetList<tbl_ShippingOrder>(x => lst.Contains(x.RecID) && x.Username == userName);
+                    if (lstOrder.Count > 0)
+                    {
+                        oRequest.Data = lstOrder;
+                    }
+                }
+                return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+
+        [HttpPost]
+        [Route("getoneorderfromcode")]
+        public object GetOneOrderFromCode([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                int id = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+
+                var result = BusinessBase.GetOne<tbl_ShippingOrder>(x => x.ID == id && x.Username == userName);
+                return new object[] { false, result };
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
         }
         #endregion
 
@@ -1305,6 +1477,102 @@ namespace KGQT.Mobility
                 oRequest.IsError = true;
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                 return new object[] { true, oRequest };
+            }
+        }
+
+        [HttpPost]
+        [Route("gettotalnotification")]
+        public object GetTotalNotification([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                var total = 0;
+                if (user != null)
+                {
+                    List<tbl_Notification> query = BusinessBase.GetList<tbl_Notification>(x => x.ReceivedID == user.ID && x.Status == 0).ToList();
+                    total = query.Count();
+                }
+                return new object[] { false, total};
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+
+        [HttpPost]
+        [Route("updatenotification")]
+        public object UpdateNotification([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
+                if (user != null)
+                {
+                    List<tbl_Notification> query = BusinessBase.GetList<tbl_Notification>(x => x.ReceivedID == user.ID && x.Status == 0).ToList();
+                    if (query.Count > 0)
+                    {
+                        foreach (var item in query)
+                        {
+                            item.Status = 1;
+                            BusinessBase.Update(item);
+                        }
+                    }
+                }
+                return new object[] { false };
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
             }
         }
         #endregion
@@ -1424,6 +1692,42 @@ namespace KGQT.Mobility
                 oRequest.IsError = false;
                 oRequest.Data = result;
                 return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
+        #endregion
+
+        #region Exchange
+        [HttpPost]
+        [Route("exchange")]
+        public async Task<object> Exchange([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                int amount = dataRequest.ContainsKey("amount") ? Int32.Parse(dataRequest["amount"].ToString()) : 0;
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                var result = WithDrawBusiness.BuySearches(userName, amount, "");
+                return result;
             }
             catch (Exception)
             {

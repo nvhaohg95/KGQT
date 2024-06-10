@@ -34,7 +34,7 @@
                     <option value="4" selected="@(status == 4)">Hàng về tới HCM</option>
                     <option value="5" selected="@(status == 5)">Đã nhận hàng</option>
                     <option value="9" selected="@(status == 9)">Đã hủy</option>
-                    <option value="10" selected="@(status == 10)">Thất lạc</option>
+                    @*<option value="10" selected="@(status == 10)">Thất lạc</option>*@
                     <option value="11" selected="@(status == 11)">Không nhận được hàng</option>
                 </select>
             </div>
@@ -109,7 +109,8 @@
                                 <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
                                     <label class="mb-0 col-md-12 col-sm-12">Mô tả</label>
                                     <div class="col-md-12 col-sm-12" id="divTextarea@(item.ID)">
-                                        <input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />
+                                        <textarea class="form-control p-0 bg-transparent text-white h-28px border-0 inputNode" id="note@(item.ID)">@item.Note</textarea>
+                                        @*<input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />*@
                                     </div>
                                     <div class="col-md-2 col-sm-12 d-none" id="divBtnSave@(item.ID)">
                                         <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
@@ -118,13 +119,13 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 my-auto text-md-right">
                                 <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
+                                @if (item.Status != 5 && item.Status != 9)
+                                {
+                                    <button class="btn-sm btn bg-dark text-white mt-2" onclick="cancel(@item.ID)">Hủy kiện</button>
+                                }
                                 @if (item.Status != 5)
                                 {
                                     <a href="/admin/package/edit?id=@item.ID" class="btn mt-2 btn-sm bg-warning text-white">Chỉnh sửa</a>
-                                }
-                                @if (item.Status != 5 && item.Status != 9)
-                                {
-                                    <button class="btn-sm btn bg-dark text-white mt-2" onclick="cancel(@item.ID)">Hủy đơn</button>
                                 }
                                 @if (item.Status < 2)
                                 {
@@ -151,7 +152,7 @@
                                         @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                                     </div>
                                     <div class="col-md-3 col-sm-12 col-xs-12">
-                                        Cân nặng: @(item.Weight)kg
+                                        Cân nặng: @(item.Weight.ChangeFormat())kg
                                     </div>
                                     @if (Converted.ToDouble(item.WeightExchange) > 0)
                                     {
@@ -161,11 +162,11 @@
                                                 <span>
                                                     Đo lên:
                                                     (@(
-                                                       item.Length + "x" + item.Width + "x" + item.Height
+                                                       item.Length.ChangeFormat() + "x" + item.Width.ChangeFormat() + "x" + item.Height.ChangeFormat()
                                                        ))
                                                 </span>
                                             }
-                                            @(item.WeightExchange)kg
+                                            @(item.WeightExchange.ChangeFormat())kg
                                         </div>
                                     }
                                 </div>
@@ -707,6 +708,11 @@
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
             copyClipboard(text);
+        })
+
+        $('.inputNode').off().on('keypress', function () {
+            if ($(this).val().length >= 70)
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
         })
     })
 </script>

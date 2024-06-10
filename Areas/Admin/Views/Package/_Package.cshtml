@@ -33,16 +33,31 @@
                 <div class="row">
                     <div class="col-md-8">
                         <div class="row p-2 mx-0 mt-2">
-                            <div class="col-md-3 col-sm-12 col-xs-12">
-                                <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                            <div class="col-md-4 col-sm-12 col-xs-12 mb-2">
+                                @if (item.MovingMethod == 0)
+                                {
+                                    <span>Loại vận chuyển:</span>
+                                    <select class="border-0 movingmethod@(item.ID)">
+                                        <option value="" disabled selected>Chọn vận chuyển</option>
+                                        <option value="1">Nhanh</option>
+                                        <option value="2">Thường</option>
+                                        <option value="3">Bộ</option>
+                                        <option value="4">Bộ lô</option>
+                                        <option value="5">Biển</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <span>Loại vận chuyển: @PJUtils.ShippingMethodName(item.MovingMethod)</span>
+                                }
                             </div>
-                            <div class="col-md-4 col-sm-12 col-xs-12">
+                            <div class="col-md-3 col-sm-12 col-xs-12">
                                 <span>Trạng thái:</span>
                                 @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                             </div>
-                            <div class="px-0 col-md-5 col-sm-12 col-xs-12">
-                                <div class="form-inline align-items-lg-start">
-                                    <label class="col-sm-12 col-md-5 col-form-label">Dịch vụ phụ:</label>
+                            <div class="col-md-5 col-sm-12 col-xs-12">
+                                <div class="form-inline align-items-start">
+                                    <label class="px-0 col-sm-12 col-md-5 col-form-label">Dịch vụ:</label>
                                     <div class="col-md-7 col-sm-12 row">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="checkbox" name="IsWoodPackage" onchange="updateService(this,1,@item.ID)" id="cbPack@(item.ID)" @(item.IsWoodPackage == true ? "checked=\"checked\"" : "")>
@@ -77,7 +92,7 @@
                             {
                                 <div class="col-md-6 d-flex align-Models-center">
                                     <div class="form-group">
-                                        <i class="fa fa-phone"></i><span>@item.Phone</span>
+                                        <i class="fa fa-phone mr-1"></i><span>@item.Phone</span>
                                     </div>
                                 </div>
                             }
@@ -126,7 +141,7 @@
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Cân nặng:</label>
                             <div class="col-sm-8 input-group">
-                                <input id="txtWeight@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput" value="@item.Weight" placeholder="Nhập số kilogram">
+                                <input id="txtWeight@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput inputWeight" data-id="@item.ID" value="@item.Weight.ChangeFormat()" placeholder="Nhập số kilogram">
                                 <div class="input-group-append">
                                     <span class="btn btn-sm btn-secondary" type="button">
                                         kg
@@ -135,7 +150,19 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="px-0 col-md-3 sethardprice@(item.ID) @(item.Weight.Double() < 500 ? "d-none" :"")">
+                        <div class="form-inline">
+                            <label class="col-sm-4 col-form-label justify-content-start">Số tiền:</label>
+                            <div class="col-sm-8 input-group">
+                                <input id="txtSetHardPrice@(item.ID)" data-type="formatvnd" class="form-control form-control-sm mb-0 onInput" value="@item.TotalPrice" placeholder="Nhập số tiền vượt mức">
+                                <div class="input-group-append">
+                                    <span class="btn btn-sm btn-secondary" type="button">
+                                        đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="px-0 col-md-3 @(item.IsWoodPackage != null && item.IsWoodPackage == true ? "" :"d-none")" id="WoodPackage@(item.ID)">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Đóng gỗ:</label>
@@ -164,12 +191,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="row m-0 pt-2 border-top">
+                <div class="row m-0 mb-2 pt-2 border-top">
                     <div class="px-0 col-md-3">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Đo lên:</label>
                             <div class="col-sm-8 input-group">
-                                <input id="txtWeightEx@(item.ID)" type="number" class="form-control form-control-sm mb-0 onInput" value="@item.WeightExchange" placeholder="Nhập khối lượng quy đổi">
+                                <input id="txtWeightEx@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput" value="@item.WeightExchange.ChangeFormat()" placeholder="Nhập khối lượng quy đổi">
                                 <div class="input-group-append">
                                     <span class="btn btn-sm btn-secondary" type="button">
                                         kg
@@ -183,7 +210,7 @@
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Dài:</label>
                             <div class="col-sm-8 input-group">
-                                <input id="txtLength@(item.ID)" type="number" class="form-control form-control-sm mb-0 onInput" value="@item.Length" placeholder="Nhập chiều dài">
+                                <input id="txtLength@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput" value="@item.Length.ChangeFormat()" placeholder="Nhập chiều dài">
                                 <div class="input-group-append">
                                     <span class="btn btn-sm btn-secondary" type="button">
                                         cm
@@ -197,7 +224,7 @@
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Rộng:</label>
                             <div class="col-sm-8 input-group">
-                                <input id="txtWidth@(item.ID)" type="number" class="form-control form-control-sm mb-0 onInput" value="@item.Width" placeholder="Nhập chiều rộng">
+                                <input id="txtWidth@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput" value="@item.Width.ChangeFormat()" placeholder="Nhập chiều rộng">
                                 <div class="input-group-append">
                                     <span class="btn btn-sm btn-secondary" type="button">
                                         cm
@@ -211,7 +238,7 @@
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Cao:</label>
                             <div class="col-sm-8 input-group">
-                                <input id="txtHeight@(item.ID)" type="number" class="form-control form-control-sm mb-0 onInput" value="@item.Height" placeholder="Nhập chiều cao">
+                                <input id="txtHeight@(item.ID)" type="text" class="form-control form-control-sm mb-0 onInput" value="@item.Height.ChangeFormat()" placeholder="Nhập chiều cao">
                                 <div class="input-group-append">
                                     <span class="btn btn-sm btn-secondary" type="button">
                                         cm
@@ -221,7 +248,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row m-0 pt-2 border-top">
+                <div class="row m-0 mb-2 pt-2 border-top">
                     <div class="px-0 col-md-3">
                         <div class="form-inline">
                             <label class="col-sm-4 col-form-label justify-content-start">Thu hộ:</label>
@@ -308,6 +335,8 @@ else
         $.datepicker.setDefaults($.datepicker.regional["vi-VN"]);
     });
     $(document).ready(function () {
+        var timeout;
+        var delay = 1000;
         formatVND();
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
@@ -329,11 +358,27 @@ else
                 return false;
             }
         })
+
+        $('.inputWeight').off('keyup').on('keyup', function (e) {
+            let _t = this;
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(function () { checkValue(_t); }, delay);
+        })
     })
+
+    function checkValue(e) {
+        let id = $(e).data('id');
+        if (parseFloat($(e).val()) >= 500) {
+            $('.sethardprice' + id).removeClass('d-none')
+        } else {
+            $('.sethardprice' + id).addClass('d-none');
+        }
+    }
 
     function submitFn(id, moving) {
         debugger
         let weight = $('#txtWeight' + id).val();
+        let setPrice = $('#txtSetHardPrice' + id).val();
         let wood = $('#txtWoodPackage' + id).data('value');
         let air = $('#txtAirPackage' + id).data('value');
         let isPrice = $('#txtDeclarePrice' + id).data('value')
@@ -349,6 +394,20 @@ else
         let $wood = $('#cbPack' + id).is(":checked");
         let $air = $('#cbAirbag' + id).is(":checked");
         let $inSure = $('#cbInsurance' + id).is(":checked");
+        let $moving = $('.movingmethod' + id);
+
+        if (moving == 0) {
+            if ($moving.length) {
+                moving = $moving.val();
+                if (!moving || moving == 0) {
+                    helper.showErr('Vui lòng chọn loại vận chuyển!');
+                    return;
+                }
+            }else{
+                helper.showErr('Vui lòng chọn loại vận chuyển!');
+                return;
+            }
+        }
 
         if (!weight) {
             helper.showErr('Vui lòng nhập cân nặng!');
@@ -388,16 +447,25 @@ else
             return;
         }
 
+        weight = weight.replace(",", ".");
+
         if (parseFloat(weight) <= 0) {
             helper.showErr('Vui lòng nhập cân nặng!');
             return;
+        } else if (parseFloat(weight) >= 500 && !setPrice) {
+            helper.showErr('Số kí vượt quá 500. Vui lòng nhập giá tiền!');
+            return;
         }
-
+        weightEx = weightEx.replace(",", ".");
+        length = length.replace(",", ".");
+        width = width.replace(",", ".");
+        height = height.replace(",", ".");
         let data = {
             id,
             username,
             movingMethod: moving,
             weight,
+            setPrice,
             woodPrice: wood,
             airPrice: air,
             surCharge: sub,
@@ -416,15 +484,14 @@ else
             dataType: 'json',
             data: { sData: JSON.stringify(data) },
             success: function (res) {
-                if (!res.isError){
+                if (!res.isError) {
                     let count = $('#lstPackage .package-item');
-                    if(count.length > 1)
-                    {
-                        let pack = $('#package'+id);
+                    if (count.length > 1) {
+                        let pack = $('#package' + id);
                         if (pack)
                             pack.remove();
-                        helper.showSuc(res.message,false);
-                    }else
+                        helper.showSuc(res.message, false);
+                    } else
                         helper.showSuc(res.message);
                 }
                 else

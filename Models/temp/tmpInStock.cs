@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public int MovingMethod { get; set; }
         public double? Weight { get; set; }
+        public double? SetPrice { get; set; }
         public double? WeightExchange { get; set; }
         public double? Length { get; set; }
         public double? Width { get; set; }

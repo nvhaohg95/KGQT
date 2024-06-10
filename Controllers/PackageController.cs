@@ -84,7 +84,7 @@ namespace KGQT.Controllers
             if (user == null)
                 return new { error = 2, msg = "Khách hàng này không có trong hệ thống, bạn có muốn tiếp tục!" };
 
-            return new { error = 3, data = user.AvailableSearch };
+            return new { error = 3, data = user.AvailableSearch, firsttime = !pack.AutoQuery, times =pack.SearchBaiduTimes };
         }
         #endregion
 

@@ -53,9 +53,9 @@
                     <li class="nav-item py-2 mr-2">
                         <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 9 ? "bg-nsh1 text-white" : "")" onclick="sort(9)">Đã hủy</a>
                     </li>
-                    <li class="nav-item py-2 mr-2">
-                        <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 10 ? "bg-nsh1 text-white" : "")" onclick="sort(10)">Thất lạc</a>
-                    </li>
+                    @* <li class="nav-item py-2 mr-2">
+                    <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 10 ? "bg-nsh1 text-white" : "")" onclick="sort(10)">Thất lạc</a>
+                    </li>*@
                     <li class="nav-item py-2 mr-2">
                         <a href="#" class="nav-link text-capitalize btn-sm border btn-light hover-nsh1 @(status == 11 ? "bg-nsh1 text-white" : "")" onclick="sort(11)">Không nhận được hàng</a>
                     </li>
@@ -130,25 +130,25 @@
                             <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
                                 <label class="mb-0 col-md-12 col-sm-12">Mô tả</label>
                                 <div class="col-md-12 col-sm-12" id="divTextarea@(item.ID)">
-                                    <input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />
+                                    @*<input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />*@
+                                    <textarea class="form-control inputNode p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)">@item.Note</textarea>
                                 </div>
                                 <div class="col-md-2 col-sm-12 d-none" id="divBtnSave@(item.ID)">
                                     <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12  m-auto text-md-right">
+                        <div class="col-lg-3 col-md-3 col-sm-12 m-auto">
                             <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
-                            @if (item.Status < 2)
-                            {
-                                <button class="btn-sm btn bg-orange text-white mt-2" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
-                                <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@item.ID)">Hủy đơn</button>
-                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)" type="button">Xóa</button>
-                            }
-
                             @if (item.Status == 9 && item.CanceledBy == userModel?.UserName)
                             {
                                 <button class="btn-sm btn bg-success text-white mt-2" onclick="Restore(@item.ID)" type="button">Khôi phục</button>
+                            }
+                            @if (item.Status < 2)
+                            {
+                                <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@item.ID)">Hủy kiện</button>
+                                <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
+                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)" type="button">Xóa</button>
                             }
                         </div>
                     </div>
@@ -163,7 +163,7 @@
                                     @Html.Raw(PJUtils.PackageStatusHtml(item.Status))
                                 </div>
                                 <div class="col-md-3 col-sm-12 col-xs-12">
-                                    Cân nặng: @(item.Weight)kg
+                                    Cân nặng: @(item.Weight.ChangeFormat())kg
                                 </div>
                                 @if (Converted.ToDouble(item.WeightExchange) > 0)
                                 {
@@ -173,11 +173,11 @@
                                             <span>
                                                 Đo lên:
                                                 (@(
-                                                   item.Length + "x" + item.Width + "x" + item.Height
+                                                   item.Length.ChangeFormat() + "x" + item.Width.ChangeFormat() + "x" + item.Height.ChangeFormat()
                                                    ))
                                             </span>
                                         }
-                                        @(item.WeightExchange)kg
+                                        @(item.WeightExchange.ChangeFormat())kg
                                     </div>
                                 }
                             </div>
@@ -207,6 +207,14 @@
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
                                                 <input type="checkbox" class="form-check-input mt-1" checked disabled>Bảo hiểm
+                                            </label>
+                                        </div>
+                                    }
+                                    @if (item.IsBrand != null && item.IsBrand == true)
+                                    {
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input mt-1" checked disabled>Hàng hiệu
                                             </label>
                                         </div>
                                     }
@@ -332,10 +340,27 @@
     </div>
 </div>
 <script>
+    function reportWindowSize() {
+        let w = window.innerWidth
+        if ((874 < w && w < 992) || (1033 < w && w < 1539)) {
+            $('.checkStatus').addClass('mr-3');
+        }else
+            $('.checkStatus').removeClass('mr-3');
+    }
+
+    window.onresize = reportWindowSize;
+
+
     $(document).ready(function () {
+        reportWindowSize();
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
             copyClipboard(text);
+        })
+
+        $('.inputNode').off().on('keypress', function () {
+            if ($(this).val().length >= 70)
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
         })
     })
 
@@ -414,10 +439,65 @@
                     return;
                 }
                 if (res.error == 3) {
-                    if (res.data == 0) {
+                    //Chưa đăng ký theo dõi sát kiện
+                    if (res.firsttime) {
+                        //Lần đầu
+                        if (res.times == 0) {
+                            if (res.data == 0) {
+                                Swal.fire({
+                                    title: "Chú ý",
+                                    text: "Bạn đã hết lượt tra cứu miễn phí, tiếp tục sẽ tốn phí 500đ?",
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#3085d6",
+                                    cancelButtonColor: "#d33",
+                                    confirmButtonText: "Đồng ý",
+                                    cancelButtonText: "Từ chối"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.href = "/package/QueryOrderStatus?code=" + code;
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Chú ý",
+                                    text: "Sẽ mất 1 điểm truy cứu khi bạn kiểm tra kiện hàng, bạn có muốn tiếp tục kiểm tra kiện " + code + " không?",
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#3085d6",
+                                    cancelButtonColor: "#d33",
+                                    confirmButtonText: "Đồng ý",
+                                    cancelButtonText: "Từ chối"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.href = "/package/QueryOrderStatus?code=" + code;
+                                    }
+                                });
+                            }
+                        }
+                        //Lần 2
+                        else {
+                            Swal.fire({
+                                title: "Chú ý",
+                                text: "Bạn nhớ đăng ký gửi thông báo các trạng thái kiện hàng để theo dõi sát hơn nhé",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Đồng ý",
+                                cancelButtonText: "Từ chối"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.href = "/package/QueryOrderStatus?code=" + code;
+                                }
+                            });
+                        }
+                    }
+                    //Đã đăng ký
+                    else {
                         Swal.fire({
                             title: "Chú ý",
-                            text: "Khách hàng đã hết lượt tra cứu miễn phí, tiếp tục sẽ tốn phí 500đ?",
+                            text: "Bạn đã đăng ký theo sát trạng thái kiện hàng, hãy yên tâm chờ thông báo nhé, hoặc bạn có thể bấm Đồng ý để vẫn có thể kiểm tra lại.",
                             icon: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#3085d6",
@@ -429,8 +509,7 @@
                                 location.href = "/package/QueryOrderStatus?code=" + code;
                             }
                         });
-                    } else
-                        location.href = "/package/QueryOrderStatus?code=" + code;
+                    }
                 }
 
             },

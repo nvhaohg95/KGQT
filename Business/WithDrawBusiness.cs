@@ -574,6 +574,7 @@ namespace KGQT.Business
                             {
                                 string content = $"Đổi {amount} lượt tìm kiếm hàng trên Baidu.";
                                 HistoryPayWallet.Insert(user.ID, user.Username, 0, content, Converted.Double2Money(money), 1, 6, moneyPrevious, moneyLeft, createdBy);
+                                PointsBusiness.Insert(user.ID, user.Username, "", $"Mua điểm tại hệ thống tracking.nhanshiphang.vn", amount, 0, user.AvailableSearch.Value, createdBy);
                                 result.IsError = false;
                                 result.Data = true;
                                 result.Message = "Đổi thành công!";

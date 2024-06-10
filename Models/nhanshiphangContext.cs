@@ -26,6 +26,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_HistoryPayWallet> tbl_HistoryPayWallets { get; set; } = null!;
         public virtual DbSet<tbl_Notification> tbl_Notifications { get; set; } = null!;
         public virtual DbSet<tbl_Package> tbl_Packages { get; set; } = null!;
+        public virtual DbSet<tbl_Point> tbl_Points { get; set; } = null!;
         public virtual DbSet<tbl_Role> tbl_Roles { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_SystemLog> tbl_SystemLogs { get; set; } = null!;
@@ -34,7 +35,6 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Zalo> tbl_Zalos { get; set; } = null!;
         public virtual DbSet<tbl_ZaloFollewer> tbl_ZaloFollewers { get; set; } = null!;
         public virtual DbSet<tbl_ZaloLog> tbl_ZaloLogs { get; set; } = null!;
-        public virtual DbSet<tbl_ZaloWebHook> tbl_ZaloWebHooks { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
         public virtual DbSet<tbl_Images> tbl_Images { get; set; } = null!;
 
@@ -193,11 +193,7 @@ namespace KGQT.Models
 
                 entity.Property(e => e.AirPackagePrice).HasMaxLength(10);
 
-                entity.Property(e => e.CanceledBy).HasMaxLength(100);
-
                 entity.Property(e => e.ComfirmDate).HasColumnType("datetime");
-
-                entity.Property(e => e.CreatedBy).HasMaxLength(100);
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -223,8 +219,6 @@ namespace KGQT.Models
 
                 entity.Property(e => e.Length).HasMaxLength(5);
 
-                entity.Property(e => e.ModifiedBy).HasMaxLength(100);
-
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.MoreCharge).HasMaxLength(10);
@@ -242,6 +236,8 @@ namespace KGQT.Models
                 entity.Property(e => e.SurCharge).HasMaxLength(10);
 
                 entity.Property(e => e.TotalPrice).HasMaxLength(12);
+
+                entity.Property(e => e.TrackingShipping).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.TransID).HasMaxLength(50);
 
@@ -264,6 +260,15 @@ namespace KGQT.Models
                 entity.Property(e => e.WoodPackagePrice).HasMaxLength(10);
             });
 
+            modelBuilder.Entity<tbl_Point>(entity =>
+            {
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.OrderID).HasMaxLength(100);
+
+                entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
+            });
+
             modelBuilder.Entity<tbl_Role>(entity =>
             {
                 entity.HasKey(e => e.RoleID);
@@ -284,8 +289,6 @@ namespace KGQT.Models
                 entity.ToTable("tbl_ShippingOrder");
 
                 entity.Property(e => e.AirPackagePrice).HasMaxLength(20);
-
-                entity.Property(e => e.CanceledBy).HasMaxLength(100);
 
                 entity.Property(e => e.ChinaExportDate).HasColumnType("datetime");
 
@@ -402,6 +405,8 @@ namespace KGQT.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.SendRequestDate).HasColumnType("datetime");
+
                 entity.Property(e => e.Username).HasMaxLength(50);
 
                 entity.Property(e => e.display_name).HasMaxLength(50);
@@ -422,33 +427,6 @@ namespace KGQT.Models
                 entity.Property(e => e.user_id).HasMaxLength(50);
 
                 entity.Property(e => e.user_name).HasMaxLength(100);
-            });
-
-            modelBuilder.Entity<tbl_ZaloWebHook>(entity =>
-            {
-                entity.HasKey(e => e.RecID);
-
-                entity.ToTable("tbl_ZaloWebHook");
-
-                entity.Property(e => e.RecID).ValueGeneratedNever();
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.app_id).HasMaxLength(50);
-
-                entity.Property(e => e.event_name).HasMaxLength(50);
-
-                entity.Property(e => e.msg_id).HasMaxLength(50);
-
-                entity.Property(e => e.name).HasMaxLength(150);
-
-                entity.Property(e => e.phone).HasMaxLength(12);
-
-                entity.Property(e => e.recipient).HasMaxLength(50);
-
-                entity.Property(e => e.sender).HasMaxLength(50);
-
-                entity.Property(e => e.timestamp).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>

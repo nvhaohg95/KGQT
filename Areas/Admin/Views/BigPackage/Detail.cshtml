@@ -60,7 +60,7 @@
                                             @PJUtils.MovingMethod2Type(item.MovingMethod)
                                         </td>
                                         <td class="text-center">
-                                            @item.Weight
+                                            @item.Weight.ChangeFormat()
                                         </td>
                                         <td class="text-center">
                                             @item.WeightExchange
@@ -76,10 +76,10 @@
                                     </td>
                                     
                                     <td class="text-center bg-warning" style="vertical-align:middle">
-                                        @Model.Sum(x=>Converted.ToDouble(x.Weight))
+                                        @Model.Sum(x=>Converted.ToDouble(x.Weight)).ChangeFormat()
                                     </td>
                                     <td class="text-center bg-warning">
-                                        @Model.Sum(x=>Converted.ToDouble(x.WeightExchange))
+                                        @Model.Sum(x=>Converted.ToDouble(x.WeightExchange)).ChangeFormat()
                                     </td>
                                     <td></td>
                                 </tr>

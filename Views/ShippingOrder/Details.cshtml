@@ -205,22 +205,35 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="row p-2 mx-0 my-2">
-                                    <div class="col-md-4 col-sm-12">
-                                        <div class="form-inline text-left">
-                                            Cân nặng:  &nbsp;
-                                            <p class=" mb-0">
-                                                @(item.Weight)kg
-                                            </p>
+                                <div class="row p-2 mx-0">
+                                    <div class="px-0 col-md-8 col-sm-12">
+                                        <div class="col-md-6 col-sm-12">
+                                            <div class="form-inline text-left">
+                                                Cân nặng:  &nbsp;
+                                                <p class=" mb-0">
+                                                    @(item.Weight.ChangeFormat())kg
+                                                </p>
+                                            </div>
                                         </div>
+                                        @if (Converted.ToDouble(item.WeightExchange) > 0)
+                                        {
+                                            <div class="col-md-6 col-sm-12">
+
+                                                <div class="form-inline text-left">
+                                                    Đo lên:  &nbsp;
+                                                    <p class=" mb-0">   (@(item.Length.ChangeFormat() + "x" + item.Width.ChangeFormat() + "x" + item.Height.ChangeFormat())) @(item.WeightExchange.ChangeFormat())kg</p>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                    @if (Converted.ToDouble(item.WeightExchange) > 0)
+                                    @if (Converted.ToDouble(item.TotalPrice) > 0)
                                     {
                                         <div class="col-md-4 col-sm-12">
-
                                             <div class="form-inline text-left">
-                                                Đo lên:  &nbsp;
-                                                <p class=" mb-0">   (@(item.Length + "x" + item.Width + "x" + item.Height)) @(item.WeightExchange)kg</p>
+                                                Tiền hàng:  &nbsp;
+                                                <p class=" mb-0">
+                                                    @Converted.String2Money(item.TotalPrice)đ
+                                                </p>
                                             </div>
                                         </div>
                                     }
@@ -310,7 +323,7 @@
                         <p class="text-muted mb-0">Cân nặng:</p>
                         <p class="text-muted mb-0">
                             <span class="fw-bold me-4">
-                                @Converted.ToDouble(Model.Order.Weight)kg
+                                @(Converted.ToDouble(Model.Order.Weight).ChangeFormat())kg
                             </span>
                         </p>
                     </div>
