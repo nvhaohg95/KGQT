@@ -317,6 +317,18 @@
                             <input type="number" name="Amount" class="form-control" min="1" max="9999" />
                         </div>
                     </div>
+                    <div class="row align-items-center my-2">
+                        <div class="col-3">
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="UsedWallet" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Tặng điểm
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="alert alert-warning d-flex" role="alert">
@@ -427,19 +439,26 @@
             helper.showWarn('Số lượt quy đổi không quá 10000 lượt!');
             return;
         }
-        $.ajax({
-            url: '/Admin/WithDraw/BuySearches',
-            type: 'POST',
-            data: { userName: data.UserName, amount: data.Amount },
-            success: function (respone) {
-                if (respone && respone?.isError)
-                    helper.showErr(respone.message)
-                else
-                    helper.showSuc(respone.message);
-            },
-            error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+
+        helper.showAlert("Xác nhận cộng điểm cho khách hàng?").then((res) => {
+            if (res.isConfirmed) 
+            {
+                $.ajax({
+                    url: '/Admin/WithDraw/BuySearches',
+                    type: 'POST',
+                    data: { userName: data.UserName, amount: data.Amount, free : data.UsedWallet },
+                    success: function (respone) {
+                        if (respone.isError)
+                            helper.showErr(respone.message)
+                        else
+                            helper.showSuc(respone.message);
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                    }
+                });
             }
         });
+        
     }
 </script>

@@ -1,0 +1,81 @@
+﻿@model KGQT.Models.tbl_Questions
+
+@{
+    ViewData["Title"] = "Chi tiết câu hỏi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a href="/Admin">Trang chủ</a></li>
+        <li class="text-uppercase fw-bold"><a href="/Admin/Question/Index">Danh sách</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Chi tiết</a></li>
+    </ul>
+</div>
+
+
+<div class="row justify-content-center w-100">
+    <div class="col-8">
+        <form method="post" id="frmQuestion">
+            <div class="form-group">
+                <h5 class="fw-bold text-danger text-uppercase mt-2">Thông tin Câu hỏi</h5>
+            </div>
+            <div class="form-group mb-4">
+                <input type="text" class="form-control d-none" name="ID" value="@Model.ID" readonly>
+            </div>
+            <div class="form-group mb-4">
+                <label>Câu hỏi <span class="text-danger">(*)</span></label>
+                <input type="text" class="form-control" name="Question" value="@Model.Question" placeholder="Nhập câu hỏi">
+            </div>
+            <div class="form-group mb-4">
+                <label>Câu trả lời <span class="text-danger">(*)</span></label>
+                <textarea rows="4" class="form-control" name="Answer">@Model.Answer</textarea>
+            </div>
+            <div class="form-group mb-4">
+                <label>Trạng thái</label>
+                <select class="form-control" name="Status">
+                    <option value="0" @(Model.Status == 0 ? "selected" : "")>Mới tạo</option>
+                    <option value="1" @(Model.Status == 1 ? "selected" : "")>Đang sử dụng</option>
+                </select>
+            </div>
+
+            <div class="col-md-12 col-sm-12 col-lg-12 text-right">
+                <button type="button" class="btn btn-sm btn-success w-100px" onclick="clickUpdate()">Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function clickUpdate() {
+        var data = helper.form2Object($('#frmQuestion').serializeArray());
+        if (!data) {
+            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            return
+        }
+        if (!data.Question) {
+            helper.showWarn('Vui lòng nhập câu hỏi!');
+            return
+        }
+
+        if (!data.Answer) {
+            helper.showWarn('Vui lòng nhập câu trả lời!');
+            return
+        }
+
+        helper.showAlert("Bạn có muốn cập nhật câu hỏi?").then((res) => {
+            $.ajax({
+                url: "/Admin/Question/Update",
+                type: 'POST',
+                data: data,
+                success: function (reponse) {
+                    if (reponse.isError)
+                        helper.showErr(reponse.message)
+                    else
+                        helper.showSuc('Cập nhật thành công!')
+                },
+                error: function (xhr, status, err) {
+                    helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
+                }
+            });
+        });
+    }
+</script>
