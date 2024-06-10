@@ -39,6 +39,11 @@ namespace KGQT.Controllers
         #region Nạp tiền
         public IActionResult Recharge()
         {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            ViewBag.userName = userLogin;
             return View();
         }
         #endregion
