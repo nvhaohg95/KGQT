@@ -522,6 +522,8 @@ namespace KGQT.Business
                                 int kq = db.SaveChanges();
                                 if(kq > 0)
                                 {
+                                    PointsBusiness.Insert(user.ID, user.Username, "", $"Được tặng tại hệ thống tracking.nhanshiphang.vn", amount, 0, user.AvailableSearch.Value, createdBy);
+
                                     _ = Task.Run(async () =>
                                     {
                                         string message = $"Bạn được tặng {amount} lượt tìm kiếm hàng trên Baidu.";

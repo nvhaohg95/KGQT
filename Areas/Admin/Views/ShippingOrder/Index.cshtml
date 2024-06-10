@@ -121,20 +121,26 @@
                                         <td class="text-center  ">
                                             @Html.DisplayFor(modelItem => item.Username)
                                         </td>
-                                        <td class="text-left w-300px d-flex text-break">
+                                        <td class="text-left">
+                                            <div class="w-300px d-flex text-break">
                                                 @item.PackageCode
+                                            </div>
                                         </td>
                                         <td class="text-center">
                                             @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                         </td>
-                                        <td class="text-center w-200px d-flex ">
-                                            @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
+                                        <td class="text-center">
+                                            <div class="w-200px d-flex">
+                                                @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
+                                            </div>
                                         </td>
-                                        <td class="text-center  ">
+                                        <td class="text-center">
                                             @Converted.String2Money(item.TotalPrice)
                                         </td>
-                                        <td class="text-center   w-200px d-flex">
+                                        <td class="text-center">
+                                            <div class="w-200px d-flex">
                                             @Html.DisplayFor(modelItem => item.CreatedDate)
+                                            </div>
                                         </td>
                                         <td class="text-center">
                                             <a class="btn btn-sm btn-info" href="/Admin/ShippingOrder/Details?id=@item.ID">
