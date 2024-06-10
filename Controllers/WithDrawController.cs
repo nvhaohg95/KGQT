@@ -76,7 +76,7 @@ namespace KGQT.Controllers
             DataReturnModel<bool> result = new DataReturnModel<bool>();
             if (user != null)
             {
-                return WithDrawBusiness.BuySearches(user.Username, amount, "");
+                return WithDrawBusiness.BuySearches(user.Username, amount, false, "");
             }
             else
             {

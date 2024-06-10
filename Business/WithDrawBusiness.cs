@@ -492,7 +492,7 @@ namespace KGQT.Business
             }
         }
 
-        public static DataReturnModel<bool> BuySearches(string userName,int amount, string createdBy = "")
+        public static DataReturnModel<bool> BuySearches(string userName,int amount, bool free, string createdBy = "")
         {
             DataReturnModel<bool> result = new DataReturnModel<bool>();
             try
@@ -509,6 +509,34 @@ namespace KGQT.Business
 
                     if (user != null)
                     {
+                        if(free)
+                        {
+                           
+                            tbl_Account? admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == createdBy.ToLower());
+                            if (admin != null)
+                            {
+                                user.AvailableSearch = user.AvailableSearch + amount;
+                                user.ModifiedBy = admin.Username;
+                                user.ModifiedDate = DateTime.Now;
+                                db.Update(user);
+                                int kq = db.SaveChanges();
+                                if(kq > 0)
+                                {
+                                    _ = Task.Run(async () =>
+                                    {
+                                        string message = $"Bạn được tặng {amount} lượt tìm kiếm hàng trên Baidu.";
+                                        await NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, 0, "", message, message, 6, "", createdBy);
+                                    });
+                                    result.IsError = false;
+                                    result.Data = true;
+                                    result.Message = "Đổi thành công!";
+                                    return result;
+                                }
+                            }
+                            result.IsError = true;
+                            result.Message = "Hệ thống thực thi không thành công.Vui lòng thử lại sau!";
+                            return result;
+                        }
                         double money = amount * 500;
                         double wallet = Converted.ToDouble(user.Wallet) - money;
                         if (wallet < 0)
@@ -558,7 +586,6 @@ namespace KGQT.Business
                                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
                                 return result;
                             }
-
                         }
                     }
                     else

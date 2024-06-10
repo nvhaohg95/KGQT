@@ -36,6 +36,11 @@ namespace KGQT.Models
         public virtual DbSet<tbl_ZaloFollewer> tbl_ZaloFollewers { get; set; } = null!;
         public virtual DbSet<tbl_ZaloLog> tbl_ZaloLogs { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
+        public virtual DbSet<tbl_Images> tbl_Images { get; set; } = null!;
+
+        public virtual DbSet<tbl_Questions> tbl_Questions { get; set; } = null!;
+
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -431,6 +436,19 @@ namespace KGQT.Models
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_Images>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<tbl_Questions>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+                
             });
 
             OnModelCreatingPartial(modelBuilder);
