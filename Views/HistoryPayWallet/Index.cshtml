@@ -61,7 +61,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12">
         <table class="table table-bordered table-hover">
             <thead>
-                <tr class="bg-info text-white">
+                <tr class="bg-nsh2 text-white">
                     <td class="fw-bold text-center">Ngày GD</td>
                     <td class="fw-bold text-center">Loại GD</td>
                     <td class="fw-bold text-center">Nội dung</td>
@@ -99,11 +99,11 @@
                         <td class="text-left">
                             @if (item.Type == 1)
                             {
-                                <span class="text-danger">-@Converted.String2Money(item.Amount)</span>
+                                <span class="text-nsh1">-@Converted.String2Money(item.Amount)</span>
                             }
                             else
                             {
-                                <span class="text-success">+@Converted.String2Money(item.Amount)</span>
+                                <span class="text-nsh2">+@Converted.String2Money(item.Amount)</span>
                             }
                         </td>
                         <td class="text-left">
