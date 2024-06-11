@@ -1,4 +1,6 @@
-﻿using KGQT.Models;
+﻿using Fasterflect;
+using KGQT.Commons;
+using KGQT.Models;
 using KGQT.Models.temp;
 using Serilog;
 using System.Text.RegularExpressions;
@@ -9,7 +11,7 @@ namespace KGQT.Business
     {
         private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
 
-        public static object[] GetPage(string imageType ,int pageIndex,int pageSize)
+        public static object[] GetPage(int pageIndex,int pageSize)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -17,8 +19,6 @@ namespace KGQT.Business
                 int total = 0;
                 int totalPage = 0;
                 var query = db.tbl_Images.AsQueryable();
-                if (!string.IsNullOrEmpty(imageType))
-                    query = query.Where(x => x.ImageType == imageType);
                 total = query.Count();
                 if(total > 0)
                 {
@@ -50,17 +50,55 @@ namespace KGQT.Business
             };
         }
 
-        public static DataReturnModel<bool> UploadImages (List<IFormFile> images, string imageType)
+        public static DataReturnModel<bool> UploadImages (List<IFormFile> images, int imageType,string createdBy)
         {
             DataReturnModel<bool> result = new();
             try
             {
+                if(images == null)
+                {
+                    result.IsError = true;
+                    result.Message = "Vui lòng chọn loại file";
+                    return result;
+                }
                 if(images.Count > 0)
                 {
-                    foreach (var image in images)
+                    string sPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "images");
+                    if (!Directory.Exists(sPath))
+                        Directory.CreateDirectory(sPath);
+                    using (var db = new nhanshiphangContext())
                     {
-
+                        foreach (var image in images)
+                        {
+                            tbl_Images data = new()
+                            {
+                                RecID = Guid.NewGuid().ToString(),
+                                ImageType = imageType,
+                                ImageSrc = "",
+                                CreatedBy = createdBy,
+                                CreatedOn = DateTime.Now
+                            };
+                            using (var stream = new MemoryStream())
+                            {
+                                image.CopyTo(stream);
+                                var bytes = stream.ToArray();
+                                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                                string path = Path.Combine(sPath, fileName);
+                                File.WriteAllBytes(path, bytes);
+                                data.ImageSrc = "\\" + Path.Combine("uploads", "images", fileName);
+                            }
+                            db.Add(data);
+                        }
+                        db.SaveChanges();
+                        result.IsError = false;
+                        result.Data = true;
+                        result.Message = "Thêm thành công!";
                     }
+                }
+                else
+                {
+                    result.IsError = true;
+                    result.Message = "Không tìm thấy file";
                 }
                 return result;
             }

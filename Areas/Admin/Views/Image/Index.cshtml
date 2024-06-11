@@ -26,19 +26,21 @@
             Thêm
         </button>
     </div>
-    <div class="col-3 my-2">
-        <div class="card" style="width:18rem;">
-            <div class="card-img-top border-bottom">
-                <div style="background-image: url('/img/anh3.png');height: 200px;width: 100%;background-position: center;background-size: contain;background-repeat: no-repeat;">
-
+    @foreach (var item in Model)
+    {
+        <div class="col-3 my-2">
+            <div class="card" style="width:18rem;">
+                <div class="card-img-top border-bottom">
+                    <div style="background-image: url('@item.ImageSrc');height: 200px;width: 100%;background-position: center;background-size: contain;background-repeat: no-repeat;">
+                    </div>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-between p-2">
+                    <p class="card-text fw-bold m-0">@(item.CreatedOn.ToString("dd/MM/yyyy hh:mm"))</p>
+                    <a href="#" onclick="clickViewImage('@item.RecID')" data-bs-toggle="modal" data-bs-target="#exampleModal">Xem</a>
                 </div>
             </div>
-            <div class="card-body d-flex align-items-center justify-content-between p-2">
-                <p class="card-text fw-bold m-0">@(DateTime.Now.ToString("dd/MM/yyyy hh:mm"))</p>
-                <a href="#" onclick="clickViewImage('0')" data-bs-toggle="modal" data-bs-target="#exampleModal">Xem</a>
-            </div>
         </div>
-    </div>
+    }
 </div>
 <div class="row p-2 w-100">
     <div class="col-4 align-self-center">
@@ -121,24 +123,23 @@
     </div>
 </div>
 <div class="modal fade" id="exampleModalAdd" tabindex="-1" aria-labelledby="exampleModalAddLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered" style="width:800px;max-width:800px">
         <form class="modal-content" enctype="multipart/form-data" method="post" action="/Admin/Image/Uploads">
             <div class="modal-header bg-primary">
                 <h1 class="modal-title fs-5 text-uppercase" id="exampleModalAddLabel">Upload</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <div class="d-flex align-items-center justify-content-center" style="height:400px">
-                    <div id="panel-upload" class="flex-column align-items-center justify-content-center" style="width:200px;height:400px">
-                        <img id="imageUpload" class="cursor-pointer" alt="image.png" onclick="upload()"/>
-                        <p>Upload files</p>
+                <div class="d-flex align-items-center align-content-center justify-content-between" style="height:400px">
+                    <div id="panel-upload" class="d-flex align-items-center justify-content-center w-50 h-100">
+                        <img src="~/img/imag-upload2.png" class="cursor-pointer" alt="image.png" onclick="upload()" style="width: 200px;height: 200px;border-width: 1px;border-style: dashed;border-color: gray;" />
                     </div>
-                    <div id="panel-files" class="flex-column align-items-center justify-content-center" style="width:200px;height:400px">
+                    <div id="panel-files" class="flex-column align-items-center justify-content-center w-50 h-100">
                         <div id="panel-files-title" class="fw-bold">
-                            <p>Files đã chọn</p>
+                            <p class="m-0">Files đã chọn</p>
                         </div>
-                        <div id="panel-files-selected" class="flex-column">
-
+                        <div id="panel-files-selected" class="flex-column overflow-auto" style="height:400px">
+                            
                         </div>
                     </div>
                 </div>
@@ -146,7 +147,7 @@
             <div class="modal-footer justify-content-between">
                 <div class="d-flex align-items-center">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="imageType" id="inlineRadio1" value="1">
+                        <input class="form-check-input" type="radio" name="imageType" id="inlineRadio1" value="1" checked>
                         <label class="form-check-label" for="inlineRadio1">Logo</label>
                     </div>
                     <div class="form-check form-check-inline">
@@ -157,12 +158,11 @@
                         <input class="form-check-input" type="radio" name="imageType" id="inlineRadio3" value="3">
                         <label class="form-check-label" for="inlineRadio3">Banner</label>
                     </div>
-                    <input id="inputUpload" type="file" multiple name="images" class="d-none" onchange="selectFile(this)" />
-
+                    <input id="inputUpload" type="file" accept="image/*" multiple name="images" class="d-none" onchange="selectFile(this)" />
                 </div>
                 <div>
                     <button type="button" class="btn btn-sm btn-secondary w-100px" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-sm btn-primary w-100px" data-bs-dismiss="modal">Thêm</button>
+                    <button type="button" class="btn btn-sm btn-primary w-100px" data-bs-dismiss="modal" onclick="saveFile()">Thêm</button>
                 </div>
             </div>
         </form>
@@ -177,8 +177,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="height:500px">
-                <div id="viewImage" class="w-100 h-100" style="background-position: center;background-size: contain;background-repeat: no-repeat;">
-                </div>
+                <img id="viewImage" src="" style="max-width:100%;max-height:100%;width:auto;height:auto" />
             </div>
         </div>
     </div>
@@ -186,38 +185,61 @@
 
 <script>
     function openPopup() {
-        $("#imageUpload").attr("src", "/img/imag-upload.png");
-        $("#imageUpload").css("width", "250px");
-        $("#imageUpload").css("height", "150px");
-        $("#iconClose").css("display","none");
+        $("#panel-files-selected")[0].innerHTML = "";
     }
     function upload(){
         $("#inputUpload").click();
     }
+    function formatBytes(bytes, decimals = 2) {
+        if (!+bytes) return '0 Bytes'
+
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    }
     function selectFile(e){
         let files = e.files;
         if (files.length <= 0) return;
-        let url = URL.createObjectURL(files[0]);
-        $("#imageUpload").attr("src", url);
-        $("#imageUpload").css("width", "auto");
-        $("#imageUpload").css("height", "auto");
-        $("#iconClose").css("display", "block");
+        $("#panel-files-selected")[0].innerHTML = "";
 
-    }
-    function removeFile(){
-        $("#imageUpload").attr("src", "/img/imag-upload.png");
-        $("#imageUpload").css("width", "250px");
-        $("#imageUpload").css("height", "150px");
-        $("#iconClose").css("display", "none");
+        for (let i = 0; i < files.length; ++i) {
+            let file = files[i];
+            let url = URL.createObjectURL(file);
+            let html = $(`
+                        <div class="d-flex align-items-center my-4" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;">
+                        <div class="me-2">
+                            <img src="${url}" style="width:100px;height:100px"/>
+                        </div>
+                        <div class="flex-column">
+                            <p class="fw-bold m-0">${file.name}</p>
+                                <p class="m-0">${formatBytes(file.size)}</p>
+                        </div>
+                    </div>`)
+            $("#panel-files-selected").append(html);
+        }
     }
     function saveFile(){
-        debugger
         let files = $("#inputUpload")[0].files;
         let imageType = $('input[name="imageType"]:checked').val();
+        if (files.length <= 0)
+        {
+            helper.showErr('Vui lòng chọn file upload!');
+            return;
+        }
+        if (!imageType) {
+            helper.showErr('Vui lòng chọn loại file!');
+            return;
+        }
         let formdata = new FormData();
-        if (files.length < 0) return;
-        formdata.append("images", files);
         formdata.append("imageType", imageType);
+        for (var i = 0; i < files.length; i++) {
+            formdata.append(files[i].name, files[i]);
+        }
+        //formdata.append("images", files);
         $.ajax({
             url: "/Admin/Image/Uploads",
             type: 'POST',
@@ -237,18 +259,19 @@
     }
 
     function clickViewImage(id){
+        $("#viewImage").attr("src","");
         $.ajax({
             url: "/Admin/Image/GetByID",
             type: 'POST',
             data: {id : id},
-            success: function (reponse) {
+            success: function (respone) {
                 if (respone.isError) 
                 {
                     helper.showErr(res.message);
                 }
                 else
                 {
-                    $("#viewImage").css(`background-image: url(${res.data.imagreSrc})`);
+                    $("#viewImage").attr("src", respone.data.imageSrc);
                 }
             },
             error: function (xhr, status, err) {
