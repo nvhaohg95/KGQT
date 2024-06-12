@@ -1726,7 +1726,7 @@ namespace KGQT.Mobility
                 }
                 int amount = dataRequest.ContainsKey("amount") ? Int32.Parse(dataRequest["amount"].ToString()) : 0;
                 string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
-                var result = WithDrawBusiness.BuySearches(userName, amount, true, "");
+                var result = WithDrawBusiness.BuySearches(userName, amount,false, "");
                 return result;
             }
             catch (Exception)
