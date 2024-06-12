@@ -671,6 +671,41 @@ namespace KGQT.Mobility
                 return new object[] { true, oRequest };
             }
         }
+
+        [HttpPost]
+        [Route("getslide")]
+        public object GetSlide()
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = false;
+                var lstimg  = BusinessBase.Get<tbl_Images>().OrderBy(x => x.CreatedOn).ToList();
+                foreach (var item in lstimg)
+                {
+                    try
+                    {
+                        string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + item.ImageSrc;
+                        byte[] imageBytes = File.ReadAllBytes(path);
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        item.ImageSrc = base64String;
+                    }
+                    catch (Exception ex)
+                    {
+                        item.ImageSrc = "";
+                    }
+                }
+                oRequest.Data = lstimg;
+                return oRequest;
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return oRequest;
+            }
+        }
         #endregion
 
         #region PackagePage
@@ -1799,6 +1834,10 @@ namespace KGQT.Mobility
             public string? Username { get; set; }
             public string? Password { get; set; }
             public string? FullName { get; set; }
+            public string? IMG { get; set; }
+        }
+        public class tempImg
+        {
             public string? IMG { get; set; }
         }
         #endregion
