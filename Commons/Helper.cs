@@ -103,7 +103,6 @@ namespace KGQT.Commons
 					{
 						Aps = {
 							Badge = 10,
-							ContentAvailable = true,
 						}
 					}
                 };
