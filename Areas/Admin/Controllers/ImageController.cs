@@ -13,9 +13,9 @@ namespace KGQT.Areas.Admin.Controllers
     public class ImageController : Controller
     {
         [HttpGet]
-        public IActionResult Index(int page)
+        public IActionResult Index(int page = 1,int pageSize = 8)
         {
-            var oData = ImageBusiness.GetPage(page, 10);
+            var oData = ImageBusiness.GetPage(page, pageSize);
             var lstData = oData[0] as List<tbl_Images>;
             var numberRecord = (int)oData[1];
             var numberPage = (int)oData[2];
