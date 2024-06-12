@@ -104,7 +104,7 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi upload images,", ex.Message);
+                _log.Error("Lỗi upload images", ex);
                 result.IsError = true;
                 result.Data = false;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
