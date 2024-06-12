@@ -132,7 +132,7 @@
             <div class="modal-body p-4">
                 <div class="d-flex align-items-center align-content-center justify-content-between" style="height:400px">
                     <div id="panel-upload" class="d-flex align-items-center justify-content-center w-50 h-100">
-                        <img src="~/img/imag-upload2.png" class="cursor-pointer" alt="image.png" onclick="upload()" style="width: 200px;height: 200px;border-width: 1px;border-style: dashed;border-color: gray;" />
+                        <img src="~/img/imag-upload2.png" class="cursor-pointer" alt="image.png" onclick="clickUpload()" style="width: 200px;height: 200px;border-width: 1px;border-style: dashed;border-color: gray;" />
                     </div>
                     <div id="panel-files" class="flex-column align-items-center justify-content-center w-50 h-100">
                         <div id="panel-files-title" class="fw-bold">
@@ -187,7 +187,7 @@
     function openPopup() {
         $("#panel-files-selected")[0].innerHTML = "";
     }
-    function upload(){
+    function clickUpload(){
         $("#inputUpload").click();
     }
     function formatBytes(bytes, decimals = 2) {
@@ -201,7 +201,7 @@
 
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
     }
-    checkFileImage(file){
+    function checkFileImage(file) {
         var fileType = file["type"];
         var validImageTypes = ["image/gif", "image/jpeg", "image/png"];
         if ($.inArray(fileType, validImageTypes) > -1) 
