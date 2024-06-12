@@ -91,6 +91,9 @@ namespace KGQT.Commons
                             Priority = NotificationPriority.HIGH,
                             Title = "Trakuaidi xin thông báo!",
                             Body = body,
+							DefaultSound = true,
+							DefaultLightSettings = true,
+							NotificationCount = 1
                         },
 						Priority = Priority.High
                     },
@@ -99,6 +102,14 @@ namespace KGQT.Commons
                         Title = "Trakuaidi xin thông báo!",
 						Body = body
                     },
+					Apns = new ApnsConfig()
+					{
+						Aps =
+						{
+							Badge = 1,
+							ContentAvailable = true
+						}
+					}
                 };
 
                 // Send a message to the device corresponding to the provided
