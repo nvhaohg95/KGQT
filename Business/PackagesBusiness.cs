@@ -174,7 +174,13 @@ namespace KGQT.Business
                         HistoryPayWallet.Insert(user.ID, user.Username, oPack.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + oPack.PackageCode, "500", 1, 1, moneyPrevious, wallet, uslogin);
                     }
                     else
-                        AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch.Value - 1);
+                    {
+                        if (AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch.Value - 1))
+                        {
+                            PointsBusiness.Insert(user.ID, user.Username, oPack.PackageCode, $"Tra cứu kiện: {oPack.PackageCode}", -1, 1, user.AvailableSearch.Value - 1, uslogin);
+                        }
+
+                    }
                 }
                 using (HttpClient client = new HttpClient())
                 {
@@ -377,6 +383,7 @@ namespace KGQT.Business
                     exist.IsAirPackage = form.IsAirPackage;
                     exist.IsWoodPackage = form.IsWoodPackage;
                     exist.IsInsurance = form.IsInsurance;
+                    exist.IsBrand = form.IsBrand;
                     if (form.IsInsurance.HasValue && form.IsInsurance == true)
                     {
                         exist.Declaration = form.Declaration;
@@ -405,6 +412,7 @@ namespace KGQT.Business
                     pack.IsAirPackage = form.IsAirPackage;
                     pack.IsWoodPackage = form.IsWoodPackage;
                     pack.IsInsurance = form.IsInsurance;
+                    pack.IsBrand = form.IsBrand;
                     pack.Status = 1;
                     pack.UID = user.ID;
                     pack.Username = user.Username;
@@ -743,7 +751,10 @@ namespace KGQT.Business
                         {
                             if (user.AvailableSearch == null)
                                 user.AvailableSearch = 0;
-                            AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch.Value + 1);
+                            if (AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch.Value + 1))
+                            {
+                                PointsBusiness.Insert(user.ID, user.Username, pack.PackageCode, $"Nhập kho thành công kiện: {pack.PackageCode}", 1, 0, user.AvailableSearch.Value, accessor);
+                            }
 
                         }
 

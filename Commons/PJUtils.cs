@@ -350,6 +350,21 @@ namespace KGQT.Commons
             return sReturn;
         }
 
+        public static string QuestionStatusHTML(int status)
+        {
+            string sReturn = "";
+            switch (status)
+            {
+                case 0:
+                    sReturn = "<span class=\"btn-sm btn bg-secondary text-white\" style=\"font-size:12px\">Mới tạo</span>";
+                    break;
+                case 1:
+                    sReturn = "<span class=\"text-white btn btn-sm bg-success\" style=\"font-size:12px\">Đang sử dụng</span>";
+                    break;
+            }
+            return sReturn;
+        }
+
         public static string TradeName(int type)
         {
             string name = "";

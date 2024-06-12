@@ -233,7 +233,7 @@ namespace KGQT.Business
                 double weightBrand = 0;
                 foreach (var item in packages)
                 {
-                    if (item.IsBrand == true)
+                    if (item.IsBrand == true && item.WeightReal.Double() < 500)
                         weightBrand += Converted.ToDouble(item.WeightReal);
                     else if (weight < 500)
                         weight += Converted.ToDouble(item.WeightReal);

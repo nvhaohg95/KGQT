@@ -1,0 +1,271 @@
+﻿@using KGQT.Commons;
+@model IEnumerable<KGQT.Models.tbl_Questions>
+
+@{
+    ViewData["Title"] = "Danh sách câu hỏi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int pageCurrent = ViewBag.pageCurrent;
+    int numberPage = ViewBag.numberPage;
+    int numberRecord = ViewBag.numberRecord;
+}
+
+<div class="row mb-2 w-100">
+    <ul class="ps-2" id="breadcrumbs">
+        <li class="text-uppercase fw-bold"><a href="/admin">Trang chủ</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Danh sách</a></li>
+    </ul>
+</div>
+<div class="row p-2 mb-2 w-100">
+    <div class="col-12 mb-2">
+        <form method="get" class="row align-items-center">
+            <div class="col-6">
+                <h5 class="fw-bold text-uppercase text-nsh1 mb-0">DANH SÁCH CÂU HỎI</h5>
+            </div>
+            <div class="col-6">
+                <div class="d-flex align-items-end justify-content-end">
+                    <button type="button" class="btn btn-sm btn-success ml-2 w-100px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i>&nbspThêm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-12">
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr class="fw-bold text-uppercase">
+                    <th class="text-left">Ngày tạo</th>
+                    <th class="text-left">Câu hỏi</th>
+                    <th class="text-left">Câu trả lời</th>
+                    <th class="text-right">Trạng thái</th>
+                    <th class="text-left"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle text-left">
+                            <span class="ml-2">@item.CreatedOn.ToString("dd/MM/yyyy")</span>
+                        </td>
+                        <td class="align-middle text-left text-truncate">
+                            @if(item.Question.Length < 50)
+                            {
+                                <span title="Câu hỏi">@item.Question</span>
+                            }
+                            else
+                            {
+                                <span title="Câu hỏi">@item.Question.Substring(0,50) ...</span>
+                            }
+                        </td>
+                        <td class="align-middle text-left text-truncate">
+                            @if (item.Answer.Length < 50)
+                            {
+                                <span title="Câu hỏi">@item.Answer</span>
+                            }
+                            else
+                            {
+                                <span title="Câu hỏi">@item.Answer.Substring(0,50) ...</span>
+                            }
+                        </td>
+                        <td class="align-middle text-right text-truncate">
+                            @Html.Raw(PJUtils.QuestionStatusHTML(item.Status))
+                        </td>
+                        <td class="align-middle text-right">
+                            <a class="btn btn-sm btn-secondary" href="/Admin/Question/Detail?id=@item.ID" title="Xem">
+                                <span>Xem</span>
+                            </a>
+                            <span class="btn btn-sm btn-danger" onclick="clickDelete(@item.ID)" title="Xóa">
+                                <span>Xóa</span>
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row p-2 w-100">
+    <div class="col-4 align-self-center">
+        <span>
+            Tổng số:&nbsp
+            <b>@numberRecord</b>
+        </span>
+    </div>
+    <div class="col-8">
+        @if (numberPage > 1)
+        {
+            <nav class="d-flex justify-content-end">
+                <ul class="pagination m-0">
+                    @{
+                        int offset = 2; // number display page
+                        if (pageCurrent > 1)
+                        {
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
+                                    <i class="fas fa-fast-backward"></i>
+                                </button>
+                            </li>
+                            int prevPage = pageCurrent - 1;
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </button>
+                            </li>
+                        }
+
+                        int from = pageCurrent - offset;
+                        int to = pageCurrent + offset;
+                        if (from <= 0)
+                        {
+                            from = 1;
+                            to = offset * 2;
+                        }
+
+                        if (to > numberPage)
+                        {
+                            to = numberPage;
+                        }
+
+                        int i;
+                        for (i = from; i <= to; i++)
+                        {
+                            <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage - (to / 2))
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link">...</a>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            int nextPage = pageCurrent + 1;
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </button>
+                            </li>
+                        }
+                        if (pageCurrent < numberPage)
+                        {
+                            <li class="page-item">
+                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
+                                    <i class="fas fa-fast-forward"></i>
+                                </button>
+                            </li>
+                        }
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+<!-- popup -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-uppercase" id="exampleModalLabel">Thêm Câu Hỏi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="container" id="formAddQuestion" autocomplete="off">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <label class="control-label">
+                                <span class="fw-bold">Câu trả lời</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <input type="text" name="Question" class="form-control" autocomplete="off" autofocus/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group">
+                            <label class="control-label">
+                                <span class="fw-bold">Câu trả lời</span>
+                                <span class="text-danger">(*)</span>
+                            </label>
+                            <textarea rows="4" name="Answer" class="form-control" autocomplete="off">
+
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 form-group text-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="Status" value="1" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Kích hoạt ngay
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary w-100px" onclick="insert()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function insert() {
+        debugger
+        var data = helper.form2Object($('#formAddQuestion').serializeArray());
+        if (!data) {
+            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            return
+        }
+        if (!data.Question) {
+            helper.showWarn('Vui lòng nhập câu hỏi!');
+            return
+        }
+
+        if (!data.Answer) {
+            helper.showWarn('Vui lòng nhập câu trả lời!');
+            return
+        }
+
+        $.ajax({
+            url: "/Admin/Question/Create",
+            type: 'POST',
+            data: { question: data.Question, answer: data.Answer, status: data.Status },
+            success: function (reponse) {
+                if (reponse.isError)
+                    helper.showErr(reponse.message)
+                else
+                    helper.showSuc('Thêm thành công!')
+            },
+            error: function (xhr, status, err) {
+                helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
+            }
+        });
+    }
+    function clickDelete(id) {
+        helper.showAlert("Bạn có muốn thực hiện thao tác xóa?").then((res) => {
+            if (res.isConfirmed) {
+                $.ajax({
+                    url: "/Admin/Question/Delete",
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (reponse) {
+                        if (reponse.isError)
+                            helper.showErr(reponse.message)
+                        else
+                            helper.showSuc('Xóa thành công!')
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
+                    }
+                });
+            }
+        });
+    }
+</script>

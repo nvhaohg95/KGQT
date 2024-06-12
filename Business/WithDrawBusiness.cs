@@ -134,7 +134,7 @@ namespace KGQT.Business
                                     user.ModifiedDate = DateTime.Now;
                                     db.Update(user);
                                     db.SaveChanges();
-                                    notiMessage = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã được duyệt.", strHTML);
+                                    notiMessage = string.Format("Yêu cầu rút <span class=\"text-nsh1\">{0}</span> của bạn đã được duyệt.", strHTML);
                                     notiMessage2 = string.Format("Yêu cầu rút {0} của bạn đã được duyệt.", strHTML);
                                     HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount, 1, 4, moneyPrevious, moneyLef, createdBy);
                                     NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, notiMessage2, 3, "", admin.Username);
@@ -257,7 +257,7 @@ namespace KGQT.Business
                         {
                             string url = "/Admin/WithDraw/Refuse?ID=" + data.ID;
                             string money = Converted.Double2Money(Converted.ToDouble(data.Amount));
-                            string notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu rút <span class=\"text-danger\">{1}</span>.", string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName, money);
+                            string notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu rút <span class=\"text-nsh1\">{1}</span>.", string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName, money);
                             string notiMessage2 = string.Format("Khách hàng {0} yêu cầu rút {1}.", string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName, money);
                             HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount, 1, 4, moneyPrevious, moneyLef, createdBy, 0,0);
                             NotificationBusiness.Insert(user.ID, user.FullName, 0, "Admin", data.ID, "", notiMessage, notiMessage2, 3, url, user.Username, true);
@@ -335,7 +335,7 @@ namespace KGQT.Business
                             else if (widthDraw.Type == 2)
                             {
                                 double wallet = Converted.ToDouble(user.Wallet) - Converted.ToDouble(widthDraw.Amount);
-                                message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã được duyệt.", money);
+                                message = string.Format("Yêu cầu rút <span class=\"text-nsh1\">{0}</span> của bạn đã được duyệt.", money);
                                 message2 = string.Format("Yêu cầu rút {0} của bạn đã được duyệt.", money);
                                 var history = db.tbl_HistoryPayWallets.FirstOrDefault(x => x.OrderID == widthDraw.ID);
                                 if (history != null)
@@ -449,7 +449,7 @@ namespace KGQT.Business
                                 }
                                 if (widthDraw.Type == 2)
                                 {
-                                    message = string.Format("Yêu cầu rút <span class=\"text-danger\">{0}</span> của bạn đã bị từ chối.", money);
+                                    message = string.Format("Yêu cầu rút <span class=\"text-nsh1\">{0}</span> của bạn đã bị từ chối.", money);
                                     message2 = string.Format("Yêu cầu rút {0} của bạn đã bị từ chối.", money);
                                     NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, message2, 3, "", admin.Username);
                                 }
@@ -492,7 +492,7 @@ namespace KGQT.Business
             }
         }
 
-        public static DataReturnModel<bool> BuySearches(string userName,int amount, string createdBy = "")
+        public static DataReturnModel<bool> BuySearches(string userName,int amount, bool free, string createdBy = "")
         {
             DataReturnModel<bool> result = new DataReturnModel<bool>();
             try
@@ -509,6 +509,36 @@ namespace KGQT.Business
 
                     if (user != null)
                     {
+                        if(free)
+                        {
+                           
+                            tbl_Account? admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == createdBy.ToLower());
+                            if (admin != null)
+                            {
+                                user.AvailableSearch = user.AvailableSearch + amount;
+                                user.ModifiedBy = admin.Username;
+                                user.ModifiedDate = DateTime.Now;
+                                db.Update(user);
+                                int kq = db.SaveChanges();
+                                if(kq > 0)
+                                {
+                                    PointsBusiness.Insert(user.ID, user.Username, "", $"Được tặng tại hệ thống tracking.nhanshiphang.vn", amount, 0, user.AvailableSearch.Value, createdBy);
+
+                                    _ = Task.Run(async () =>
+                                    {
+                                        string message = $"Bạn được tặng {amount} lượt tìm kiếm hàng trên Baidu.";
+                                        await NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, 0, "", message, message, 6, "", createdBy);
+                                    });
+                                    result.IsError = false;
+                                    result.Data = true;
+                                    result.Message = "Đổi thành công!";
+                                    return result;
+                                }
+                            }
+                            result.IsError = true;
+                            result.Message = "Hệ thống thực thi không thành công.Vui lòng thử lại sau!";
+                            return result;
+                        }
                         double money = amount * 500;
                         double wallet = Converted.ToDouble(user.Wallet) - money;
                         if (wallet < 0)
@@ -546,6 +576,7 @@ namespace KGQT.Business
                             {
                                 string content = $"Đổi {amount} lượt tìm kiếm hàng trên Baidu.";
                                 HistoryPayWallet.Insert(user.ID, user.Username, 0, content, Converted.Double2Money(money), 1, 6, moneyPrevious, moneyLeft, createdBy);
+                                PointsBusiness.Insert(user.ID, user.Username, "", $"Mua điểm tại hệ thống tracking.nhanshiphang.vn", amount, 0, user.AvailableSearch.Value, createdBy);
                                 result.IsError = false;
                                 result.Data = true;
                                 result.Message = "Đổi thành công!";
@@ -557,7 +588,6 @@ namespace KGQT.Business
                                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
                                 return result;
                             }
-
                         }
                     }
                     else

@@ -19,7 +19,7 @@
             <div class="card" style="border-radius: 10px;">
                 <div class="card-header">
                     <div class="card-header">
-                        <h2>Thông tin đơn: <span class="text-uppercase text-danger">@Model.Order.ShippingOrderCode</span></h2>
+                        <h2>Thông tin đơn: <span class="text-uppercase text-nsh1">@Model.Order.ShippingOrderCode</span></h2>
                         <div class="px-0 pt-2 col-md-12">
                             <span>Ngày tạo: @Model.Order.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
                         </div>
@@ -31,7 +31,7 @@
                 <div class="card-body p-4">
                     <!--Start::Thông tin kiện-->
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Danh sách Kiện</h3>
+                        <h3 class="lead fw-normal mb-0 text-nsh1 text-uppercase">Danh sách Kiện</h3>
                     </div>
                     @foreach (var item in Model.Packs)
                     {

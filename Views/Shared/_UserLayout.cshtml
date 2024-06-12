@@ -51,6 +51,7 @@
     <link href="~/styles/styleSheet.css" rel="stylesheet" type="text/css">
     <link href="~/styles/user.css" rel="stylesheet" type="text/css">
     <link href="~/styles/custom.css" rel="stylesheet" type="text/css">
+    <link href="~/styles/responsive.css" rel="stylesheet" type="text/css">
     <link href="~/vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
     <link href="~/css/sweetalert2.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -100,7 +101,7 @@
                 }
                 else
                 {
-                    <span>Số dư ví: <span class="fw-bold text-danger">0đ</span></span>
+                    <span>Số dư ví: <span class="fw-bold text-nsh1">0đ</span></span>
                 }
             </li>
             <!-- Nav Item - Alerts -->
@@ -233,13 +234,13 @@
                     <div class="dropdown-divider d-block d-md-none"></div>
                     <a class="dropdown-item d-block d-md-none" href="/Account/Info">
                         <i class="fas fa-wallet fa-sm fa-fw mr-2"></i>
-                        <span>Số dư ví: <span class="fw-bold text-danger">@string.Format("{0:N0}đ",user?.Wallet).Replace(",",".")</span></span>
+                        <span>Số dư ví: <span class="fw-bold text-nsh1">@string.Format("{0:N0}đ",user?.Wallet).Replace(",",".")</span></span>
                     </a>
                     <div class="dropdown-divider d-block d-md-none"></div>
                     <a class="dropdown-item d-block d-md-none" href="#">
                         <i class="fas fa-bell fa-fw"></i>
                         <!-- Counter - Alerts -->
-                        Thông báo<span class="badge badge-danger badge-counter">3+</span>
+                        Thông báo<span class="badge badge-danger badge-counter">0</span>
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" data-toggle="modal" data-target="#withDrawModal" href="#">
@@ -305,6 +306,12 @@
                                     <p class="mb-0">
                                         @*<i class="fas fa-exchange icon-16"></i>*@
                                         <span>LỊCH SỬ</span>
+                                    </p>
+                                </a>
+                                <a class="nav-link" asp-action="Index" asp-controller="Points">
+                                    <p class="mb-0 text-uppercase">
+                                        @*<i class="fas fa-exchange icon-16"></i>*@
+                                        <span>Lịch sử điểm tra cứu</span>
                                     </p>
                                 </a>
                             </nav>

@@ -174,7 +174,7 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Đổi điểm Search
-        public DataReturnModel<bool> BuySearches(string userName,int amount)
+        public DataReturnModel<bool> BuySearches(string userName,int amount, bool free = false)
         {
             DataReturnModel<bool> result = new();
             var cookieService = new CookieService(HttpContext);
@@ -183,7 +183,7 @@ namespace KGQT.Areas.Admin.Controllers
             string userLogin = userModel != null ? userModel.UserName : "";
             if(!string.IsNullOrEmpty(userLogin))
             {
-                result = WithDrawBusiness.BuySearches(userName, amount,userLogin);
+                result = WithDrawBusiness.BuySearches(userName, amount, free, userLogin);
             }   
             else
             {
