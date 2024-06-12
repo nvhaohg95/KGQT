@@ -1,7 +1,10 @@
-﻿ 
+﻿@using System.Web;
+ 
 @{
     ViewData["Title"] = "Nạp tiền";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    string qr1 = $"https://img.vietqr.io/image/vietcombank-1024148679-print.jpg?addInfo=NAP {ViewBag.userName}&accountName=NGUYEN THI MY NGA";
+    string qr2 = $"https://img.vietqr.io/image/acb-33738077-print.jpg?addInfo=NAP {ViewBag.userName}&accountName=LE TRI DUNG";
 }
 <ul id="breadcrumbs" class="mb-2">
     <li><a href="/Home/Dashboard">Trang chủ</a></li>
@@ -17,6 +20,7 @@
             <div class="col-lg-6 col-md-12 col-sm-12 border">
                 <div class="d-flex justify-content-center">
                     <img src="~/img/bank-vietcombank.jpg" width="300" height="400" />
+                   @* <img src="@qr1" class="w-100" />*@
                 </div>
                 <div class="row">
                     <div class="col-12">
@@ -34,6 +38,8 @@
             <div class="col-lg-6 col-md-12 col-sm-12 border">
                 <div class="d-flex justify-content-center">
                     <img src="~/img/bank-ACB.jpg" width="300" height="400" />
+                    @*<img src="@qr2" class="w-100" />*@
+
                 </div>
                 <div class="row">
                     <div class="col-12">

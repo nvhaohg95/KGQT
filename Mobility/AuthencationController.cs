@@ -23,7 +23,7 @@ namespace KGQT.Mobility
         #region Authencation
         [HttpPost]
         [Route("login")]
-        public async Task<object> Login([FromBody] RequestModel model) 
+        public async Task<object> Login([FromBody] RequestModel model)
         {
             try
             {
@@ -48,11 +48,11 @@ namespace KGQT.Mobility
                 string? deviceID = dataRequest.ContainsKey("deviceID") ? dataRequest["deviceID"]?.ToString() : "";
 
                 var config = BusinessBase.GetOne<tbl_Configuration>(x => x.Websitename == "Trakuaidi");
-                if(config != null)
+                if (config != null)
                 {
                     if ((bool)config.IsMobileReview)
                     {
-                        if(userName.ToLower() != "admintan")
+                        if (userName.ToLower() != "admintan")
                         {
                             oRequest.IsError = true;
                             oRequest.Message = "Hệ thống đang trong quá trình bảo trì! Vui lòng thử lại sau";
@@ -71,7 +71,7 @@ namespace KGQT.Mobility
                 if (!result.IsError)
                 {
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userName);
-                    if(user == null)
+                    if (user == null)
                     {
                         oRequest.IsError = true;
                         oRequest.Message = "Người dùng không tồn tại. Vui lòng thử lại!";
@@ -286,7 +286,7 @@ namespace KGQT.Mobility
                 data.Phone = model.Phone;
                 data.Address = model.Address;
                 data.Username = model.Username;
-                var result = AccountBusiness.Update(data, file,"");
+                var result = AccountBusiness.Update(data, file, "");
                 return result;
             }
             catch (Exception)
@@ -708,7 +708,7 @@ namespace KGQT.Mobility
                     return new object[] { true, oRequest };
                 }
                 var oData = PackagesBusiness.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
-                return new object[] { false, oData};
+                return new object[] { false, oData };
             }
             catch (Exception)
             {
@@ -815,7 +815,7 @@ namespace KGQT.Mobility
                     return new object[] { true, oRequest };
                 }
 
-                return new object[] { false, user.AvailableSearch};
+                return new object[] { false, user.AvailableSearch };
             }
             catch (Exception)
             {
@@ -1010,7 +1010,7 @@ namespace KGQT.Mobility
                 }
                 int ID = dataRequest.ContainsKey("id") ? Int32.Parse(dataRequest["id"].ToString()) : 0;
                 var data = PackagesBusiness.Delete(ID);
-                return new object[] { false, data};
+                return new object[] { false, data };
             }
             catch (Exception)
             {
@@ -1066,7 +1066,7 @@ namespace KGQT.Mobility
                     oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
                     return new object[] { true, oRequest };
                 }
-                var data = PackagesBusiness.SaveNote(model.ID,model.Note, model.Username);
+                var data = PackagesBusiness.SaveNote(model.ID, model.Note, model.Username);
                 var oPack = BusinessBase.GetOne<tbl_Package>(x => x.ID == model.ID);
                 return new object[] { false, data, oPack };
             }
@@ -1123,9 +1123,9 @@ namespace KGQT.Mobility
 
         #region OrderPage
         [HttpPost]
-		[Route("order")]
-		public object[] GetOrder([FromBody] RequestModel model)
-		{
+        [Route("order")]
+        public object[] GetOrder([FromBody] RequestModel model)
+        {
             try
             {
                 var oRequest = new DataReturnModel<object>();
@@ -1156,7 +1156,7 @@ namespace KGQT.Mobility
                     return new object[] { true, oRequest };
                 }
                 var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, pageNum, pageSize, userName);
-                return new object[] { false, oData};
+                return new object[] { false, oData };
             }
             catch (Exception)
             {
@@ -1413,7 +1413,7 @@ namespace KGQT.Mobility
                 }
                 var oData = HistoryPayWallet.GetPage(userName, ID, status, fromDate, toDate, pageNum, pageSize);
                 var s = oData[0] as List<tbl_HistoryPayWallet>;
-                if(s.Count > 0)
+                if (s.Count > 0)
                 {
                     var s2 = s.Select(x => new
                     {
@@ -1423,8 +1423,8 @@ namespace KGQT.Mobility
                     }).GroupBy(x => new { x.Month, x.Year })
                     .Select((g, i) => new
                     {
-                    Key = g.Key.Month + "/" + g.Key.Year,
-                    Datas = g.ToList()
+                        Key = g.Key.Month + "/" + g.Key.Year,
+                        Datas = g.ToList()
                     });
                     oData[0] = s2;
                 }
@@ -1514,7 +1514,7 @@ namespace KGQT.Mobility
                     List<tbl_Notification> query = BusinessBase.GetList<tbl_Notification>(x => x.ReceivedID == user.ID && x.Status == 0).ToList();
                     total = query.Count();
                 }
-                return new object[] { false, total};
+                return new object[] { false, total };
             }
             catch (Exception)
             {

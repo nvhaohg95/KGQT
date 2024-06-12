@@ -56,7 +56,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12">
         <table class="table table-bordered table-hover">
             <thead>
-                <tr class="bg-info text-white">
+                <tr class="bg-nsh2 text-white">
                     <td class="fw-bold text-center">Ngày GD</td>
                     <td class="fw-bold text-center">Nội dung</td>
                     <td class="fw-bold text-center">Số điểm</td>
@@ -68,7 +68,7 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="text-left">
+                        <td class="text-center">
                             <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
                         </td>
                         <td class="text-center text-truncate" title="@item.HContent">
@@ -84,10 +84,17 @@
                                 }
                             }
                         </td>
-                        <td class="text-left">
-                                <span>@item.Point</span>
+                        <td class="text-center">
+                            @if (item.Type == 1)
+                            {
+                                <span class="text-nsh1">-@item.Point</span>
+                            }
+                            else
+                            {
+                                <span class="text-nsh2">+@item.Point</span>
+                            }
                         </td>
-                        <td class="text-left">
+                        <td class="text-center">
                             <span class="text-danger">@item.PointLeft</span>
                         </td>
                     </tr>

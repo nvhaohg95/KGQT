@@ -1,4 +1,11 @@
 ﻿/*Base*/
+.text-nsh1 {
+    color: #f5b821;
+}
+
+.text-nsh2 {
+    color: #008cd0;
+}
 .bg-nsh1 {
     background: #f5b821;
     border: #f5b821;

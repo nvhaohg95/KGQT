@@ -148,7 +148,7 @@
                             {
                                 <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@item.ID)">Hủy kiện</button>
                                 <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
-                                <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)" type="button">Xóa</button>
+                                <button class="btn-sm btn bg-danger text-white mt-2 px-3" onclick="Delete(@item.ID)" type="button">Xóa</button>
                             }
                         </div>
                     </div>
@@ -340,19 +340,19 @@
     </div>
 </div>
 <script>
-    function reportWindowSize() {
-        let w = window.innerWidth
-        if ((874 < w && w < 992) || (1033 < w && w < 1539)) {
-            $('.checkStatus').addClass('mr-3');
-        }else
-            $('.checkStatus').removeClass('mr-3');
-    }
+    //function reportWindowSize() {
+    //    let w = window.innerWidth
+    //    if ((874 < w && w < 992) || (1033 < w && w < 1539)) {
+    //        $('.checkStatus').addClass('mr-3');
+    //    }else
+    //        $('.checkStatus').removeClass('mr-3');
+    //}
 
-    window.onresize = reportWindowSize;
+    //window.onresize = reportWindowSize;
 
 
     $(document).ready(function () {
-        reportWindowSize();
+        //reportWindowSize();
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
             copyClipboard(text);

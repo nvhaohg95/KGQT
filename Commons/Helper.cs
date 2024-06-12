@@ -99,6 +99,12 @@ namespace KGQT.Commons
                         Title = "Trakuaidi xin thông báo!",
 						Body = body
                     },
+					Apns = new ApnsConfig()
+					{
+						Aps = {
+							Badge = 10,
+						}
+					}
                 };
 
                 // Send a message to the device corresponding to the provided
