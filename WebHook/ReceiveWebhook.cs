@@ -40,16 +40,16 @@ namespace KGQT.WebHook
                 var token = db.tbl_Zalos.FirstOrDefault();
                 if (token?.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await ZaloCommon.RefreshToken();
-               
+
                 string phone = data.info.phone;
-              
+
                 if (phone.StartsWith("84"))
                     phone = phone.Replace("84", "0");
 
                 var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.sender.id);
                 if (f == null)
                 {
-                   
+
                     var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
 
                     f = new tbl_ZaloFollewer();
@@ -62,7 +62,7 @@ namespace KGQT.WebHook
                     f.SendRequestTimes = 1;
                     f.SendRequestDate = DateTime.Now;
                     f.CreatedDate = DateTime.Now;
-                 
+
                     if (user != null)
                         f.Username = user.Username;
                     db.Add(f);
@@ -108,35 +108,41 @@ namespace KGQT.WebHook
         {
             using (var db = new nhanshiphangContext())
             {
-
-                var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.follower.id);
-                if (f == null)
+                try
                 {
-                    f = new tbl_ZaloFollewer();
-                    f.RecID = Guid.NewGuid();
-                    f.user_id = data.follower.id;
-                    f.SendRequest = false;
-                    f.SendRequestTimes = 0;
-                    f.CreatedDate = DateTime.Now;
-                    db.Add(f);
+                    var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.follower.id);
+                    if (f == null)
+                    {
+                        f = new tbl_ZaloFollewer();
+                        f.RecID = Guid.NewGuid();
+                        f.user_id = data.follower.id;
+                        f.SendRequest = false;
+                        f.SendRequestTimes = 0;
+                        f.CreatedDate = DateTime.Now;
+                        db.Add(f);
 
-                    if (db.SaveChanges() > 0)
-                    {
-                        ZaloCommon.RequestMoreInfoAsync(data.sender.id);
+                        if (db.SaveChanges() > 0)
+                        {
+                            ZaloCommon.RequestMoreInfoAsync(data.sender.id);
+                        }
+                        else
+                        {
+                            var w = new tbl_ZaloWebHook();
+                            w.RecID = Guid.NewGuid();
+                            w.app_id = data.app_id;
+                            w.event_name = data.event_name;
+                            w.timestamp = data.timestamp;
+                            w.sender = data.follower?.id;
+                            w.status = 0;
+                            w.CreatedDate = DateTime.Now;
+                            db.Add(w);
+                            await db.SaveChangesAsync();
+                        }
                     }
-                    else
-                    {
-                        var w = new tbl_ZaloWebHook();
-                        w.RecID = Guid.NewGuid();
-                        w.app_id = data.app_id;
-                        w.event_name = data.event_name;
-                        w.timestamp = data.timestamp;
-                        w.sender = data.follower?.id;
-                        w.status = 0;
-                        w.CreatedDate = DateTime.Now;
-                        db.Add(w);
-                        await db.SaveChangesAsync();
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Lỗi addFollower {ex.Message}");
                 }
             }
         }
