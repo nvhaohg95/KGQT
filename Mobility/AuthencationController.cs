@@ -97,7 +97,7 @@ namespace KGQT.Mobility
                             data.TypeRequest = "loginerror";
                             Dictionary<string, string> datas = new Dictionary<string, string>();
                             datas.Add("data", JsonConvert.SerializeObject(data));
-                            await Helper.SendFCMAsync(body, user.TokenDevice, datas);
+                            await Helper.SendFCMAsync(body, user.TokenDevice, datas,user.ID);
                         }
                     }
                     user.TokenDevice = token;

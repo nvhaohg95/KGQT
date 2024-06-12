@@ -88,7 +88,7 @@ namespace KGQT.Business
                         {
                             _ = Task.Run(async () =>
                             {
-                                await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null);
+                                await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null,user.ID);
                             });
                         }
                         var follower = db.tbl_ZaloFollewers.FirstOrDefault(x => x.Username == user.Username);

@@ -8,6 +8,9 @@ using FirebaseAdmin.Messaging;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Newtonsoft.Json;
+using DocumentFormat.OpenXml.Vml;
+using KGQT.Business.Base;
+using KGQT.Models;
 
 namespace KGQT.Commons
 {
@@ -62,10 +65,16 @@ namespace KGQT.Commons
 				result = pInfo.GetValue(obj, null);
 			return result;
 		}
-        public static async Task<object> SendFCMAsync(string body, string token, Dictionary<string, string> data)
+        public static async Task<object> SendFCMAsync(string body, string token, Dictionary<string, string> data,int userID)
         {
             try
             {
+                var total = 0;
+                List <tbl_Notification> query = BusinessBase.GetList<tbl_Notification>(x => x.ReceivedID == userID && x.Status == 0).ToList();
+                if (query.Count > 0)
+                {
+                    total = query.Count();
+                }
                 if (FirebaseApp.DefaultInstance == null)
                 {
                     string path = AppDomain.CurrentDomain.BaseDirectory + "Firebase\\" + "trakuaidi-app-firebase-key.json";
@@ -91,6 +100,9 @@ namespace KGQT.Commons
                             Priority = NotificationPriority.HIGH,
                             Title = "Trakuaidi xin thông báo!",
                             Body = body,
+							DefaultSound = true,
+							DefaultLightSettings = true,
+                            NotificationCount = total
                         },
 						Priority = Priority.High
                     },
@@ -99,12 +111,20 @@ namespace KGQT.Commons
                         Title = "Trakuaidi xin thông báo!",
 						Body = body
                     },
-					Apns = new ApnsConfig()
+                    Apns = new ApnsConfig()
+                    {
+                        Aps = new Aps()
+                        {
+                            Badge = total,
+							ContentAvailable = true,
+                        }
+                    }
+                    /*Apns = new ApnsConfig()
 					{
 						Aps = {
 							Badge = 10,
 						}
-					}
+					}*/
                 };
 
                 // Send a message to the device corresponding to the provided
