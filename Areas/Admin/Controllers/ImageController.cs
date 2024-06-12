@@ -53,5 +53,12 @@ namespace KGQT.Areas.Admin.Controllers
             return result;
         }
 
+
+        public DataReturnModel<List<tbl_Images>> GetImageByType(int imageType)
+        {
+            DataReturnModel<List<tbl_Images>> result = new();
+            result.Data = ImageBusiness.GetImgaeByType(imageType);
+            return result;
+        }
     }
 }

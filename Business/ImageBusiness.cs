@@ -2,6 +2,7 @@
 using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
+using Newtonsoft.Json;
 using Serilog;
 using System.Text.RegularExpressions;
 using ILogger = Serilog.ILogger;
@@ -104,11 +105,20 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi upload images", ex);
+                _log.Error("Lỗi upload images :" +  ex.Message);
                 result.IsError = true;
                 result.Data = false;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
                 return result;
+            }
+        }
+
+        public static List<tbl_Images> GetImgaeByType(int imageType)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var datas = db.tbl_Images.Where(x => x.ImageType == imageType && x.Status == 1).ToList();
+                return datas;
             }
         }
     }
