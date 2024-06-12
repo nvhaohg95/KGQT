@@ -1,9 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using KGQT.Business;
+using KGQT.Commons;
 using KGQT.Models;
 using KGQT.Models.temp;
 using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -13,7 +15,7 @@ namespace KGQT.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Index(int page)
         {
-            var oData = ImageBusiness.GetPage("", 1, 10);
+            var oData = ImageBusiness.GetPage(page, 10);
             var lstData = oData[0] as List<tbl_Images>;
             var numberRecord = (int)oData[1];
             var numberPage = (int)oData[2];
@@ -30,12 +32,17 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public DataReturnModel<bool> Uploads(List<IFormFile> images,string imageType)
+        public DataReturnModel<bool> Uploads(int imageType)
         {
             DataReturnModel<bool> result = new();
-            if(images != null && images.Count > 0 && string.IsNullOrEmpty(imageType))
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var images = Request.Form.Files;
+            if (images != null && images.Count > 0)
             {
-                result = ImageBusiness.UploadImages(images, imageType);
+                result = ImageBusiness.UploadImages(images.ToList(), imageType, userLogin);
             }
             else
             {

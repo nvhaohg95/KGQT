@@ -59,11 +59,11 @@
                         <td class="align-middle text-left text-truncate">
                             @if (item.Answer.Length < 50)
                             {
-                                <span title="Câu hỏi">@item.Answer</span>
+                                <span title="Câu trả lời">@item.Answer</span>
                             }
                             else
                             {
-                                <span title="Câu hỏi">@item.Answer.Substring(0,50) ...</span>
+                                <span title="Câu trả lời">@item.Answer.Substring(0,50) ...</span>
                             }
                         </td>
                         <td class="align-middle text-right text-truncate">
@@ -178,7 +178,7 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-12 form-group">
                             <label class="control-label">
-                                <span class="fw-bold">Câu trả lời</span>
+                                <span class="fw-bold">Câu hỏi</span>
                                 <span class="text-danger">(*)</span>
                             </label>
                             <input type="text" name="Question" class="form-control" autocomplete="off" autofocus/>

@@ -8,7 +8,7 @@
         /// 2. Slide
         /// 3. Banner
         /// </summary>
-        public string ImageType { get; set; }
+        public int ImageType { get; set; }
         public string ImageSrc { get; set; }
         /// <summary>
         /// 0. Mới tạo
