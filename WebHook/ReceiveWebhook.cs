@@ -62,9 +62,16 @@ namespace KGQT.WebHook
                     f.SendRequestTimes = 1;
                     f.SendRequestDate = DateTime.Now;
                     f.CreatedDate = DateTime.Now;
-
+                    f.Status = 2;
                     if (user != null)
+                    {
                         f.Username = user.Username;
+                        f.Status = 1;
+                    }
+                    else
+                    {
+                        f.Note = "Không tìm thấy số điện thoại nào khớp với sdt khách đã cung cấp";
+                    }
                     db.Add(f);
                 }
                 else
@@ -73,7 +80,14 @@ namespace KGQT.WebHook
                     f.address = data.info.address;
                     var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
                     if (user != null)
+                    {
                         f.Username = user.Username;
+                        f.Status = 1;
+                    }
+                    else
+                    {
+                        f.Note = "Không tìm thấy số điện thoại nào khớp với sdt khách đã cung cấp";
+                    }
                     db.Update(f);
                 }
 
@@ -118,6 +132,7 @@ namespace KGQT.WebHook
                         f.user_id = data.follower.id;
                         f.SendRequest = false;
                         f.SendRequestTimes = 0;
+                        f.Status = 0;
                         f.CreatedDate = DateTime.Now;
                         db.Add(f);
 

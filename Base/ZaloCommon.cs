@@ -251,6 +251,7 @@ namespace KGQT.Base
                             var f = new tbl_ZaloFollewer();
                             f.RecID = Guid.NewGuid();
                             f.user_id = item.user_id;
+                            f.Status = 0;
                             f.SendRequest = false;
                             f.SendRequestTimes = 0;
                             JObject oDetail = client.getProfileOfFollower(item.user_id);

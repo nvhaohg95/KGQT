@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using KGQT.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -24,9 +23,11 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Configuration> tbl_Configurations { get; set; } = null!;
         public virtual DbSet<tbl_FeeWeight> tbl_FeeWeights { get; set; } = null!;
         public virtual DbSet<tbl_HistoryPayWallet> tbl_HistoryPayWallets { get; set; } = null!;
+        public virtual DbSet<tbl_Image> tbl_Images { get; set; } = null!;
         public virtual DbSet<tbl_Notification> tbl_Notifications { get; set; } = null!;
         public virtual DbSet<tbl_Package> tbl_Packages { get; set; } = null!;
         public virtual DbSet<tbl_Point> tbl_Points { get; set; } = null!;
+        public virtual DbSet<tbl_Question> tbl_Questions { get; set; } = null!;
         public virtual DbSet<tbl_Role> tbl_Roles { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_SystemLog> tbl_SystemLogs { get; set; } = null!;
@@ -35,19 +36,15 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Zalo> tbl_Zalos { get; set; } = null!;
         public virtual DbSet<tbl_ZaloFollewer> tbl_ZaloFollewers { get; set; } = null!;
         public virtual DbSet<tbl_ZaloLog> tbl_ZaloLogs { get; set; } = null!;
+        public virtual DbSet<tbl_ZaloWebHook> tbl_ZaloWebHooks { get; set; } = null!;
         public virtual DbSet<tbll_ConfigurationNoti> tbll_ConfigurationNotis { get; set; } = null!;
-        public virtual DbSet<tbl_Images> tbl_Images { get; set; } = null!;
-
-        public virtual DbSet<tbl_Questions> tbl_Questions { get; set; } = null!;
-
-
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(Config.Connections["KGQT"]);
+                optionsBuilder.UseSqlServer("Server=LAPTOP-EOMC9SID;Database=nhanshiphang;User Id=sa;Password=abc123;Integrated Security=True; Trusted_Connection=True;");
             }
         }
 
@@ -174,6 +171,28 @@ namespace KGQT.Models
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });
 
+            modelBuilder.Entity<tbl_Image>(entity =>
+            {
+                entity.HasKey(e => e.RecID)
+                    .HasName("PK__tbl_Imag__360414FF2D414CCC");
+
+                entity.Property(e => e.RecID)
+                    .HasMaxLength(50)
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+
+                entity.Property(e => e.ModifiedOn)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+            });
+
             modelBuilder.Entity<tbl_Notification>(entity =>
             {
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
@@ -267,6 +286,19 @@ namespace KGQT.Models
                 entity.Property(e => e.OrderID).HasMaxLength(100);
 
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
+            });
+
+            modelBuilder.Entity<tbl_Question>(entity =>
+            {
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.MidifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedBy).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbl_Role>(entity =>
@@ -407,13 +439,11 @@ namespace KGQT.Models
 
                 entity.Property(e => e.SendRequestDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Username).HasMaxLength(50);
-
-                entity.Property(e => e.display_name).HasMaxLength(50);
+                entity.Property(e => e.Username).HasMaxLength(100);
 
                 entity.Property(e => e.phone).HasMaxLength(12);
 
-                entity.Property(e => e.user_id).HasMaxLength(50);
+                entity.Property(e => e.user_id).HasMaxLength(100);
             });
 
             modelBuilder.Entity<tbl_ZaloLog>(entity =>
@@ -429,6 +459,31 @@ namespace KGQT.Models
                 entity.Property(e => e.user_name).HasMaxLength(100);
             });
 
+            modelBuilder.Entity<tbl_ZaloWebHook>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.ToTable("tbl_ZaloWebHook");
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.app_id).HasMaxLength(100);
+
+                entity.Property(e => e.event_name).HasMaxLength(100);
+
+                entity.Property(e => e.name).HasMaxLength(100);
+
+                entity.Property(e => e.phone).HasMaxLength(15);
+
+                entity.Property(e => e.recipient).HasMaxLength(100);
+
+                entity.Property(e => e.sender).HasMaxLength(100);
+
+                entity.Property(e => e.timestamp).HasMaxLength(100);
+            });
+
             modelBuilder.Entity<tbll_ConfigurationNoti>(entity =>
             {
                 entity.ToTable("tbll_ConfigurationNoti");
@@ -436,19 +491,6 @@ namespace KGQT.Models
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<tbl_Images>(entity =>
-            {
-                entity.HasKey(e => e.RecID);
-
-                entity.Property(e => e.RecID).ValueGeneratedNever();
-            });
-
-            modelBuilder.Entity<tbl_Questions>(entity =>
-            {
-                entity.HasKey(e => e.ID);
-                
             });
 
             OnModelCreatingPartial(modelBuilder);
