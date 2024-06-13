@@ -7,12 +7,13 @@ namespace KGQT.Areas.Admin.Controllers
     public class ZaloController : Controller
     {
         [Area("admin")]
-        public IActionResult Index(string search, DateTime? fromDate, DateTime? toDate, int type = -1, int page = 1)
+        public IActionResult Index(string search, int page = 1)
         {
             var oData = ZaloBusiness.GetPage(search, page, 10);
-            var lstData = oData[0] as List<tbl_Point>;
+            var lstData = oData[0] as List<tbl_ZaloFollewer>;
             ViewBag.numberPage = (int)oData[2];
             ViewBag.numberRecord = (int)oData[1];
+            ViewBag.pageCurrent = page;
             return View(lstData);
         }
     }

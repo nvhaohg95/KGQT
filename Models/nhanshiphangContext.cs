@@ -23,11 +23,11 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Configuration> tbl_Configurations { get; set; } = null!;
         public virtual DbSet<tbl_FeeWeight> tbl_FeeWeights { get; set; } = null!;
         public virtual DbSet<tbl_HistoryPayWallet> tbl_HistoryPayWallets { get; set; } = null!;
-        public virtual DbSet<tbl_Image> tbl_Images { get; set; } = null!;
+        public virtual DbSet<tbl_Images> tbl_Images { get; set; } = null!;
         public virtual DbSet<tbl_Notification> tbl_Notifications { get; set; } = null!;
         public virtual DbSet<tbl_Package> tbl_Packages { get; set; } = null!;
         public virtual DbSet<tbl_Point> tbl_Points { get; set; } = null!;
-        public virtual DbSet<tbl_Question> tbl_Questions { get; set; } = null!;
+        public virtual DbSet<tbl_Questions> tbl_Questions { get; set; } = null!;
         public virtual DbSet<tbl_Role> tbl_Roles { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_SystemLog> tbl_SystemLogs { get; set; } = null!;
@@ -171,7 +171,7 @@ namespace KGQT.Models
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });
 
-            modelBuilder.Entity<tbl_Image>(entity =>
+            modelBuilder.Entity<tbl_Images>(entity =>
             {
                 entity.HasKey(e => e.RecID)
                     .HasName("PK__tbl_Imag__360414FF2D414CCC");
@@ -288,7 +288,7 @@ namespace KGQT.Models
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });
 
-            modelBuilder.Entity<tbl_Question>(entity =>
+            modelBuilder.Entity<tbl_Questions>(entity =>
             {
                 entity.Property(e => e.CreatedBy).HasMaxLength(50);
 

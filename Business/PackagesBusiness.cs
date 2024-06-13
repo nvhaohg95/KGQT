@@ -158,7 +158,7 @@ namespace KGQT.Business
             if (oPack != null)
             {
                 var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == oPack.Username);
-                if (user != null)
+                if (user != null && (oPack.SearchBaiduTimes == null || oPack.SearchBaiduTimes == 0))
                 {
                     if (user.AvailableSearch == 0)
                     {
@@ -182,6 +182,7 @@ namespace KGQT.Business
 
                     }
                 }
+
                 using (HttpClient client = new HttpClient())
                 {
                     string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, code);
@@ -207,7 +208,7 @@ namespace KGQT.Business
                                     BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
 
                                     string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
-                                    message = string.Format(message, oPack.PackageCode, string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
+                                    message = string.Format(message, oPack.PackageCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
                                     NotificationBusiness.Insert(1, "admin", oPack.UID, oPack.Username, oPack.ID, oPack.PackageCode, message, message, 1, "/Package/Details/" + oPack.ID, "admin");
                                 }
                             }
@@ -926,7 +927,7 @@ namespace KGQT.Business
                                         ShippingOrder.UpdateByPackageChanged(oPack, accessor);
                                 }
                                 string message = "Đơn hàng {0}{1} đã nhập kho HCM";
-                                message = string.Format(message, ship.ShippingOrderCode, string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
+                                message = string.Format(message, ship.ShippingOrderCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
                                 NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
@@ -1047,13 +1048,7 @@ namespace KGQT.Business
                                             d = PJUtils.GetDeliveryDate(date, movingMethod);
                                         }
                                     }
-                                    //var date = DateTime.ParseExact(dt.Rows[row][0].ToString(),"dd/MM/yyyy",null);
-                                    //var dateExp = DateTime.Now;
-                                    //if (date != null || date != DateTime.MinValue && type != null || type > 0)
-                                    //{
-                                    //    dateExp = date.AddDays(type);
-                                    //}
-                                    //var d = PJUtils.GetDeliveryDate(dateExp);
+
                                     var oExist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
                                     if (oExist != null)
                                     {
@@ -1074,7 +1069,7 @@ namespace KGQT.Business
                                                 if (oExist.AutoQuery == true)
                                                 {
                                                     string message = "Kiện hàng {0}{1} đang được vận chuyển về kho Hồ Chí Minh";
-                                                    message = string.Format(message, oExist.PackageCode, string.IsNullOrEmpty(oExist.Note) ? " - " + oExist.Note : "");
+                                                    message = string.Format(message, oExist.PackageCode, !string.IsNullOrEmpty(oExist.Note) ? " - " + oExist.Note : "");
                                                     NotificationBusiness.Insert(1, "admin", oExist.UID, oExist.Username, oExist.ID, oExist.PackageCode, message, message, 1, "/ShippingOrder/Details/" + oExist.ID, "admin");
                                                 }
                                             }
@@ -1343,19 +1338,7 @@ namespace KGQT.Business
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == item.Username);
                     if (user != null)
                     {
-                        //if (user.AvailableSearch == 0)
-                        //{
-                        //    if (string.IsNullOrEmpty(user.Wallet) || Converted.ToDouble(user.Wallet) < 500)
-                        //        return;
-                        //    var wallet = Converted.StringCeiling(Converted.ToDouble(user.Wallet) - 500);
-                        //    AccountBusiness.UpdateWallet(user.ID, wallet);
-                        //    #region Logs
-                        //    HistoryPayWallet.Insert(user.ID, user.Username, item.ID, "Thanh toán tiền gọi api kiểm tra Mã Vận Đơn " + item.PackageCode, "500", 1, 1, wallet, "admin");
-                        //    #endregion
-                        //}
-                        //else
-                        //    AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch - 1);
-
+                        string message = "";
                         using (HttpClient client = new HttpClient())
                         {
                             string url = string.Format(Config.Settings.ApiUrl, Config.Settings.ApiKey, item.PackageCode);
@@ -1379,15 +1362,13 @@ namespace KGQT.Business
                                             BusinessBase.TrackLog(1, item.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, "admin");
                                         }
                                     }
-                                    else if (oData.data.Count > item.TrackingShipping)
+                                    else if (oData.data.Count > 0)
                                     {
                                         string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(oData.data[oData.data.Count() - 1].context, "zh", "vi"));
                                         string properties_trans = stran.Replace("[", "").Replace("]", "").Replace("\"", "");
                                         string[] ass = properties_trans.Split(',');
-                                        string message = $"Thông tin kiện hàng {item.PackageCode} ";
-                                        if (!string.IsNullOrEmpty(item.Note))
-                                            message += "- " + item.Note;
-                                        message += "\r\n" + ass[0];
+                                        message = "Thông tin kiện hàng {0}{1}\r\n{2}";
+                                        message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "", ass[0]);
                                     }
                                 }
                             }
@@ -1395,11 +1376,19 @@ namespace KGQT.Business
                         if (item.SearchBaiduTimes == null)
                             item.SearchBaiduTimes = 0;
                         item.SearchBaiduTimes++;
-                        if (BusinessBase.Update(item) && item.Status == 2)
+                        if (BusinessBase.Update(item))
                         {
-                            string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
-                            message = string.Format(message, item.PackageCode, string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "");
-                            NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/Package/Details/" + item.ID, "admin");
+                            if (item.Status == 2)
+                            {
+                                message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
+                                message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "");
+                                NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/Package/Details/" + item.ID, "admin");
+                            }
+                            else if (item.Status < 2)
+                            {
+                                if(!string.IsNullOrEmpty(message))
+                                    NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/package/QueryOrderStatus?code=" + item.PackageCode, "admin");
+                            }
                         }
                     }
                 }

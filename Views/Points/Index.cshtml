@@ -1,5 +1,5 @@
 ﻿@using KGQT.Commons;
-@model IEnumerable<KGQT.Models.tbl_Point>
+@model IEnumerable<KGQT.Models.temp.tempPoints>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
@@ -87,15 +87,15 @@
                         <td class="text-center">
                             @if (item.Type == 1)
                             {
-                                <span class="text-nsh1">-@item.Point</span>
+                                <span>@item.Point</span>
                             }
                             else
                             {
-                                <span class="text-nsh2">+@item.Point</span>
+                                <span>+@item.Point</span>
                             }
                         </td>
                         <td class="text-center">
-                            <span class="text-danger">@item.PointLeft</span>
+                            <span class="text-nsh1">@item.PointLeft</span>
                         </td>
                     </tr>
                 }

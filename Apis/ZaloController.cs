@@ -22,6 +22,14 @@ namespace KGQT.Apis
             return Redirect("/admin/package/index");
         }
 
+        [HttpGet]
+        [Route("Authorization")]
+        public IActionResult Authorization()
+        {
+            string uri = HttpUtility.UrlEncodeUnicode(Config.Zalo.Redirect_Uri);
+            string url = string.Format(Config.Zalo.PerUrl, Config.Zalo.AppID, uri);
+            return Redirect(url);
+        }
 
         [HttpGet]
         [Route("checktoken")]

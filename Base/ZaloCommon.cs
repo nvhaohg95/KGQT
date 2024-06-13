@@ -378,7 +378,7 @@ namespace KGQT.Base
                 JObject result = client.sendRequestUserProfileToUserIdV3(uid,
                     "Yêu cầu cung cấp thông tin",
                     "Vui lòng bấm vào hình để cung cấp cho chúng tôi thông tin của bạn!",
-                    "https://assets.easypost.com/assets/images/redesign/simple_truck_01.5f67d451fa50f2d2ce2655c2483fd10f.png");
+                    "https://tracking.nhanshiphang.vn/uploads/images/ead8daf4-f3cd-43bc-aa5c-830ecd7cdbb7.png");
                 Log.Information("Send request more info: " + result.ToString());
                 return result.ToString();
             }

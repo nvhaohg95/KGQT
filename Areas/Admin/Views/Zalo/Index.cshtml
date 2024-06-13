@@ -5,10 +5,6 @@
 @{
     ViewData["Title"] = "Lịch sử giao dịch";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var orderID = ViewBag.orderID;
-    var type = ViewBag.type;
-    DateTime? fromDate = ViewBag.fromDate;
-    DateTime? toDate = ViewBag.toDate;
     int pageCurrent = ViewBag.pageCurrent;
     int numberPage = ViewBag.numberPage;
     int numberRecord = ViewBag.numberRecord;
@@ -71,7 +67,7 @@
                             <span>@item.address</span>
                         </td>
                         <td class="text-center">
-                            <span class="text-nsh1">@item.</span>
+                            <span class="text-nsh1">@item.Status</span>
                         </td>
                     </tr>
                 }
