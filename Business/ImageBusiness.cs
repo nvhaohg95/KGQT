@@ -23,6 +23,7 @@ namespace KGQT.Business
                 total = query.Count();
                 if(total > 0)
                 {
+                    query = query.OrderByDescending(x => x.CreatedOn);
                     int pageNum = (pageIndex - 1) * pageSize;
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                     datas = query.Skip(pageNum).Take(pageSize).ToList();   

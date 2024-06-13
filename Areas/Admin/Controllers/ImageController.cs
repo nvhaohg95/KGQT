@@ -26,7 +26,6 @@ namespace KGQT.Areas.Admin.Controllers
             return result;
         }
 
-        [HttpPost]
         public DataReturnModel<bool> Uploads(int imageType)
         {
             DataReturnModel<bool> result = new();
