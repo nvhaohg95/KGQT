@@ -142,9 +142,10 @@ namespace KGQT.Base
             string url = Config.Zalo.GetTokenUrl;
             var token = BusinessBase.GetFirst<tbl_Zalo>();
 
-            if (token == null) {
+            if (token == null)
+            {
                 Log.Error("Không có token");
-                return null; 
+                return null;
             }
 
             if (token.freshtoken_expire <= DateTime.Now) return null;
@@ -250,6 +251,7 @@ namespace KGQT.Base
                             var f = new tbl_ZaloFollewer();
                             f.RecID = Guid.NewGuid();
                             f.user_id = item.user_id;
+                            f.Status = 0;
                             f.SendRequest = false;
                             f.SendRequestTimes = 0;
                             JObject oDetail = client.getProfileOfFollower(item.user_id);
@@ -373,7 +375,11 @@ namespace KGQT.Base
                 if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.sendRequestUserProfileToUserIdV3(uid, "Yêu cầu cung cấp thông tin", "Chúng tôi cần thêm thông tin từ bạn để được hỗ trợ tốt hơn", "https://stc-developers.zdn.vn/zalo.png");
+                JObject result = client.sendRequestUserProfileToUserIdV3(uid,
+                    "Yêu cầu cung cấp thông tin",
+                    "Vui lòng bấm vào hình để cung cấp cho chúng tôi thông tin của bạn!",
+                    "https://tracking.nhanshiphang.vn/uploads/images/ead8daf4-f3cd-43bc-aa5c-830ecd7cdbb7.png");
+                Log.Information("Send request more info: " + result.ToString());
                 return result.ToString();
             }
             return "";
@@ -417,12 +423,13 @@ namespace KGQT.Base
                     token = await RefreshToken();
                 ZaloClient client = new ZaloClient(token.access_token);
                 JObject result = client.updateFollowerInfo(uid, info.name, info.phone, info.address, 0, 0);
+                Log.Information("Update Info Follower: " + result.ToString());
                 return result.ToString();
             }
             return "";
         }
         #region Common
-        public static async void SendRequestAuto()
+        public static void SendRequestAuto()
         {
             using (var db = new nhanshiphangContext())
             {

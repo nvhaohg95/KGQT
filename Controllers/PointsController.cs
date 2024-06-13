@@ -16,7 +16,7 @@ namespace KGQT.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userName = userModel != null ? userModel.UserName : "";
             var oData = PointsBusiness.GetPage(userName, orderID, type, fromDate, toDate, page, 10);
-            var lstData = oData[0] as List<tbl_Point>;
+            var lstData = oData[0] as List<tempPoints>;
             var numberRecord = (int)oData[1];
             var numberPage = (int)oData[2];
             ViewBag.orderID = orderID;

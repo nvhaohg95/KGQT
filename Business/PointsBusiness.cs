@@ -1,6 +1,7 @@
 ﻿using KGQT.Business.Base;
 using KGQT.Commons;
 using KGQT.Models;
+using KGQT.Models.temp;
 
 namespace KGQT.Business
 {
@@ -10,7 +11,6 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                List<tbl_Point> datas = new();
                 int total = 0;
                 int totalPage = 0;
                 IQueryable<tbl_Point> query = db.tbl_Points;
@@ -31,9 +31,19 @@ namespace KGQT.Business
                 if (total > 0)
                 {
                     totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
-                    datas = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                    query = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize);
                 }
-                return new object[] { datas, total, page };
+                var oData = query.GroupJoin(db.tbl_Packages, a => a.OrderID, b => b.PackageCode, (a,b) => new { point = a, pack = b })
+                    .SelectMany(x => x.pack.DefaultIfEmpty(), (x, y) => new tempPoints
+                    {
+                        CreatedDate = x.point.CreatedDate,
+                        HContent = x.point.HContent,
+                        Point = x.point.Point,
+                        Type = x.point.Type,
+                        PointLeft = x.point.PointLeft,
+                        Note = y != null ? y.Note : "",
+                    }).ToList();
+                return new object[] { oData, total, totalPage };
             }
         }
 

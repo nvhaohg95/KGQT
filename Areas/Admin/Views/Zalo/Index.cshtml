@@ -1,20 +1,15 @@
 ﻿@using KGQT.Commons;
-@model IEnumerable<KGQT.Models.temp.tempPoints>
+@model IEnumerable<KGQT.Models.tbl_ZaloFollewer>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Lịch sử giao dịch";
-    Layout = "~/Views/Shared/_UserLayout.cshtml";
-    var orderID = ViewBag.orderID;
-    var type = ViewBag.type;
-    DateTime? fromDate = ViewBag.fromDate;
-    DateTime? toDate = ViewBag.toDate;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     int pageCurrent = ViewBag.pageCurrent;
     int numberPage = ViewBag.numberPage;
     int numberRecord = ViewBag.numberRecord;
 
 }
-
 <ul id="breadcrumbs">
     <li><a href="/Home/Dashboard">Trang chủ</a></li>
     <li><a class="active">Lịch sử điểm tra cứu</a></li>
@@ -22,22 +17,7 @@
 <div class="row p-2">
     <div class="col-lg-12 col-md-12 col-sm-12">
         <form class="row" id="myform">
-            <div class="col-lg-3 col-md-3 col-sm-12">
-                <p class="fw-bold m-0">Loại:</p>
-                <select name="type" id="TradeType" class="form-control">
-                    <option value="0" selected="@(type == -1)">Tất cả</option>
-                    <option value="1" selected="@(type == 0)">Điểm cộng</option>
-                    <option value="2" selected="@(type == 1 )">Điểm trừ</option>
-                </select>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-12">
-                <p class="fw-bold m-0">Từ ngày:</p>
-                @Html.TextBoxFor(model => fromDate, "", new { @type="date", @class="form-control" })
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-12">
-                <p class="fw-bold m-0">Đến ngày:</p>
-                @Html.TextBoxFor(model => toDate, "", new { @type="date", @class="form-control" })
-            </div>
+            
             <div class="col-lg-3 col-md-3 col-sm-12 d-flex align-items-end justify-content-end">
                 <a href="Index" class="btn btn-sm btn-info mr-2 w-100px">
                     <i class="fas fa-sync fa-xs"></i>
@@ -46,7 +26,7 @@
                 <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
             </div>
             <div class="col-lg-12 mt-4">
-                <h5 class="fw-bold text-primary text-uppercase">Lịch sử điểm tra cứu</h5>
+                <h5 class="fw-bold text-primary text-uppercase">Danh sách người dùng quan tâm Zalo Official</h5>
             </div>
         </form>
     </div>
@@ -56,11 +36,14 @@
     <div class="col-lg-12 col-md-12 col-sm-12">
         <table class="table table-bordered table-hover">
             <thead>
-                <tr class="bg-nsh2 text-white">
-                    <td class="fw-bold text-center">Ngày GD</td>
-                    <td class="fw-bold text-center">Nội dung</td>
-                    <td class="fw-bold text-center">Số điểm</td>
-                    <td class="fw-bold text-center">Số điểm còn lại</td>
+                <tr class="bg-info text-white">
+                    <td class="fw-bold text-center">Mã Zalo khách</td>
+                    <td class="fw-bold text-center">Zalo khách</td>
+                    <td class="fw-bold text-center">Tài khoản</td>
+                    <td class="fw-bold text-center">Điện thoại</td>
+                    <td class="fw-bold text-center">Địa chỉ</td>
+                    <td class="fw-bold text-center">Trạng thái</td>
+                    <td class="fw-bold text-center"></td>
 
                 </tr>
             </thead>
@@ -69,33 +52,22 @@
                 {
                     <tr>
                         <td class="text-center">
-                            <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
-                        </td>
-                        <td class="text-center text-truncate" title="@item.HContent">
-                            @if (!string.IsNullOrEmpty(item.HContent))
-                            {
-                                @if (item.HContent.Length < 50)
-                                {
-                                    @item.HContent
-                                }
-                                else
-                                {
-                                    @item.HContent.Substring(0,50)
-                                }
-                            }
+                            <span>@item.user_id</span>
                         </td>
                         <td class="text-center">
-                            @if (item.Type == 1)
-                            {
-                                <span>@item.Point</span>
-                            }
-                            else
-                            {
-                                <span>+@item.Point</span>
-                            }
+                            <span>@item.display_name</span>
                         </td>
                         <td class="text-center">
-                            <span class="text-nsh1">@item.PointLeft</span>
+                            <span>@item.Username</span>
+                        </td>
+                        <td class="text-center">
+                            <span>@item.phone</span>
+                        </td>
+                        <td class="text-center">
+                            <span>@item.address</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-nsh1">@item.Status</span>
                         </td>
                     </tr>
                 }
