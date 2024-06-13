@@ -12,14 +12,14 @@ namespace KGQT.Business
     {
         private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
 
-        public static object[] GetPage(int pageIndex,int pageSize)
+        public static object[] GetPage(int imageType,int pageIndex,int pageSize)
         {
             using (var db = new nhanshiphangContext())
             {
                 List<tbl_Images> datas = new();
                 int total = 0;
                 int totalPage = 0;
-                var query = db.tbl_Images.AsQueryable();
+                var query = db.tbl_Images.Where(x => x.ImageType == imageType);
                 total = query.Count();
                 if(total > 0)
                 {
@@ -119,6 +119,42 @@ namespace KGQT.Business
             {
                 var datas = db.tbl_Images.Where(x => x.ImageType == imageType && x.Status == 1).ToList();
                 return datas;
+            }
+        }
+
+        public static DataReturnModel<bool> UpdateImages(string recID, int stauts, int viewIndex, string createdBy)
+        {
+            DataReturnModel<bool> result = new();
+            try
+            {
+                using (var db = new nhanshiphangContext())
+                {
+                    var data = db.tbl_Images.FirstOrDefault(x => x.RecID == recID);
+                    if (data == null)
+                    {
+                        result.IsError = true;
+                        result.Message = "Không tìm thấy thông tin file";
+                        return result;
+                    }
+                    data.Status = stauts;
+                    data.ViewIndex = viewIndex;
+                    data.ModifiedBy = createdBy;
+                    data.ModifiedOn = DateTime.Now;
+                    db.Update(data);
+                    int kq = db.SaveChanges();
+                    result.IsError = false;
+                    result.Data = true;
+                    result.Message = "Cập nhật thành công!";
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Lỗi update images :" + ex.Message);
+                result.IsError = true;
+                result.Data = false;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                return result;
             }
         }
     }
