@@ -1052,8 +1052,8 @@ namespace KGQT.Business
 
                                                 if (split.Length >= 3)
                                                 {
-                                                    split[2] = split[2].Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
-                                                    date = new DateTime(split[2].ToInt(), split[1].ToInt(), split[0].ToInt());
+                                                    int year = DateTime.Now.Year;
+                                                    date = new DateTime(year, split[1].ToInt(), split[0].ToInt());
                                                     d = PJUtils.GetDeliveryDate(date, movingMethod);
                                                 }
                                             }
