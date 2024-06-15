@@ -1483,6 +1483,67 @@ namespace KGQT.Mobility
                 return new object[] { true, oRequest };
             }
         }
+
+        [HttpPost]
+        [Route("historypoint")]
+        public object[] GetHistoryPoint([FromBody] RequestModel model)
+        {
+            try
+            {
+                var oRequest = new DataReturnModel<object>();
+                if (!ValidateModelRequest(model))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var dataRequest = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.DataRequest);
+                if (dataRequest == null)
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                int status = dataRequest.ContainsKey("status") ? Int32.Parse(dataRequest["status"].ToString()) : 0;
+                string? ID = dataRequest.ContainsKey("id") ? dataRequest["id"].ToString() : null;
+                int pageNum = dataRequest.ContainsKey("pageNum") ? Int32.Parse(dataRequest["pageNum"].ToString()) : 0;
+                int pageSize = dataRequest.ContainsKey("pageSize") ? Int32.Parse(dataRequest["pageSize"].ToString()) : 0;
+                string? userName = dataRequest.ContainsKey("userName") ? dataRequest["userName"].ToString() : null;
+                DateTime? fromDate = dataRequest.ContainsKey("fromDate") ? (DateTime?)dataRequest["fromDate"] : null;
+                DateTime? toDate = dataRequest.ContainsKey("toDate") ? (DateTime?)dataRequest["toDate"] : null;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    oRequest.IsError = true;
+                    oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                    return new object[] { true, oRequest };
+                }
+                var oData = PointsBusiness.GetPage(userName, ID, status, fromDate, toDate, pageNum, pageSize);
+                var s = oData[0] as List<tbl_Point>;
+                if (s.Count > 0)
+                {
+                    var s2 = s.Select(x => new
+                    {
+                        Data = x,
+                        Month = x.CreatedDate.Value.Month,
+                        Year = x.CreatedDate.Value.Year,
+                    }).GroupBy(x => new { x.Month, x.Year })
+                    .Select((g, i) => new
+                    {
+                        Key = g.Key.Month + "/" + g.Key.Year,
+                        Datas = g.ToList()
+                    });
+                    oData[0] = s2;
+                }
+                return new object[] { false, oData };
+            }
+            catch (Exception)
+            {
+                var oRequest = new DataReturnModel<object>();
+                oRequest.IsError = true;
+                oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
+                return new object[] { true, oRequest };
+            }
+        }
         #endregion
 
         #region Notification
