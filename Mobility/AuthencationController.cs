@@ -1518,7 +1518,7 @@ namespace KGQT.Mobility
                     return new object[] { true, oRequest };
                 }
                 var oData = PointsBusiness.GetPage(userName, ID, status, fromDate, toDate, pageNum, pageSize);
-                var s = oData[0] as List<tbl_Point>;
+                var s = oData[0] as List<tempPoints>;
                 if (s.Count > 0)
                 {
                     var s2 = s.Select(x => new
