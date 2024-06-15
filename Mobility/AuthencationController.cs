@@ -680,7 +680,7 @@ namespace KGQT.Mobility
             {
                 var oRequest = new DataReturnModel<object>();
                 oRequest.IsError = false;
-                var lstslide  = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 2 && x.Status == 1).OrderBy(x => x.CreatedOn);
+                var lstslide  = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 2 && x.Status == 1).OrderBy(x => x.CreatedOn).OrderBy(x => x.ViewIndex);
                 tbl_Images imgPopup = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 3 && x.Status == 1).OrderBy(x => x.CreatedOn).FirstOrDefault();
                 tbl_Images imgSticket = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 4 && x.Status == 1).OrderBy(x => x.CreatedOn).FirstOrDefault();
                 //var imgPopup = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 3).OrderBy(x => x.CreatedOn);
