@@ -550,7 +550,7 @@ namespace KGQT.Mobility
                     oRequest.Message = "Người dùng không còn tồn tại!";
                     return new object[] { true, oRequest };
                 }
-                if (!string.IsNullOrEmpty(result.IMG))
+                /*if (!string.IsNullOrEmpty(result.IMG))
                 {
                     try
                     {
@@ -563,7 +563,7 @@ namespace KGQT.Mobility
                     {
                         result.IMG = "";
                     }
-                }
+                }*/
                 return new object[] { false, result };
             }
             catch (Exception)
@@ -605,7 +605,8 @@ namespace KGQT.Mobility
                     user.Username = item.Username;
                     user.FullName = item.FullName;
                     user.Password = PJUtils.Decrypt("userpass", item.Password);
-                    if (!string.IsNullOrEmpty(item.IMG))
+                    user.IMG = item.IMG;
+                    /*if (!string.IsNullOrEmpty(item.IMG))
                     {
                         try
                         {
@@ -618,7 +619,7 @@ namespace KGQT.Mobility
                         {
                             user.IMG = "";
                         }
-                    }
+                    }*/
                     lstTemp.Add(user);
                 }
                 return new object[] { false, lstTemp };
@@ -683,37 +684,29 @@ namespace KGQT.Mobility
                 var lstslide  = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 2 && x.Status == 1).OrderBy(x => x.CreatedOn).OrderBy(x => x.ViewIndex);
                 tbl_Images imgPopup = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 3 && x.Status == 1).OrderBy(x => x.CreatedOn).FirstOrDefault();
                 tbl_Images imgSticket = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 4 && x.Status == 1).OrderBy(x => x.CreatedOn).FirstOrDefault();
-                //var imgPopup = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 3).OrderBy(x => x.CreatedOn);
+                List<tempImg> lstImg = new List<tempImg>();
                 foreach (var item in lstslide)
                 {
-                    try
-                    {
-                        string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + item.ImageSrc;
-                        byte[] imageBytes = File.ReadAllBytes(path);
-                        string base64String = Convert.ToBase64String(imageBytes);
-                        item.ImageSrc = base64String;
-                    }
-                    catch (Exception ex)
-                    {
-                        item.ImageSrc = "";
-                    }
+                    var temp = new tempImg();
+                    temp.ImgType = item.ImageType;
+                    temp.IMG = item.ImageSrc;
+                    lstImg.Add(temp);
                 }
                 if (imgPopup != null)
                 {
-                    string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + imgPopup.ImageSrc;
-                    byte[] imageBytes = File.ReadAllBytes(path);
-                    string base64String = Convert.ToBase64String(imageBytes);
-                    imgPopup.ImageSrc = base64String;
+                    var temp = new tempImg();
+                    temp.IMG = imgPopup.ImageSrc;
+                    temp.ImgType = imgPopup.ImageType;
+                    lstImg.Add(temp);
                 }
                 if (imgSticket != null)
                 {
-                    string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + imgSticket.ImageSrc;
-                    byte[] imageBytes = File.ReadAllBytes(path);
-                    string base64String = Convert.ToBase64String(imageBytes);
-                    imgSticket.ImageSrc = base64String;
+                    var temp = new tempImg();
+                    temp.IMG = imgSticket.ImageSrc;
+                    temp.ImgType = imgSticket.ImageType;
+                    lstImg.Add(temp);
                 }
-
-                return new object[] { false, lstslide, imgPopup, imgSticket };
+                return new object[] { false, lstImg };
             }
             catch (Exception)
             {
@@ -1856,6 +1849,7 @@ namespace KGQT.Mobility
         public class tempImg
         {
             public string? IMG { get; set; }
+            public int? ImgType { get; set; }
         }
         #endregion
 
