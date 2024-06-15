@@ -674,14 +674,17 @@ namespace KGQT.Mobility
 
         [HttpPost]
         [Route("getslide")]
-        public object GetSlide()
+        public object[] GetSlide()
         {
             try
             {
                 var oRequest = new DataReturnModel<object>();
                 oRequest.IsError = false;
-                var lstimg  = BusinessBase.Get<tbl_Images>().OrderBy(x => x.CreatedOn).ToList();
-                foreach (var item in lstimg)
+                var lstslide  = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 2 && x.Status == 1).OrderBy(x => x.CreatedOn);
+                tbl_Images imgPopup = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 3 && x.Status == 1).OrderBy(x => x.CreatedOn).FirstOrDefault();
+                tbl_Images imgSticket = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 4 && x.Status == 1).OrderBy(x => x.CreatedOn).FirstOrDefault();
+                //var imgPopup = BusinessBase.GetList<tbl_Images>(x => x.ImageType == 3).OrderBy(x => x.CreatedOn);
+                foreach (var item in lstslide)
                 {
                     try
                     {
@@ -695,15 +698,29 @@ namespace KGQT.Mobility
                         item.ImageSrc = "";
                     }
                 }
-                oRequest.Data = lstimg;
-                return oRequest;
+                if (imgPopup != null)
+                {
+                    string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + imgPopup.ImageSrc;
+                    byte[] imageBytes = File.ReadAllBytes(path);
+                    string base64String = Convert.ToBase64String(imageBytes);
+                    imgPopup.ImageSrc = base64String;
+                }
+                if (imgSticket != null)
+                {
+                    string path = AppDomain.CurrentDomain.BaseDirectory + "wwwroot\\" + imgSticket.ImageSrc;
+                    byte[] imageBytes = File.ReadAllBytes(path);
+                    string base64String = Convert.ToBase64String(imageBytes);
+                    imgSticket.ImageSrc = base64String;
+                }
+
+                return new object[] { false, lstslide, imgPopup, imgSticket };
             }
             catch (Exception)
             {
                 var oRequest = new DataReturnModel<object>();
                 oRequest.IsError = true;
                 oRequest.Message = "Đã có lỗi trong quá trình thực thi hệ thống. Vui lòng thử lại!";
-                return oRequest;
+                return new object[] { true, oRequest };
             }
         }
         #endregion
