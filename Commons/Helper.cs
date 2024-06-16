@@ -103,7 +103,6 @@ namespace KGQT.Commons
                             DefaultSound = true,
                             DefaultLightSettings = true,
                             NotificationCount = total,
-                            Sticky = true
                         },
 						Priority = Priority.High
                     },
