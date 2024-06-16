@@ -6,6 +6,7 @@ using KGQT.Models.temp;
 using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Drawing.Printing;
 
 namespace KGQT.Areas.Admin.Controllers
 {
@@ -13,25 +14,18 @@ namespace KGQT.Areas.Admin.Controllers
     public class ImageController : Controller
     {
         [HttpGet]
-        public IActionResult Index(int page = 1,int pageSize = 8)
+        public IActionResult Index()
         {
-            var oData = ImageBusiness.GetPage(page, pageSize);
-            var lstData = oData[0] as List<tbl_Images>;
-            var numberRecord = (int)oData[1];
-            var numberPage = (int)oData[2];
-            ViewBag.pageCurrent = page;
-            ViewBag.numberPage = numberPage;
-            ViewBag.numberRecord = numberRecord;
-            return View(lstData);
+            return View();
         }
 
+        [HttpPost]
         public DataReturnModel<tbl_Images> GetByID(string id)
         {
             DataReturnModel<tbl_Images> result = ImageBusiness.GetByID(id);
             return result;
         }
 
-        [HttpPost]
         public DataReturnModel<bool> Uploads(int imageType)
         {
             DataReturnModel<bool> result = new();
@@ -53,12 +47,47 @@ namespace KGQT.Areas.Admin.Controllers
             return result;
         }
 
-
+        [HttpPost]
         public DataReturnModel<List<tbl_Images>> GetImageByType(int imageType)
         {
             DataReturnModel<List<tbl_Images>> result = new();
             result.Data = ImageBusiness.GetImgaeByType(imageType);
             return result;
+        }
+
+        [HttpGet]
+        public IActionResult Detail(int imageType,int page = 1, int pageSize = 8)
+        {
+            var oData = ImageBusiness.GetPage(imageType, page, pageSize);
+            var lstData = oData[0] as List<tbl_Images>;
+            var numberRecord = (int)oData[1];
+            var numberPage = (int)oData[2];
+            ViewBag.imageType = imageType;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
+            return View(lstData);
+        }
+
+        [HttpPost]
+        public DataReturnModel<bool> Update(string recID, int status,int viewIndex)
+        {
+            DataReturnModel<bool> result = new DataReturnModel<bool>();
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            if (!string.IsNullOrEmpty(userLogin))
+            {
+                result = ImageBusiness.UpdateImages(recID, status, viewIndex, userLogin);
+            }
+            else
+            {
+                result.IsError = true;
+                result.Data = false;
+                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+            }
+            return result; ;
         }
     }
 }

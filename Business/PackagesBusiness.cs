@@ -1039,13 +1039,28 @@ namespace KGQT.Business
                                     DateTime d = DateTime.Now;
                                     if (!string.IsNullOrEmpty(sDate))
                                     {
-                                        string[] split = sDate.Split("/", StringSplitOptions.RemoveEmptyEntries);
-
-                                        if (split.Length >= 3)
+                                        try
                                         {
-                                            split[2] = split[2].Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
-                                            date = new DateTime(split[2].ToInt(), split[1].ToInt(), split[0].ToInt());
+                                            date = DateTime.Parse(sDate);
                                             d = PJUtils.GetDeliveryDate(date, movingMethod);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            try
+                                            {
+                                                string[] split = sDate.Split("/", StringSplitOptions.RemoveEmptyEntries);
+
+                                                if (split.Length >= 3)
+                                                {
+                                                    int year = DateTime.Now.Year;
+                                                    date = new DateTime(year, split[1].ToInt(), split[0].ToInt());
+                                                    d = PJUtils.GetDeliveryDate(date, movingMethod);
+                                                }
+                                            }
+                                            catch (Exception ex2)
+                                            {
+                                                _log.Error(JsonConvert.SerializeObject(ex));
+                                            }
                                         }
                                     }
 
@@ -1120,6 +1135,7 @@ namespace KGQT.Business
                                 }
                                 catch (Exception ex)
                                 {
+                                    BusinessBase.Remove(big);
                                     _log.Error("Import Excel", ex.Message);
                                     lstError.Add(new tempExport { Row = row, Column = 3 });
                                 }
@@ -1386,7 +1402,7 @@ namespace KGQT.Business
                             }
                             else if (item.Status < 2)
                             {
-                                if(!string.IsNullOrEmpty(message))
+                                if (!string.IsNullOrEmpty(message))
                                     NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/package/QueryOrderStatus?code=" + item.PackageCode, "admin");
                             }
                         }

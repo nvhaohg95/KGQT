@@ -1,18 +1,9 @@
-﻿@model IEnumerable<KGQT.Models.tbl_Images>
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+﻿
 @{
+    
     ViewData["Title"] = "Hình ảnh";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    int pageCurrent = ViewBag.pageCurrent;
-    int numberPage = ViewBag.numberPage;
-    int numberRecord = ViewBag.numberRecord;
-    List<IFormFile> fileUploads = new();
 }
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
-}
-
 <div class="row mb-2 w-100">
     <ul class="ps-2" id="breadcrumbs">
         <li class="text-uppercase fw-bold"><a href="/admin">Trang chủ</a></li>
@@ -20,273 +11,28 @@
     </ul>
 </div>
 <div class="row py-2 px-4 w-100">
-    <div class="col-12 text-right">
-        <button type="button" class="btn btn-sm btn-success w-100px" data-bs-toggle="modal" data-bs-target="#exampleModalAdd" onclick="openPopup()">
-            <i class="fas fa-plus mr-1"></i>
-            Thêm
-        </button>
+    <div class="col-2 flex-column cursor-pointer my-2">
+        <a href="Detail?imageType=1" class="text-dark text-decoration-none">
+            <img src="~/img/folder.jpg" style="height:200px;width:100%;" />
+            <p class="fw-bold text-center">Logo</p>
+        </a>
     </div>
-    @foreach (var item in Model)
-    {
-        <div class="col-3 my-2">
-            <div class="card" style="width:18rem;">
-                <div class="card-img-top border-bottom d-flex align-items-center justify-content-center" style="height:200px;width:100%;">
-                    <img src="@item.ImageSrc" style="max-height:200px;max-width:100%;"/>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-between p-2">
-                    <p class="card-text fw-bold m-0">@(item.CreatedOn.ToString("dd/MM/yyyy hh:mm"))</p>
-                    <a href="#" onclick="clickViewImage('@item.RecID')" data-bs-toggle="modal" data-bs-target="#exampleModal">Xem</a>
-                </div>
-            </div>
-        </div>
-    }
-</div>
-<div class="row p-2 w-100">
-    <div class="col-4 align-self-center">
-        <span>
-            Tổng số:&nbsp
-            <b>@numberRecord</b>
-        </span>
+    <div class="col-2 flex-column cursor-pointer my-2">
+        <a href="Detail?imageType=2" class="text-dark text-decoration-none">
+            <img src="~/img/folder.jpg" style="height:200px;width:100%;" />
+            <p class="fw-bold text-center">Slider</p>
+        </a>
     </div>
-    <div class="col-8">
-        @if (numberPage > 1)
-        {
-            <nav class="d-flex justify-content-end">
-                <ul class="pagination m-0">
-                    @{
-                        int offset = 2; // number display page
-                        if (pageCurrent > 1)
-                        {
-                            <li class="page-item">
-                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
-                                    <i class="fas fa-fast-backward"></i>
-                                </button>
-                            </li>
-                            int prevPage = pageCurrent - 1;
-                            <li class="page-item">
-                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
-                                    <span aria-hidden="true">&laquo;</span>
-                                    <span class="sr-only">Previous</span>
-                                </button>
-                            </li>
-                        }
-
-                        int from = pageCurrent - offset;
-                        int to = pageCurrent + offset;
-                        if (from <= 0)
-                        {
-                            from = 1;
-                            to = offset * 2;
-                        }
-
-                        if (to > numberPage)
-                        {
-                            to = numberPage;
-                        }
-
-                        int i;
-                        for (i = from; i <= to; i++)
-                        {
-                            <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
-                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
-                            </li>
-                        }
-                        if (pageCurrent < numberPage - (to / 2))
-                        {
-                            <li class="page-item disabled">
-                                <a class="page-link">...</a>
-                            </li>
-                        }
-                        if (pageCurrent < numberPage)
-                        {
-                            int nextPage = pageCurrent + 1;
-                            <li class="page-item">
-                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
-                                </button>
-                            </li>
-                        }
-                        if (pageCurrent < numberPage)
-                        {
-                            <li class="page-item">
-                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
-                                    <i class="fas fa-fast-forward"></i>
-                                </button>
-                            </li>
-                        }
-                    }
-                </ul>
-            </nav>
-        }
+    <div class="col-2 flex-column cursor-pointer my-2">
+        <a href="Detail?imageType=3" class="text-dark text-decoration-none">
+            <img src="~/img/folder.jpg" style="height:200px;width:100%;" />
+            <p class="fw-bold text-center">Banner</p>
+        </a>
+    </div>
+    <div class="col-2 flex-column cursor-pointer my-2">
+        <a href="Detail?imageType=4" class="text-dark text-decoration-none">
+            <img src="~/img/folder.jpg" style="height:200px;width:100%;" />
+            <p class="fw-bold text-center">Sticket</p>
+        </a>
     </div>
 </div>
-<div class="modal fade" id="exampleModalAdd" tabindex="-1" aria-labelledby="exampleModalAddLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="width:1000px;max-width:1000px">
-        <form class="modal-content" enctype="multipart/form-data" method="post" action="/Admin/Image/Uploads">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-uppercase" id="exampleModalAddLabel">Upload</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="d-flex align-items-center align-content-center justify-content-between" style="height:400px">
-                    <div id="panel-upload" class="d-flex align-items-center justify-content-center" style="width:30%;height:100%;border-width: 1px;border-style: dashed;border-color: gray;">
-                        <img src="~/img/imag-upload2.png" class="cursor-pointer" alt="image.png" onclick="clickUpload()" style=" max-width:100%;height: 200px;" />
-                    </div>
-                    <div id="panel-files" class="flex-column align-items-center justify-content-center" style="width:68%;height:100%;border-width: 1px;border-style: dashed;border-color: gray; overflow:hidden">
-                        <div id="panel-files-title" class="fw-bold p-2" style="height:40px">
-                            <p class="m-0">Files đã chọn</p>
-                        </div>
-                        <div id="panel-files-selected" class="flex-column overflow-auto" style="height:360px;padding:0px 20px">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer justify-content-between">
-                <div class="d-flex align-items-center">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="imageType" id="inlineRadio1" value="1">
-                        <label class="form-check-label" for="inlineRadio1">Logo</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="imageType" id="inlineRadio2" value="2">
-                        <label class="form-check-label" for="inlineRadio2">Slider</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="imageType" id="inlineRadio3" value="3">
-                        <label class="form-check-label" for="inlineRadio3">Banner</label>
-                    </div>
-                    <input id="inputUpload" type="file" accept="image/*" multiple name="images" class="d-none" onchange="selectFile(this)" />
-                </div>
-                <div>
-                    <button type="button" class="btn btn-sm btn-secondary w-100px" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-sm btn-primary w-100px" data-bs-dismiss="modal" onclick="saveFile()">Thêm</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-uppercase" id="exampleModalLabel">Hình ảnh</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body d-flex align-items-center justify-content-center" style="height:500px">
-                <img id="viewImage" src="" style="max-width:100%;max-height:100%;width:auto;height:auto" /> 
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function openPopup() {
-        $("#panel-files-selected")[0].innerHTML = "";
-    }
-    function clickUpload(){
-        $("#inputUpload").click();
-    }
-    function formatBytes(bytes, decimals = 2) {
-        if (!+bytes) return '0 Bytes'
-
-        const k = 1024
-        const dm = decimals < 0 ? 0 : decimals
-        const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
-
-        const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-    }
-    function checkFileImage(file) {
-        var fileType = file["type"];
-        var validImageTypes = ["image/gif", "image/jpeg", "image/png"];
-        if ($.inArray(fileType, validImageTypes) > -1) 
-        {
-            return true;
-        }
-        return false;
-    }
-
-    function selectFile(e){
-        let files = e.files;
-        if (files.length <= 0) return;
-        $("#panel-files-selected")[0].innerHTML = "";
-        for (let i = 0; i < files.length; ++i) {
-            let file = files[i];
-            if (checkFileImage(file))
-            {
-                let url = URL.createObjectURL(file);
-                let html = $(`
-                            <div class="d-flex align-items-center my-4 p-2" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;">
-                                <div class="me-4">
-                                    <img src="${url}" style="width:100px;height:100px"/>
-                                </div>
-                                <div class="flex-column text-truncate">
-                                    <p class="fw-bold m-0" title="${file.name}">${file.name}</p>
-                                    <p class="m-0">${formatBytes(file.size)}</p>
-                                </div>
-                        </div>`)
-                $("#panel-files-selected").append(html);
-            }
-        }
-    }
-    function saveFile(){
-        let files = $("#inputUpload")[0].files;
-        let imageType = $('input[name="imageType"]:checked').val();
-        if (files.length <= 0)
-        {
-            helper.showErr('Vui lòng chọn file upload!');
-            return;
-        }
-        if (!imageType) {
-            helper.showErr('Vui lòng chọn loại file!');
-            return;
-        }
-        let formdata = new FormData();
-        formdata.append("imageType", imageType);
-        for (var i = 0; i < files.length; i++) {
-            formdata.append(files[i].name, files[i]);
-        }
-        $.ajax({
-            url: "/Admin/Image/Uploads",
-            type: 'POST',
-            contentType: false,
-            processData: false,
-            data: formdata,
-            success: function (reponse) {
-                if (reponse.isError)
-                    helper.showErr(reponse.message)
-                else
-                    helper.showSuc('Thêm thành công!')
-            },
-            error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
-            }
-        });
-    }
-
-    function clickViewImage(id){
-        $("#viewImage").attr("src","");
-        $.ajax({
-            url: "/Admin/Image/GetByID",
-            type: 'POST',
-            data: {id : id},
-            success: function (respone) {
-                if (respone.isError) 
-                {
-                    helper.showErr(res.message);
-                }
-                else
-                {
-                    $("#viewImage").attr("src", respone.data.imageSrc);
-                }
-            },
-            error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại');
-            }
-        });
-    }
-</script>
