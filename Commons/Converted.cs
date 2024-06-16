@@ -1,4 +1,5 @@
-﻿using KGQT.Business;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using KGQT.Business;
 using Newtonsoft.Json;
 using Serilog;
 using ILogger = Serilog.ILogger;
@@ -9,6 +10,12 @@ namespace KGQT.Commons
     {
         private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
 
+        public static bool ToBool(this bool? value)
+        {
+            if (!value.HasValue) return false;
+
+            return value.Value;
+        }
         public static int ToInt(int? s)
         {
             if (!s.HasValue) return 0;
@@ -32,14 +39,16 @@ namespace KGQT.Commons
         {
             if (string.IsNullOrEmpty(s)) return 0;
 
-            return Convert.ToDouble(s);
+            double num = Convert.ToDouble(s.ToString());
+            return Math.Round(num, 1, MidpointRounding.AwayFromZero);
         }
 
         public static double Double(this string s)
         {
             if (string.IsNullOrEmpty(s)) return 0;
 
-            return Convert.ToDouble(s);
+            double num = Convert.ToDouble(s.ToString());
+            return Math.Round(num, 1, MidpointRounding.AwayFromZero);
         }
         public static double ToDouble(object s)
         {

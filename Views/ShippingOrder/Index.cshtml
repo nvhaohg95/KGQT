@@ -125,11 +125,16 @@
                                     }
                                 </td>
                                 <td class="text-left ">
-                                    @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                    <a href="/ShippingOrder/Details?id=@item.ID">
+                                        @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                    </a>
                                 </td>
                                 <td class="text-left">
                                     <div class="w-300px d-block text-break">
-                                        @item.PackageCode
+                                        @foreach (var p in item.Packages)
+                                        {
+                                            <p>@p</p>
+                                        }
                                     </div>
                                 </td>
                                 <td class="text-center ">

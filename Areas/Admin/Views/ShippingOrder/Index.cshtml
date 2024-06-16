@@ -115,7 +115,9 @@
                                 {
                                     <tr class="table-light font-weight-normal">
                                         <td class="text-left">
+                                            <a href="/Admin/ShippingOrder/Details?id=@item.ID">
                                             @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                            </a>
                                         </td>
 
                                         <td class="text-center  ">
@@ -123,7 +125,10 @@
                                         </td>
                                         <td class="text-left">
                                             <div class="w-300px d-flex text-break">
-                                                @item.PackageCode
+                                                @foreach (var p in item.Packages)
+                                                {
+                                                    <p>@p</p>
+                                                }
                                             </div>
                                         </td>
                                         <td class="text-center">

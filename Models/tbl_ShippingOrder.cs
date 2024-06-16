@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KGQT.Models
 {
@@ -38,5 +39,8 @@ namespace KGQT.Models
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
+
+        [NotMapped]
+        public List<string> Packages { get; set; }
     }
 }

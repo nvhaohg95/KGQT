@@ -129,9 +129,9 @@
                         <div class="col-lg-4 col-md-4 col-sm-12 my-auto">
                             <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
                                 <label class="mb-0 col-md-12 col-sm-12">Mô tả</label>
-                                <div class="col-md-12 col-sm-12" id="divTextarea@(item.ID)">
+                                <div class="col-md-12 col-sm-12 h-28px" id="divTextarea@(item.ID)">
                                     @*<input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />*@
-                                    <textarea class="form-control inputNode p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)">@item.Note</textarea>
+                                    <textarea class="form-control inputNode p-0 bg-transparent text-white border-0" id="note@(item.ID)">@item.Note</textarea>
                                 </div>
                                 <div class="col-md-2 col-sm-12 d-none" id="divBtnSave@(item.ID)">
                                     <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
@@ -359,8 +359,8 @@
         })
 
         $('.inputNode').off().on('keypress', function () {
-            if ($(this).val().length >= 70)
-                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+            if ($(this).val().length >= 40)
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
         })
     })
 
@@ -376,8 +376,8 @@
 
     function saveNote(id) {
         let note = $('#note' + id).val();
-        if (note && note.length > 70) {
-            helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+        if (note && note.length > 40) {
+            helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
             return
         }
         $.ajax({

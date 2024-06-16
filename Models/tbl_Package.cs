@@ -72,5 +72,6 @@ namespace KGQT.Models
         public bool? Exported { get; set; }
         public bool? AutoQuery { get; set; }
         public int? TrackingShipping { get; set; }
+        public bool? IsImport { get; set; }
     }
 }

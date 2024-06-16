@@ -111,8 +111,8 @@
 <script>
     $(document).ready(function(){
         $('.inputNode').off().on('keypress', function () {
-            if ($(this).val().length >= 70)
-                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+            if ($(this).val().length >= 40)
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
         })
     })
     function showhideDeclare(o) {
@@ -146,8 +146,8 @@
         }
 
         if (data.Note) {
-            if (data.Note.length > 70) {
-                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+            if (data.Note.length > 40) {
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
                 return
             }
         }

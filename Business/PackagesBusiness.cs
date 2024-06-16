@@ -641,6 +641,7 @@ namespace KGQT.Business
                 try
                 {
                     var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == data.Id);
+                    bool isImport = pack.IsImport.ToBool();
                     if (pack == null)
                     {
                         dt.IsError = true;
@@ -707,7 +708,7 @@ namespace KGQT.Business
                     pack.ModifiedBy = accessor;
                     pack.ModifiedDate = DateTime.Now;
                     pack.ImportedSGWH = DateTime.Now;
-
+                    pack.IsImport = true;
                     if (!string.IsNullOrEmpty(data.Date))
                     {
                         DateTime dt2 = DateTime.ParseExact(data.Date, "dd/MM/yyyy", null);
@@ -748,7 +749,7 @@ namespace KGQT.Business
                     db.Update(pack);
                     if (db.SaveChanges() > 0)
                     {
-                        if (user != null)
+                        if (user != null && isImport)
                         {
                             if (user.AvailableSearch == null)
                                 user.AvailableSearch = 0;
@@ -791,14 +792,15 @@ namespace KGQT.Business
                             double weightOver = 0;
                             foreach (var item in lstPack)
                             {
-                                if (item.IsBrand == true && item.WeightReal.Double() < 500)
-                                    weightBrand += Converted.ToDouble(item.WeightReal);
-                                else if (item.WeightReal.Double() < 500)
-                                    weight += Converted.ToDouble(item.WeightReal);
+                                double weightEx = Converted.ToDouble(item.WeightReal);
+                                if (item.IsBrand == true && weightEx < 500)
+                                    weightBrand = Converted.ToDouble(weightBrand + weightEx);
+                                else if (weightEx < 500)
+                                    weight = Converted.ToDouble(weight + weightEx);
                                 else
                                 {
-                                    weightOver += Converted.ToDouble(item.WeightReal);
-                                    priceOver += item.TotalPrice.Double();
+                                    weightOver = Converted.ToDouble(weightOver + weightEx);
+                                    priceOver = Converted.ToDouble(priceOver + item.TotalPrice.Double());
                                 }
                             }
 
