@@ -100,9 +100,10 @@ namespace KGQT.Commons
                             Priority = NotificationPriority.HIGH,
                             Title = "Trakuaidi xin thông báo!",
                             Body = body,
-							DefaultSound = true,
-							DefaultLightSettings = true,
-                            NotificationCount = total
+                            DefaultSound = true,
+                            DefaultLightSettings = true,
+                            NotificationCount = total,
+                            Sticky = true
                         },
 						Priority = Priority.High
                     },
