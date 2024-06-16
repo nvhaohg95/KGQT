@@ -138,7 +138,8 @@ namespace KGQT.WebHook
 
                         if (db.SaveChanges() > 0)
                         {
-                            ZaloCommon.RequestMoreInfoAsync(data.sender.id);
+                            Log.Information($"Save follower succes: {data.follower.id}");
+                            ZaloCommon.RequestMoreInfoAsync(data.follower.id);
                         }
                         else
                         {
