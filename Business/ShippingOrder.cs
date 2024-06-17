@@ -66,13 +66,26 @@ namespace KGQT.Business
         #endregion
 
         #region Get List
-        public static (int, double) GetTotalAndLeft(string username)
+        public static (int, double) GetTotalAndLeft(int status, string ID, DateTime? fromDate, DateTime? toDate, string username)
         {
             using (var db = new nhanshiphangContext())
             {
-                IQueryable<tbl_ShippingOrder> queryable = db.tbl_ShippingOrders.Where(x => x.Username == username);
-                int total = queryable.Count();
-                double totalLeft = queryable.Where(x => x.Status == 1 || x.Status == 0).AsEnumerable().Sum(x => x.TotalPrice.Double());
+                IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders.Where(x => x.Username == username);
+
+                if (status > 0)
+                    query = query.Where(x => x.Status == status);
+
+                if (!string.IsNullOrEmpty(ID))
+                    query = query.Where(x => x.ShippingOrderCode.Contains(ID) || x.Username.Contains(ID) || x.PackageCode.Contains(ID));
+
+                if (fromDate != null)
+                    query = query.Where(x => x.CreatedDate >= fromDate);
+
+                if (toDate != null)
+                    query = query.Where(x => x.CreatedDate <= toDate);
+
+                int total = query.Count();
+                double totalLeft = query.Where(x => x.Status == 1 || x.Status == 0).AsEnumerable().Sum(x => x.TotalPrice.Double());
                 return (total, totalLeft);
             }
         }

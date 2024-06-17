@@ -1,4 +1,5 @@
 ﻿using KGQT.Base;
+using KGQT.Business;
 using KGQT.Models;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -48,13 +49,21 @@ namespace KGQT.Apis
             string data = await ZaloCommon.GetInfoFlowerAsync(uid);
             return Ok(data);
         }
-        
+
         [HttpGet]
         [Route("request")]
         public async Task<IActionResult> Test2(string uid)
         {
             string data = await ZaloCommon.RequestMoreInfoAsync(uid);
             return Ok(data);
+        }
+
+        [HttpGet]
+        [Route("dailytask")]
+        public async Task<IActionResult> Test3()
+        {
+            PackagesBusiness.DailyTask();
+            return Ok(200);
         }
     }
 }
