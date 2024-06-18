@@ -138,7 +138,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12 m-auto">
+                        <div class="col-lg-3 col-md-3 col-sm-12 m-auto text-right">
                             <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
                             @if (item.Status == 9 && item.CanceledBy == userModel?.UserName)
                             {
@@ -147,7 +147,10 @@
                             @if (item.Status < 2)
                             {
                                 <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@item.ID)">Hủy kiện</button>
-                                <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
+                            }
+                            <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@item.PackageCode',@item.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
+                            @if (item.Status < 2)
+                            {
                                 <button class="btn-sm btn bg-danger text-white mt-2 px-3" onclick="Delete(@item.ID)" type="button">Xóa</button>
                             }
                         </div>

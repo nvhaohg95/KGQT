@@ -367,6 +367,56 @@ namespace KGQT.Base
             bw.RunWorkerAsync();
         }
 
+        public static async Task SendMessageToAllV2(string message)
+        {
+            var token = BusinessBase.GetFirst<tbl_Zalo>();
+            if (token != null)
+            {
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
+                    token = await RefreshToken();
+                ZaloClient client = new ZaloClient(token.access_token);
+                using (var db = new nhanshiphangContext())
+                {
+                    var lstData = db.tbl_ZaloFollewers.ToList();
+                    if(lstData != null && lstData.Count > 0)
+                    {
+                        BackgroundWorker bw = new BackgroundWorker();
+                        bw.WorkerSupportsCancellation = true;
+                        bw.DoWork += new DoWorkEventHandler(
+                        delegate (object o, DoWorkEventArgs args)
+                        {
+                            BackgroundWorker b = o as BackgroundWorker;
+
+                            foreach (var item in lstData)
+                            {
+                                JObject result = client.sendTextMessageToUserIdV3(item.user_id, message);
+                                var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
+                                if (oData.error != 0)
+                                {
+                                    var log = new tbl_ZaloLog();
+                                    log.action = 1;
+                                    log.error = oData.error;
+                                    log.message = oData.message;
+                                    log.user_id = item.user_id;
+                                    log.user_name = item.display_name;
+                                    log.context = message;
+                                    log.CreatedDate = DateTime.Now;
+                                    BusinessBase.Add(log);
+                                }
+                            }
+
+                        });
+                        bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                           delegate (object o, RunWorkerCompletedEventArgs args)
+                           {
+                               bw.CancelAsync();
+                           });
+                        bw.RunWorkerAsync();
+                    }
+                }
+            }
+        }
+
         public static async Task<string> RequestMoreInfoAsync(string uid)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
