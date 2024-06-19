@@ -120,6 +120,17 @@
                     <label for="txtShipID">Mô tả</label>
                     <textarea class="form-control" name="Note" placeholder="Nhập mô tả" rows="4">@Model.Note</textarea>
                 </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtExportedCNWH">Ngày xuất kho Trung Quốc</label>
+                    <input type="text" class="form-control txtImportDate" id="txtExportedCNWH" name="zExportedCNWH" value="@(Model.ExportedCNWH != null? Model.ExportedCNWH.Value.ToString("dd/MM/yyyy") :"")">
+                </div>
+                @if (Model.ImportedSGWH != null)
+                {
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtImportedSGWH">Ngày Nhập kho HCM</label>
+                        <input type="text" class="form-control txtImportDate" id="txtImportedSGWH" name="zImportedSGWH" value="@(Model.ImportedSGWH != null? Model.ImportedSGWH.Value.ToString("dd/MM/yyyy") :"")">
+                    </div>
+                }
                 <div class="form-group mb-2">
                     <label class="mb-0">Trạng thái</label>
                 </div>
@@ -143,7 +154,31 @@
     </div>
 </div>
 <script>
+    jQuery(function ($) {
+        $.datepicker.regional["vi-VN"] =
+        {
+            closeText: "Đóng",
+            prevText: "Trước",
+            nextText: "Sau",
+            currentText: "Hôm nay",
+            monthNames: ["Tháng một", "Tháng hai", "Tháng ba", "Tháng tư", "Tháng năm", "Tháng sáu", "Tháng bảy", "Tháng tám", "Tháng chín", "Tháng mười", "Tháng mười một", "Tháng mười hai"],
+            monthNamesShort: ["Một", "Hai", "Ba", "Bốn", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười một", "Mười hai"],
+            dayNames: ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"],
+            dayNamesShort: ["CN", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy"],
+            dayNamesMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+            weekHeader: "Tuần",
+            dateFormat: "dd/mm/yy",
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ""
+        };
+
+        $.datepicker.setDefaults($.datepicker.regional["vi-VN"]);
+    });
     $(document).ready(function () {
+        $(".txtImportDate").datepicker();
+
         $('#txtPackage').off('keypress').on('keypress', function (e) {
             if (e.which == 13)
                 checkPackage();
@@ -309,10 +344,9 @@
         if (!data["IsAirPackage"])
             data["IsAirPackage"] = false;
         if (!data["IsInsurance"])
-            data["IsInsurance"] = false; 
-            if (!data["IsBrand"])
+            data["IsInsurance"] = false;
+        if (!data["IsBrand"])
             data["IsBrand"] = false;
-
         $.ajax({
             url: '/admin/Package/Update',
             type: 'POST',

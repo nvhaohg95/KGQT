@@ -419,16 +419,16 @@ namespace KGQT.Commons
             switch (status)
             {
                 case 1:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning\">Chờ thanh toán</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-nsh2\">Chờ thanh toán</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success\">Đã thanh toán</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-success\">Đã thanh toán</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-danger\">Đã hủy</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info\">Khác</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-info\">Khác</span>";
                     break;
             }
             return sReturn;
@@ -440,16 +440,16 @@ namespace KGQT.Commons
             switch (type)
             {
                 case 1:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-success\">Nạp tiền</span>";
+                    sReturn = "<span class=\"text-white btn-sm badge-success\">Nạp tiền</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Rút tiền</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-danger\">Rút tiền</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-danger\">Đã hủy</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info\">Khác</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-info\">Khác</span>";
                     break;
             }
             return sReturn;

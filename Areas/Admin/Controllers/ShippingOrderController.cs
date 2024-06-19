@@ -20,7 +20,7 @@ namespace KGQT.Areas.Admin.Controllers
     public class ShippingOrderController : Controller
     {
         #region constructor
-        
+
         public ShippingOrderController()
         {
         }
@@ -120,6 +120,17 @@ namespace KGQT.Areas.Admin.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             DataReturnModel<bool> ret = ShippingOrder.Payment(id, userLogin);
+            return ret;
+        }
+
+        [HttpPost]
+        public object PaymentDirect(int id)
+        {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            DataReturnModel<bool> ret = ShippingOrder.PaymentDirect(id, userLogin);
             return ret;
         }
 

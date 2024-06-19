@@ -3,7 +3,7 @@
 @using KGQT.Commons
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Danh sách ký gửi";
+    ViewData["Title"] = "Danh sách đơn hàng";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var ID = ViewBag.ID;
     var status = ViewBag.status;
@@ -78,7 +78,7 @@
             <div class="row bg-white mt-2">
                 <div class="col-12">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="fw-bold text-nsh1 text-uppercase m-0">Danh sách đơn ký gửi</h5>
+                        <h5 class="fw-bold text-nsh1 text-uppercase m-0">Danh sách đơn hàng</h5>
                     </div>
                 </div>
                 <div class="col-12 mt-2">
@@ -115,15 +115,20 @@
                                 {
                                     <tr class="table-light font-weight-normal">
                                         <td class="text-left">
+                                            <a href="/Admin/ShippingOrder/Details?id=@item.ID">
                                             @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                            </a>
                                         </td>
 
                                         <td class="text-center  ">
                                             @Html.DisplayFor(modelItem => item.Username)
                                         </td>
                                         <td class="text-left">
-                                            <div class="w-300px d-flex text-break">
-                                                @item.PackageCode
+                                            <div class="w-300px d-block text-break">
+                                                @foreach (var p in item.Packages)
+                                                {
+                                                    <p>@p</p>
+                                                }
                                             </div>
                                         </td>
                                         <td class="text-center">

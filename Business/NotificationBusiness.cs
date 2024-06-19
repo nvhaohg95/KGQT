@@ -242,7 +242,7 @@ namespace KGQT.Business
 
                         Task task = new Task(() =>
                         {
-                            ZaloCommon.SendMessageToAll(contents);
+                            ZaloCommon.SendMessageToAllV2(contents);
                         });
                         task.Start();
                         result.IsError = false;

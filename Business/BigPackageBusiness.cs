@@ -56,7 +56,8 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 var dt = new DataReturnModel<bool>();
-                if(db.tbl_Packages.Any(x=>x.Status == 5))
+                bool exist = db.tbl_Packages.Any(x => x.Status == 5);
+                if (exist)
                 {
                     dt.IsError = true;
                     dt.Message = "Có kiện đã được nhận không thể xóa";

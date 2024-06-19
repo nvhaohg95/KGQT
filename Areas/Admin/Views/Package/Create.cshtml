@@ -104,26 +104,38 @@
                 </div>
                 <div class="form-group mb-4">
                     <label for="txtShipID">Mô tả</label>
-                    <textarea class="form-control inputNode" name="Note" placeholder="Nhập mô tả (tối đa 70 từ)" rows="4"></textarea>
+                    <textarea class="form-control inputNode" name="Note" placeholder="Nhập mô tả (tối đa 40 từ)" rows="4"></textarea>
                 </div>
 
                 <div class="col-md-12 col-sm-12 col-lg-12 text-center">
-                    <button type="button" class="btn bg-nsh1" onclick="insert()">Lưu</button>
+                    <button type="button" class="btn bg-nsh1" onclick="inser()">Lưu</button>
                     <button type="reset" class="btn btn-secondary mr-4">Nhập lại</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-<script src="~/lib/summernote-bs4.js"></script>
-<link href="~/lib/summernote-bs4.css" rel="stylesheet" />
-<script src="~/lib/summernote-bs4.min.js"></script>
-<link href="~/lib/summernote-bs4.min.css" rel="stylesheet" />
+
+<div class="modal fade" id="choosePack" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="choosePackLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark">Chọn kiện để khớp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <span>Mã kiện vừa nhập gần giống với các kiện sau:</span>
+                <i>(Chọn 1 mã kiện để khớp hoặc đóng để giữ nguyên mã vừa nhập)</i>
+                <div id="choosePackBody" class="p-2"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-nsh2" onclick="select()">Chọn</button>
+                <button type="button" class="btn bg-nsh1" data-bs-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-    $('#textEditer').summernote({
-        placeholder: 'Nhập nội dung',
-        height: 250
-    });
     $(document).ready(function () {
         $('#txtUserName').autocomplete({
             source: function (request, response) {
@@ -188,30 +200,88 @@
         };
 
         $('.inputNode').off().on('keypress', function () {
-            if ($(this).val().length >= 70)
-                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+            if ($(this).val().length >= 40)
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
         })
     });
-    function addPackage() {
-        const ip = $('#txtPackage').val();
-        if (ip) {
-            $.ajax({
-                url: '/admin/Package/CheckPackage',
-                type: 'GET',
-                data: { package: ip },
-                // other AJAX options here
-                success: function (result) {
-                    if (result) {
-                        helper.showErr('Kiện đã tồn tại!');
-                    }
-                },
-                error: function (xhr, status, err) {
-                    // error handling
-                }
-            })
-        } else {
-            helper.showErr('Vui lòng nhập mã kiện!');
+    function beforeAdd() {
+        var data = helper.form2Object($('#frmShip').serializeArray());
+
+        if (!data.Username) {
+            helper.showErr('Vui lòng nhập tài khoản khách hàng!');
+            return
         }
+
+        if (!data.PackageCode) {
+            helper.showErr('Vui lòng nhập mã kiện!');
+            return
+        }
+
+        if (!data.WareHouse) {
+            helper.showErr('Hãy chọn kho TQ nhập hàng!');
+            return
+        }
+        if (data.IsInsurance) {
+            if (!data.Declaration || !data.DeclarePrice) {
+                helper.showErr('Vui lòng kê khai thông tin để tính phí bảo hiểm!');
+                return;
+            }
+        }
+
+        if (data.DeclarePrice) {
+            data.DeclarePrice = $('input[name="DeclarePrice"]').data('value');
+        }
+
+        if (data.Note) {
+            if (data.Note.length > 40) {
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
+                return
+            }
+        }
+
+        $.ajax({
+            url: '/admin/Package/BeforeAdd',
+            type: 'GET',
+            data: { code: data.PackageCode },
+            // other AJAX options here
+            beforeSend: function () {
+                stopLoading();
+            },
+            success: function (res) {
+                if (res) {
+                    let html = "";
+                    $.each(res, function (i, v) {
+                        html += '<div class="form-check">';
+                        html += '<input class="form-check-input" type="radio" name="choose" value="' + v.packageCode + '">';
+                        html += '<label class="form-check-label">' + v.packageCode;
+                        if (v.weightReal && parseFloat(v.weightReal) > 0)
+                            html += ' - ' + v.weightReal;
+                        if (v.note)
+                            html += ' - ' + v.weightReal;
+                        html += '</label>';
+                        html += '</div>';
+                    });
+                    $('#choosePackBody').html(html);
+                    $('#choosePack').modal('show');
+                }else{
+                    insert(data);
+                }
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            },
+            complete: function () {
+                stopLoading(true);
+            }
+        })
+    }
+
+    function select(){
+        var data = helper.form2Object($('#frmShip').serializeArray());
+        let code = $('input[name="choose"]:checked').val();
+        data.PackageCode = code;
+        $('#choosePack').modal('hide');
+        insert(data);
     }
 
     function showhideDeclare(o) {
@@ -250,12 +320,11 @@
         }
 
         if (data.Note) {
-            if (data.Note.length > 70) {
-                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 70 ký tự");
+            if (data.Note.length > 40) {
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
                 return
             }
         }
-
         $.ajax({
             url: '/admin/Package/Create',
             type: 'POST',

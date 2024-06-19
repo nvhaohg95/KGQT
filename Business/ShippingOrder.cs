@@ -66,13 +66,26 @@ namespace KGQT.Business
         #endregion
 
         #region Get List
-        public static (int, double) GetTotalAndLeft(string username)
+        public static (int, double) GetTotalAndLeft(int status, string ID, DateTime? fromDate, DateTime? toDate, string username)
         {
             using (var db = new nhanshiphangContext())
             {
-                IQueryable<tbl_ShippingOrder> queryable = db.tbl_ShippingOrders.Where(x => x.Username == username);
-                int total = queryable.Count();
-                double totalLeft = queryable.Where(x => x.Status == 1 || x.Status == 0).AsEnumerable().Sum(x => x.TotalPrice.Double());
+                IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders.Where(x => x.Username == username);
+
+                if (status > 0)
+                    query = query.Where(x => x.Status == status);
+
+                if (!string.IsNullOrEmpty(ID))
+                    query = query.Where(x => x.ShippingOrderCode.Contains(ID) || x.Username.Contains(ID) || x.PackageCode.Contains(ID));
+
+                if (fromDate != null)
+                    query = query.Where(x => x.CreatedDate >= fromDate);
+
+                if (toDate != null)
+                    query = query.Where(x => x.CreatedDate <= toDate);
+
+                int total = query.Count();
+                double totalLeft = query.Where(x => x.Status == 1 || x.Status == 0).AsEnumerable().Sum(x => x.TotalPrice.Double());
                 return (total, totalLeft);
             }
         }
@@ -108,6 +121,14 @@ namespace KGQT.Business
                     lstData = query.OrderByDescending(x => x.CreatedDate)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize).ToList();
+
+                    var lstTrans = lstData.Select(x => x.RecID).ToArray();
+                    var packs = db.tbl_Packages.Where(x => lstTrans.Contains(x.TransID)).ToList();
+                    foreach (var item in lstData)
+                    {
+                        List<string> pack = packs.Where(x => x.TransID == item.RecID).Select(x => x.PackageCode + " - " + x.WeightReal + "kg").ToList();
+                        item.Packages = pack;
+                    }
                 }
 
                 return new object[] { lstData, total, totalPage };
@@ -404,6 +425,76 @@ namespace KGQT.Business
                     _log.Error("Payment", ex.Message);
                     db.tbl_ShippingOrders.Update(oldOrder);
                     db.tbl_Accounts.Update(oldUser);
+                    db.SaveChanges();
+                }
+                dt.IsError = true;
+                dt.Message = "Lỗi, vui lòng tải lại trang!";
+                return dt;
+            }
+        }
+
+        public static DataReturnModel<bool> PaymentDirect(int id, string accessor)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var dt = new DataReturnModel<bool>();
+                var oOrder = db.tbl_ShippingOrders.FirstOrDefault(x => x.ID == id);
+                var oldOrder = db.tbl_ShippingOrders.FirstOrDefault(x => x.ID == id);
+                if (oOrder == null)
+                {
+                    dt.IsError = true;
+                    dt.Message = "Không tìm thấy thông tin đơn";
+                    return dt;
+                }
+
+                if (oOrder.Status == 2)
+                {
+
+                    dt.IsError = true;
+                    dt.Message = "Đơn này đã thanh toán rồi";
+                    return dt;
+                }
+
+                var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == oOrder.Username);
+
+                if (oUser == null)
+                {
+                    dt.IsError = true;
+                    dt.Message = "Không tìm thấy thông tin khách hàng";
+                    return dt;
+                }
+
+                try
+                {
+                    double totalPrice = Convert.ToDouble(oOrder.TotalPrice);
+
+                    oOrder.Status = 2;
+                    oOrder.ModifiedBy = accessor;
+                    oOrder.ModifiedDate = DateTime.Now;
+                    db.tbl_ShippingOrders.Update(oOrder);
+                    if (db.SaveChanges() > 0)
+                    {
+                        HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Thanh toán cho đơn {oOrder.ShippingOrderCode}", oOrder.TotalPrice, 1, 1, oUser.Wallet, oUser.Wallet, accessor);
+                        var packs = db.tbl_Packages.Where(x => x.TransID == oOrder.ShippingOrderCode).ToList();
+                        foreach (var pack in packs)
+                        {
+                            pack.Status = 5;
+                            pack.ModifiedBy = accessor;
+                            pack.ModifiedDate = DateTime.Now;
+                            db.Update(pack);
+                            BusinessBase.TrackLog(oUser.ID, pack.ID, "{0} đã thanh toán cho kiện {1}", 1, oOrder.Username);
+                        }
+
+                        db.SaveChanges();
+                        dt.IsError = false;
+                        dt.Message = "Thanh toán thành công.";
+                        return dt;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _log.Error("Payment", ex.Message);
+                    db.tbl_ShippingOrders.Update(oldOrder);
                     db.SaveChanges();
                 }
                 dt.IsError = true;
