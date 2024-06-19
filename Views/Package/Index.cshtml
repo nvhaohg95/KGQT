@@ -126,7 +126,7 @@
                                 @(item.OrderDate.Value.ToString("dd/MM/yyyy"))
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-12 my-auto">
+                        <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
                             <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
                                 <label class="mb-0 col-md-12 col-sm-12">Mô tả</label>
                                 <div class="col-md-12 col-sm-12 h-28px" id="divTextarea@(item.ID)">
@@ -138,7 +138,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12 m-auto text-right">
+                        <div class="col-lg-4 col-md-4 col-sm-12 m-auto text-md-right">
                             <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@item.ID)">Nhập mô tả</button>
                             @if (item.Status == 9 && item.CanceledBy == userModel?.UserName)
                             {

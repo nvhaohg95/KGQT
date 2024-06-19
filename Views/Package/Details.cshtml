@@ -1,9 +1,19 @@
 ﻿@model KGQT.Models.tbl_Package
 @using KGQT.Commons
+@using KGQT.Models.temp;
 @using Newtonsoft.Json
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+
+    var cookieService = new CookieService(Context);
+    var tkck = cookieService.Get("tkck");
+    UserModel userModel = new UserModel();
+
+    if (!string.IsNullOrEmpty(tkck))
+    {
+        userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+    }
 }
 
 <ul id="breadcrumbs" class="mb-2">
@@ -22,12 +32,22 @@
                             <div class="col-md-6 col-sm-12">
                                 <h3>Mã vận đơn: <span class="text-uppercase text-nsh1">@Model.PackageCode</span></h3>
                             </div>
-                            @if (Model.Status < 3)
+                            <div class="col-md-6 col-sm-12 text-right">
+                            <button class="btn-sm btn bg-primary text-white mt-2" onclick="addNote(@Model.ID)">Nhập mô tả</button>
+                            @if (Model.Status == 9 && Model.CanceledBy == userModel?.UserName)
                             {
-                                <div class="col-md-6 col-sm-12">
-                                    <button type="button" onclick="cancel(@Model.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
-                                </div>
+                                <button class="btn-sm btn bg-success text-white mt-2" onclick="Restore(@Model.ID)" type="button">Khôi phục</button>
                             }
+                            @if (Model.Status < 2)
+                            {
+                                <button class="btn btn-sm bg-dark text-white mt-2" type="button" onclick="cancel(@Model.ID)">Hủy kiện</button>
+                            }
+                            <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@Model.PackageCode',@Model.SearchBaiduTimes)" type="button">Kiểm tra hàng</button>
+                            @if (Model.Status < 2)
+                            {
+                                <button class="btn-sm btn bg-danger text-white mt-2 px-3" onclick="Delete(@Model.ID)" type="button">Xóa</button>
+                            }
+                            </div>
                             <div class="row pb-2">
                                 <div class="col-md-12 col-sm-12">
                                     @Html.Raw(PJUtils.PackageStatusHtml(Model.Status))
@@ -255,12 +275,13 @@
                             <div class="panel-heading">
                                 <h3 class="lead fw-normal mb-0 text-primary text-uppercase">Mô tả</h3>
                             </div>
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div>
-                                            @Html.Raw(Model.Note)
-                                        </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 my-auto">
+                                <div class="row @(string.IsNullOrEmpty(Model.Note) ?"d-none" : "")" id="divNote">
+                                    <div class="col-md-12 col-sm-12 px-0 mt-2" id="divTextarea">
+                                        <textarea class="form-control inputNode  bg-transparent border-0" readonly="readonly" id="note">@Model.Note</textarea>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12 d-none mt-2 text-right" id="divBtnSave">
+                                        <button type="button" class="btn bg-nsh1" id="btnNote" onclick="saveNote(@Model.ID)">Lưu</button>
                                     </div>
                                 </div>
                             </div>
@@ -276,4 +297,246 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.btn-copy').off('click').on('click', function () {
+                let text = $(this).data('value');
+                copyClipboard(text);
+            })
+
+            $('.inputNode').off().on('keypress', function () {
+                if ($(this).val().length >= 40)
+                    helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
+            })
+        })
+
+        function addNote(id) {
+            $('#divNote').removeClass('d-none');
+            $('#note').removeAttr('readonly');
+            $('#note').removeClass('bg-transparent text-white border-0');
+            $('#divBtnSave').removeClass('d-none');
+            $('#note').focus();
+        }
+
+        function saveNote(id) {
+            let note = $('#note').val();
+            if (note && note.length > 40) {
+                helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
+                return
+            }
+            $.ajax({
+                url: '/Package/SaveNote',
+                method: 'POST',
+                dataType: 'json',
+                data: { id, note },
+                beforeSend: function () {
+                    stopLoading();
+                },
+                success: function (res) {
+                    if (res) {
+                        helper.showSuc("Cập nhật thành công");
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                },
+                complete: function () {
+                    stopLoading(true);
+                },
+            })
+        }
+
+        function checkStatus(code, times) {
+            $.ajax({
+                url: '/Package/CheckAvailableSearch',
+                method: 'GET',
+                dataType: 'json',
+                data: { code },
+                beforeSend: function () {
+                    stopLoading();
+                },
+                success: function (res) {
+                    if (res.error == 1) {
+                        helper.showErr(res.msg);
+                        return;
+                    }
+                    if (res.error == 2) {
+                        Swal.fire({
+                            title: "Chú ý",
+                            text: res.msg,
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Đồng ý",
+                            cancelButtonText: "Từ chối"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                            }
+                        });
+                        return;
+                    }
+                    if (res.error == 3) {
+                        //Chưa đăng ký theo dõi sát kiện
+                        if (res.firsttime) {
+                            //Lần đầu
+                            if (res.times == 0) {
+                                if (res.data == 0) {
+                                    Swal.fire({
+                                        title: "Chú ý",
+                                        text: "Bạn đã hết lượt tra cứu miễn phí, tiếp tục sẽ tốn phí 500đ?",
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#3085d6",
+                                        cancelButtonColor: "#d33",
+                                        confirmButtonText: "Đồng ý",
+                                        cancelButtonText: "Từ chối"
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.href = "/package/QueryOrderStatus?code=" + code;
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: "Chú ý",
+                                        text: "Sẽ mất 1 điểm truy cứu khi bạn kiểm tra kiện hàng, bạn có muốn tiếp tục kiểm tra kiện " + code + " không?",
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#3085d6",
+                                        cancelButtonColor: "#d33",
+                                        confirmButtonText: "Đồng ý",
+                                        cancelButtonText: "Từ chối"
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.href = "/package/QueryOrderStatus?code=" + code;
+                                        }
+                                    });
+                                }
+                            }
+                            //Lần 2
+                            else {
+                                Swal.fire({
+                                    title: "Chú ý",
+                                    text: "Bạn nhớ đăng ký gửi thông báo các trạng thái kiện hàng để theo dõi sát hơn nhé",
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#3085d6",
+                                    cancelButtonColor: "#d33",
+                                    confirmButtonText: "Đồng ý",
+                                    cancelButtonText: "Từ chối"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.href = "/package/QueryOrderStatus?code=" + code;
+                                    }
+                                });
+                            }
+                        }
+                        //Đã đăng ký
+                        else {
+                            Swal.fire({
+                                title: "Chú ý",
+                                text: "Bạn đã đăng ký theo sát trạng thái kiện hàng, hãy yên tâm chờ thông báo nhé, hoặc bạn có thể bấm Đồng ý để vẫn có thể kiểm tra lại.",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Đồng ý",
+                                cancelButtonText: "Từ chối"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.href = "/package/QueryOrderStatus?code=" + code;
+                                }
+                            });
+                        }
+                    }
+
+                },
+                error: function (err) {
+                    console.log(err)
+                },
+                complete: function () {
+                    stopLoading(true);
+                },
+            })
+        }
+
+        function cancel(id) {
+            $.ajax({
+                url: '/Package/Cancel',
+                type: 'POST',
+                data: { id },
+                beforeSend: function () {
+                    stopLoading();
+                },
+                // other AJAX options here
+                success: function (result) {
+                    if (result.isError)
+                        helper.showErr(result.message)
+                    else
+                        helper.showSuc(result.message)
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }, complete: function () {
+                    stopLoading(true);
+                }
+            });
+        }
+
+        function Restore(id) {
+            $.ajax({
+                url: '/Package/Restore',
+                type: 'POST',
+                data: { id },
+                beforeSend: function () {
+                    stopLoading();
+                },
+                // other AJAX options here
+                success: function (result) {
+                    if (result.isError)
+                        helper.showErr(result.message)
+                    else
+                        helper.showSuc(result.message)
+                },
+                error: function (xhr, status, err) {
+                    // error handling
+                }, complete: function () {
+                    stopLoading(true);
+                }
+            });
+        }
+
+        function Delete(id) {
+            Swal.fire({
+                title: "Bạn có chắc muốn xóa kiện này?",
+                icon: "warning",
+                showCancelButton: true,
+                CancelButtonText: "Không",
+                confirmButtonText: "Có",
+                allowOutsideClick: false,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Package/Delete',
+                        type: 'POST',
+                        data: { id },
+                        // other AJAX options here
+                        success: function (result) {
+                            if (result.isError)
+                                helper.showErr(result.message)
+                            else
+                                helper.showSuc(result.message)
+                        },
+                        error: function (xhr, status, err) {
+                            // error handling
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+
 </div>

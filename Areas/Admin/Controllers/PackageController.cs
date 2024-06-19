@@ -162,6 +162,19 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         #region Function
+        [HttpGet]
+        public List<tbl_Package> BeforeAdd(string code)
+        {
+            var s = exclude.FirstOrDefault(x => code.EndsWith(x));
+            if (s != null)
+            {
+                code = code.Replace(s,"");
+                var packages = BusinessBase.GetList<tbl_Package>(x=>x.PackageCode.Contains(code)).ToList();
+                return packages;
+             }
+            return null;
+        }
+
         /// <summary>
         /// Tạo Mã vận đơn - 1 mã
         /// </summary>
@@ -247,13 +260,12 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
-        public DataReturnModel<bool> Update(tbl_Package form)
+        public DataReturnModel<bool> Update(tempPack form)
         {
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
-
             var oSave = PackagesBusiness.Update(form, userLogin);
             return oSave;
         }
@@ -395,5 +407,13 @@ namespace KGQT.Areas.Admin.Controllers
             return dt;
         }
         #endregion
+
+        private static string[] exclude = new string[] {
+        "001","0001","00001","002","0002","00002",
+        "003","0003","00003","004","0004","00004",
+        "005","0005","00005","006","0006","00006",
+        "007","0007","00007","008","0008","00008",
+        "009","0009","00009","0010","00010","000010"
+        };
     }
 }

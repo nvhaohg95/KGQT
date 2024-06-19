@@ -182,5 +182,34 @@ namespace KGQT.Commons
             string v = value.ToString();
             return v.Replace(curr, to);
         }
+
+        public static DateTime ConvertDate(string s)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(s))
+                {
+                    return DateTime.Parse(s);
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    return DateTime.ParseExact(s, "dd/MM/yyy", null);
+                }
+                catch (Exception ex2)
+                {
+                    string[] split = s.Split("/", StringSplitOptions.RemoveEmptyEntries);
+
+                    if (split.Length >= 3)
+                    {
+                        int year = DateTime.Now.Year;
+                        return new DateTime(year, split[1].ToInt(), split[0].ToInt());
+                    }
+                }
+            }
+            return DateTime.MinValue;
+        }
     }
 }

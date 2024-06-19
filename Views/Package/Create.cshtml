@@ -109,7 +109,7 @@
 <script src="~/lib/summernote-bs4.min.js"></script>
 <link href="~/lib/summernote-bs4.min.css" rel="stylesheet" />
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         $('.inputNode').off().on('keypress', function () {
             if ($(this).val().length >= 40)
                 helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
@@ -163,7 +163,7 @@
                 if (result.isError)
                     helper.showErr(result.message)
                 else
-                    helper.showSuc(result.message, false, "Thành công", "/Package/index");
+                    helper.showSuc(result.message, false, "Thành công", "/package/details?id="+result.data);
             },
             error: function (xhr, status, err) {
                 // error handling

@@ -389,6 +389,7 @@ namespace KGQT.Base
 
                             foreach (var item in lstData)
                             {
+                                Log.Information("send message to uid:" + item.user_id);
                                 JObject result = client.sendTextMessageToUserIdV3(item.user_id, message);
                                 var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
                                 if (oData.error != 0)

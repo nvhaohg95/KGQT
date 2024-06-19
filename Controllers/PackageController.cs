@@ -84,13 +84,13 @@ namespace KGQT.Controllers
             if (user == null)
                 return new { error = 2, msg = "Khách hàng này không có trong hệ thống, bạn có muốn tiếp tục!" };
 
-            return new { error = 3, data = user.AvailableSearch, firsttime = !pack.AutoQuery, times =pack.SearchBaiduTimes };
+            return new { error = 3, data = user.AvailableSearch, firsttime = !pack.AutoQuery, times = pack.SearchBaiduTimes };
         }
         #endregion
 
         #region CRUD
         [HttpPost]
-        public DataReturnModel<bool> Create(tbl_Package form)
+        public DataReturnModel<int> Create(tbl_Package form)
         {
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
@@ -164,6 +164,5 @@ namespace KGQT.Controllers
             return dt;
         }
         #endregion
-
     }
 }

@@ -347,9 +347,9 @@ namespace KGQT.Business
             return dt;
         }
 
-        public static DataReturnModel<bool> CustomerAdd(tbl_Package form, string userLogin)
+        public static DataReturnModel<int> CustomerAdd(tbl_Package form, string userLogin)
         {
-            var data = new DataReturnModel<bool>();
+            var data = new DataReturnModel<int>();
             var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == userLogin);
             form.PackageCode = form.PackageCode.Trim().Replace("\'", "").Replace(" ", "");
             form.PackageCode = form.PackageCode.Replace(",", ";");
@@ -373,7 +373,7 @@ namespace KGQT.Business
                     }
                     else if (!string.IsNullOrEmpty(exist.Username) && exist.Username != userLogin)
                     {
-                        data.Message = $"Mã vận đơn {item} đã có trong hệ thống, vui lòng liên hệ với nhân viên để đối chiếu thông tin! <hr>";
+                        data.Message = $"Mã vận đơn {item} đã có trong hệ thống và thuộc sở hữu của khách hàng khác, vui lòng liên hệ với nhân viên để đối chiếu thông tin! <hr>";
                         fail++;
                         continue;
                     }
@@ -394,10 +394,13 @@ namespace KGQT.Business
 
                     exist.ModifiedBy = user.Username;
                     exist.ModifiedDate = DateTime.Now;
+                    if (!string.IsNullOrEmpty(form.Note))
+                        exist.Note = form.Note;
                     var update = BusinessBase.Update(exist);
                     if (update)
                         BusinessBase.TrackLog(user.ID, form.ID, "{0} đã cập nhật thông tin kiện", 0, user.Username);
                     data.IsError = false;
+                    data.Data = exist.ID;
                     data.Message = "Tạo Mã vận đơn thành công!";
                     if (equalVC)
                         data.Message = $"Mã vận đơn {item} đã được nhân viên khai báo phương thức vận chuyển." +
@@ -442,6 +445,7 @@ namespace KGQT.Business
                     if (s)
                     {
                         data.Message += $"Đã thêm mã vận đơn {item}</br>";
+                        data.Data = pack.ID;
                         BusinessBase.TrackLog(user.ID, form.ID, "{0} đã tạo kiện", 0, user.Username);
                     }
                 }
@@ -457,7 +461,7 @@ namespace KGQT.Business
             return data;
         }
 
-        public static DataReturnModel<bool> Update(tbl_Package form, string userLogin)
+        public static DataReturnModel<bool> Update(tempPack form, string userLogin)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -515,6 +519,23 @@ namespace KGQT.Business
 
                     if (p.MoreCharge != form.MoreCharge)
                         p.MoreCharge = form.MoreCharge;
+
+                    if (!string.IsNullOrEmpty(form.zExportedCNWH))
+                    {
+                        DateTime zexport = Converted.ConvertDate(form.zExportedCNWH);
+                        if (zexport != DateTime.MinValue && zexport != p.ExportedCNWH)
+                        {
+                            p.ExportedCNWH = zexport;
+                            if (p.MovingMethod > 0)
+                            {
+                                var d = PJUtils.GetDeliveryDate(p.ExportedCNWH.Value, p.MovingMethod);
+                                p.DateExpectation = "Dự kiến " + d.ToString("dd/MM/yyyy");
+                            }
+                        }
+                    }
+
+                    if (p.ImportedSGWH != form.ImportedSGWH)
+                        p.ImportedSGWH = form.ImportedSGWH;
 
                     p.WareHouse = form.WareHouse;
                     p.Status = form.Status;
