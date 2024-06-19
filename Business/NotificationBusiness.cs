@@ -9,6 +9,7 @@ using Serilog;
 using ILogger = Serilog.ILogger;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using KGQT.Base;
+using Newtonsoft.Json;
 
 namespace KGQT.Business
 {
@@ -88,7 +89,9 @@ namespace KGQT.Business
                         {
                             _ = Task.Run(async () =>
                             {
-                                await Helper.SendFCMAsync(messageMobile, user.TokenDevice, null,user.ID);
+                                Dictionary<string, string> datas = new Dictionary<string, string>();
+                                datas.Add("data", JsonConvert.SerializeObject(data));
+                                await Helper.SendFCMAsync(messageMobile, user.TokenDevice, datas, user.ID);
                             });
                         }
                         var follower = db.tbl_ZaloFollewers.FirstOrDefault(x => x.Username == user.Username);

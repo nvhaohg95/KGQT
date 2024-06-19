@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using DocumentFormat.OpenXml.Vml;
 using KGQT.Business.Base;
 using KGQT.Models;
+using Org.BouncyCastle.Tls;
+using System.Security.Policy;
 
 namespace KGQT.Commons
 {
@@ -83,6 +85,19 @@ namespace KGQT.Commons
                         Credential = GoogleCredential.FromFile(path)
                     });
                 }
+                Dictionary<string, string> datas = new Dictionary<string, string>();
+                if (data == null)
+                {
+                    var oNoti = new tbl_Notification()
+                    {
+                        NotifType = -1,
+                    };
+                    datas.Add("data", JsonConvert.SerializeObject(oNoti));
+                }
+                else
+                {
+                    datas = data;
+                }
 
                 // This registration token comes from the client FCM SDKs.
                 //var registrationToken = "dLz14KR5QdmuioC_LZ0y8j:APA91bHduPYeNfEOAFHpOEhUmFAQrhZVvrhpok95mJulgQzF6OFYY99HukLTCAxNQ9lGpxhcdD0BE8WMqDKuVP2ahi4Z8wZT81qk8-3juViDjAa35oVWu650R90nMgPyOKAXL3D6GN-0";
@@ -90,7 +105,7 @@ namespace KGQT.Commons
                 var message = new Message()
                 {
 
-                    Data = data,
+                    Data = datas,
                     Token = token,
                     Android = new AndroidConfig()
                     {
