@@ -237,7 +237,7 @@ namespace KGQT.Business
                         {
                             try
                             {
-                                var data = PushNotificationAll(admin.ID, admin.FullName, user.ID, user.FullName, contents, contents, 10, userLogin);
+                                var data = GenNoti(admin.ID, admin.FullName, user.ID, user.FullName, contents, contents, 10, userLogin);
                                 db.Add(data);
                                 if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
                                 {
@@ -248,6 +248,17 @@ namespace KGQT.Business
                                         await Helper.SendFCMAsync(contents, user.TokenDevice, datas, user.ID);
                                     });
                                 }
+
+                                var zl = db.tbl_ZaloFollewers.FirstOrDefault(x => x.Username == user.Username);
+                                if(zl != null)
+                                {
+                                    Task task = new Task(() =>
+                                    {
+                                        ZaloCommon.SendMessage(zl.user_id,contents);
+                                    });
+                                    task.Start();
+                                }
+
                             }
                             catch (Exception ex)
                             {
@@ -282,7 +293,7 @@ namespace KGQT.Business
         }
 
 
-        public static tbl_Notification PushNotificationAll(int senderID, string senderName, int? reciverID, string reciverName, string message, string messageMobile, int notiType, string createdBy)
+        public static tbl_Notification GenNoti(int senderID, string senderName, int? reciverID, string reciverName, string message, string messageMobile, int notiType, string createdBy)
         {
             var data = new tbl_Notification()
             {
