@@ -365,6 +365,24 @@ namespace KGQT.Commons
             return sReturn;
         }
 
+        public static string ZaloStatus(int type)
+        {
+            string name = "";
+            switch (type)
+            {
+                case 0:
+                    name = "<span class=\"btn-sm btn bg-nsh1\" style=\"font-size:12px\">Chưa cung cấp thông tin</span>";
+                    break;
+                case 1:
+                    name = "<span class=\"btn-sm btn bg-nsh2\" style=\"font-size:12px\">Chưa khớp thông tin</span>";
+                    break;
+                case 2:
+                    name = "<span class=\"btn-sm btn btn-success\" style=\"font-size:12px\">Liên kết thành công</span>";
+                    break;
+            }
+            return name;
+        }
+
         public static string TradeName(int type)
         {
             string name = "";
@@ -378,6 +396,7 @@ namespace KGQT.Commons
             }
             return name;
         }
+
 
         public static string PackageStatus(int status)
         {

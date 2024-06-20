@@ -62,11 +62,11 @@ namespace KGQT.WebHook
                     f.SendRequestTimes = 1;
                     f.SendRequestDate = DateTime.Now;
                     f.CreatedDate = DateTime.Now;
-                    f.Status = 2;
+                    f.Status = 1;
                     if (user != null)
                     {
                         f.Username = user.Username;
-                        f.Status = 1;
+                        f.Status = 2;
                     }
                     else
                     {
@@ -82,7 +82,7 @@ namespace KGQT.WebHook
                     if (user != null)
                     {
                         f.Username = user.Username;
-                        f.Status = 1;
+                        f.Status = 2;
                     }
                     else
                     {
@@ -90,14 +90,7 @@ namespace KGQT.WebHook
                     }
                     db.Update(f);
                 }
-
-                if (db.SaveChanges() > 0)
-                {
-                    var log = new tbl_ZaloLog();
-                    log.RecID = Guid.NewGuid();
-                    log.context = $"Cập nhật thông tin người quan tâm {f.user_id} thành công";
-                }
-                else
+                if (db.SaveChanges() <= 0)
                 {
                     var w = new tbl_ZaloWebHook();
                     w.RecID = Guid.NewGuid();
@@ -138,7 +131,7 @@ namespace KGQT.WebHook
 
                         if (db.SaveChanges() > 0)
                         {
-                           await ZaloCommon.RequestMoreInfoAsync(data.follower.id);
+                            await ZaloCommon.RequestMoreInfoAsync(data.follower.id);
                         }
                         else
                         {

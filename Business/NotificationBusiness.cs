@@ -219,6 +219,12 @@ namespace KGQT.Business
                     if (sendToAll)
                     {
                         lstUser = db.tbl_Accounts.Where(x => x.IsActive == true).ToList();
+
+                        Task task = new Task(() =>
+                        {
+                            ZaloCommon.SendMessageToAllV2(contents);
+                        });
+                        task.Start();
                     }
                     else
                     {
@@ -231,7 +237,17 @@ namespace KGQT.Business
                         {
                             try
                             {
-                                Insert(admin.ID, admin.FullName, user.ID, user.FullName, 0, "", contents, contents, 10, "", userLogin);
+                                var data = PushNotificationAll(admin.ID, admin.FullName, user.ID, user.FullName, contents, contents, 10, userLogin);
+                                db.Add(data);
+                                if (user != null && !string.IsNullOrEmpty(user.TokenDevice))
+                                {
+                                    _ = Task.Run(async () =>
+                                    {
+                                        Dictionary<string, string> datas = new Dictionary<string, string>();
+                                        datas.Add("data", JsonConvert.SerializeObject(data));
+                                        await Helper.SendFCMAsync(contents, user.TokenDevice, datas, user.ID);
+                                    });
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -239,12 +255,8 @@ namespace KGQT.Business
                                 continue;
                             }
                         }
+                        db.SaveChanges();
 
-                        Task task = new Task(() =>
-                        {
-                            ZaloCommon.SendMessageToAllV2(contents);
-                        });
-                        task.Start();
                         result.IsError = false;
                         result.Message = "Gửi thành công!";
                         result.Data = true;
@@ -268,5 +280,31 @@ namespace KGQT.Business
                 return result;
             }
         }
+
+
+        public static tbl_Notification PushNotificationAll(int senderID, string senderName, int? reciverID, string reciverName, string message, string messageMobile, int notiType, string createdBy)
+        {
+            var data = new tbl_Notification()
+            {
+                SenderID = senderID,
+                SenderUsername = senderName,
+                ReceivedID = reciverID,
+                ReceivedUsername = reciverName,
+                OrderID = -1,
+                OrderCode = "",
+                Message = message,
+                Message2 = messageMobile,
+                IsForAdmin = false,
+                NotifType = notiType,
+                Status = 0,
+                CreatedBy = createdBy,
+                CreatedDate = DateTime.Now
+            };
+
+            if (string.IsNullOrEmpty(data.Url))
+                data.Url = GetUrlDefault(data.ID);
+            return data;
+        }
+
     }
 }

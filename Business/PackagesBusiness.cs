@@ -949,8 +949,22 @@ namespace KGQT.Business
                                     if (BusinessBase.Update(oPack))
                                         ShippingOrder.UpdateByPackageChanged(oPack, accessor);
                                 }
-                                string message = "Đơn hàng {0}{1} đã nhập kho HCM";
-                                message = string.Format(message, ship.ShippingOrderCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
+                                var lstpackage = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();
+                                string pstring = "";
+
+                                foreach (var i in lstpackage)
+                                {
+                                    pstring += i.PackageCode + " - " + i.WeightReal + "kg";
+                                    if (!string.IsNullOrEmpty(i.Note))
+                                        pstring += " - " + i.Note + "\r\n";
+                                    else pstring += "\r\n";
+
+                                }
+
+                                string message = "Đơn hàng {0} - {1}vnđ - đã nhập kho HCM \r\nDanh sách kiện: \r\n{3}";
+                                message = string.Format(message,
+                                    ship.ShippingOrderCode, Converted.String2Money(ship.TotalPrice),
+                                    pstring);
                                 NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";

@@ -286,6 +286,7 @@ namespace KGQT.Base
                 if (oData.error != 0)
                 {
                     var log = new tbl_ZaloLog();
+                    log.RecID = Guid.NewGuid();
                     log.action = 1;
                     log.error = oData.error;
                     log.message = oData.message;
@@ -345,6 +346,7 @@ namespace KGQT.Base
                     if (oData.error != 0)
                     {
                         var log = new tbl_ZaloLog();
+                        log.RecID = Guid.NewGuid();
                         log.action = 1;
                         log.error = oData.error;
                         log.message = oData.message;
@@ -395,6 +397,7 @@ namespace KGQT.Base
                                 if (oData.error != 0)
                                 {
                                     var log = new tbl_ZaloLog();
+                                    log.RecID = Guid.NewGuid();
                                     log.action = 1;
                                     log.error = oData.error;
                                     log.message = oData.message;
