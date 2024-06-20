@@ -961,7 +961,7 @@ namespace KGQT.Business
 
                                 }
 
-                                string message = "Đơn hàng {0} - {1}vnđ - đã nhập kho HCM \r\nDanh sách kiện: \r\n{3}";
+                                string message = "Đơn hàng {0} - {1}vnđ - đã nhập kho HCM \r\nDanh sách kiện: \r\n{2}";
                                 message = string.Format(message,
                                     ship.ShippingOrderCode, Converted.String2Money(ship.TotalPrice),
                                     pstring);
