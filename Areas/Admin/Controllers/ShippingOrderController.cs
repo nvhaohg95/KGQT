@@ -19,14 +19,6 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("Admin")]
     public class ShippingOrderController : Controller
     {
-        #region constructor
-
-        public ShippingOrderController()
-        {
-        }
-
-        #endregion
-
         #region View
         [HttpGet]
         public ActionResult Index(int status, string ID, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
@@ -143,6 +135,17 @@ namespace KGQT.Areas.Admin.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             DataReturnModel<bool> ret = ShippingOrder.Receiver(id, userLogin);
+            return ret;
+        }
+        
+        [HttpPost]
+        public bool NotifiOrder()
+        {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var ret = ShippingOrder.NotifiOrder(userLogin);
             return ret;
         }
         #endregion

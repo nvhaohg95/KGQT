@@ -17,7 +17,7 @@ namespace KGQT.Business
                 IQueryable<tbl_BigPackage> query = db.tbl_BigPackages;
 
                 if (!string.IsNullOrEmpty(code))
-                    query = query.Where(x => x.BigPackageCode == code);
+                    query = query.Where(x => x.BigPackageCode.Contains(code));
 
                 if (fromDate != null)
                     query = query.Where(x => x.CreatedDate >= fromDate);

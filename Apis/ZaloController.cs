@@ -54,7 +54,7 @@ namespace KGQT.Apis
         [Route("request")]
         public async Task<IActionResult> Test2(string uid)
         {
-            string data = await ZaloCommon.RequestMoreInfoAsync(uid);
+            int data = await ZaloCommon.RequestMoreInfoAsync(uid);
             return Ok(data);
         }
 

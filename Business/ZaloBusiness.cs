@@ -13,7 +13,8 @@ namespace KGQT.Business
                 int totalPage = 0;
                 IQueryable<tbl_ZaloFollewer> query = db.tbl_ZaloFollewers;
                 if (!string.IsNullOrEmpty(userName))
-                    query = query.Where(x => x.user_id == userName || x.Username == userName || x.phone == userName || x.display_name == userName || x.address == userName);
+                    query = query.Where(x => x.user_id.Contains(userName) || x.Username.Contains(userName) || x.phone.Contains(userName)
+                    || x.display_name.Contains(userName) || x.address.Contains(userName));
 
                 total = query.Count();
                 if (total > 0)

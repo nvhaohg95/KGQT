@@ -778,5 +778,46 @@ namespace KGQT.Business
             }
         }
         #endregion
+
+
+        #region Notifi
+        public static bool NotifiOrder(string accessor)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                var ships = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.IsSendNoti == false).ToList();
+                foreach (var ship in ships)
+                {
+                    var customer = db.tbl_Accounts.FirstOrDefault(x => x.Username == ship.Username);
+                    if (customer != null)
+                    {
+                        var lstpackage = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();
+                        string pstring = "";
+
+                        foreach (var i in lstpackage)
+                        {
+                            pstring += "\r\n" + i.PackageCode + " - " + i.WeightReal + "kg";
+                            if (!string.IsNullOrEmpty(i.Note))
+                                pstring += " - " + i.Note;
+                        }
+
+                        string message = "Đơn hàng {0} - {1}vnđ - đã nhập kho HCM \r\nDanh sách kiện: \r\n{2}";
+                        message = string.Format(message,
+                            ship.ShippingOrderCode, Converted.String2Money(ship.TotalPrice),
+                            pstring);
+                        NotificationBusiness.Insert(admin.ID, admin.Username, customer.ID, customer.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
+
+                        ship.IsSendNoti = true;
+                        ship.ModifiedBy = accessor;
+                        ship.ModifiedDate = DateTime.Now;
+                        db.Update(ship);
+                    }
+                }
+                db.SaveChanges();
+            }
+            return true;
+        }
+        #endregion
     }
 }

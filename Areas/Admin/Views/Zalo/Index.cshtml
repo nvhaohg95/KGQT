@@ -36,45 +36,50 @@
 <!--Start: Danh sách giao dịch-->
 <div class="row p-2">
     <div class="col-lg-12 col-md-12 col-sm-12">
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr class="bg-info text-white">
-                    <td class="fw-bold text-center">Mã Zalo khách</td>
-                    <td class="fw-bold text-center">Tên hiện thị Zalo</td>
-                    <td class="fw-bold text-center">Tài khoản Tracking</td>
-                    <td class="fw-bold text-center">Điện thoại</td>
-                    <td class="fw-bold text-center">Địa chỉ</td>
-                    <td class="fw-bold text-center">Trạng thái</td>
-                    @*<td class="fw-bold text-center"></td>*@
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-info text-white">
+                        <td class="fw-bold text-center">Mã Zalo khách</td>
+                        <td class="fw-bold text-center">Tên hiện thị Zalo</td>
+                        <td class="fw-bold text-center">Tài khoản Tracking</td>
+                        <td class="fw-bold text-center">Điện thoại</td>
+                        <td class="fw-bold text-center">Địa chỉ</td>
+                        <td class="fw-bold text-center">Trạng thái</td>
+                        <td class="fw-bold text-center">#</td>
 
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td class="text-center">
-                            <span>@item.user_id</span>
-                        </td>
-                        <td class="text-center">
-                            <span>@item.display_name</span>
-                        </td>
-                        <td class="text-center">
-                            <span>@item.Username</span>
-                        </td>
-                        <td class="text-center">
-                            <span>@item.phone</span>
-                        </td>
-                        <td class="text-center">
-                            <span>@item.address</span>
-                        </td>
-                        <td class="text-center">
-                            @Html.Raw(PJUtils.ZaloStatus(item.Status.Value))
-                        </td>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <span>@item.user_id</span>
+                            </td>
+                            <td class="text-center">
+                                <span>@item.display_name</span>
+                            </td>
+                            <td class="text-center">
+                                <span>@item.Username</span>
+                            </td>
+                            <td class="text-center">
+                                <span>@item.phone</span>
+                            </td>
+                            <td class="text-center">
+                                <span>@item.address</span>
+                            </td>
+                            <td class="text-center">
+                                @Html.Raw(PJUtils.ZaloStatus(item.Status.Value))
+                            </td>
+                            <td class="text-center">
+                                 <button class="btn btn-sm bg-nsh1" onclick="sendRequest()">Gửi yêu cầu</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <!--Start: Phân trang-->
@@ -158,3 +163,23 @@
         }
     </div>
 </div>
+
+
+<script type="text/javascript">
+    function sendNotifi() {
+        $.ajax({
+            url: '/admin/zalo/sendRequest',
+            type: 'Post',
+            // other AJAX options here
+            success: function (res) {
+                if(res)
+                helper.showSuc("Gửi yêu cầu thành công",false);
+                else
+                    helper.showErr("Gửi yêu cầu thất bại", false)
+            },
+            error: function (xhr, status, err) {
+                // error handling
+            }
+        });
+    }
+</script>

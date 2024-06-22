@@ -206,10 +206,12 @@ namespace KGQT.Business
                                 {
                                     var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == uslogin);
                                     BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
-
-                                    string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
-                                    message = string.Format(message, oPack.PackageCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
-                                    NotificationBusiness.Insert(1, "admin", oPack.UID, oPack.Username, oPack.ID, oPack.PackageCode, message, message, 1, "/Package/Details/" + oPack.ID, "admin");
+                                    if (oPack.Status < 3)
+                                    {
+                                        string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
+                                        message = string.Format(message, oPack.PackageCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
+                                        NotificationBusiness.Insert(1, "admin", oPack.UID, oPack.Username, oPack.ID, oPack.PackageCode, message, message, 1, "/Package/Details/" + oPack.ID, "admin");
+                                    }
                                 }
                             }
                             for (int i = 0; i < data.Data.data.Count; i++)
@@ -936,6 +938,7 @@ namespace KGQT.Business
                             ship.ChinaExportDate = pack.ExportedCNWH;
                             ship.CreatedDate = DateTime.Now;
                             ship.CreatedBy = accessor;
+                            ship.IsSendNoti = false;
                             db.Add(ship);
                             bool save = db.SaveChanges() > 0;
                             if (save)
@@ -949,23 +952,6 @@ namespace KGQT.Business
                                     if (BusinessBase.Update(oPack))
                                         ShippingOrder.UpdateByPackageChanged(oPack, accessor);
                                 }
-                                var lstpackage = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();
-                                string pstring = "";
-
-                                foreach (var i in lstpackage)
-                                {
-                                    pstring += i.PackageCode + " - " + i.WeightReal + "kg";
-                                    if (!string.IsNullOrEmpty(i.Note))
-                                        pstring += " - " + i.Note + "\r\n";
-                                    else pstring += "\r\n";
-
-                                }
-
-                                string message = "Đơn hàng {0} - {1}vnđ - đã nhập kho HCM \r\nDanh sách kiện: \r\n{2}";
-                                message = string.Format(message,
-                                    ship.ShippingOrderCode, Converted.String2Money(ship.TotalPrice),
-                                    pstring);
-                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
                                 return dt;
@@ -1385,9 +1371,10 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                var lst = db.tbl_Packages.Where(x => x.AutoQuery == true && x.Status < 2).ToList();
+                var lst = db.tbl_Packages.Where(x => x.AutoQuery == true && x.Status < 3).ToList();
                 foreach (var item in lst)
                 {
+                    int oldStt = item.Status;
                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == item.Username);
                     if (user != null)
                     {
@@ -1404,33 +1391,36 @@ namespace KGQT.Business
                                 var oData = JsonConvert.DeserializeObject<tmpChinaOrderStatus>(sData);
                                 if (oData != null && oData.data.Count > 0)
                                 {
-                                    var exist = oData.data.FirstOrDefault(x => x.context.Contains("签收") || x.context.Contains("退回"));
-                                    if (exist != null)
+                                    if (oldStt < 2)
                                     {
-                                        if (item.Status < 2)
-                                            item.Status = 2;
-                                        item.ExportedCNWH = Converted.ToDate(exist.time);
-                                        if (item.ExportedCNWH.Value.Hour > 15)
-                                            item.ExportedCNWH = item.ExportedCNWH.Value.AddDays(1).Date;
-                                        if (BusinessBase.Update(item))
+                                        var exist = oData.data.FirstOrDefault(x => x.context.Contains("签收") || x.context.Contains("退回"));
+                                        if (exist != null)
                                         {
-                                            BusinessBase.TrackLog(1, item.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, "admin");
-                                            string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
-                                            message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "");
-                                            NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/Package/Details/" + item.ID, "admin");
+                                            item.Status = 2;
+                                            item.ExportedCNWH = Converted.ToDate(exist.time);
+                                            if (item.ExportedCNWH.Value.Hour > 15)
+                                                item.ExportedCNWH = item.ExportedCNWH.Value.AddDays(1).Date;
+                                            if (BusinessBase.Update(item))
+                                            {
+                                                BusinessBase.TrackLog(1, item.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, "admin");
+                                                //if (oldStt < 2)
+                                                //{
+                                                //    string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
+                                                //    message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "");
+                                                //    NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/Package/Details/" + item.ID, "admin");
+                                                //}
+                                            }
                                         }
                                     }
-                                    else if (oData.data.Count > 0)
+
+                                    string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(oData.data[oData.data.Count() - 1].context, "zh", "vi"));
+                                    string properties_trans = stran.Replace("[", "").Replace("]", "").Replace("\"", "");
+                                    string[] ass = properties_trans.Split(',');
+                                    if (BusinessBase.Update(item))
                                     {
-                                        string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(oData.data[oData.data.Count() - 1].context, "zh", "vi"));
-                                        string properties_trans = stran.Replace("[", "").Replace("]", "").Replace("\"", "");
-                                        string[] ass = properties_trans.Split(',');
-                                        if (BusinessBase.Update(item))
-                                        {
-                                            string message = "Thông tin kiện hàng {0}{1}\r\n{2}";
-                                            message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "", ass[0]);
-                                            NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/package/QueryOrderStatus?code=" + item.PackageCode, "admin");
-                                        }
+                                        string message = "Thông tin kiện hàng {0}{1}\r\n{2}";
+                                        message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "", ass[0]);
+                                        NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/package/QueryOrderStatus?code=" + item.PackageCode, "admin");
                                     }
                                 }
                             }
@@ -1439,6 +1429,6 @@ namespace KGQT.Business
                 }
             }
         }
+        #endregion
     }
-    #endregion
 }

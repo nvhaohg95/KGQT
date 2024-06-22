@@ -1,4 +1,5 @@
-﻿using KGQT.Business;
+﻿using KGQT.Base;
+using KGQT.Business;
 using KGQT.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,14 @@ namespace KGQT.Areas.Admin.Controllers
             ViewBag.numberRecord = (int)oData[1];
             ViewBag.pageCurrent = page;
             return View(lstData);
+        }
+
+        [HttpPost]
+        public async Task<bool> SendRequestAsync(string uid)
+        {
+            if (string.IsNullOrEmpty(uid)) return false;
+            int a = await ZaloCommon.RequestMoreInfoAsync(uid);
+            return a == 0;
         }
     }
 }

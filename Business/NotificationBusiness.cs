@@ -10,6 +10,7 @@ using ILogger = Serilog.ILogger;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using KGQT.Base;
 using Newtonsoft.Json;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace KGQT.Business
 {
@@ -230,6 +231,18 @@ namespace KGQT.Business
                     {
                         List<string> userNames = strUserNames.Split(";").Select(x => x.ToLower()).Distinct().ToList();
                         lstUser = db.tbl_Accounts.Where(x => x.IsActive == true && userNames.Contains(x.Username)).ToList();
+                        var zalo = db.tbl_ZaloFollewers.Where(x => userNames.Contains(x.Username)).ToList();
+                        if (zalo != null && zalo.Count > 0)
+                        {
+                            Task task = new Task(() =>
+                            {
+                                foreach (var item in zalo)
+                                {
+                                    ZaloCommon.SendMessage(item.user_id, contents);
+                                }
+                            });
+                            task.Start();
+                        }
                     }
                     if (lstUser.Count > 0)
                     {
@@ -248,17 +261,6 @@ namespace KGQT.Business
                                         await Helper.SendFCMAsync(contents, user.TokenDevice, datas, user.ID);
                                     });
                                 }
-
-                                var zl = db.tbl_ZaloFollewers.FirstOrDefault(x => x.Username == user.Username);
-                                if(zl != null)
-                                {
-                                    Task task = new Task(() =>
-                                    {
-                                        ZaloCommon.SendMessage(zl.user_id,contents);
-                                    });
-                                    task.Start();
-                                }
-
                             }
                             catch (Exception ex)
                             {

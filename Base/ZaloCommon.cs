@@ -379,7 +379,7 @@ namespace KGQT.Base
                 ZaloClient client = new ZaloClient(token.access_token);
                 using (var db = new nhanshiphangContext())
                 {
-                    var lstData = db.tbl_ZaloFollewers.ToList();
+                    var lstData = db.tbl_ZaloFollewers.DistinctBy(x=>x.user_id).ToList();
                     if(lstData != null && lstData.Count > 0)
                     {
                         BackgroundWorker bw = new BackgroundWorker();
@@ -421,7 +421,7 @@ namespace KGQT.Base
             }
         }
 
-        public static async Task<string> RequestMoreInfoAsync(string uid)
+        public static async Task<int> RequestMoreInfoAsync(string uid)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
@@ -434,9 +434,11 @@ namespace KGQT.Base
                     "Vui lòng bấm vào hình để cung cấp cho chúng tôi thông tin của bạn!",
                     "https://tracking.nhanshiphang.vn/uploads/images/ead8daf4-f3cd-43bc-aa5c-830ecd7cdbb7.png");
                 Log.Information("Send request more info: " + result.ToString());
-                return result.ToString();
+                var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
+
+                return oData.error;
             }
-            return "";
+            return -1;
         }
 
         public static async Task<string> GetInfoFlowerAsync(string uid)
