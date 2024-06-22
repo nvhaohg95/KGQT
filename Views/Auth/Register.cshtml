@@ -4,6 +4,8 @@
     ViewData["Title"] = "Đăng ký";
     Layout = "~/Views/Shared/_PartialView.cshtml";
 }
+<link href="~/lib/cropper/cropper.min.css" rel="stylesheet" />
+<script src="~/lib/cropper/cropper.min.js"></script>
 
 <div class="container">
     <div class="row justify-content-center">
@@ -14,13 +16,12 @@
                         <div class="col-lg-10">
                             <div class="p-5">
                                 <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4 text-uppercase">Đăng ký tài khoản</h1>
+                                    <h1 class="text-gray-900 mb-4 text-uppercase">ĐĂNG KÝ TÀI KHOẢN</h1>
                                 </div>
                                 <form class="row" id="formRegister">
                                     <div class="form-group col-12 d-flex flex-column align-items-center justify-content-center">
                                         <div class="upload-avatar w-100px h-100px">
-                                            <img class="avatar-img rounded-circle cursor-pointer" id="avatar_upload" width="100" height="100" src="@(!string.IsNullOrWhiteSpace(Model?.IMG) ? Model.IMG : "/img/undraw_profile.svg")" onclick="clickUploadAvatar()">
-                                            <input name="File" id="input_uploader" class="d-none" type="file" onchange="onChange(event)" />
+                                            <img class="avatar-img rounded-circle cursor-pointer" id="avatar" width="100" height="100" src="/img/undraw_profile.svg" onclick="openPopup()">
                                         </div>
                                     </div>
                                     <div class="form-group col-6">
@@ -98,13 +99,98 @@
         </div>
     </div>
 </div>
-<script src="~/js/helper.js" type="text/javascript"></script>
-<script src="~/js/base.js" type="text/javascript"></script>
-<script src="~/vendor/jquery-easing/jquery.easing.js"></script>
-<script src="~/js/sb-admin-2.min.js"></script>
-<script src="~/js/sweetalert2.min.js"></script>
+
+<!-- Modal -->
+<div class="modal fade" id="popupCropper" tabindex="-1" aria-labelledby="popupCropperLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title fs-5" id="popupCropperLabel">Upload</h5>
+                <button type="button" class="close text-danger" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center justify-content-center" style="height:500px">
+                    <img id="image_upload" src="/img/imag-upload.png" style="max-width:100%;max-height:100%" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100">
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-info w-100px" onclick="openDialog()">Tải file</button>
+                        <input type="file" id="input_upload" accept="image/*"  class="d-none" onchange="selectFile(this)" />
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-secondary w-100px mr-4" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary w-100px" onclick="btnClick()">Chọn</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    function clickShowPass(){
+    const popup = new bootstrap.Modal(document.getElementById("popupCropper"));
+    const image_upload = document.getElementById("image_upload");
+    const input_Upload = document.getElementById("input_upload");
+    const avatar = document.getElementById("avatar");
+    var cropper;
+    var fileAvatar;
+
+    function openPopup() {
+        if(!popup) return;
+        if (cropper)
+            cropper.destroy();
+        image_upload.src = "/img/imag-upload.png";
+        popup.show();
+    }
+
+    function openDialog(){
+        if (!input_Upload) return;
+        input_Upload.click();
+    }
+
+    function selectFile(e) {
+        if(!e) return;
+        let file = e.files[0];
+        let src = URL.createObjectURL(file);
+        image_upload.src = src;
+        setTimeout(() => {
+            if (cropper)
+                cropper.destroy();
+            cropper = new Cropper(image_upload, { aspectRatio: 0, viewMode: 1, minContainerWidth: 200, minContainerHeight: 200, minCanvasWidth: 200, minCanvasHeight: 200, minCropBoxWidth: 200, minCropBoxHeight: 200 });
+            input_Upload.value = "";
+        },300);
+
+    }
+
+    function btnClick() {
+        if (!cropper) return;
+        let src = cropper.getCroppedCanvas().toDataURL("image/png");
+        avatar.src = src;
+        image_upload.src = "/img/imag-upload.png";
+        fileAvatar = dataURLtoFile(src, "avatar.png");
+        cropper.destroy();
+        popup.hide();
+    }
+
+    function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(','),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[arr.length - 1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+    function clickShowPass() {
         let _input = $('#txtPassword');
         let _icon = $('#icon');
         if (_icon.hasClass('fa fa-eye-slash')) {
@@ -118,46 +204,65 @@
             _input.attr('type', 'password');
         }
     };
-    function clickUploadAvatar() {
-        document.getElementById("input_uploader")?.click();
-    }
-    function onChange(evt) {
-        let file = evt?.target?.files[0];
-        toBase64(file).then(res => {
-            if (res) {
-                document.getElementById("avatar_upload")?.setAttribute("src", res);
-            }
-        });
-    }
-    const toBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-    });
+
     function clickRegister(){
         let data = helper.form2Object($('#formRegister').serializeArray());
-        let files = $("#input_uploader")[0].files;
-        let form = new FormData();
-        form.append("jsData",JSON.stringify(data));
-        if(files != null && files.length > 0)
+        let formData = new FormData();
+        if(!data)
         {
-            form.append("file", files[0]);
+            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            return;
         }
+        if(!data.FullName)
+        {
+            helper.showWarn('Vui lòng nhập Họ và tên!');
+            return;
+        }
+        if (!data.Phone) {
+            helper.showWarn('Vui lòng nhập Số điện thoại!');
+            return;
+        }
+        if (!data.Address) {
+            helper.showWarn('Vui lòng nhập Địa chỉ!');
+            return;
+        }
+        if (!data.Username) {
+            helper.showWarn('Vui lòng nhập Tên tài khoản!');
+            return;
+        }
+        if (!data.Password) {
+            helper.showWarn('Vui lòng nhập Mật khẩu!');
+            return;
+        }
+        if(fileAvatar)
+        {
+            data.File = fileAvatar;
+        }
+        $.each(data, function (key, value) {
+            formData.append("data." + key, value);
+        });
         $.ajax({
             url: '/Auth/Registers',
             type: "POST",
-            data: form,
-            contentType: false,
+            data: formData,
+            dataType: 'json',
             processData: false,
+            contentType: false,
+            beforeSend: function () {
+                stopLoading();
+            },
             success: function (respone) {
-                if (respone.isError)
-                    helper.showWarn(respone.message);
-                else
-                    helper.showSuc(respone.message, false, "", respone.url);
+            stopLoading(true);
+            if (respone.isError)
+                helper.showErr(respone.message);
+            else
+                helper.showSuc(respone.message, false, "", respone.url);
             },
             error: function (xhr, status, err) {
+                stopLoading(true);
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            }, complete: function () {
+                stopLoading(true);
             }
         });
     }

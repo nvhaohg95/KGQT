@@ -2,6 +2,7 @@
 using KGQT.Base;
 using KGQT.Models.temp;
 using KGQT.WebHook;
+using Microsoft.Extensions.FileProviders;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

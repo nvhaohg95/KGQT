@@ -165,7 +165,7 @@ namespace KGQT.Business
                         {
                             if (!Directory.Exists(data.Path)) 
                                 Directory.CreateDirectory(data.Path);
-                            var bytes = FileService.ResizeImage(data.File);
+                            var bytes = FileService.ResizeAndCompressImage(data.File);
                             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
                             string path = Path.Combine(data.Path, fileName);
                             File.WriteAllBytes(path, bytes);
@@ -716,7 +716,6 @@ namespace KGQT.Business
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username.ToLower());
                     if (acc != null)
                     {
@@ -749,6 +748,12 @@ namespace KGQT.Business
                         if (fileImg != null)
                         {
                             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
+                            if (!string.IsNullOrEmpty(acc.IMG))
+                            {
+                                var oldPath = string.Concat(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot"), acc.IMG);
+                                if(File.Exists(oldPath))
+                                    File.Delete(oldPath);
+                            }
                             if (!Directory.Exists(path))
                                 Directory.CreateDirectory(path);
                             var bytes = FileService.ResizeImage(fileImg);

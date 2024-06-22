@@ -51,70 +51,7 @@ namespace KGQT.Business
                 return result;
             };
         }
-
-        public static DataReturnModel<bool> UploadImages (List<IFormFile> images, int imageType,string createdBy)
-        {
-            DataReturnModel<bool> result = new();
-            try
-            {
-                if(images == null)
-                {
-                    result.IsError = true;
-                    result.Message = "Vui lòng chọn loại file";
-                    return result;
-                }
-                if(images.Count > 0)
-                {
-                    string sPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "images");
-                    if (!Directory.Exists(sPath))
-                        Directory.CreateDirectory(sPath);
-                    using (var db = new nhanshiphangContext())
-                    {
-                        foreach (var image in images)
-                        {
-                            tbl_Images data = new()
-                            {
-                                RecID = Guid.NewGuid().ToString(),
-                                ImageType = imageType,
-                                ImageSrc = "",
-                                CreatedBy = createdBy,
-                                CreatedOn = DateTime.Now
-                            };
-                            using (var stream = new MemoryStream())
-                            {
-                                image.CopyTo(stream);
-                                var bytes = stream.ToArray();
-                                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                                string path = Path.Combine(sPath, fileName);
-                                File.WriteAllBytes(path, bytes);
-                                data.ImageSrc = "\\" + Path.Combine("uploads", "images", fileName);
-                            }
-                            db.Add(data);
-                        }
-                        db.SaveChanges();
-                        result.IsError = false;
-                        result.Data = true;
-                        result.Message = "Thêm thành công!";
-                    }
-                }
-                else
-                {
-                    result.IsError = true;
-                    result.Message = "Không tìm thấy file";
-                }
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _log.Error("Lỗi upload images :" +  ex.Message);
-                result.IsError = true;
-                result.Data = false;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
-                return result;
-            }
-        }
-
-        public static List<tbl_Images> GetImgaeByType(int imageType)
+        public static List<tbl_Images> GetImageByType(int imageType)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -122,8 +59,111 @@ namespace KGQT.Business
                 return datas;
             }
         }
+        public static DataReturnModel<bool> UploadImages (FileUploadModel fileUpload,string createdBy)
+        {
+            DataReturnModel<bool> result = new();
+            try
+            {
+                if(fileUpload == null)
+                {
+                    result.IsError = true;
+                    result.Message = "File tải lên không hợp lệ!";
+                    return result;
+                }
+                string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "images");
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                using (var db = new nhanshiphangContext())
+                {
+                    tbl_Images data = new()
+                    {
+                        RecID = Guid.NewGuid().ToString(),
+                        ImageType = fileUpload.FileType,
+                        ImageSrc = "",
+                        CreatedBy = createdBy,
+                        CreatedOn = DateTime.Now
+                    };
+                    using (var stream = new MemoryStream())
+                    {
+                        fileUpload.File.CopyTo(stream);
+                        var bytes = stream.ToArray();
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileUpload.FileName);
+                        string path = Path.Combine(folder, fileName);
+                        File.WriteAllBytes(path, bytes);
+                        data.ImageSrc = "\\" + Path.Combine("uploads", "images", fileName);
+                    }
+                    db.Add(data);
+                    int kq = db.SaveChanges();
+                    if (kq > 0)
+                    {
+                        result.IsError = false;
+                        result.Data = true;
+                        result.Message = "Thêm File thành công!";
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Message = "Thêm File không thành công!";
+                    }
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Lỗi upload file :" +  ex.Message);
+                result.IsError = true;
+                result.Data = false;
+                result.Message = "Thêm File không thành công. Vui lòng thử lại";
+                return result;
+            }
+        }
 
-        public static DataReturnModel<bool> UpdateImages(string recID, int stauts, int viewIndex, string createdBy)
+        public static DataReturnModel<bool> UpdateImages(tbl_Images model, string createdBy)
+        {
+            DataReturnModel<bool> result = new();
+            try
+            {
+                using (var db = new nhanshiphangContext())
+                {
+                    var data = db.tbl_Images.FirstOrDefault(x => x.RecID == model.RecID);
+                    if (data == null)
+                    {
+                        result.IsError = true;
+                        result.Message = "Không tìm thấy File!";
+                        return result;
+                    }
+                    data.Status = model.Status;
+                    data.ViewIndex = model.ViewIndex;
+                    data.ModifiedBy = createdBy;
+                    data.ModifiedOn = DateTime.Now;
+                    db.Update(data);
+                    int kq = db.SaveChanges();
+                    if(kq > 0)
+                    {
+                        result.IsError = false;
+                        result.Data = true;
+                        result.Message = "Cập nhật File thành công!";
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Data = false;
+                        result.Message = "Cập nhật File không thành công. Vui lòng thử lại!";
+                    }    
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Lỗi update images :" + ex.Message);
+                result.IsError = true;
+                result.Data = false;
+                result.Message = "Cập nhật File không thành công. Vui lòng thử lại";
+                return result;
+            }
+        }
+
+        public static DataReturnModel<bool> DeleteImage(string recID)
         {
             DataReturnModel<bool> result = new();
             try
@@ -134,27 +174,37 @@ namespace KGQT.Business
                     if (data == null)
                     {
                         result.IsError = true;
-                        result.Message = "Không tìm thấy thông tin file";
+                        result.Message = "Không tìm thấy File";
                         return result;
                     }
-                    data.Status = stauts;
-                    data.ViewIndex = viewIndex;
-                    data.ModifiedBy = createdBy;
-                    data.ModifiedOn = DateTime.Now;
-                    db.Update(data);
+                    string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
+                    string path = string.Concat(folder,data.ImageSrc);
+                    if (File.Exists(path))
+                        File.Delete(path);
+                    db.Remove(data);
                     int kq = db.SaveChanges();
-                    result.IsError = false;
-                    result.Data = true;
-                    result.Message = "Cập nhật thành công!";
+                    if(kq > 0)
+                    {
+                        
+                        
+                        result.IsError = false;
+                        result.Data = true;
+                        result.Message = "Xóa File thành công!";
+                    }
+                    else
+                    {
+                        result.IsError = true;
+                        result.Message = "Xóa File không thành công. Vui lòng thử lại!";
+                    }
                     return result;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi update images :" + ex.Message);
+                _log.Error("Lỗi xóa images :" + ex.Message);
                 result.IsError = true;
                 result.Data = false;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
+                result.Message = "Xóa File không thành công. Vui lòng thử lại";
                 return result;
             }
         }

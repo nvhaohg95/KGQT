@@ -58,17 +58,23 @@ namespace KGQT.Areas.Admin.Controllers
 
         #region Update
         [HttpPost]
-        public object Update(string jsData, IFormFile file)
+        public object Update(SignUpModel data)
         {
-            var data = JsonConvert.DeserializeObject<tbl_Account>(jsData);
-            if (data == null)
-                return new DataReturnModel<bool>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
+            DataReturnModel<tbl_Account> result = new();
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
-            var reponse = AccountBusiness.Update(data, file, userLogin);
-            return reponse;
+            if(data != null && !string.IsNullOrEmpty(userLogin))
+            {
+                result = AccountBusiness.Update(data, data.File, userLogin);
+            }
+            else
+            {
+                result.IsError = true;
+                result.Message = "Cập nhật không thành công. Vui lòng thử lại!";
+            }
+            return result;
         }
         #endregion
 

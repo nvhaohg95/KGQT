@@ -89,15 +89,13 @@ namespace KGQT.Controllers
         }
 
         [HttpPost]
-        public DataReturnModel<tbl_Account> Registers(string jsData, IFormFile file)
+        public DataReturnModel<tbl_Account> Registers(SignUpModel data)
         {
-            var data = JsonConvert.DeserializeObject<SignUpModel>(jsData);
             if (data == null)
                 return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
-            if (file != null)
+            if (data.File != null)
             {
                 data.Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "uploads", "avatars");
-                data.File = file;
             }
             var result = AccountBusiness.Register(data);
             return result;
@@ -170,4 +168,6 @@ namespace KGQT.Controllers
         #endregion
 
     }
+
+   
 }

@@ -9,12 +9,16 @@
   <ItemGroup>
     <Compile Remove="Areas\Admin\Data\**" />
     <Compile Remove="logs\**" />
+    <Compile Remove="wwwroot\css\images\**" />
     <Content Remove="Areas\Admin\Data\**" />
     <Content Remove="logs\**" />
+    <Content Remove="wwwroot\css\images\**" />
     <EmbeddedResource Remove="Areas\Admin\Data\**" />
     <EmbeddedResource Remove="logs\**" />
+    <EmbeddedResource Remove="wwwroot\css\images\**" />
     <None Remove="Areas\Admin\Data\**" />
     <None Remove="logs\**" />
+    <None Remove="wwwroot\css\images\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1907,7 +1911,6 @@
 
   <ItemGroup>
     <Folder Include="uploads\" />
-    <Folder Include="wwwroot\css\images\" />
     <Folder Include="wwwroot\uploads\avatars\" />
   </ItemGroup>
 

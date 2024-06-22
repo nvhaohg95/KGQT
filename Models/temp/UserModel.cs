@@ -93,7 +93,7 @@ namespace KGQT.Models.temp
 
     }
 
-    public class SignUpModel:tbl_Account
+    public class SignUpModel : tbl_Account
     {
         public IFormFile? File { get; set; }
         public string? Path { get; set; }
@@ -105,4 +105,5 @@ namespace KGQT.Models.temp
     {
         public string DataRequest { get; set; }
     }
+
 }

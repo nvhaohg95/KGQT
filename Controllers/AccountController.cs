@@ -24,19 +24,24 @@ namespace KGQT.Controllers
 
         #region Update Info
         [HttpPost]
-        public object Update(string jsData, IFormFile file)
+        public object Update(SignUpModel data)
         {
-            var data = JsonConvert.DeserializeObject<tbl_Account>(jsData);
             if (data == null)
             {
-                return new DataReturnModel<tbl_Account>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
+                return new DataReturnModel<object>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
             }
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
-            var reponse = AccountBusiness.Update(data, file, userLogin);
-            return reponse;
+            if(!string.IsNullOrEmpty(userLogin))
+            {
+                return AccountBusiness.Update(data, data.File, userLogin);
+            }
+            else 
+            { 
+                return new DataReturnModel<object>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
+            }
         }
 
         #endregion
