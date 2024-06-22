@@ -31,5 +31,6 @@ namespace KGQT.Models
         public string? BankInfor { get; set; }
         public int? SearchBaiDuTimes { get; set; }
         public bool? IsMobileReview { get; set; }
+        public string? VersionNo { get; set; }
     }
 }

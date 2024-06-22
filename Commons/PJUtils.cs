@@ -365,6 +365,24 @@ namespace KGQT.Commons
             return sReturn;
         }
 
+        public static string ZaloStatus(int type)
+        {
+            string name = "";
+            switch (type)
+            {
+                case 0:
+                    name = "<span class=\"btn-sm btn bg-nsh1\" style=\"font-size:12px\">Chưa cung cấp thông tin</span>";
+                    break;
+                case 1:
+                    name = "<span class=\"btn-sm btn bg-nsh2\" style=\"font-size:12px\">Chưa khớp thông tin</span>";
+                    break;
+                case 2:
+                    name = "<span class=\"btn-sm btn btn-success\" style=\"font-size:12px\">Liên kết thành công</span>";
+                    break;
+            }
+            return name;
+        }
+
         public static string TradeName(int type)
         {
             string name = "";
@@ -378,6 +396,7 @@ namespace KGQT.Commons
             }
             return name;
         }
+
 
         public static string PackageStatus(int status)
         {
@@ -419,16 +438,16 @@ namespace KGQT.Commons
             switch (status)
             {
                 case 1:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-warning\">Chờ thanh toán</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-nsh2\">Chờ thanh toán</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-success\">Đã thanh toán</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-success\">Đã thanh toán</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-danger\">Đã hủy</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info\">Khác</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-info\">Khác</span>";
                     break;
             }
             return sReturn;
@@ -440,16 +459,16 @@ namespace KGQT.Commons
             switch (type)
             {
                 case 1:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm badge-success\">Nạp tiền</span>";
+                    sReturn = "<span class=\"text-white btn-sm badge-success\">Nạp tiền</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Rút tiền</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-danger\">Rút tiền</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-danger\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-danger\">Đã hủy</span>";
                     break;
                 case 4:
-                    sReturn = "<span class=\"text-white badge-pill btn-sm bg-info\">Khác</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-info\">Khác</span>";
                     break;
             }
             return sReturn;

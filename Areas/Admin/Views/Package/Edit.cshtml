@@ -120,6 +120,17 @@
                     <label for="txtShipID">Mô tả</label>
                     <textarea class="form-control" name="Note" placeholder="Nhập mô tả" rows="4">@Model.Note</textarea>
                 </div>
+                <div class="form-group mb-4">
+                    <label class="required" for="txtExportedCNWH">Ngày xuất kho Trung Quốc</label>
+                    <input type="text" class="form-control txtImportDate" id="txtExportedCNWH" name="zExportedCNWH" value="@(Model.ExportedCNWH != null? Model.ExportedCNWH.Value.ToString("dd/MM/yyyy") :"")">
+                </div>
+                @if (Model.ImportedSGWH != null)
+                {
+                    <div class="form-group mb-4">
+                        <label class="required" for="txtImportedSGWH">Ngày Nhập kho HCM</label>
+                        <input type="text" class="form-control txtImportDate" id="txtImportedSGWH" name="zImportedSGWH" value="@(Model.ImportedSGWH != null? Model.ImportedSGWH.Value.ToString("dd/MM/yyyy") :"")">
+                    </div>
+                }
                 <div class="form-group mb-2">
                     <label class="mb-0">Trạng thái</label>
                 </div>
@@ -144,6 +155,12 @@
 </div>
 <script>
     $(document).ready(function () {
+        $(".txtImportDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2024:2099"
+        });
+
         $('#txtPackage').off('keypress').on('keypress', function (e) {
             if (e.which == 13)
                 checkPackage();
@@ -309,10 +326,9 @@
         if (!data["IsAirPackage"])
             data["IsAirPackage"] = false;
         if (!data["IsInsurance"])
-            data["IsInsurance"] = false; 
-            if (!data["IsBrand"])
+            data["IsInsurance"] = false;
+        if (!data["IsBrand"])
             data["IsBrand"] = false;
-
         $.ajax({
             url: '/admin/Package/Update',
             type: 'POST',

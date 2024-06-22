@@ -286,6 +286,7 @@ namespace KGQT.Base
                 if (oData.error != 0)
                 {
                     var log = new tbl_ZaloLog();
+                    log.RecID = Guid.NewGuid();
                     log.action = 1;
                     log.error = oData.error;
                     log.message = oData.message;
@@ -345,6 +346,7 @@ namespace KGQT.Base
                     if (oData.error != 0)
                     {
                         var log = new tbl_ZaloLog();
+                        log.RecID = Guid.NewGuid();
                         log.action = 1;
                         log.error = oData.error;
                         log.message = oData.message;
@@ -367,7 +369,59 @@ namespace KGQT.Base
             bw.RunWorkerAsync();
         }
 
-        public static async Task<string> RequestMoreInfoAsync(string uid)
+        public static async Task SendMessageToAllV2(string message)
+        {
+            var token = BusinessBase.GetFirst<tbl_Zalo>();
+            if (token != null)
+            {
+                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
+                    token = await RefreshToken();
+                ZaloClient client = new ZaloClient(token.access_token);
+                using (var db = new nhanshiphangContext())
+                {
+                    var lstData = db.tbl_ZaloFollewers.DistinctBy(x=>x.user_id).ToList();
+                    if(lstData != null && lstData.Count > 0)
+                    {
+                        BackgroundWorker bw = new BackgroundWorker();
+                        bw.WorkerSupportsCancellation = true;
+                        bw.DoWork += new DoWorkEventHandler(
+                        delegate (object o, DoWorkEventArgs args)
+                        {
+                            BackgroundWorker b = o as BackgroundWorker;
+
+                            foreach (var item in lstData)
+                            {
+                                Log.Information("send message to uid:" + item.user_id);
+                                JObject result = client.sendTextMessageToUserIdV3(item.user_id, message);
+                                var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
+                                if (oData.error != 0)
+                                {
+                                    var log = new tbl_ZaloLog();
+                                    log.RecID = Guid.NewGuid();
+                                    log.action = 1;
+                                    log.error = oData.error;
+                                    log.message = oData.message;
+                                    log.user_id = item.user_id;
+                                    log.user_name = item.display_name;
+                                    log.context = message;
+                                    log.CreatedDate = DateTime.Now;
+                                    BusinessBase.Add(log);
+                                }
+                            }
+
+                        });
+                        bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                           delegate (object o, RunWorkerCompletedEventArgs args)
+                           {
+                               bw.CancelAsync();
+                           });
+                        bw.RunWorkerAsync();
+                    }
+                }
+            }
+        }
+
+        public static async Task<int> RequestMoreInfoAsync(string uid)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
@@ -380,9 +434,11 @@ namespace KGQT.Base
                     "Vui lòng bấm vào hình để cung cấp cho chúng tôi thông tin của bạn!",
                     "https://tracking.nhanshiphang.vn/uploads/images/ead8daf4-f3cd-43bc-aa5c-830ecd7cdbb7.png");
                 Log.Information("Send request more info: " + result.ToString());
-                return result.ToString();
+                var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
+
+                return oData.error;
             }
-            return "";
+            return -1;
         }
 
         public static async Task<string> GetInfoFlowerAsync(string uid)

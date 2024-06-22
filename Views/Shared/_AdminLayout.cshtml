@@ -338,6 +338,17 @@
                                 <a class="nav-link text-uppercase" href="/Admin/Complain/Index?page=1" title="Khiếu nại">KHIẾU NẠI</a>
                             </nav>
                         </div>
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts7" aria-expanded="false" aria-controls="collapseLayouts7" title="Zalo">
+                            <span><i class="fas fa-headset icon-16"></i></span>
+                            <span class="ml-2 text-uppercase">Zalo</span>
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseLayouts7" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link text-uppercase" href="/Admin/Zalo/Index?page=1" title="Thông báo">Danh sách quan tâm</a>
+                                <a class="nav-link text-uppercase" href="/Admin/Zalo/logs?page=1" title="Nhật ký">Nhật ký</a>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -440,6 +451,28 @@
     <script src="~/js/scripts.js"></script>
     <script src="~/js/datatables-simple-demo.js"></script>
     <script>
+        jQuery(function ($) {
+            $.datepicker.regional["vi-VN"] =
+            {
+                closeText: "Đóng",
+                prevText: "Trước",
+                nextText: "Sau",
+                currentText: "Hôm nay",
+                monthNames: ["Tháng một", "Tháng hai", "Tháng ba", "Tháng tư", "Tháng năm", "Tháng sáu", "Tháng bảy", "Tháng tám", "Tháng chín", "Tháng mười", "Tháng mười một", "Tháng mười hai"],
+                monthNamesShort: ["Một", "Hai", "Ba", "Bốn", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười một", "Mười hai"],
+                dayNames: ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"],
+                dayNamesShort: ["CN", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy"],
+                dayNamesMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+                weekHeader: "Tuần",
+                dateFormat: "dd/mm/yy",
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ""
+            };
+
+            $.datepicker.setDefaults($.datepicker.regional["vi-VN"]);
+        });
         // scrolling load noti
         function onScroll(e) {
             if (e.scrollHeight - (e.clientHeight + e.scrollTop) == 0) {

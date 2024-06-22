@@ -30,7 +30,7 @@ namespace KGQT.Controllers
             var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
             string userLogin = userModel != null ? userModel.UserName : "";
             var oData = ShippingOrder.GetPage(status, ID, fromDate, toDate, page, pageSize, userLogin);
-            var (total, totalLeft) = ShippingOrder.GetTotalAndLeft(userLogin);
+            var (total, totalLeft) = ShippingOrder.GetTotalAndLeft(status, ID, fromDate, toDate, userLogin);
             var lstData = oData[0] as List<tbl_ShippingOrder>;
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
