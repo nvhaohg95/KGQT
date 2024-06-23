@@ -335,7 +335,7 @@ namespace KGQT.Commons
                     sReturn = "<span class=\"text-white btn btn-sm bg-primary\" style=\"font-size:12px\">Đã về kho HCM</span>";
                     break;
                 case 5:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-success\" style=\"font-size:12px\">Đã nhận hàng</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-success\" style=\"font-size:12px;background-color:#7066e0 !important\">Đã nhận hàng</span>";
                     break;
                 case 9:
                     sReturn = "<span class=\"text-white btn btn-sm bg-dark\" style=\"font-size:12px\">Đã hủy</span>";
@@ -441,7 +441,7 @@ namespace KGQT.Commons
                     sReturn = "<span class=\"text-white btn-sm bg-nsh2\">Chờ thanh toán</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white btn-sm bg-success\">Đã thanh toán</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-success\" style=\"background-color: #4e73df !important;padding-left: 0.7rem !important;padding-right: 0.7rem !important;\">Đã thanh toán</span>";
                     break;
                 case 3:
                     sReturn = "<span class=\"text-white btn-sm bg-danger\">Đã hủy</span>";
@@ -536,6 +536,9 @@ namespace KGQT.Commons
                     break;
                 case 6:
                     s = "Đổi lượt tìm kiếm trên Baidu";
+                    break;
+                case 8:
+                    s = "Được tặng";
                     break;
             }
             return s;

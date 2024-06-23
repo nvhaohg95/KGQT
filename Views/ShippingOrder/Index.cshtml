@@ -117,49 +117,68 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr class="table-light font-weight-normal py-2">
-                                <td>
+                                <tr class="table-light font-weight-normal py-2">
+                                    <td>
                                     @if (item.Status == 1)
                                     {
-                                        <input class="payment-check" type="checkbox" value="@item.RecID" />
+                                                <input class="payment-check" type="checkbox" value="@item.RecID" />
                                     }
-                                </td>
-                                <td class="text-left ">
-                                    <a href="/ShippingOrder/Details?id=@item.ID">
-                                        @Html.DisplayFor(modelItem => item.ShippingOrderCode)
-                                    </a>
-                                </td>
-                                <td class="text-left">
-                                    <div class="w-300px d-block text-break">
+                                    </td>
+                                    <td class="text-left">
+                                        <a href="/ShippingOrder/Details?id=@item.ID">
+                                              <div style="height:100%;width:100%">
+                                            @Html.DisplayFor(modelItem => item.ShippingOrderCode)
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td class="text-left">
+                                         <a href="/ShippingOrder/Details?id=@item.ID">
+                                              <div style="height:100%;width:100%">
+                                        <div class="w-300px d-block text-break">
                                         @foreach (var p in item.Packages)
                                         {
-                                            <p>@p</p>
+                                                    <p>@p</p>
                                         }
-                                    </div>
-                                </td>
-                                <td class="text-center ">
+                                        </div>
+                                          </div>
+                                        </a>
+                                    </td>
+                                    <td class="text-center ">
+                                         <a href="/ShippingOrder/Details?id=@item.ID">
+                                              <div style="height:100%;width:100%">
                                     @Html.DisplayFor(modelItem => item.ShippingMethodName)
+                                    </div>
+                                        </a>    
                                 </td>
-                                <td class="text-center">
-                                    <div class="w-200px d-block">
+                                    <td class="text-center">
+                                        
+                                         <a href="/ShippingOrder/Details?id=@item.ID">
+                                              <div style="height:100%;width:100%">
+                                        <div class="w-200px d-block">
                                         @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
-                                    </div>
-                                </td>
-                                <td class="text-center ">
+                                        </div>
+                                         </div>
+                                        </a>   
+                                    </td>
+                                    <td class="text-center ">
                                     @Converted.String2Money(item.TotalPrice)
-                                </td>
-                                <td class="text-center">
-                                    <div class="w-200px d-block">
-                                        @Html.DisplayFor(modelItem => item.CreatedDate)
-                                    </div>
-                                </td>
-                                <td class="text-center ">
-                                    <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.ID">
-                                        <i class="far fa-edit"></i>
-                                        <span>Xem</span>
-                                    </a>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="text-center">
+                                         <a href="/ShippingOrder/Details?id=@item.ID">
+                                              <div style="height:100%;width:100%">
+                                        <div class="w-200px d-block">
+                                        @Converted.Date2String(item.CreatedDate,true)
+                                        </div>
+                                           </div>
+                                        </a>   
+                                    </td>
+                                    <td class="text-center ">
+                                        <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.ID">
+                                            <i class="far fa-edit"></i>
+                                            <span>Xem</span>
+                                        </a>
+                                    </td>
+                                </tr>
                         }
                     </tbody>
                 </table>
@@ -176,24 +195,24 @@
         <div class="col-8">
             @if (numberPage > 1)
             {
-                <nav class="d-flex justify-content-end">
-                    <ul class="pagination m-0">
+                    <nav class="d-flex justify-content-end">
+                        <ul class="pagination m-0">
                         @{
                             int offset = 2; // number display page
                             if (pageCurrent > 1)
                             {
-                                <li class="page-item">
-                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
-                                        <i class="fas fa-fast-backward"></i>
-                                    </button>
-                                </li>
+                                            <li class="page-item">
+                                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,1,@numberPage)">
+                                                    <i class="fas fa-fast-backward"></i>
+                                                </button>
+                                            </li>
                                 int prevPage = pageCurrent - 1;
-                                <li class="page-item">
-                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
-                                        <span aria-hidden="true">&laquo;</span>
-                                        <span class="sr-only">Previous</span>
-                                    </button>
-                                </li>
+                                            <li class="page-item">
+                                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@prevPage,@numberPage)">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                    <span class="sr-only">Previous</span>
+                                                </button>
+                                            </li>
                             }
 
                             int from = pageCurrent - offset;
@@ -212,37 +231,37 @@
                             int i;
                             for (i = from; i <= to; i++)
                             {
-                                <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
-                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
-                                </li>
+                                            <li class="@(pageCurrent == i ? "page-item active" : "page-item")">
+                                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@i,@numberPage)">@i</button>
+                                            </li>
                             }
                             if (pageCurrent < numberPage - (to / 2))
                             {
-                                <li class="page-item disabled">
-                                    <a class="page-link">...</a>
-                                </li>
+                                            <li class="page-item disabled">
+                                                <a class="page-link">...</a>
+                                            </li>
                             }
                             if (pageCurrent < numberPage)
                             {
                                 int nextPage = pageCurrent + 1;
-                                <li class="page-item">
-                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
-                                        <span aria-hidden="true">&raquo;</span>
-                                        <span class="sr-only">Next</span>
-                                    </button>
-                                </li>
+                                            <li class="page-item">
+                                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@nextPage,@numberPage)">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                    <span class="sr-only">Next</span>
+                                                </button>
+                                            </li>
                             }
                             if (pageCurrent < numberPage)
                             {
-                                <li class="page-item">
-                                    <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
-                                        <i class="fas fa-fast-forward"></i>
-                                    </button>
-                                </li>
+                                            <li class="page-item">
+                                                <button type="button" class="page-link" onclick="nextPage(@pageCurrent,@numberPage,@numberPage)">
+                                                    <i class="fas fa-fast-forward"></i>
+                                                </button>
+                                            </li>
                             }
                         }
-                    </ul>
-                </nav>
+                        </ul>
+                    </nav>
             }
         </div>
     </div>
@@ -257,6 +276,15 @@
                 $('#btnPaymentSelected').removeClass('d-block');
             $('.checkCount').html('(' + check + ')');
         });
+
+
+        //$(".pack-item").click(function (e) {
+        //    if ($(e.target).is('p')) {
+        //        e.preventDefault();
+        //        return;
+        //    }
+        //    alert("woohoo!");
+        //});
     })
 
     function paymentSelected() {

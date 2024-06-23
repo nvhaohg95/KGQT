@@ -25,7 +25,7 @@
                 <div class="form-group mb-2">
                     <label class="mb-0 text-primary fw-bold">Phương thức vận chuyển</label>
                 </div>
-                <div class="form-group mb-4">
+                @*<div class="form-group mb-4">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" id="movingfast" name="MovingMethod" value="1">
                         <label class="form-check-label" for="movingfast">Nhanh</label>
@@ -46,7 +46,7 @@
                         <input class="form-check-input" type="radio" id="movingofficial" name="MovingMethod" value="5">
                         <label class="form-check-label" for="movingofficial">Biển</label>
                     </div>
-                </div>
+                </div>*@
                 <div class="form-group mb-2">
                     <label class="required mb-0">Kho</label>
                 </div>
@@ -129,10 +129,6 @@
             return
         }
 
-        if (!data.WareHouse) {
-            helper.showErr('Hãy chọn kho TQ nhập hàng!');
-            return
-        }
 
         if (data.IsInsurance) {
             if (!data.Declaration || !data.DeclarePrice) {
@@ -151,6 +147,8 @@
                 return
             }
         }
+
+        data.MovingMethod = 0;
 
         $.ajax({
             url: '@Url.Action("Create", "Package")',

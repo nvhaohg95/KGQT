@@ -38,32 +38,35 @@ namespace KGQT.Commons
         public static double ToDouble(string s)
         {
             if (string.IsNullOrEmpty(s)) return 0;
-
-            double num = Convert.ToDouble(s.ToString());
+            s = FormatStringDouble(s);
+            double num = Convert.ToDouble(s);
             return Math.Round(num, 1, MidpointRounding.AwayFromZero);
         }
 
         public static double Double(this string s)
         {
             if (string.IsNullOrEmpty(s)) return 0;
-
-            double num = Convert.ToDouble(s.ToString());
+                s = FormatStringDouble(s);
+            double num = Convert.ToDouble(s);
             return Math.Round(num, 1, MidpointRounding.AwayFromZero);
         }
-        public static double ToDouble(object s)
+        public static double ToDouble(object value)
         {
-            if (s == null) return 0;
-
+            if (value == null) return 0;
+            string s = FormatStringDouble(value);
+            double num = Convert.ToDouble(s);
             return Convert.ToDouble(s.ToString());
         }
 
-        public static double ToDouble(double? s, int period = 1)
+        public static double ToDouble(double? value, int period = 1)
         {
-            if (s == null) return 0;
-            var num = Convert.ToDouble(s.ToString());
+            if (value == null) return 0;
+            string s = FormatStringDouble(value);
+            double num = Convert.ToDouble(s);
             return Math.Round(num, period, MidpointRounding.AwayFromZero);
         }
-        public static decimal ToDecimal(double? s, int period = 1)
+
+        public static decimal ToDecimal(this double? s, int period = 1)
         {
             if (s == null) return 0;
             var num = Convert.ToDecimal(s);
@@ -108,7 +111,8 @@ namespace KGQT.Commons
         public static string StringCeiling(object value)
         {
             if (value == null) return "0";
-            double num = Convert.ToDouble(value);
+            string s = FormatStringDouble(value);
+            double num = Convert.ToDouble(s);
             if (value.ToString().IndexOf(".") > -1)
                 return Math.Ceiling(num).ToString().Replace(",", ".");
             return value.ToString().Replace(",", ".");
@@ -117,7 +121,8 @@ namespace KGQT.Commons
         public static double DoubleCeiling(double? value)
         {
             if (value == null) return 0;
-            double num = Convert.ToDouble(value);
+            string s = FormatStringDouble(value);
+            double num = Convert.ToDouble(s);
             if (value.ToString().IndexOf(".") > -1)
                 return Math.Ceiling(num);
             return Convert.ToDouble(value);
@@ -126,19 +131,20 @@ namespace KGQT.Commons
         public static string Double2String(double? str)
         {
             if (str == null) return "0";
-
-            if (str.ToString().IndexOf(".") > 0)
+            string s = FormatStringDouble(str);
+            if (s.IndexOf(".") > 0)
             {
-                var split = str.ToString().Split('.');
+                var split = s.Split('.');
                 if (split[1].Length > 2)
                     return Math.Round(str.Value, 1, MidpointRounding.AwayFromZero).ToString().Replace(",", ".");
             }
-            return str.ToString().Replace(",", ".");
+            return s.Replace(",", ".");
         }
 
         public static string String2Double(string value)
         {
             if (string.IsNullOrEmpty(value)) return "0";
+            value = FormatStringDouble(value);
             double num = Convert.ToDouble(value);
             if (value.IndexOf(".") > 0)
             {
@@ -152,6 +158,7 @@ namespace KGQT.Commons
         public static string String2Money(string value)
         {
             if (string.IsNullOrEmpty(value)) return "0";
+            value = FormatStringDouble(value);
             double num = Convert.ToDouble(value);
             if (value.IndexOf(".") > 0)
                 return string.Format("{0:N0}", Math.Round(num, 1, MidpointRounding.AwayFromZero)).Replace(".", ",");
@@ -161,7 +168,9 @@ namespace KGQT.Commons
         public static string Double2Money(double? value)
         {
             if (value == null) return "0";
-            double num = Convert.ToDouble(value);
+            string s = value.ToString();
+           
+            double num = Convert.ToDouble(s);
             if (value.ToString().IndexOf(".") > 0)
                 return string.Format("{0:N0}", Math.Round(num, 1, MidpointRounding.AwayFromZero)).Replace(".", ",");
             return string.Format("{0:N0}", value).Replace(".", ",");
@@ -210,6 +219,27 @@ namespace KGQT.Commons
                 }
             }
             return DateTime.MinValue;
+        }
+
+        private static string[] sInclude = new string[] {
+            "000001", "000002", "000003", "000004", "000005",
+            "000006", "000007", "000008", "000009", "0000010",
+            "0000011", "0000012","0000013", "0000014","0000015",
+            "0000016", "0000017","0000018", "0000019","0000020",
+            "0000021", "0000022","0000023", "0000024","0000025",
+            "0000026", "0000027","0000028", "0000029","0000030"
+        };
+        private static string FormatStringDouble(object value)
+        {
+            var s = value.ToString();
+            var exist = sInclude.FirstOrDefault(x => s.Contains(x));
+            if (exist != null)
+                s = s.Replace(exist, "");
+            string[] spt = s.Split(".", StringSplitOptions.RemoveEmptyEntries);
+            if(spt.Length > 1 && spt[1].Length > 3) {
+                s = spt[0] + "." + spt[1].Substring(0,2);
+            }
+            return s;
         }
     }
 }

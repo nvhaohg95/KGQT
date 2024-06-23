@@ -20,11 +20,14 @@ namespace KGQT.Models
         public int Type { get; set; }
         public int? Status { get; set; }
         /// <summary>
-        /// 1: Thanh toán đơn hàng, 
-        /// 2: Nhận lại tiền hang, 3: Admin nạp tiền
-        /// , 4: Rút tiền
-        /// 5: Hủy rút tiền, 6:Nạp tiền tại kho
+        /// 1: Thanh toán đơn hàng
+        /// 2: Nhận lại tiền hang
+        /// 3: Admin nạp tiền
+        /// 4: Rút tiền
+        /// 5: Hủy rút tiền
+        /// 6:Nạp tiền tại kho
         /// 7.Rút tiền tại kho
+        /// 8: Tặng
         /// 
         /// </summary>
         public int TradeType { get; set; }

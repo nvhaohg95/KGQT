@@ -79,7 +79,7 @@
             </div>
             @foreach (var item in Model)
             {
-                <div class="card shadow-0 border mb-1">
+                <div class="card shadow-0 border mb-1 base-hover pack-item" data-id="@item.PackageCode">
                     <div class="card-body p-0">
                         <input type="text" hidden value="@item.PackageCode" class="package-code">
                         <div class="row mx-0 py-2 border-bottom bg-nsh2 text-white">
@@ -125,7 +125,7 @@
                                 }
                                 @if (item.Status != 5)
                                 {
-                                    <a href="/admin/package/edit?id=@item.ID" class="btn mt-2 btn-sm bg-warning text-white">Chỉnh sửa</a>
+                                    <a href="/admin/package/edit?id=@item.ID" class="btn mt-2 btn-sm bg-warning text-white @(item.Status < 2 || item.Status == 3 ? "": "px-3")">Chỉnh sửa</a>
                                 }
                                 @if (item.Status < 2)
                                 {
@@ -137,7 +137,9 @@
                                 }
                                 @if (item.Status != 5)
                                 {
-                                    <button class="btn-sm btn bg-danger text-white mt-2" onclick="Delete(@item.ID)">Xóa</button>
+                                    <button class="btn-sm btn bg-danger text-white mt-2 px-3" style="@(item.Status < 2 || item.Status == 3 ? " " : " padding-left: 1.25rem !important;padding-right: 1.25rem !important;")" onclick="Delete(@item.ID)">
+                                        Xóa
+                                    </button>
                                 }
                             </div>
                         </div>

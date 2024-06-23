@@ -33,7 +33,7 @@ namespace KGQT.Business
                     var data = db.tbl_Accounts.FirstOrDefault(x => x.Username == userName.ToLower());
                     if (data != null)
                     {
-                        if(data.IsActive == false)
+                        if (data.IsActive == false)
                         {
                             result.IsError = true;
                             result.Message = "Tài khoản của bạn đã bị khóa!";
@@ -117,7 +117,7 @@ namespace KGQT.Business
                     result.Message = "Mật khẩu không được bỏ trống!";
                     return result;
                 }
-                
+
                 using (var db = new nhanshiphangContext())
                 {
                     var isUserName = db.tbl_Accounts.Any(x => x.Username == data.Username.ToLower());
@@ -127,16 +127,16 @@ namespace KGQT.Business
                         result.Message = "Tên tài khoản đã được sử dụng!";
                         return result;
                     }
-                    if(!string.IsNullOrEmpty(data.Email))
+                    if (!string.IsNullOrEmpty(data.Email))
                     {
                         var isEmail = db.tbl_Accounts.Any(x => x.Email == data.Email);
-                        if(isEmail)
+                        if (isEmail)
                         {
                             result.IsError = true;
                             result.Message = "Địa chỉ Email đã được sử dụng!";
                             return result;
                         }
-                    }    
+                    }
                     var acc = new tbl_Account()
                     {
                         Username = data.Username.ToLower(),
@@ -149,8 +149,9 @@ namespace KGQT.Business
                         Wallet = "0",
                         AvailableSearch = 20,
                         Status = 2,
-                        RoleID = 4, 
+                        RoleID = 4,
                         IsActive = true,
+                        IsLinkedZalo = false,
                         TokenDevice = data.TokenDevice,
                         DeviceID = data.DeviceID,
                         DeviceName = data.DeviceName,
@@ -163,7 +164,7 @@ namespace KGQT.Business
                     {
                         if (data.File != null)
                         {
-                            if (!Directory.Exists(data.Path)) 
+                            if (!Directory.Exists(data.Path))
                                 Directory.CreateDirectory(data.Path);
                             var bytes = FileService.ResizeImage(data.File);
                             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(data.File.FileName);
@@ -219,12 +220,12 @@ namespace KGQT.Business
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Email == email);
                     if (acc != null)
                     {
-                        if(acc.IsActive == false)
+                        if (acc.IsActive == false)
                         {
                             result.IsError = true;
                             result.Message = "Tài khoản của bạn đã bị khóa!";
                             return result;
-                        }    
+                        }
 
                         acc.Token = Guid.NewGuid().ToString();
                         var name = acc.FullName;
@@ -519,7 +520,7 @@ namespace KGQT.Business
                     reponse.Message = "Số điện thoại không hợp lệ.";
                     return reponse;
                 }
-                
+
                 using (var db = new nhanshiphangContext())
                 {
                     if (!string.IsNullOrEmpty(data.UserID))
@@ -581,7 +582,7 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi tạo người dùng",ex.Message);
+                _log.Error("Lỗi tạo người dùng", ex.Message);
                 reponse.IsError = true;
                 reponse.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại";
                 return reponse;
@@ -716,7 +717,7 @@ namespace KGQT.Business
                 }
                 using (var db = new nhanshiphangContext())
                 {
-                    
+
                     var acc = db.tbl_Accounts.FirstOrDefault(x => x.Username == data.Username.ToLower());
                     if (acc != null)
                     {
@@ -733,7 +734,7 @@ namespace KGQT.Business
                         if (!string.IsNullOrEmpty(data.UserID) && acc.UserID != data.UserID)
                         {
                             var isUserID = db.tbl_Accounts.Any(x => x.Username == data.UserID);
-                            if(isUserID)
+                            if (isUserID)
                             {
                                 result.IsError = true;
                                 result.Message = string.Format("Mã định danh {0} đã được sử dụng!", data.UserID);
@@ -742,7 +743,7 @@ namespace KGQT.Business
                             else
                                 acc.UserID = data.UserID;
                         }
-                        if(data.RoleID != null)
+                        if (data.RoleID != null)
                         {
                             acc.RoleID = data.RoleID;
                         }
@@ -797,9 +798,29 @@ namespace KGQT.Business
             }
         }
 
+        public static bool UpdateInfoZalo(string username)
+        {
+            using (var db = new nhanshiphangContext())
+            {
+                var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == username);
+                if (user != null && user.IsLinkedZalo == false)
+                {
+                    double w = user.Wallet.Double();
+                    user.Wallet = (w + 10000).ToString();
+                    user.IsLinkedZalo = true;
+                    user.ModifiedBy = "admin";
+                    user.ModifiedDate = DateTime.Now;
+                    db.Update(user);
+                    if (db.SaveChanges() > 0)
+                    {
+                        HistoryPayWallet.Insert(user.ID, username, 0, "Được tặng khi cung cấp thông tin zalo thành công", "10000", 2, 8, w.ToString(), user.Wallet, "admin");
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
         #endregion
-
-
         public static tbl_Account? GetByUserName(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return null;

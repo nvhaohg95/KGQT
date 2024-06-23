@@ -1,4 +1,5 @@
 ﻿using KGQT.Base;
+using KGQT.Business;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace KGQT.WebHook
                 switch (data.event_name)
                 {
                     case "user_submit_info":
-                        UpdateFollowerInfo(data);
+                        UpdateFollowerInfoAsync(data);
                         break;
                     case "unfollow":
                         RemoveFollower(data);
@@ -33,7 +34,7 @@ namespace KGQT.WebHook
             return Task.FromResult(HttpStatusCode.OK);
         }
 
-        public async Task UpdateFollowerInfo(WebHookReceive data)
+        public async Task UpdateFollowerInfoAsync(WebHookReceive data)
         {
             using (var db = new nhanshiphangContext())
             {
@@ -45,13 +46,10 @@ namespace KGQT.WebHook
 
                 if (phone.StartsWith("84"))
                     phone = phone.Replace("84", "0");
-
+                var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
                 var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.sender.id);
                 if (f == null)
                 {
-
-                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
-
                     f = new tbl_ZaloFollewer();
                     f.RecID = Guid.NewGuid();
                     f.user_id = data.sender.id;
@@ -76,9 +74,10 @@ namespace KGQT.WebHook
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(data.info.name))
+                        data.info.name = f.display_name;
                     f.phone = phone;
                     f.address = data.info.address;
-                    var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
                     if (user != null)
                     {
                         f.Username = user.Username;
@@ -90,23 +89,22 @@ namespace KGQT.WebHook
                     }
                     db.Update(f);
                 }
-                if (db.SaveChanges() <= 0)
+                if (db.SaveChanges() > 0)
                 {
-                    var w = new tbl_ZaloWebHook();
-                    w.RecID = Guid.NewGuid();
-                    w.app_id = data.app_id;
-                    w.event_name = data.event_name;
-                    w.timestamp = data.timestamp;
-                    w.sender = data.sender?.id;
-                    w.recipient = data.recipient?.id;
-                    w.phone = data.info?.phone;
-                    w.address = data.info?.address;
-                    w.name = data.info?.name;
-                    w.status = 0;
-                    w.CreatedDate = DateTime.Now;
-                    db.Add(w);
-                    await db.SaveChangesAsync();
                     await ZaloCommon.UpdateInfoFollower(data.sender.id, data.info);
+                    Log.Information($"Cập nhật thông tin người dùng zalo {f.user_id} - {f.display_name} thành công");
+
+                    if (user != null)
+                    {
+                        string mess = $"Cảm ơn {(string.IsNullOrEmpty(f.display_name) ? user.Username : f.display_name)} đã cung cấp thông tin thành công trên hệ thống Zalo OA của Nhận Ship Hàng. Hệ thống gửi tặng bạn 10.000 VND sẽ được nạp vào số dư ví trên ứng dụng TRAKUAIDI của Quý khách hàng trong vòng 24h. \r\nMọi thắc mắc xin vui lòng liên hệ CSKH của chúng tôi để được tư vấn giải đáp!";
+
+                        if (AccountBusiness.UpdateInfoZalo(f.Username))
+                            await ZaloCommon.SendMessage(f.user_id, mess);
+                    }
+                }
+                else
+                {
+                    Log.Error($"Cập nhật thông tin người dùng zalo {f.user_id} - {f.display_name} thất bại");
                 }
             }
         }

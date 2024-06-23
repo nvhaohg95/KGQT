@@ -70,5 +70,13 @@ app.MapPost("/webhook", async (HttpContext context, IReceiveWebhook receiveWeboo
 });
 
 
+app.MapPost("/casso", async (HttpContext context, IReceiveWebhook receiveWebook) =>
+{
+    using StreamReader stream = new StreamReader(context.Request.Body);
+    return await receiveWebook.UpdateTransactionStatus(await stream.ReadToEndAsync());
+});
+
+
+
 app.Run();
 #endregion

@@ -65,5 +65,13 @@ namespace KGQT.Apis
             PackagesBusiness.DailyTask();
             return Ok(200);
         }
+
+        [HttpGet]
+        [Route("sendall")]
+        public async Task<IActionResult> SendAll(string message)
+        {
+            ZaloCommon.SendMessageToAllV2(message);
+            return Ok(200);
+        }
     }
 }
