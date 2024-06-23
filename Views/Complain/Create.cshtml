@@ -69,7 +69,7 @@
         else 
         {
             if (data.Type != "3" && !data.TransId) {
-                helper.showWarn('Vui lòng nhập mã đơn hàng của bạn!');
+                helper.showWarn('Vui lòng nhập mã đơn hàng của Quý khách!');
                 return;
             }
         }
@@ -92,7 +92,7 @@
                 if (respone.isError)
                     helper.showErr(respone.message)
                 else
-                    helper.showSuc('Yêu cầu của bạn đã được gửi!');
+                    helper.showSuc('Yêu cầu của Quý khách đã được gửi!');
             },
             error: function (xhr, status, err) {
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');

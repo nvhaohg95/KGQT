@@ -82,9 +82,9 @@ namespace KGQT.Controllers
                 return new { error = 1, msg = "Kiện chưa kê khác khách hàng!" };
             var user = AccountBusiness.GetOne(pack.Username);
             if (user == null)
-                return new { error = 2, msg = "Khách hàng này không có trong hệ thống, bạn có muốn tiếp tục!" };
+                return new { error = 2, msg = "Khách hàng này không có trong hệ thống, Quý khách có muốn tiếp tục!" };
 
-            return new { error = 3, data = user.AvailableSearch, firsttime = !pack.AutoQuery, times = pack.SearchBaiduTimes };
+            return new { error = 3, data = user.AvailableSearch, firsttime = pack.AutoQuery == null || pack.AutoQuery == false ? true : false, times = pack.SearchBaiduTimes };
         }
         #endregion
 

@@ -121,6 +121,10 @@
                     <textarea class="form-control" name="Note" placeholder="Nhập mô tả" rows="4">@Model.Note</textarea>
                 </div>
                 <div class="form-group mb-4">
+                    <label class="required" for="txtExportedCNWH">Ngày lên đơn</label>
+                    <input type="text" class="form-control txtImportDate" id="txtExportedCNWH" name="zOrderDate" value="@(Model.OrderDate != null? Model.OrderDate.Value.ToString("dd/MM/yyyy") :"")">
+                </div>
+                <div class="form-group mb-4">
                     <label class="required" for="txtExportedCNWH">Ngày xuất kho Trung Quốc</label>
                     <input type="text" class="form-control txtImportDate" id="txtExportedCNWH" name="zExportedCNWH" value="@(Model.ExportedCNWH != null? Model.ExportedCNWH.Value.ToString("dd/MM/yyyy") :"")">
                 </div>

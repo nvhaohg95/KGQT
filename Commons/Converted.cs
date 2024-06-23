@@ -2,6 +2,7 @@
 using KGQT.Business;
 using Newtonsoft.Json;
 using Serilog;
+using System.Globalization;
 using ILogger = Serilog.ILogger;
 
 namespace KGQT.Commons
@@ -198,16 +199,12 @@ namespace KGQT.Commons
             {
                 if (!string.IsNullOrEmpty(s))
                 {
-                    return DateTime.Parse(s);
+                    return DateTime.ParseExact(s, "MM/dd/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture);
                 }
             }
             catch (Exception ex)
             {
                 try
-                {
-                    return DateTime.ParseExact(s, "dd/MM/yyy", null);
-                }
-                catch (Exception ex2)
                 {
                     string[] split = s.Split("/", StringSplitOptions.RemoveEmptyEntries);
 
@@ -216,6 +213,11 @@ namespace KGQT.Commons
                         int year = DateTime.Now.Year;
                         return new DateTime(year, split[1].ToInt(), split[0].ToInt());
                     }
+                    
+                }
+                catch (Exception ex2)
+                {
+                    return DateTime.Parse(s);
                 }
             }
             return DateTime.MinValue;

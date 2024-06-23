@@ -87,8 +87,8 @@ namespace KGQT.Mobility
                     {
                         if (!string.IsNullOrEmpty(user.TokenDevice))
                         {
-                            string body = "Tài khoản của bạn đã được đăng nhập tại nơi khác!";
-                            string message = "Tài khoản của bạn đã được đăng nhập ở nơi khác! Vui lòng đăng nhập lại.";
+                            string body = "Tài khoản của Quý khách đã được đăng nhập tại nơi khác!";
+                            string message = "Tài khoản của Quý khách đã được đăng nhập ở nơi khác! Vui lòng đăng nhập lại.";
                             if (!string.IsNullOrEmpty(deviceName))
                                 message += $"Phát hiện tài khoản đang được đăng nhập tại {deviceName}";
                             var data = new DataReturnModel<object>();
@@ -175,7 +175,7 @@ namespace KGQT.Mobility
                             }
                             else
                             {
-                                string message = "Tài khoản của bạn đã được đăng nhập ở nơi khác! Vui lòng đăng nhập lại.";
+                                string message = "Tài khoản của Quý khách đã được đăng nhập ở nơi khác! Vui lòng đăng nhập lại.";
                                 if (!string.IsNullOrEmpty(user.DeviceName))
                                     message += $"Phát hiện tài khoản đang được đăng nhập tại {user.DeviceName}";
                                 oRequest.Message = message;
@@ -1718,7 +1718,7 @@ namespace KGQT.Mobility
                         {
                             if (!string.IsNullOrEmpty(token))
                             {
-                                string body = $"Yêu cầu rút tiền của bạn đã được gửi đi";
+                                string body = $"Yêu cầu rút tiền của Quý khách đã được gửi đi";
                                 await SendFCMAsync(body, token, null);
                             }
                         }*/
@@ -1733,7 +1733,7 @@ namespace KGQT.Mobility
                         {
                             if (!string.IsNullOrEmpty(token))
                             {
-                                string body = $"Yêu cầu nạp tiền của bạn đã được gửi đi";
+                                string body = $"Yêu cầu nạp tiền của Quý khách đã được gửi đi";
                                 await SendFCMAsync(body, token, null);
                             }
                         }*/

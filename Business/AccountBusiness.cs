@@ -36,7 +36,7 @@ namespace KGQT.Business
                         if (data.IsActive == false)
                         {
                             result.IsError = true;
-                            result.Message = "Tài khoản của bạn đã bị khóa!";
+                            result.Message = "Tài khoản đã bị khóa!";
                             return result;
                         }
                         var isCorrect = password == PJUtils.Decrypt("userpass", data.Password);
@@ -223,7 +223,7 @@ namespace KGQT.Business
                         if (acc.IsActive == false)
                         {
                             result.IsError = true;
-                            result.Message = "Tài khoản của bạn đã bị khóa!";
+                            result.Message = "Tài khoản đã bị khóa!";
                             return result;
                         }
 
@@ -234,7 +234,7 @@ namespace KGQT.Business
                         string id = Helper.Base64Encode(acc.Username);
                         string token = Helper.Base64Encode(sToken);
                         string subject = "YÊU CẦU CẤP PHÁT LẠI MẬT KHẨU";
-                        string body = "<div>Xin chào <b>{0}</b>.</div><br><div>Yêu cầu cấp phát lại mật khẩu của bạn đã được xác nhận, vui lòng truy cập đường link bên dưới để tiếp tục thay đổi mật khẩu của bạn. <span><a href='{1}'>link</a></span></div><div></div><br><div>Cám ơn.</div>";
+                        string body = "<div>Xin chào <b>{0}</b>.</div><br><div>Yêu cầu cấp phát lại mật khẩu của Quý khách đã được xác nhận, vui lòng truy cập đường link bên dưới để tiếp tục thay đổi mật khẩu của bạn. <span><a href='{1}'>link</a></span></div><div></div><br><div>Cám ơn.</div>";
                         link = $"https://localhost:44330/auth/forgotpassword?id={id}&tk={token}";
                         body = string.Format(body, name, link);
 
@@ -242,7 +242,7 @@ namespace KGQT.Business
                         if (status)
                         {
                             result.IsError = false;
-                            result.Message = "Yêu cầu của bạn đã được gửi.Vui lòng kiểm tra Email!";
+                            result.Message = "Yêu cầu của Quý khách đã được gửi.Vui lòng kiểm tra Email!";
                             db.Update(acc);
                             db.SaveChanges();
                             return result;

@@ -522,6 +522,12 @@ namespace KGQT.Business
                     if (p.MoreCharge != form.MoreCharge)
                         p.MoreCharge = form.MoreCharge;
 
+                    if (!string.IsNullOrEmpty(form.zOrderDate))
+                    {
+                        DateTime zorder = Converted.ConvertDate(form.zOrderDate);
+                        if (zorder != DateTime.MinValue && zorder != p.OrderDate)
+                            p.OrderDate = zorder;
+                    }
                     if (!string.IsNullOrEmpty(form.zExportedCNWH))
                     {
                         DateTime zexport = Converted.ConvertDate(form.zExportedCNWH);
@@ -952,6 +958,23 @@ namespace KGQT.Business
                                     if (BusinessBase.Update(oPack))
                                         ShippingOrder.UpdateByPackageChanged(oPack, accessor);
                                 }
+                                var lstpackage = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();
+                                string pstring = "";
+
+                                foreach (var i in lstpackage)
+                                {
+                                    pstring += i.PackageCode + " - " + i.WeightReal + "kg";
+                                    if (!string.IsNullOrEmpty(i.Note))
+                                        pstring += " - " + i.Note + "\r\n";
+                                    else pstring += "\r\n";
+
+                                }
+
+                                string message = "Đơn hàng {0} - {1}vnđ - đã nhập kho HCM \r\nDanh sách kiện: \r\n{2}";
+                                message = string.Format(message,
+                                    ship.ShippingOrderCode, Converted.String2Money(ship.TotalPrice),
+                                    pstring);
+                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
                                 return dt;

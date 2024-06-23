@@ -96,7 +96,7 @@ namespace KGQT.WebHook
 
                     if (user != null)
                     {
-                        string mess = $"Cảm ơn {(string.IsNullOrEmpty(f.display_name) ? user.Username : f.display_name)} đã cung cấp thông tin thành công trên hệ thống Zalo OA của Nhận Ship Hàng. Hệ thống gửi tặng bạn 10.000 VND sẽ được nạp vào số dư ví trên ứng dụng TRAKUAIDI của Quý khách hàng trong vòng 24h. \r\nMọi thắc mắc xin vui lòng liên hệ CSKH của chúng tôi để được tư vấn giải đáp!";
+                        string mess = $"Cảm ơn {(string.IsNullOrEmpty(f.display_name) ? user.Username : f.display_name)} đã cung cấp thông tin thành công trên hệ thống Zalo OA của Nhận Ship Hàng. Hệ thống gửi tặng Quý khách 10.000 VND sẽ được nạp vào số dư ví trên ứng dụng TRAKUAIDI của Quý khách hàng trong vòng 24h. \r\nMọi thắc mắc xin vui lòng liên hệ CSKH của chúng tôi để được tư vấn giải đáp!";
 
                         if (AccountBusiness.UpdateInfoZalo(f.Username))
                             await ZaloCommon.SendMessage(f.user_id, mess);
