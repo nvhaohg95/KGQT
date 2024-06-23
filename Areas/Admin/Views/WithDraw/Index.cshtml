@@ -18,8 +18,7 @@
 
 <div class="row mb-2 w-100">
     <ul class="ps-2" id="breadcrumbs">
-        <li class="text-uppercase fw-bold"><a href="/admin">Quản lý giao dịch</a></li>
-        <li class="text-uppercase fw-bold"><a href="/Admin/Withdraw/Index">Quản lý giao dịch</a></li>
+        <li class="text-uppercase"><a href="/admin">Trang chủ</a></li>
         <li class="text-uppercase fw-bold"><a class="active">Nạp tiền</a></li>
     </ul>
 </div>
@@ -28,7 +27,7 @@
         <form class="row align-items-center align-items-stretch" id="myform">
             <div class="col-lg-3 col-md-3 col-sm-12">
                 <p class="m-0">Khách hàng:</p>
-                @Html.TextBoxFor(model => userName, "", new { @type="text", @class="form-control w-100", @placeholder="Nhập mã định danh" })
+                @Html.TextBoxFor(model => userName, "", new { @type="text", @class="form-control w-100", @placeholder="Nhập tài khoản" })
             </div>
             <div class="col-lg-2 col-md-2 col-sm-12">
                 <p class="m-0">Từ ngày:</p>
@@ -61,7 +60,7 @@
     <div clss="col-12">
         <div class="d-flex align-items-center justify-content-between w-100">
             <h5 class="fw-bold text-uppercase text-nsh1">NẠP TIỀN</h5>
-            <a class="btn btn-sm btn-success w-100px" href="/Admin/Withdraw/Create?type=1"><i class="fas fa-plus"></i>&nbspThêm</a>
+            <a class="btn btn-sm btn-tracking-blue w-100px" href="/Admin/Withdraw/Create?type=1">Thêm</a>
         </div>
     </div>
     <div class="col-12">
@@ -120,10 +119,10 @@
                         <td class="text-right align-middle">
                             @if (item.Status == 1)
                             {
-                                <a class="btn btn-sm btn-success w-100px" onclick="clickApproval(@item.ID)">
+                                <a class="btn btn-sm btn-tracking-blue w-100px" onclick="clickApproval(@item.ID)">
                                     <span>Duyệt</span>
                                 </a>
-                                <a class="btn btn-sm btn-danger w-100px" onclick="clickRefuse(@item.ID)">
+                                <a class="btn btn-sm btn-tracking-orange w-100px" onclick="clickRefuse(@item.ID)">
                                     <span>Từ chối</span>
                                 </a>
                             }

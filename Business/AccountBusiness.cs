@@ -766,6 +766,8 @@ namespace KGQT.Business
                         acc.Gender = data.Gender;
                         acc.Phone = data.Phone;
                         acc.Email = data.Email;
+                        if (data.RoleID != null)
+                            acc.RoleID = data.RoleID;
                         acc.Address = data.Address;
                         acc.ModifiedBy = createdBy;
                         acc.ModifiedDate = DateTime.Now;

@@ -9,8 +9,8 @@
 }
 <div class="row mb-2 w-100">
     <ul class="ps-2" id="breadcrumbs">
-        <li class="text-uppercase fw-bold"><a href="/Admin">Trang chủ</a></li>
-        <li class="text-uppercase fw-bold"><a href="/Admin/Account/Index">Người dùng</a></li>
+        <li class="text-uppercase"><a href="/Admin">Trang chủ</a></li>
+        <li class="text-uppercase"><a href="/Admin/Account/Index">Người dùng</a></li>
         <li class="text-uppercase fw-bold"><a>Thông tin tài khoản</a></li>
     </ul>
 </div>
@@ -33,9 +33,6 @@
                                 }
                             }
                         </div>
-                        <div class="text-center mb-2">
-                            <p title="@Model.FullName" class="fw-bold text-truncate text-uppercase text-nsh1 m-0">@Model.FullName</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -47,7 +44,7 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="FirstName">Họ tên<span class="ml-1 text-danger">(*)</span></label>
+                            <label for="FirstName">Họ tên<span class="ml-1 text-warning">(*)</span></label>
                             <input name="FullName" id="FullName" value="@Model.FullName" type="text" class="form-control" placeholder="Họ và tên"/>
                         </div>
                     </div>
@@ -65,7 +62,7 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Phone">SDT<span class="ml-1 text-danger">(*)</span></label>
+                            <label for="Phone">SDT<span class="ml-1 text-warning">(*)</span></label>
                             <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
                         </div>
                     </div>
@@ -85,7 +82,7 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="AvailableSearch">Lượt tìm kiếm baidu</label>
+                            <label for="AvailableSearch">Điểm tra cứu Baidu</label>
                             <input name="AvailableSearch" id="Wallet" value="@Model.AvailableSearch" class="form-control text-primary" placeholder="0đ" readonly />
                         </div>
                     </div>
@@ -93,7 +90,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
-                            <label for="Address">Địa chỉ <span class="ml-1 text-danger">(*)</span></label>
+                            <label for="Address">Địa chỉ <span class="ml-1 text-warning">(*)</span></label>
                             <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
                         </div>
                     </div>
@@ -127,13 +124,13 @@
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
-                            <label for="RoleID">Loại tài khoản<span class="ml-1 text-danger">(*)</span></label>
+                            <label for="RoleID">Loại tài khoản<span class="ml-1 text-warning">(*)</span></label>
                             @Html.DropDownListFor(model => model.RoleID, new SelectList(ViewBag.lstRoles,"RoleID","RoleName"),"",new { @class="form-control", @name="RoleID"})
                         </div>
                     </div>
                 </div>
                 <div class="row justify-content-end mt-2">
-                    <button type="button" class="btn btn-success w-100px" onclick="update()">Cập nhật</button>
+                    <button type="button" class="btn btn-tracking-blue w-100px" onclick="update()">Cập nhật</button>
                 </div>
             </form>
         </div>
@@ -143,23 +140,52 @@
 <script>
     function update() {
         let data = helper.form2Object($('#formUser').serializeArray());
-        let form = new FormData();
-        form.append("jsData", JSON.stringify(data));
-        $.ajax({
-            url: '/Admin/Account/Update',
-            type: 'Post',
-            data: form,
-            contentType: false,
-            processData: false,
-            success: function (result) {
-                if (result.isError)
-                    helper.showErr(result.message);
-                else
-                    helper.showSuc(result.message);
-            },
-            error: function (xhr, status, err) {
-                helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại sau!");
-            }
+        if (!data) {
+            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            return;
+        }
+        if (!data.FullName) {
+            helper.showWarn('Vui lòng nhập Họ tên!');
+            return;
+        }
+        if (!data.Address) {
+            helper.showWarn('Vui lòng nhập Địa chỉ liên hệ!');
+            return;
+        }
+        if (!data.Phone) {
+            helper.showWarn('Vui lòng nhập Số điện thoại!');
+            return;
+        }
+        if (!data.RoleID) {
+            helper.showWarn('Vui lòng chọn loại tài khoản!');
+            return;
+        }
+        let formData = new FormData();
+        $.each(data, function (key, value) {
+            formData.append("data." + key, value);
         });
+        helper.showAlert("Cập nhật thông tin tài khoản?")
+        .then((res) => {
+            if (res.isConfirmed) {
+                $.ajax({
+                    url: '/Admin/Account/Update',
+                    type: 'Post',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (result) {
+                        if (result.isError)
+                            helper.showErr(result.message);
+                        else
+                            helper.showSuc(result.message);
+                    },
+                    error: function (xhr, status, err) {
+                        helper.showErr("Cập nhật không thành công. Vui lòng thử lại!");
+                    }
+                    });
+            }
+        })
+
+        
     }
 </script>

@@ -15,7 +15,7 @@
 
 <div class="row mb-2 w-100">
     <ul class="ps-2" id="breadcrumbs">
-        <li><a href="/admin/home">Trang chủ</a></li>
+        <li class="text-uppercase"><a href="/admin/home">Trang chủ</a></li>
         <li class="text-uppercase fw-bold"><a class="active">Danh sách khiếu nại</a></li>
     </ul>
 </div>
@@ -128,15 +128,15 @@
                             }
                         </td>
                         <td class="text-right align-middle">
-                            <a href="Detail?ID=@item.ID" class="btn btn-sm btn-info w-100px">
+                            <a href="Detail?ID=@item.ID" class="btn btn-sm btn-secondary w-100px">
                                 <span>Chi tiết</span>
                             </a>
                             @if (item.Status == 1)
                             {
-                                <button type="button" class="btn btn-sm btn-success w-100px" onclick="clickUpdateStatus(@item.ID,2)">
+                                <button type="button" class="btn btn-sm btn-tracking-blue w-100px" onclick="clickUpdateStatus(@item.ID,2)">
                                     <span>Xác nhận</span>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger w-100px" onclick="clickUpdateStatus(@item.ID,3)">
+                                <button type="button" class="btn btn-sm btn-tracking-orange w-100px" onclick="clickUpdateStatus(@item.ID,3)">
                                     <span>Từ chối</span>
                                 </button>
                             }

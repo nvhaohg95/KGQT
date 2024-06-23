@@ -34,7 +34,7 @@
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="FullName">Họ tên<span class="ml-1 text-danger">(*)</span></label>
+                                <label for="FullName">Họ tên<span class="ml-1 text-warning">(*)</span></label>
                                 <input name="FullName" id="FullName" value="@Model.FullName" type="text" class="form-control" placeholder="Họ và tên" />
                             </div>
                         </div>
@@ -52,7 +52,7 @@
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="Phone">Số điện thoại<span class="ml-1 text-danger">(*)</span></label>
+                                <label for="Phone">Số điện thoại<span class="ml-1 text-warning">(*)</span></label>
                                 <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="form-group">
-                                <label for="Address">Địa chỉ liên hệ<span class="ml-1 text-danger">(*)</span></label>
+                                <label for="Address">Địa chỉ liên hệ<span class="ml-1 text-warning">(*)</span></label>
                                 <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="AvailableSearch">Điểm tra cứu <i class="fa fa-question-circle" aria-hidden="true" onclick="toggleInfo()"></i></label>
+                                <label for="AvailableSearch"><a href="/Points/Index">Điểm tra cứu</a> <i class="fa fa-question-circle cursor-pointer" aria-hidden="true" onclick="toggleInfo()"></i></label>
                                 <input name="AvailableSearch" id="AvailableSearch" value="@Model.AvailableSearch" type="text" class="form-control text-primary" placeholder="Điểm tra cứu" readonly />
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                         </div>
                     </div>
                     <div class="row justify-content-end mt-2">
-                        <button type="button" class="btn btn-success w-100px" onclick="update()">Cập nhật</button>
+                        <button type="button" class="btn bt-sm btn-tracking-blue w-100px" onclick="update()">Cập nhật</button>
                     </div>
                 </form>
             </div>
@@ -144,7 +144,7 @@
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title fs-5" id="popupCopperLabel">Upload</h5>
-                <button type="button" class="btn btn-close text-danger" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn btn-close text-warning" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body">
@@ -227,9 +227,10 @@
 
 
     function update() {
+
         let data = helper.form2Object($('#formUser').serializeArray());
         if (!data) {
-            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
             return;
         }
         if (!data.Phone) {
@@ -247,29 +248,32 @@
         $.each(data, function (key, value) {
             formData.append("data." + key, value);
         });
-
-
-        $.ajax({
-            url: '/Account/Update',
-            type: 'Post',
-            data: formData,
-            contentType: false,
-            processData: false,
-            beforeSend: function () {
-                stopLoading();
-            },
-            success: function (result) {
-                stopLoading(true);
-                if (result.isError)
-                    helper.showErr(result.message);
-                else
-                    helper.showSuc("Cập nhật thành công");
-            },
-            error: function (xhr, status, err) {
-                stopLoading(true);
-                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
-            }, complete: function () {
-                stopLoading(true);
+        helper.showAlert("Cập nhật thông tin tài khoản?")
+        .then((res) => {
+            if (res.isConfirmed) {
+                $.ajax({
+                    url: '/Account/Update',
+                    type: 'Post',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function () {
+                        stopLoading();
+                    },
+                    success: function (result) {
+                        stopLoading(true);
+                        if (result.isError)
+                            helper.showErr(result.message);
+                        else
+                            helper.showSuc("Cập nhật thành công");
+                    },
+                    error: function (xhr, status, err) {
+                        stopLoading(true);
+                        helper.showErr('Cập nhật không thành công. Vui lòng thử lại!');
+                    }, complete: function () {
+                        stopLoading(true);
+                    }
+                });
             }
         });
     }

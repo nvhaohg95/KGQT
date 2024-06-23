@@ -186,3 +186,25 @@ html {
                 width: 18rem;
             }
     }
+
+.bg-tracking-orange {
+    background-color: #fbb606 !important;
+}
+.btn-tracking-orange {
+    background-color: #fbb606 !important;
+    color: #ffffff;
+}
+.btn-tracking-orange:hover {
+    color: #ffffff !important;
+}
+.bg-tracking-blue {
+    background-color: #048dce !important;
+}
+.btn-tracking-blue {
+    background-color: #048dce !important;
+    color:#ffffff;
+}
+
+.btn-tracking-blue:hover {
+    color: #ffffff !important;
+}
