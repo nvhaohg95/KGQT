@@ -15,7 +15,7 @@
 <div class="container-fluid h-100">
     <div class="row mb-2">
         <ul id="breadcrumbs">
-            <li><a href="/admin/home">Trang chủ</a></li>
+            <li class="text text-uppercase"><a href="/admin/home">Trang chủ</a></li>
             <li class="text-uppercase fw-bold"><a>Phí vận chuyển</a></li>
         </ul>
     </div>
@@ -40,7 +40,7 @@
                             <i class="fas fa-sync fa-xs"></i> Xóa lọc
                         </a>
                         <button type="submit" class="btn btn-sm btn-primary mx-2 w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
-                        <button type="button" class="btn btn-sm btn-success w-100px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i>&nbspThêm</button>
+                        <button type="button" class="btn btn-sm btn-tracking-blue w-100px" data-toggle="modal" data-target="#exampleModal">Thêm</button>
                     </div>
                 </div>
             </form>
@@ -202,7 +202,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Tuyến vận chuyển</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
 
                             <select name="Type" class="form-control">
@@ -220,21 +220,21 @@
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng từ</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng đến</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Hiển thị</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="Display" placeholder="Hiển thị đến người dùng" />
                         </div>
@@ -243,7 +243,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Giá tiền</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
                         </div>
@@ -265,7 +265,7 @@
             <div class="modal-header bg-primary">
                 <h5 class="modal-title" id="exampleModalLabel2">Cập nhật Phí Vận chuyển</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#exampleModal2').modal('hide')">
-                    <span aria-hidden="true" class="text-danger">&times;</span>
+                    <span aria-hidden="true" class="text-warning">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -279,7 +279,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Tuyến vận chuyển</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
 
                             <select id="Type" name="Type" class="form-control">
@@ -297,14 +297,14 @@
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng từ</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
                             <input id="WeightFrom" class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng đến</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
                             <input id="WeightTo" class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
                         </div>
@@ -313,7 +313,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Giá tiền</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-warning">(*)</span>
                             </div>
                             <input id="Amount" class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
                         </div>
@@ -332,17 +332,17 @@
     function insert() {
         var data = helper.form2Object($('#formFeeWeight').serializeArray());
         if (!data["WeightFrom"]) {
-            helper.showErr('Vui lòng nhập cân nặng nhỏ nhất!');
+            helper.showWarn('Vui lòng nhập cân nặng nhỏ nhất!');
             return
         }
 
         if (!data["WeightTo"]) {
-            helper.showErr('Vui lòng nhập cân nặng lớn nhất!');
+            helper.showWarn('Vui lòng nhập cân nặng lớn nhất!');
             return
         }
 
         if (!data["Amount"]) {
-            helper.showErr('Vui lòng nhập giá tiền!');
+            helper.showWarn('Vui lòng nhập giá tiền!');
             return;
         }
         $.ajax({
@@ -380,7 +380,7 @@
                     helper.showErr('Dữ liệu đã bị xóa!');
             },
             error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+                helper.showErr('Xóa không thành công. Vui lòng thử lại!');
             }
         });
     }
@@ -388,17 +388,17 @@
     function update(){
         var data = helper.form2Object($('#formEditFeeWeight').serializeArray());
         if (!data["WeightFrom"]) {
-            helper.showErr('Vui lòng nhập cân nặng nhỏ nhất!');
+            helper.showWarn('Vui lòng nhập cân nặng nhỏ nhất!');
             return
         }
 
         if (!data["WeightTo"]) {
-            helper.showErr('Vui lòng nhập cân nặng lớn nhất!');
+            helper.showWarn('Vui lòng nhập cân nặng lớn nhất!');
             return
         }
 
         if (!data["Amount"]) {
-            helper.showErr('Vui lòng nhập giá tiền!');
+            helper.showWarn('Vui lòng nhập giá tiền!');
             return;
         }
         $.ajax({
@@ -412,14 +412,14 @@
                     helper.showErr('Cấp nhật không thành công. Vui lòng thử lại!');
             },
             error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+                helper.showErr('Cập nhật không thành công. Vui lòng thử lại!');
             }
         });
     }
 
     // delete
     function clickDelete(id){
-        helper.showAlert("Bạn có muốn thực hiện thao tác xóa?")
+        helper.showAlert("Bạn muốn xóa dữ liệu?")
         .then((res) => {
             if (res.isConfirmed) 
             {
@@ -434,7 +434,7 @@
                             helper.showErr('Xóa không thành công!')
                     },
                     error: function (xhr, status, err) {
-                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+                            helper.showErr('Xóa không thành công. Vui lòng thử lại!');
                     }
                 });
             }

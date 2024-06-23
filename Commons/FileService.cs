@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace KGQT.Commons
 {
@@ -22,33 +23,122 @@ namespace KGQT.Commons
         #endregion
 
         #region Resize File Image
-        public static byte[] ResizeImage(IFormFile file, int width = 100, int height = 100)
+
+        public static byte[] ResizeImage(IFormFile image, int width = 300, int height = 300)
         {
-            using (var ms = new MemoryStream())
+            using (var stream = image.OpenReadStream())
             {
-                file.CopyTo(ms);
-                var byteArr = ms.ToArray();
-                var imageResize = Image.FromStream(ms);
+                var originalImage = Image.FromStream(stream);
 
-                var ratioX = (double)width / imageResize.Width;
-                var ratioY = (double)height / imageResize.Height;
+                // Check if the original image dimensions are smaller than the specified dimensions
+                if (originalImage.Width <= width && originalImage.Height <= height)
+                {
+                    // Return the original image as it is
+                    using (var ms = new MemoryStream())
+                    {
+                        originalImage.Save(ms, originalImage.RawFormat);
+                        return ms.ToArray();
+                    }
+                }
 
+                // Calculate new width and height to maintain the aspect ratio
+                var ratioX = (double)width / originalImage.Width;
+                var ratioY = (double)height / originalImage.Height;
                 var ratio = Math.Min(ratioX, ratioY);
 
-                width = (int)(imageResize.Width * ratio);
-                height = (int)(imageResize.Height * ratio);
+                var newWidth = (int)(originalImage.Width * ratio);
+                var newHeight = (int)(originalImage.Height * ratio);
 
-                var newImage = new Bitmap(width, height);
+                var resizedImage = new Bitmap(newWidth, newHeight);
 
-                Graphics.FromImage(newImage).DrawImage(imageResize, 0, 0, width, height);
+                using (var graphics = Graphics.FromImage(resizedImage))
+                {
+                    graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    graphics.DrawImage(originalImage, 0, 0, newWidth, newHeight);
+                }
 
-                Bitmap bmp = new Bitmap(newImage);
-
-                ImageConverter converter = new ImageConverter();
-
-                byteArr = (byte[])converter.ConvertTo(bmp, typeof(byte[]));
-                return byteArr;
+                using (var ms = new MemoryStream())
+                {
+                    resizedImage.Save(ms, originalImage.RawFormat);
+                    return ms.ToArray();
+                }
             }
+        }
+
+
+        public static byte[] ResizeAndCompressImage(IFormFile image, int width = 300, int height = 300, long quality = 75L)
+        {
+            using (var stream = image.OpenReadStream())
+            {
+                var originalImage = Image.FromStream(stream);
+
+                // Check if the original image dimensions are smaller than the specified dimensions
+                if (originalImage.Width <= width && originalImage.Height <= height)
+                {
+                    // Return the original image as it is
+                    using (var ms = new MemoryStream())
+                    {
+                        SaveImageToStream(originalImage, ms, quality, originalImage.RawFormat);
+                        return ms.ToArray();
+                    }
+                }
+
+                // Calculate new width and height to maintain the aspect ratio
+                var ratioX = (double)width / originalImage.Width;
+                var ratioY = (double)height / originalImage.Height;
+                var ratio = Math.Min(ratioX, ratioY);
+
+                var newWidth = (int)(originalImage.Width * ratio);
+                var newHeight = (int)(originalImage.Height * ratio);
+
+                // Create a new bitmap with the new dimensions
+                var resizedImage = new Bitmap(newWidth, newHeight);
+
+                using (var graphics = Graphics.FromImage(resizedImage))
+                {
+                    // Set quality settings
+                    graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+
+                    // Draw the original image onto the resized bitmap
+                    graphics.DrawImage(originalImage, 0, 0, newWidth, newHeight);
+                }
+
+                // Save the resized and compressed image to a memory stream
+                using (var ms = new MemoryStream())
+                {
+                    SaveImageToStream(resizedImage, ms, quality, originalImage.RawFormat);
+                    return ms.ToArray();
+                }
+            }
+        }
+
+        private static void SaveImageToStream(Image image, Stream stream, long quality, ImageFormat format)
+        {
+            // Determine if the image format is supported for compression
+            if (format.Equals(ImageFormat.Jpeg) || format.Equals(ImageFormat.Png))
+            {
+                // Get the codec for the specified image format
+                var codec = ImageCodecInfo.GetImageDecoders()
+                                          .FirstOrDefault(c => c.FormatID == format.Guid);
+
+                if (codec != null)
+                {
+                    // Set the quality parameter for the encoder
+                    var encoderParams = new EncoderParameters(1);
+                    encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, quality);
+
+                    // Save the image using the codec and quality parameters
+                    image.Save(stream, codec, encoderParams);
+                    return;
+                }
+            }
+
+            // If the format is not JPEG or PNG, save the image without compression
+            image.Save(stream, format);
         }
         #endregion
 
@@ -104,6 +194,8 @@ namespace KGQT.Commons
             }
             return lstFile;
         }
+
+        
     }
 
 
@@ -113,5 +205,7 @@ namespace KGQT.Commons
         public string FilePath { get; set; }
         public DateTime CreatedOn { get; set; }
     }
+    
+
 
 }

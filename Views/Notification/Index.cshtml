@@ -65,28 +65,30 @@
                         <th class="text-center">
                             Nội dung
                         </th>
-                        <th class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr>
+                        <tr class="@(item.Status == 0 ? "link-primary" : "")">
                             <td class="text-left align-middle">
                                 @item.CreatedDate.Value.ToString("dd/MM/yyy")
                             </td>
                             <td class="text-left align-middle">
                                <div class="line-clamp line-clamp-2">
-                                    @Html.Raw(item.Message)
+                                   @if(item.Message.Length < 200)
+                                    {
+                                        @Html.Raw(item.Message)
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(item.Message.Substring(0,300))
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#popupNoti" onclick="getNoti(@item.ID)">
+                                            Xem thêm...
+                                        </a>
+                                    }
                                </div>
-                            </td>
-                            <td class="text-center align-middle">
-                                @if(item.NotifType == 10)
-                                {
-                                    <button data-bs-toggle="modal" data-bs-target="#popupNoti" class="btn btn-sm btn-secondary" onclick="getNoti(@item.ID)">
-                                        <span>Xem</span>
-                                    </button>
-                                }
+                                
                             </td>
                         </tr>
                     }

@@ -19,44 +19,8 @@ namespace KGQT.Areas.Admin.Controllers
             return View();
         }
 
-        [HttpPost]
-        public DataReturnModel<tbl_Images> GetByID(string id)
-        {
-            DataReturnModel<tbl_Images> result = ImageBusiness.GetByID(id);
-            return result;
-        }
-
-        public DataReturnModel<bool> Uploads(int imageType)
-        {
-            DataReturnModel<bool> result = new();
-            var cookieService = new CookieService(HttpContext);
-            var tkck = cookieService.Get("tkck");
-            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
-            string userLogin = userModel != null ? userModel.UserName : "";
-            var images = Request.Form.Files;
-            if (images != null && images.Count > 0)
-            {
-                result = ImageBusiness.UploadImages(images.ToList(), imageType, userLogin);
-            }
-            else
-            {
-                result.IsError = true;
-                result.Data = false;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
-            }
-            return result;
-        }
-
-        [HttpPost]
-        public DataReturnModel<List<tbl_Images>> GetImageByType(int imageType)
-        {
-            DataReturnModel<List<tbl_Images>> result = new();
-            result.Data = ImageBusiness.GetImgaeByType(imageType);
-            return result;
-        }
-
         [HttpGet]
-        public IActionResult Detail(int imageType,int page = 1, int pageSize = 8)
+        public IActionResult Detail(int imageType, int page = 1, int pageSize = 8)
         {
             var oData = ImageBusiness.GetPage(imageType, page, pageSize);
             var lstData = oData[0] as List<tbl_Images>;
@@ -70,7 +34,42 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public DataReturnModel<bool> Update(string recID, int status,int viewIndex)
+        public DataReturnModel<tbl_Images> GetByID(string id)
+        {
+            DataReturnModel<tbl_Images> result = ImageBusiness.GetByID(id);
+            return result;
+        }
+
+        public DataReturnModel<bool> Uploads(FileUploadModel model)
+        {
+            DataReturnModel<bool> result = new();
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            if (model != null)
+            {
+                result = ImageBusiness.UploadImages(model, userLogin);
+            }
+            else
+            {
+                result.IsError = true;
+                result.Data = false;
+                result.Message = "Thêm File không thành công. Vui lòng thử lại!";
+            }
+            return result;
+        }
+
+        [HttpPost]
+        public DataReturnModel<List<tbl_Images>> GetImageByType(int imageType)
+        {
+            DataReturnModel<List<tbl_Images>> result = new();
+            result.Data = ImageBusiness.GetImageByType(imageType);
+            return result;
+        }
+
+        [HttpPost]
+        public DataReturnModel<bool> Update(tbl_Images model)
         {
             DataReturnModel<bool> result = new DataReturnModel<bool>();
             var cookieService = new CookieService(HttpContext);
@@ -79,13 +78,35 @@ namespace KGQT.Areas.Admin.Controllers
             string userLogin = userModel != null ? userModel.UserName : "";
             if (!string.IsNullOrEmpty(userLogin))
             {
-                result = ImageBusiness.UpdateImages(recID, status, viewIndex, userLogin);
+                result = ImageBusiness.UpdateImages(model, userLogin);
             }
             else
             {
                 result.IsError = true;
                 result.Data = false;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Message = "Cập nhật File không thành công. Vui lòng thử lại!";
+            }
+            return result;
+        }
+
+        [HttpPost]
+
+        public DataReturnModel<bool> Delete(string id) { 
+        
+             DataReturnModel<bool> result = new DataReturnModel<bool>();
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            if (!string.IsNullOrEmpty(userLogin))
+            {
+                result = ImageBusiness.DeleteImage(id);
+            }
+            else
+            {
+                result.IsError = true;
+                result.Data = false;
+                result.Message = "Xóa File không thành công. Vui lòng thử lại!";
             }
             return result; ;
         }
