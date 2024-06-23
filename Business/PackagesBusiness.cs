@@ -157,6 +157,7 @@ namespace KGQT.Business
             var oPack = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
             if (oPack != null)
             {
+                int oldStt = oPack.Status;
                 var user = BusinessBase.GetOne<tbl_Account>(x => x.Username == oPack.Username);
                 if (user != null && (oPack.SearchBaiduTimes == null || oPack.SearchBaiduTimes == 0))
                 {
@@ -206,7 +207,7 @@ namespace KGQT.Business
                                 {
                                     var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == uslogin);
                                     BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
-                                    if (oPack.Status < 3)
+                                    if (oldStt < 2)
                                     {
                                         string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
                                         message = string.Format(message, oPack.PackageCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");

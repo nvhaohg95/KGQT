@@ -10,7 +10,7 @@ namespace KGQT.WebHook
 {
     public class ReceiveWebhook : IReceiveWebhook
     {
-        public Task<HttpStatusCode> UpdateTransactionStatus(string json)
+        public Task<HttpStatusCode> ReceiveData(string json)
         {
             var data = JsonConvert.DeserializeObject<WebHookReceive>(json);
             Log.Information($"ReceiveWebhook  {json}");

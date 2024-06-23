@@ -87,6 +87,6 @@ namespace KGQT.Models
         public string? DeviceName { get; set; }
         public string? DeviceID { get; set; }
         public bool? IsBiometrics { get; set; }
-        public bool IsLinkedZalo { get; set; }
+        public bool? IsLinkedZalo { get; set; }
     }
 }

@@ -32,6 +32,5 @@ namespace KGQT.Models
         public int? SearchBaiDuTimes { get; set; }
         public bool? IsMobileReview { get; set; }
         public string? VersionNo { get; set; }
-        public string? UrlFAQ { get; set; }
     }
 }

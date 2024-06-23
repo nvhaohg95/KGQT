@@ -1871,7 +1871,7 @@ namespace KGQT.Mobility
                 var message = new Message()
                 {
 
-                    Data = data,
+                    CassoData = data,
                     Token = token,
                     Android = new AndroidConfig()
                     {
