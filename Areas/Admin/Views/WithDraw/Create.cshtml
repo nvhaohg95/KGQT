@@ -21,18 +21,18 @@
                 <h5 class="fw-bold text-nsh1 text-uppercase mt-2">@(type == 1 ? "Tạo lệnh Nạp tiền" : "Tạo lệnh Rút tiền")</h5>
             </div>
             <div class="form-group mb-4 d-none">
-                <label for="type">Lệnh:<span class="text-warning">(*)</span></label>
+                <label for="type">Lệnh:<span class="text-nsh1">(*)</span></label>
                 <select class="form-control" name="Type" id="type">
                     <option value="1" @(type == 1 ? "selected" : "")>Nạp tiền</option>
                     <option value="2" @(type == 2 ? "selected" : "")>Rút tiền</option>
                 </select>
             </div>
             <div class="form-group mb-4">
-                <label for="txtShipID">Tài khoản khách hàng:<span class="text-warning">(*)</span></label>
+                <label for="txtShipID">Tài khoản khách hàng:<span class="text-nsh1">(*)</span></label>
                 <input type="text" class="form-control" id="txtUserName" name="Username" value="@user" placeholder="Nhập tài khoản khách hàng">
             </div>
             <div class="form-group mb-4">
-                <label for="sltPaymentMethod">Hình thức thanh toán:<span class="text-warning">(*)</span></label>
+                <label for="sltPaymentMethod">Hình thức thanh toán:<span class="text-nsh1">(*)</span></label>
                 <select class="form-control" name="PaymentMethod" id="sltPaymentMethod" onchange="pmtChanged(this)">
                     <option value="1" selected>Tiền mặt</option>
                     <option value="2">Chuyển khoản</option>
@@ -44,20 +44,20 @@
                     <label class="mb-0 text-primary fw-bold">Thông tin chuyển khoản</label>
                 </div>
                 <div class="form-group mb-4">
-                    <label for="txtBank">Ngân hàng: <span class="text-warning">(*)</span></label>
+                    <label for="txtBank">Ngân hàng: <span class="text-nsh1">(*)</span></label>
                     <input type="text" class="form-control" id="txtBank" name="BankName" placeholder="Ngân hàng">
                 </div>
                 <div class="form-group mb-4">
-                    <label for="txtBank">Chủ tài khoản: <span class="text-warning">(*)</span></label>
+                    <label for="txtBank">Chủ tài khoản: <span class="text-nsh1">(*)</span></label>
                     <input type="text" class="form-control" id="txtAccountName" name="AccountName" placeholder="Chủ tài khoản">
                 </div>
                 <div class="form-group mb-4">
-                    <label for="txtBank">Số tài khoản: <span class="text-warning">(*)</span></label>
+                    <label for="txtBank">Số tài khoản: <span class="text-nsh1">(*)</span></label>
                     <input type="text" class="form-control" id="txtAccountNumber" name="AccountNumber" placeholder="Số tài khoản">
                 </div>
             </div>
             <div class="form-group mb-4">
-                <label for="txtAmount">Số tiền: <span class="text-warning">(*)</span></label>
+                <label for="txtAmount">Số tiền: <span class="text-nsh1">(*)</span></label>
                 <input type="text" class="form-control" id="txtAmount" data-type="formatvnd" name="Amount" value="0" placeholder="Nhập số tiền">
             </div>
             <div class="form-group mb-4">
@@ -66,8 +66,8 @@
             </div>
 
             <div class="col-md-12 col-sm-12 col-lg-12 text-right">
-                <button type="button" class="btn btn-sm btn-tracking-blue w-100px mr-4 " onclick="insert()">Duyệt</button>
-                <button type="reset" class="btn btn-sm btn-tracking-orange w-100px">Nhập lại</button>
+                <button type="button" class="btn btn-sm bg-nsh2 w-100px mr-4 " onclick="insert()">Duyệt</button>
+                <button type="reset" class="btn btn-sm btn-secondary w-100px">Nhập lại</button>
             </div>
         </form>
     </div>

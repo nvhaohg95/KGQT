@@ -4,20 +4,20 @@
 }
 
 <ul id="breadcrumbs" class="mb-2">
-    <li><a href="/Home/Dashboard">Trang chủ</a></li>
-    <li><a href="/package/index">Đơn ký gửi</a></li>
-    <li><a class="active">Thêm Mã Vận Đơn</a></li>
+    <li class="text-uppercase"><a href="/Home/Dashboard">Trang chủ</a></li>
+    <li class="text-uppercase"><a href="/package/index">Đơn ký gửi</a></li>
+    <li class="text-uppercase fw-bold"><a class="active">Thêm Mã Vận Đơn</a></li>
 </ul>
 
 <div class="container bg-white py-4">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <h1 class="text-primary fw-bold text-uppercase">Thêm Mã Vận Đơn</h1>
+            <h1 class="text-nsh1 fw-bold text-uppercase">Thêm Mã Vận Đơn</h1>
         </div>
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
             <form method="post" action="Create" id="frmShip">
                 <div class="form-group mb-4">
-                    <label class="required" for="txtShipID">Mã vận đơn</label>
+                    <label for="txtShipID">Mã vận đơn</label>
                     <input type="text" class="form-control" id="txtPackage" name="PackageCode" placeholder="Nhập mã vận đơn">
                     <i class="fs-7">Có thể tạo nhiều Mã Vận Đơn cùng lúc bằng dấu "," hoặc ":". Ví dụ: mavandon1,mavandon2 hoặc mavandon1;mavandon2</i>
 

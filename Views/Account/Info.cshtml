@@ -12,8 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
 <ul id="breadcrumbs" class="mb-2">
-    <li><a href="/Home/Dashboard">Trang chủ</a></li>
-    <li class="fw-bold"><a>Thông tin tài khoản</a></li>
+    <li class="text-uppercase"><a href="/Home/Dashboard">Trang chủ</a></li>
+    <li class="text-uppercase fw-bold"><a>Thông tin tài khoản</a></li>
 </ul>
 <div class="row justify-content-center py-4">
     <div class="col-lg-8 col-md-12 col-sm-12" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
@@ -34,7 +34,7 @@
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="FullName">Họ tên<span class="ml-1 text-warning">(*)</span></label>
+                                <label for="FullName">Họ tên<span class="ml-1 text-nsh1">(*)</span></label>
                                 <input name="FullName" id="FullName" value="@Model.FullName" type="text" class="form-control" placeholder="Họ và tên" />
                             </div>
                         </div>
@@ -52,7 +52,7 @@
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="Phone">Số điện thoại<span class="ml-1 text-warning">(*)</span></label>
+                                <label for="Phone">Số điện thoại<span class="ml-1 text-nsh1">(*)</span></label>
                                 <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="form-group">
-                                <label for="Address">Địa chỉ liên hệ<span class="ml-1 text-warning">(*)</span></label>
+                                <label for="Address">Địa chỉ liên hệ<span class="ml-1 text-nsh1">(*)</span></label>
                                 <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
                             </div>
                         </div>
@@ -100,13 +100,13 @@
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
                                 <label for="Wallet">Số dư ví</label>
-                                <input name="Wallet" id="Wallet" value="@Converted.String2Money(Model.Wallet)" type="text" class="form-control text-primary" readonly />
+                                <input name="Wallet" id="Wallet" value="@Converted.String2Money(Model.Wallet)" type="text" class="form-control text-nsh2" readonly />
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
                                 <label for="AvailableSearch"><a href="/Points/Index">Điểm tra cứu</a> <i class="fa fa-question-circle cursor-pointer" aria-hidden="true" onclick="toggleInfo()"></i></label>
-                                <input name="AvailableSearch" id="AvailableSearch" value="@Model.AvailableSearch" type="text" class="form-control text-primary" placeholder="Điểm tra cứu" readonly />
+                                <input name="AvailableSearch" id="AvailableSearch" value="@Model.AvailableSearch" type="text" class="form-control text-nsh2" placeholder="Điểm tra cứu" readonly />
                             </div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
                         </div>
                     </div>
                     <div class="row justify-content-end mt-2">
-                        <button type="button" class="btn bt-sm btn-tracking-blue w-100px" onclick="update()">Cập nhật</button>
+                        <button type="button" class="btn bt-sm bg-nsh2 w-100px" onclick="update()">Cập nhật</button>
                     </div>
                 </form>
             </div>
@@ -144,7 +144,7 @@
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title fs-5" id="popupCopperLabel">Upload</h5>
-                <button type="button" class="btn btn-close text-warning" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn btn-close text-nsh1" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body">
