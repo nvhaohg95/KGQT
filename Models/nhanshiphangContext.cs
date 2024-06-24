@@ -31,6 +31,7 @@ namespace KGQT.Models
         public virtual DbSet<tbl_Point> tbl_Points { get; set; } = null!;
         public virtual DbSet<tbl_Questions> tbl_Questions { get; set; } = null!;
         public virtual DbSet<tbl_Role> tbl_Roles { get; set; } = null!;
+        public virtual DbSet<tbl_Schedules> tbl_Schedules { get; set; } = null!;
         public virtual DbSet<tbl_ShippingOrder> tbl_ShippingOrders { get; set; } = null!;
         public virtual DbSet<tbl_SystemLog> tbl_SystemLogs { get; set; } = null!;
         public virtual DbSet<tbl_TrackShippingOrder> tbl_TrackShippingOrders { get; set; } = null!;
@@ -71,8 +72,6 @@ namespace KGQT.Models
                     .HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
                 entity.Property(e => e.Gender).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
-
-                entity.Property(e => e.IsLinkedZalo).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
@@ -181,7 +180,7 @@ namespace KGQT.Models
 
                 entity.Property(e => e.MoneyPrevious).HasMaxLength(20);
 
-                entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r\n, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n;8: Được tặng");
+                entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r\n, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n, 8. Duoc tang");
 
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });
@@ -329,6 +328,19 @@ namespace KGQT.Models
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
                 entity.Property(e => e.RoleName).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<tbl_Schedules>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateBy).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.TaskName).HasMaxLength(50);
             });
 
             modelBuilder.Entity<tbl_ShippingOrder>(entity =>
