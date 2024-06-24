@@ -44,7 +44,7 @@
                 window.location.reload();
         });
     },
-    showAlert: function (message = "Bạn có muốn thực hiện thao tác này?", refresh = false, title = "Chú ý") {
+    showAlert: function (message = "Quý khách có muốn thực hiện thao tác này?", refresh = false, title = "Chú ý") {
         return Swal.fire({
             title: title,
             text: message,

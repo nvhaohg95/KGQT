@@ -24,7 +24,7 @@ namespace KGQT.Business
                     {
                         result.IsError = false;
                         result.Data = true;
-                        result.Message = "Yêu cầu của bạn đã được gửi!";
+                        result.Message = "Yêu cầu của Quý khách đã được gửi!";
                         var user = AccountBusiness.GetInfo(-1, data.CreatedBy);
                         if (user != null)
                         {
@@ -134,9 +134,9 @@ namespace KGQT.Business
                                 string message = "";
                                 string url = $"/Complain/Index?ID={data.ID}";
                                 if (status == 2)
-                                    message = "Thông tin khiếu nại của bạn đã được hỗ trợ.";
+                                    message = "Thông tin khiếu nại của Quý khách đã được hỗ trợ.";
                                 else if (status == 3)
-                                    message = "Thông tin khiếu nại của bạn đã bị từ chối.";
+                                    message = "Thông tin khiếu nại của Quý khách đã bị từ chối.";
                                 NotificationBusiness.Insert(admin.ID, "Admin", user.ID, user.FullName, -1, data.TransId, message, message, 5, url, admin.Username);
                             }
                         }

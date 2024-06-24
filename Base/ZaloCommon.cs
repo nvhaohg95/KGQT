@@ -379,7 +379,7 @@ namespace KGQT.Base
                 ZaloClient client = new ZaloClient(token.access_token);
                 using (var db = new nhanshiphangContext())
                 {
-                    var lstData = db.tbl_ZaloFollewers.DistinctBy(x=>x.user_id).ToList();
+                    var lstData = db.tbl_ZaloFollewers.ToList();
                     if(lstData != null && lstData.Count > 0)
                     {
                         BackgroundWorker bw = new BackgroundWorker();
@@ -432,7 +432,7 @@ namespace KGQT.Base
                 JObject result = client.sendRequestUserProfileToUserIdV3(uid,
                     "Yêu cầu cung cấp thông tin",
                     "Vui lòng bấm vào hình để cung cấp cho chúng tôi thông tin của bạn!",
-                    "https://tracking.nhanshiphang.vn/uploads/images/ead8daf4-f3cd-43bc-aa5c-830ecd7cdbb7.png");
+                    "https://tracking.nhanshiphang.vn/uploads/images/zalo-oa-request-moreinfo-14x9.png");
                 Log.Information("Send request more info: " + result.ToString());
                 var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
 

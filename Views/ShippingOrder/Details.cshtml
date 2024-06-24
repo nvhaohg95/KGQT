@@ -26,6 +26,14 @@
                         <div class="px-0 pt-2 col-md-12">
                             <span class="py-2">Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))
                         </div>
+                        <div class="px-0 col-md-12 row d-none d-sm-block mt-2">
+                            @if (Model.Order.Status == 1)
+                            {
+                                <div class="w-100">
+                                    <button type="button" class="btn bg-nsh1 px-5" onclick="payment()">Thanh toán</button>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -379,7 +387,7 @@
             @if (Model.Order.Status == 1)
             {
                 <div class="w-100 py-2">
-                    <button type="button" class="btn btn-success  py-2 w-100" onclick="payment()">Thanh toán</button>
+                    <button type="button" class="btn bg-nsh1 py-2 w-100" onclick="payment()">Thanh toán</button>
                 </div>
             }
         </div>
@@ -440,7 +448,7 @@
                 // other AJAX options here
                 success: function (result) {
                     if (result == -1)
-                        helper.showErr('Bạn đã kê khai sản phẩn này rồi!');
+                        helper.showErr('Quý khách đã kê khai sản phẩn này rồi!');
 
                     if (result == 0)
                         helper.showErr('Lỗi!');

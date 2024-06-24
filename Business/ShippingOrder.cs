@@ -515,14 +515,14 @@ namespace KGQT.Business
                 if (userWallet == null)
                 {
                     dt.IsError = true;
-                    dt.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                    dt.Message = "Quý khách chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
                     return dt;
                 }
 
                 if (userWallet.Wallet.Double() < totalMoney)
                 {
                     dt.IsError = true;
-                    dt.Message = $"Bạn cần phải nạp thêm {Converted.Double2Money(totalMoney - userWallet.Wallet.Double())} để thanh toán đơn hàng";
+                    dt.Message = $"Quý khách cần phải nạp thêm {Converted.Double2Money(totalMoney - userWallet.Wallet.Double())} để thanh toán đơn hàng";
                     return dt;
                 }
                 List<string> msg = new List<string>();
@@ -608,14 +608,14 @@ namespace KGQT.Business
                 if (userWallet == null)
                 {
                     dt.IsError = true;
-                    dt.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                    dt.Message = "Quý khách chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
                     return dt;
                 }
 
                 if (userWallet.Wallet.Double() < totalMoney)
                 {
                     dt.IsError = true;
-                    dt.Message = $"Bạn cần phải nạp thêm {Converted.Double2Money(totalMoney - userWallet.Wallet.Double())} để thanh toán đơn hàng";
+                    dt.Message = $"Quý khách cần phải nạp thêm {Converted.Double2Money(totalMoney - userWallet.Wallet.Double())} để thanh toán đơn hàng";
                     return dt;
                 }
                 List<string> msg = new List<string>();

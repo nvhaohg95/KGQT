@@ -19,6 +19,7 @@ namespace KGQT.Models
 
         public virtual DbSet<tbl_Account> tbl_Accounts { get; set; } = null!;
         public virtual DbSet<tbl_BigPackage> tbl_BigPackages { get; set; } = null!;
+        public virtual DbSet<tbl_Casso> tbl_Cassos { get; set; } = null!;
         public virtual DbSet<tbl_Comment> tbl_Comments { get; set; } = null!;
         public virtual DbSet<tbl_Complain> tbl_Complains { get; set; } = null!;
         public virtual DbSet<tbl_Configuration> tbl_Configurations { get; set; } = null!;
@@ -71,6 +72,8 @@ namespace KGQT.Models
 
                 entity.Property(e => e.Gender).HasComment("0. Admin\r\n1. User\r\n2. Quản lý văn phòng\r\n3. Quản lý kho\r\n4. Nhân viên");
 
+                entity.Property(e => e.IsLinkedZalo).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Password).HasMaxLength(50);
@@ -105,6 +108,17 @@ namespace KGQT.Models
                 entity.Property(e => e.FileName).HasMaxLength(250);
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<tbl_Casso>(entity =>
+            {
+                entity.HasKey(e => e.RecID);
+
+                entity.ToTable("tbl_Casso");
+
+                entity.Property(e => e.RecID).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<tbl_Comment>(entity =>
@@ -167,7 +181,7 @@ namespace KGQT.Models
 
                 entity.Property(e => e.MoneyPrevious).HasMaxLength(20);
 
-                entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r\n, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n");
+                entity.Property(e => e.TradeType).HasComment("1: Thanh toán đơn hàng, \r\n2: Nhận lại tiền hang, 3: Admin nạp tiền\r\n, 4: Rút tiền\r\n5: Hủy rút tiền, 6:Nạp tiền tại kho\r\n7.Rút tiền tại kho\r\n;8: Được tặng");
 
                 entity.Property(e => e.Type).HasComment("1: trừ\r\n2: cộng\r\n");
             });

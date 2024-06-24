@@ -155,7 +155,7 @@ namespace KGQT.Areas.Admin.Controllers
                 return new { error = 1, msg = "Kiện chưa kê khác khách hàng!" };
             var user = AccountBusiness.GetOne(pack.Username);
             if (user == null)
-                return new { error = 2, msg = "Khách hàng này không có trong hệ thống, bạn có muốn tiếp tục!" };
+                return new { error = 2, msg = "Khách hàng này không có trong hệ thống, xác nhận tiếp tục!" };
 
             return new { error = 3, data = user.AvailableSearch };
         }

@@ -73,7 +73,7 @@
                                 @Html.Raw(PJUtils.ZaloStatus(item.Status.Value))
                             </td>
                             <td class="text-center">
-                                 <button class="btn btn-sm bg-nsh1" onclick="sendRequest()">Gửi yêu cầu</button>
+                                 <button class="btn btn-sm bg-nsh1" onclick="sendRequest('@item.user_id')">Gửi yêu cầu</button>
                             </td>
                         </tr>
                     }
@@ -166,10 +166,11 @@
 
 
 <script type="text/javascript">
-    function sendNotifi() {
+    function sendRequest(uid) {
         $.ajax({
             url: '/admin/zalo/sendRequest',
             type: 'Post',
+            data: { uid },
             // other AJAX options here
             success: function (res) {
                 if(res)

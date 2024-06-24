@@ -64,12 +64,11 @@ app.UseEndpoints(endpoints =>
     );
 });
 
-app.MapPost("/webhook", async (HttpContext context, IReceiveWebhook receiveWebook) =>
+app.MapPost("/webhook", async (HttpContext context, IReceiveWebhook zalo) =>
 {
     using StreamReader stream = new StreamReader(context.Request.Body);
-    return await receiveWebook.UpdateTransactionStatus(await stream.ReadToEndAsync());
+    return await zalo.ReceiveData(await stream.ReadToEndAsync());
 });
-
 
 app.Run();
 #endregion

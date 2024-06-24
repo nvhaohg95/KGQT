@@ -39,7 +39,8 @@ namespace KGQT.Models
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
-        public bool IsSendNoti { get; set; }
+        public bool? IsSendNoti { get; set; }
+
         [NotMapped]
         public List<string> Packages { get; set; }
     }

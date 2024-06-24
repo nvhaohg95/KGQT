@@ -115,7 +115,7 @@ namespace KGQT.Controllers
             if (userModel == null)
             {
                 ret.IsError = true;
-                ret.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                ret.Message = "Quý khách chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
                 return ret;
             }
             ret = ShippingOrder.PaymentSelected(data, userModel.UserName);
@@ -132,7 +132,7 @@ namespace KGQT.Controllers
             if (userModel == null)
             {
                 ret.IsError = true;
-                ret.Message = "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
+                ret.Message = "Quý khách chưa đăng nhập hoặc phiên đăng nhập đã hết hạn";
                 return ret;
             }
             ret = ShippingOrder.PaymentAll(userModel.UserName);

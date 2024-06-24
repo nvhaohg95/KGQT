@@ -19,7 +19,7 @@
 <div class="container bg-white py-4">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
-            <h5 class="fw-bold text-danger text-uppercase">Thông tin vận chuyển</h5>
+            <h5 class="fw-bold text-nsh1 text-uppercase">Thông tin vận chuyển</h5>
         </div>
         <div class="col-lg-12 col-md-12 col-xl-12 col-sm-12">
             <div class="mb-3 row">
@@ -32,7 +32,7 @@
             <div class="mb-3 row">
                 <label class="col-md-4 col-sm-12 col-form-label">Kết quả truy vấn</label>
                 <div class="col-md-8">
-                    <label class="form-control-plaintext @(!Model.IsError ? "text-success" : "text-danger" )">@(!Model.IsError ? "Thành công" : "Thất bại")</label>
+                    <label class="form-control-plaintext @(!Model.IsError ? "text-nsh2" : "text-nsh1" )">@(!Model.IsError ? "Thành công" : "Thất bại")</label>
                 </div>
             </div>
             @if (!Model.IsError && Model.Data != null)
@@ -66,6 +66,11 @@
                         <label readonly class="form-control-plaintext">@Html.Raw(Model.Data?.reason ?? Model.Message)</label>
                     </div>
                 </div>
+                <div class="mb-3 row">
+                    <div class="col-md-12 col-sm-12 bg-nsh1">
+                        <label readonly class="form-control-plaintext">Hiện tại không thể tra cứu lịch trình của kiện hàng quý khách chọn, quý khách vui lòng xem lại ứng dụng mua hàng hoặc liên hệ lại shop nếu trong 72 tiếng đồng hồ từ lúc có mã vận đơn mà vẫn không có cập nhật dữ liệu của Baidu</label>
+                    </div>
+                </div>
             }
         </div>
         <div class="col-md-12 col-sm-12 col-lg-12 text-right">
@@ -76,7 +81,7 @@
                     <label class="form-check-label text-nsh1" for="movingfast">Đăng ký theo dõi sát kiện</label>
                 </div>
             }
-            <a class="btn btn-sm btn-secondary w-100px" href="/package/index">Quay lại</a>
+            <a class="btn btn-sm bg-nsh2 w-100px" href="/package/index">Quay lại</a>
         </div>
     </div>
 </div>
