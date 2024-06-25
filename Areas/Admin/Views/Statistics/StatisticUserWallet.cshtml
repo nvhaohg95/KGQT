@@ -24,12 +24,12 @@
                 <div>
                     <h5 class="text-nsh1 fw-bold text-uppercase m-0">Thống kê số dư tài khoản khách hàng</h5>
                 </div>
-                <div class="d-flex align-items-center justify-content-end">
+                @*<div class="d-flex align-items-center justify-content-end">
                     <a href="StatisticRevenue" class="mr-2 btn btn-sm btn-info w-100px">
                         <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
                     </a>
                     <button type="submit" class="btn btn-sm btn-primary w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
-                </div>
+                </div>*@
             </div>
 
         </div>
@@ -60,7 +60,7 @@
                             <th class="text-center">
                                 Số dư ví
                             </th>
-                            <th class="text-center"></th>
+                            <th class="text-right"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -73,12 +73,12 @@
                                 <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.FullName)
                                 </td>
-                                <td class="text-center align-middle">
+                                <td class="text-right align-middle">
                                     @Converted.String2Money(item.Wallet)
                                 </td>
                                 <td class="text-center align-middle">
-                                    <a class="btn btn-sm btn-secondary" href="/Admin/account/Detail?id=@item.ID" title="Xem chi tiết">
-                                        <span>Xem</span>
+                                    <a class="btn btn-sm btn-secondary" href="/Admin/Transaction/Index?kh=@item.Username">
+                                        <span>Lịch sử GD</span>
                                     </a>
                                 </td>
                             </tr>

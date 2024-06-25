@@ -11,9 +11,9 @@ namespace KGQT.Areas.Admin.Controllers
     [Area("admin")]
     public class QuestionController : Controller
     {
-        public IActionResult Index(int page = 1, int pageSize = 10)
+        public IActionResult Index(int page = 1)
         {
-            var oData = QuestionBusiness.GetList(page, pageSize);
+            var oData = QuestionBusiness.GetList(1,page,10);
             var lstData = oData[0] as List<tbl_Questions>;
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
@@ -37,7 +37,7 @@ namespace KGQT.Areas.Admin.Controllers
             else
             {
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công! Vui lòng thử lại";
+                result.Message = "Thêm câu hỏi không thành công! Vui lòng thử lại";
             }
             return result;
         }
@@ -55,7 +55,7 @@ namespace KGQT.Areas.Admin.Controllers
             else
             {
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Message = "Xóa không thành công. Vui lòng thử lại!";
             }
             return result;
         }

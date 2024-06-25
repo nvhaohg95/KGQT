@@ -165,7 +165,11 @@
             url: '/Admin/WithDraw/Create',
             type: 'POST',
             data: { model: data },
+            beforeSend: function () {
+                stopLoading();
+            },
             success: function (respone) {
+                stopLoading(true);
                 if (respone.isError)
                     helper.showErr(respone.message)
                 else
@@ -179,8 +183,12 @@
                 }
             },
             error: function (xhr, status, err) {
+                stopLoading(true);
                 helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
 
+            },
+            complete: function () {
+                stopLoading(true);
             }
         });
     }

@@ -12,9 +12,21 @@ namespace KGQT.Areas.Admin.Controllers
     public class TransactionController : Controller
     {
         #region View
-        public IActionResult Index()
+        public IActionResult Index(string kh, int orderID, int tradeType, DateTime? fromDate, DateTime? toDate, int page = 1)
         {
-            return View();
+            var oData = HistoryPayWallet.GetPage(kh, orderID, tradeType, fromDate, toDate, page, 10);
+            var lstData = oData[0] as List<tbl_HistoryPayWallet>;
+            int numberRecord = (int)oData[1];
+            int numberPage = (int)oData[2];
+            ViewBag.kh = kh;
+            ViewBag.orderID = orderID;
+            ViewBag.tradeType = tradeType;
+            ViewBag.fromDate = fromDate;
+            ViewBag.toDate = toDate;
+            ViewBag.pageCurrent = page;
+            ViewBag.numberPage = numberPage;
+            ViewBag.numberRecord = numberRecord;
+            return View(lstData);
         }
 
         #endregion

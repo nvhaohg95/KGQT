@@ -29,10 +29,10 @@
                     <div class="w-300px mr-4">
                         <select name="Type" id=" Type" class="form-control">
                             <option value="" @(type == 0 ? "selected" : "")>Tất cả</option>
-                            <option value="1" @(type == 1 ? "selected" : "")>Tuyến bay nhanh</option>
-                            <option value="2" @(type == 2 ? "selected" : "")>Tuyến bay thường</option>
+                            <option value="1" @(type == 1 ? "selected" : "")>Tuyến nhanh</option>
+                            <option value="2" @(type == 2 ? "selected" : "")>Tuyến thường</option>
                             <option value="3" @(type == 3 ? "selected" : "")>Tuyến bộ</option>
-                            <option value="4" @(type == 4 ? "selected" : "")>Tuyến lô</option>
+                            <option value="4" @(type == 4 ? "selected" : "")>Tuyến bộ lô</option>
                         </select>
                     </div>
                     <div class="d-flex align-items-center justify-content-end">
@@ -76,16 +76,16 @@
                                     @switch (item.Type)
                                     {
                                         case 1:
-                                            <span>Tuyến bay nhanh</span>
+                                            <span>Tuyến nhanh</span>
                                             break;
                                         case 2:
-                                            <span>Tuyến bay thường</span>
+                                            <span>Tuyến thường</span>
                                             break;
                                         case 3:
                                             <span>Tuyến bộ</span>
                                             break;
                                         case 4:
-                                            <span>Tuyến lô</span>
+                                            <span>Tuyến bộ lô</span>
                                             break;
                                     }
                                 </td>
@@ -202,7 +202,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Tuyến vận chuyển</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
 
                             <select name="Type" class="form-control">
@@ -220,21 +220,21 @@
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng từ</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng đến</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Hiển thị</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="Display" placeholder="Hiển thị đến người dùng" />
                         </div>
@@ -243,7 +243,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Giá tiền</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
                             <input class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
                         </div>
@@ -251,8 +251,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary w-100px" onclick="insert()">Thêm</button>
+                <button type="button" class="btn btn-sm btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-sm bg-nsh2 w-100px" onclick="insert()">Thêm</button>
             </div>
         </div>
     </div>
@@ -265,7 +265,7 @@
             <div class="modal-header bg-primary">
                 <h5 class="modal-title" id="exampleModalLabel2">Cập nhật Phí Vận chuyển</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#exampleModal2').modal('hide')">
-                    <span aria-hidden="true" class="text-warning">&times;</span>
+                    <span aria-hidden="true" class="text-nsh1">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -279,7 +279,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Tuyến vận chuyển</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
 
                             <select id="Type" name="Type" class="form-control">
@@ -297,14 +297,14 @@
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng từ</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
                             <input id="WeightFrom" class="form-control form-control-user border-none rounded" name="WeightFrom" placeholder="Từ" />
                         </div>
                         <div class="col-md-6 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Cân nặng đến</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
                             <input id="WeightTo" class="form-control form-control-user border-none rounded" name="WeightTo" placeholder="Đến" />
                         </div>
@@ -313,7 +313,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <div>
                                 <span class="fw-bold">Giá tiền</span>
-                                <span class="text-warning">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </div>
                             <input id="Amount" class="form-control form-control-user border-none rounded" name="Amount" placeholder="Giá tiền" onkeyup="format(this)" />
                         </div>
@@ -328,9 +328,12 @@
     </div>
 </div>
 <script>
-    // insert
     function insert() {
         var data = helper.form2Object($('#formFeeWeight').serializeArray());
+        if (!data) {
+            helper.showErr('Thêm không thành công. Vui lòng thử lại!');
+            return
+        }
         if (!data["WeightFrom"]) {
             helper.showWarn('Vui lòng nhập cân nặng nhỏ nhất!');
             return
@@ -346,7 +349,7 @@
             return;
         }
         $.ajax({
-            url: "/Admin/FeeWeight/create",
+            url: "/Admin/FeeWeight/Create",
             type: 'POST',
             data: data,
             success: function (reponse) {
@@ -356,7 +359,7 @@
                     helper.showErr('Thêm không thành công. Vui lòng thử lại!');
             },
             error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+                helper.showErr('Thêm không thành công. Vui lòng thử lại!');
             }
         });
     }
@@ -377,14 +380,13 @@
                     $("#Amount").val(reponse.amount);
                 }
                 else
-                    helper.showErr('Dữ liệu đã bị xóa!');
+                    helper.showErr('Không tìm thấy dữ liệu vận chuyển!');
             },
             error: function (xhr, status, err) {
                 helper.showErr('Xóa không thành công. Vui lòng thử lại!');
             }
         });
     }
-    //update
     function update(){
         var data = helper.form2Object($('#formEditFeeWeight').serializeArray());
         if (!data["WeightFrom"]) {
@@ -417,9 +419,8 @@
         });
     }
 
-    // delete
     function clickDelete(id){
-        helper.showAlert("Bạn muốn xóa dữ liệu?")
+        helper.showAlert("Bạn muốn xóa Phí vận chuyển?")
         .then((res) => {
             if (res.isConfirmed) 
             {

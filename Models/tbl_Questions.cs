@@ -8,7 +8,6 @@
         /// <summary>
         ///  0. Chưa active
         ///  1. Đang active
-        ///  2. Đã xóa
         /// </summary>
         public int Status { get; set; }
         public string CreatedBy { get; set; }

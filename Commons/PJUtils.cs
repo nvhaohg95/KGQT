@@ -359,7 +359,7 @@ namespace KGQT.Commons
                     sReturn = "<span class=\"btn-sm btn bg-secondary text-white\" style=\"font-size:12px\">Mới tạo</span>";
                     break;
                 case 1:
-                    sReturn = "<span class=\"text-white btn btn-sm bg-success\" style=\"font-size:12px\">Đang sử dụng</span>";
+                    sReturn = "<span class=\"text-white btn btn-sm bg-nsh1\" style=\"font-size:12px\">Đang hiển thị</span>";
                     break;
             }
             return sReturn;

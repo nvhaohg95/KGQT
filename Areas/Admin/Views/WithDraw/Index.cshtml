@@ -223,14 +223,22 @@
                     url: '/Admin/WithDraw/Approval',
                     type: "POST",
                     data: { ID: id },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
                     success: function (reponse) {
+                        stopLoading(true);
                         if (reponse.isError)
                             helper.showErr(reponse.message);
                         else
                             helper.showSuc(reponse.message);
                     },
                     error: function (xhr, status, err) {
+                        stopLoading(true);
                         helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
+                    }, 
+                    complete: function () {
+                        stopLoading(true);
                     }
                 });
             }
@@ -247,14 +255,22 @@
                     url: '/Admin/WithDraw/Refuse',
                     type: "POST",
                     data: { ID: id },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
                     success: function (reponse) {
+                        stopLoading(true);
                         if (reponse.isError)
                             helper.showErr(reponse.message);
                         else
                             helper.showSuc(reponse.message);
                     },
                     error: function (xhr, status, err) {
+                        stopLoading(true);
                         helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
+                    },
+                    complete: function () {
+                        stopLoading(true);
                     }
                 });
             }

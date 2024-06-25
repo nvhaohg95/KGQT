@@ -26,12 +26,12 @@ namespace KGQT.Controllers
             var item1 = new FeeweightCategory()
             {
                 ID = 1,
-                Name = "Tuyến bay nhanh"
+                Name = "Tuyến nhanh"
             };
             var item2 = new FeeweightCategory()
             {
                 ID = 2,
-                Name = "Tuyến bay thường"
+                Name = "Tuyến thường"
             };
             var item3 = new FeeweightCategory()
             {
@@ -41,7 +41,7 @@ namespace KGQT.Controllers
             var item4 = new FeeweightCategory()
             {
                 ID = 4,
-                Name = "Tuyến lô"
+                Name = "Tuyến bộ lô"
             };
             
             lst.Add(item1);
