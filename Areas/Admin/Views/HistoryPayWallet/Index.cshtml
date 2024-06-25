@@ -59,6 +59,7 @@
         <table class="table table-bordered table-hover">
             <thead>
                 <tr class="bg-nsh2 text-white">
+                    <td class="fw-bold text-center">Khách hàng</td>
                     <td class="fw-bold text-center">Ngày GD</td>
                     <td class="fw-bold text-center">Loại GD</td>
                     <td class="fw-bold text-center">Nội dung</td>
@@ -75,6 +76,8 @@
                 {
                     <tr>
                         <td class="text-left">
+                            <span>@item.Username</span>
+                        </td><td class="text-left">
                             <span>@item.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
                         </td>
                         <td class="text-left " title="@(PJUtils.TradeType(item.TradeType))">
