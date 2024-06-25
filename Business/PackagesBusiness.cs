@@ -1,4 +1,6 @@
-﻿using ExcelDataReader;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using ExcelDataReader;
 using Fasterflect;
 using KGQT.Base;
 using KGQT.Business.Base;
@@ -214,9 +216,9 @@ namespace KGQT.Business
                             for (int i = 0; i < data.Data.data.Count; i++)
                             {
                                 string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(data.Data.data[i].context, "zh", "vi"));
-                                string properties_trans = stran.Replace("[", "").Replace("]", "").Replace("\"", "");
-                                string[] ass = properties_trans.Split(',');
-                                data.Data.data[i].context = ass[0];
+                                string[] arrS = stran.Split("\",", StringSplitOptions.RemoveEmptyEntries);
+                                string properties_trans = arrS[0].Replace("[", "").Replace("]", "").Replace("\"", "");
+                                data.Data.data[i].context = properties_trans;
                             }
                             oPack.TrackingShipping = data.Data.data.Count();
                         }
@@ -784,6 +786,13 @@ namespace KGQT.Business
                                 PointsBusiness.Insert(user.ID, user.Username, pack.PackageCode, $"Nhập kho thành công kiện: {pack.PackageCode}", 1, 0, user.AvailableSearch.Value, accessor);
                             }
 
+                            string message = "Kiện hàng {0}{1} đã nhập kho HCM. \r\nQuý khách vui lòng chờ đợi cho đến khi ra đơn hàng hãy sắp xếp lấy hàng nhé, các kiện hàng cùng lô/ ngày này còn đang được cập nhật thêm";
+                            if (string.IsNullOrEmpty(pack.Note))
+                                message = string.Format(message, pack.PackageCode, " - " + pack.Note);
+                            else
+                                message = string.Format(message);
+
+                            NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, pack.ID, pack.PackageCode, message, message, 1, "/Package/Details?id=" + pack.ID, accessor);
                         }
 
                         //Ktra xem khach da co don chua.
@@ -955,23 +964,7 @@ namespace KGQT.Business
                                     if (BusinessBase.Update(oPack))
                                         ShippingOrder.UpdateByPackageChanged(oPack, accessor);
                                 }
-                                var lstpackage = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();
-                                string pstring = "";
 
-                                foreach (var i in lstpackage)
-                                {
-                                    pstring += i.PackageCode + " - " + i.WeightReal + "kg";
-                                    if (!string.IsNullOrEmpty(i.Note))
-                                        pstring += " - " + i.Note + "\r\n";
-                                    else pstring += "\r\n";
-
-                                }
-
-                                string message = "Đơn hàng {0} - {1}vnđ - đã nhập kho HCM \r\nDanh sách kiện: \r\n{2}";
-                                message = string.Format(message,
-                                    ship.ShippingOrderCode, Converted.String2Money(ship.TotalPrice),
-                                    pstring);
-                                NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, ship.ID, ship.ShippingOrderCode, message, message, 1, "/ShippingOrder/Details/" + ship.ID, accessor);
                                 dt.IsError = false;
                                 dt.Message = "Đã nhập kho";
                                 return dt;
@@ -1441,11 +1434,11 @@ namespace KGQT.Business
 
                                         if (BusinessBase.Update(item))
                                         {
-                                            string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(oData.data[oData.data.Count() - 1].context, "zh", "vi"));
-                                            string properties_trans = stran.Replace("[", "").Replace("]", "").Replace("\"", "");
-                                            string[] ass = properties_trans.Split(',');
+                                            string stran = PJUtils.RemoveHTMLTags(PJUtils.TranslateTextNew(oData.data[0].context, "zh", "vi"));
+                                            string[] arrS = stran.Split("\",", StringSplitOptions.RemoveEmptyEntries);
+                                            string properties_trans = arrS[0].Replace("[", "").Replace("]", "").Replace("\"", "");
                                             string message = "Thông tin kiện hàng {0}{1}\r\n{2}";
-                                            message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "", ass[0]);
+                                            message = string.Format(message, item.PackageCode, !string.IsNullOrEmpty(item.Note) ? " - " + item.Note : "", properties_trans);
                                             NotificationBusiness.Insert(1, "admin", item.UID, item.Username, item.ID, item.PackageCode, message, message, 1, "/package/QueryOrderStatus?code=" + item.PackageCode, "admin");
                                         }
                                     }
