@@ -25,7 +25,7 @@ namespace KGQT.Models
         /// , 4: Rút tiền
         /// 5: Hủy rút tiền, 6:Nạp tiền tại kho
         /// 7.Rút tiền tại kho
-        /// ;8: Được tặng
+        /// , 8. Duoc tang
         /// </summary>
         public int TradeType { get; set; }
         public string? Note { get; set; }

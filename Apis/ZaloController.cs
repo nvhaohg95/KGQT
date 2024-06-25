@@ -62,7 +62,7 @@ namespace KGQT.Apis
         [Route("dailytask")]
         public async Task<IActionResult> Test3()
         {
-            PackagesBusiness.DailyTask();
+            PackagesBusiness.DailyTaskAsync();
             return Ok(200);
         }
 

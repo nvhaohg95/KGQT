@@ -16,20 +16,20 @@ namespace KGQT.Areas.Admin.Controllers
         /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IActionResult StatisticUserWallet( int page = 1, int pageSize = 20)
+        public IActionResult StatisticUserWallet(string search, int sort, int page = 1, int pageSize = 20)
         {
-
-            var oData = StatisticsBusiness.UserWallet(page, pageSize);
-
+            var oData = StatisticsBusiness.UserWallet(search,sort,page, pageSize);
             var lstData = oData[0] as List<tbl_Account>;
             int numberRecord = (int)oData[1];
             int numberPage = (int)oData[2];
+            ViewBag.sort = sort;
+            ViewBag.search = search;
             ViewBag.pageCurrent = page;
             ViewBag.numberPage = numberPage;
             ViewBag.numberRecord = numberRecord;
             return View(lstData);
         }
-        
+
         /// <summary>
         /// Thống kê cân nặng
         /// </summary>
@@ -67,16 +67,16 @@ namespace KGQT.Areas.Admin.Controllers
         /// <returns></returns>
         public IActionResult StatisticRevenue(DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20)
         {
-            if(fromDate == null)
+            if (fromDate == null)
                 fromDate = DateTime.Now;
-            
-            if(toDate == null)
+
+            if (toDate == null)
                 toDate = DateTime.Now;
 
             fromDate = fromDate.Value.Date;
             toDate = toDate.Value.Date.AddDays(1).AddTicks(-1);
 
-            var oData = StatisticsBusiness.Revenue(fromDate, toDate, page,pageSize);
+            var oData = StatisticsBusiness.Revenue(fromDate, toDate, page, pageSize);
 
             var lstData = oData[0] as List<tbl_ShippingOrder>;
             int numberRecord = (int)oData[1];

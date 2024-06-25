@@ -7,15 +7,23 @@ namespace KGQT.Business
 {
     public class StatisticsBusiness
     {
-        public static object[] UserWallet(int page, int pageSize)
+        public static object[] UserWallet(string s, int order, int page, int pageSize)
         {
             using (var db = new nhanshiphangContext())
             {
                 IQueryable<tbl_Account> query = db.tbl_Accounts
                     .Where(x => x.Wallet != "0");
 
+                if (!string.IsNullOrEmpty(s))
+                    query = query.Where(x => x.Username.Contains(s) || x.FullName.Contains(s));
+
+                if (order > 0)
+                    query = query.AsEnumerable().OrderByDescending(x => x.Wallet.Double()).AsQueryable();
+                else
+                    query = query.AsEnumerable().OrderBy(x => x.Wallet.Double()).AsQueryable();
+
                 int total = query.Count();
-                var lstData = query.OrderByDescending(x => x.CreatedDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                var lstData = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
                 int totalPage = Convert.ToInt32(Math.Ceiling((decimal)total / pageSize));
                 return new object[] { lstData, total, totalPage };
 

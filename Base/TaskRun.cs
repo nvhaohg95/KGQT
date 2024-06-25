@@ -1,4 +1,7 @@
 ﻿using KGQT.Business;
+using KGQT.Business.Base;
+using KGQT.Models;
+using KGQT.Models.temp;
 using System.IO.Packaging;
 
 namespace KGQT.Base
@@ -9,7 +12,9 @@ namespace KGQT.Base
         public static bool isRuning = false;
         private List<Timer> timers = new List<Timer>();
 
-        private TaskRun() { }
+        private TaskRun()
+        {
+        }
 
         public static TaskRun Instance => _instance ?? (_instance = new TaskRun());
 
@@ -38,23 +43,67 @@ namespace KGQT.Base
 
         public static void Run()
         {
-            Instance.ScheduleTask(16, 0, 0,
+            var config = BusinessBase.Get<tbl_Schedules>().ToList();
+            #region Baidu Task
+            var baidu = config.FirstOrDefault(x=>x.TaskID == 1003);
+            int bHours = 16;
+            int bMinute = 0;
+            int bSecond = 0;
+
+            if(baidu != null)
+            {
+                bHours = baidu.Hours.Value;
+                bMinute = baidu.Minute.Value;
+                bSecond = baidu.Seccon.Value;
+            }
+
+            Instance.ScheduleTask(bHours, bMinute, bSecond,
                () =>
                {
                    //here write the code that you want to schedule
-                   PackagesBusiness.DailyTask();
+                   PackagesBusiness.DailyTaskAsync();
                });
-            Instance.ScheduleTask(23, 59, 0,
+            #endregion
+
+            #region OA follower
+            var follower = config.FirstOrDefault(x => x.TaskID == 1002);
+            int fHours = 23;
+            int fMinute = 59;
+            int fSecond = 0;
+
+            if (follower != null)
+            {
+                fHours = follower.Hours.Value;
+                fMinute = follower.Minute.Value;
+                fSecond = follower.Seccon.Value;
+            }
+
+            Instance.ScheduleTask(fHours, fMinute, fSecond,
              () =>
              {
                  //here write the code that you want to schedule
                  ZaloCommon.GetListFollower();
              });
+            #endregion
 
-            Instance.ScheduleTask(9, 0, 0, () =>
-            {
-                ZaloCommon.SendRequestAuto();
-            });
+            #region Send Request
+            //var oa = config.FirstOrDefault(x => x.TaskID == 1001);
+            //int oHours = 9;
+            //int oMinute = 0;
+            //int oSecond = 0;
+
+            //if (oa != null)
+            //{
+            //    oHours = oa.Hours.Value;
+            //    oMinute = oa.Minute.Value;
+            //    oSecond = oa.Seccon.Value;
+            //}
+
+            //Instance.ScheduleTask(oHours, oMinute, oSecond, () =>
+            //{
+            //    ZaloCommon.SendRequestAuto();
+            //});
+            #endregion
         }
     }
 }

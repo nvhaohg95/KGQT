@@ -26,7 +26,6 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 TaskRun.Run();
-ZaloCommon.CallRefresh();
 #region App
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())

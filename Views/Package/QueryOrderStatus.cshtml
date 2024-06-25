@@ -51,8 +51,7 @@
                         @foreach (var item in Model.Data?.data)
                         {
                             <li>
-                                <span class="d-block">@item.context</span>
-                                <i>@item.time</i>
+                                <span class="d-block">@item.time: @item.context</span>
                             </li>
                         }
                     </ul>

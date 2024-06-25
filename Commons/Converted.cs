@@ -17,15 +17,15 @@ namespace KGQT.Commons
 
             return value.Value;
         }
-        public static int ToInt(int? s)
+        public static int ToInt(int? s, int df = 0)
         {
-            if (!s.HasValue) return 0;
+            if (!s.HasValue) return df;
 
             return s.Value;
         }
-        public static int ToInt(object s)
+        public static int ToInt(object s, int df = 0)
         {
-            if (s == null) return 0;
+            if (s == null) return df;
 
             return Convert.ToInt32(s);
         }
