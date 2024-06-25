@@ -60,7 +60,7 @@
     <div clss="col-12">
         <div class="d-flex align-items-center justify-content-between w-100">
             <h5 class="fw-bold text-uppercase text-nsh1">NẠP TIỀN</h5>
-            <a class="btn btn-sm btn-tracking-blue w-100px" href="/Admin/Withdraw/Create?type=1">Thêm</a>
+            <a class="btn btn-sm bg-nsh2 w-100px" href="/Admin/Withdraw/Create?type=1">Thêm</a>
         </div>
     </div>
     <div class="col-12">
@@ -119,10 +119,10 @@
                         <td class="text-right align-middle">
                             @if (item.Status == 1)
                             {
-                                <a class="btn btn-sm btn-tracking-blue w-100px" onclick="clickApproval(@item.ID)">
+                                <a class="btn btn-sm bg-nsh2 w-100px" onclick="clickApproval(@item.ID)">
                                     <span>Duyệt</span>
                                 </a>
-                                <a class="btn btn-sm btn-tracking-orange w-100px" onclick="clickRefuse(@item.ID)">
+                                <a class="btn btn-sm bg-nsh1 w-100px" onclick="clickRefuse(@item.ID)">
                                     <span>Từ chối</span>
                                 </a>
                             }

@@ -326,7 +326,7 @@ namespace KGQT.Mobility
                     oRequest.Message = "Người dùng không còn tồn tại!";
                     return oRequest;
                 }
-                user.IsActive = false;
+                user.IsActive = true;
                 var update = BusinessBase.Update(user);
                 if (!update)
                 {

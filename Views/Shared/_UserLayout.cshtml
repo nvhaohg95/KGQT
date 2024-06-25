@@ -96,7 +96,7 @@
                 {
                     <span class="nav-link">
                         <span class="text-dark mr-1">Ví cá nhân:</span>
-                        <span class="fw-bold text-warning">@Converted.String2Money(user.Wallet)đ</span>
+                        <span class="fw-bold text-nsh1">@Converted.String2Money(user.Wallet)đ</span>
                     </span>
                 }
                 else
@@ -361,7 +361,7 @@
                             <div class="row align-items-center my-2 h-50px">
                                 <div class="col-3">
                                     <span class="fw-bold">Tài khoản</span>
-                                    <span class="text-warning">(*)</span>
+                                    <span class="text-nsh1">(*)</span>
                                 </div>
                                 <div class="col-9">
                                     <input type="text" name="UserName" value="@user.Username" placeholder="Tài khoản" class="form-control" readonly />
@@ -370,7 +370,7 @@
                             <div class="row align-items-center my-2 h-50px">
                                 <div class="col-3">
                                     <span class="fw-bold">Mật khẩu</span>
-                                    <span class="text-warning">(*)</span>
+                                    <span class="text-nsh1">(*)</span>
                                 </div>
                                 <div class="col-9 d-flex align-items-center position-relative">
                                     <input id="txtPassword1" type="password" name="OldPassword" placeholder="Mật khẩu" class="form-control" />
@@ -382,7 +382,7 @@
                             <div class="row align-items-center my-2 h-50px">
                                 <div class="col-3">
                                     <span class="fw-bold">Mật khẩu mới</span>
-                                    <span class="text-warning">(*)</span>
+                                    <span class="text-nsh1">(*)</span>
                                 </div>
                                 <div class="col-9 d-flex align-items-center position-relative">
                                     <input id="txtPassword2" type="password" name="NewPassword" placeholder="Mật khẩu mới" class="form-control" />
@@ -394,7 +394,7 @@
                             <div class="row align-items-center my-2 h-50px">
                                 <div class="col-3">
                                     <span class="fw-bold">Nhập lại mật khẩu</span>
-                                    <span class="text-warning">(*)</span>
+                                    <span class="text-nsh1">(*)</span>
                                 </div>
                                 <div class="col-9 d-flex align-items-center position-relative">
                                     <input id="txtPassword3" type="password" name="ConfirmPassword" placeholder="Nhập lại mật khẩu" class="form-control" />
@@ -427,13 +427,13 @@
                             <div class="row px-4">
                                 <div class="col-lg-12 col-md-12 col-sm-12 d-none">
                                     <div class="form-group">
-                                        <label class="fw-bold">Tài khoản<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Tài khoản<span class="text-nsh1">(*)</span></label>
                                         <input type="text" class="form-control" name="Username" value="@user.Username" placeholder="Tài khoản" readonly>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
-                                        <label class="fw-bold">Hình thức thanh toán<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Hình thức thanh toán<span class="text-nsh1">(*)</span></label>
                                         <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this,1)">
                                             <option value="1" selected>Tiền mặt</option>
                                             <option value="2" >Chuyển khoản</option>
@@ -445,19 +445,19 @@
                                     <div class="row">
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <label class="fw-bold">Ngân hàng<span class="text-warning">(*)</span></label>
+                                                <label class="fw-bold">Ngân hàng<span class="text-nsh1">(*)</span></label>
                                                 <input type="text" class="form-control" name="BankName" placeholder="Ngân hàng">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <label class="fw-bold">Số tài khoản<span class="text-warning">(*)</span></label>
+                                                <label class="fw-bold">Số tài khoản<span class="text-nsh1">(*)</span></label>
                                                 <input type="text" class="form-control" name="AccountNumber" placeholder="Số tài khoản">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <label class="fw-bold">Chủ tài khoản<span class="text-warning">(*)</span></label>
+                                                <label class="fw-bold">Chủ tài khoản<span class="text-nsh1">(*)</span></label>
                                                 <input type="text" class="form-control" name="AccountName" placeholder="Chủ tài khoản">
                                             </div>
                                         </div>
@@ -465,14 +465,14 @@
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
-                                        <label class="fw-bold">Số tiền<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Số tiền<span class="text-nsh1">(*)</span></label>
                                         <input type="text" class="form-control" name="Amount" placeholder="Số tiền" onkeyup="format(this)">
 
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
-                                        <label class="fw-bold">Nội dung<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Nội dung<span class="text-nsh1">(*)</span></label>
                                         <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
                                     </div>
                                 </div>
@@ -510,13 +510,13 @@
                             <div class="row px-4">
                                 <div class="col-lg-12 col-md-12 col-sm-12 d-none">
                                     <div class="form-group">
-                                        <label class="fw-bold">Tài khoản<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Tài khoản<span class="text-nsh1">(*)</span></label>
                                         <input type="text" class="form-control" name="Username" value="@user.Username" placeholder="Tài khoản" readonly>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
-                                        <label class="fw-bold">Hình thức thanh toán<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Hình thức thanh toán<span class="text-nsh1">(*)</span></label>
                                         <select class="form-control" name="PaymentMethod" onchange="valueCBBChange(this,2)">
                                             <option value="1" selected>Tiền mặt</option>
                                             <option value="2">Chuyển khoản</option>
@@ -528,19 +528,19 @@
                                     <div class="row">
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <label class="fw-bold">Ngân hàng<span class="text-warning">(*)</span></label>
+                                                <label class="fw-bold">Ngân hàng<span class="text-nsh1">(*)</span></label>
                                                 <input type="text" class="form-control" name="BankName" placeholder="Ngân hàng">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <label class="fw-bold">Số tài khoản<span class="text-warning">(*)</span></label>
+                                                <label class="fw-bold">Số tài khoản<span class="text-nsh1">(*)</span></label>
                                                 <input type="text" class="form-control" name="AccountNumber" placeholder="Số tài khoản">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <label class="fw-bold">Chủ tài khoản<span class="text-warning">(*)</span></label>
+                                                <label class="fw-bold">Chủ tài khoản<span class="text-nsh1">(*)</span></label>
                                                 <input type="text" class="form-control" name="AccountName" placeholder="Chủ tài khoản">
                                             </div>
                                         </div>
@@ -548,14 +548,14 @@
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
-                                        <label class="fw-bold">Số tiền<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Số tiền<span class="text-nsh1">(*)</span></label>
                                         <input type="text" class="form-control" name="Amount" placeholder="Số tiền" onkeyup="format(this)">
 
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="form-group">
-                                        <label class="fw-bold">Nội dung<span class="text-warning">(*)</span></label>
+                                        <label class="fw-bold">Nội dung<span class="text-nsh1">(*)</span></label>
                                         <textarea class="form-control" name="Note" placeholder="Nội dung"></textarea>
                                     </div>
                                 </div>
@@ -584,7 +584,7 @@
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-primary">
-                        <h5 class="modal-title">ĐỔI ĐIỂM TRA CỨU Baidu</h5>
+                        <h5 class="modal-title">ĐỔI ĐIỂM TRA CỨU BAIDU</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -594,7 +594,7 @@
                             <div class="row align-items-center my-2 h-50px">
                                 <div class="col-3">
                                     <span class="fw-bold">Số dư ví</span>
-                                    <span class="text-warning">(*)</span>
+                                    <span class="text-nsh1">(*)</span>
                                 </div>
                                 <div class="col-9 d-flex align-items-center">
                                     <input type="text" name="Wallet" value="@Converted.String2Money(user.Wallet)" placeholder="0đ" class="form-control" readonly />
@@ -603,7 +603,7 @@
                             <div class="row align-items-center my-2 h-50px">
                                 <div class="col-3">
                                     <span class="fw-bold">Số điểm</span>
-                                    <span class="text-warning">(*)</span>
+                                    <span class="text-nsh1">(*)</span>
                                 </div>
                                 <div class="col-9 d-flex align-items-center">
                                     <input type="number" name="Amount" class="form-control" min="1" max="9999"/>

@@ -44,7 +44,7 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="FirstName">Họ tên<span class="ml-1 text-warning">(*)</span></label>
+                            <label for="FirstName">Họ tên<span class="ml-1 text-nsh1">(*)</span></label>
                             <input name="FullName" id="FullName" value="@Model.FullName" type="text" class="form-control" placeholder="Họ và tên"/>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12">
                         <div class="form-group">
-                            <label for="Phone">SDT<span class="ml-1 text-warning">(*)</span></label>
+                            <label for="Phone">SDT<span class="ml-1 text-nsh1">(*)</span></label>
                             <input name="Phone" id="Phone" value="@Model.Phone" type="text" class="form-control" placeholder="Số điện thoại" />
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
-                            <label for="Address">Địa chỉ <span class="ml-1 text-warning">(*)</span></label>
+                            <label for="Address">Địa chỉ <span class="ml-1 text-nsh1">(*)</span></label>
                             <input name="Address" id="Address" value="@Model.Address" type="text" class="form-control" placeholder="Địa chỉ" />
                         </div>
                     </div>
@@ -124,13 +124,13 @@
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12">
                         <div class="form-group">
-                            <label for="RoleID">Loại tài khoản<span class="ml-1 text-warning">(*)</span></label>
+                            <label for="RoleID">Loại tài khoản<span class="ml-1 text-nsh1">(*)</span></label>
                             @Html.DropDownListFor(model => model.RoleID, new SelectList(ViewBag.lstRoles,"RoleID","RoleName"),"",new { @class="form-control", @name="RoleID"})
                         </div>
                     </div>
                 </div>
                 <div class="row justify-content-end mt-2">
-                    <button type="button" class="btn btn-tracking-blue w-100px" onclick="update()">Cập nhật</button>
+                    <button type="button" class="btn bg-nsh2 w-100px" onclick="update()">Cập nhật</button>
                 </div>
             </form>
         </div>

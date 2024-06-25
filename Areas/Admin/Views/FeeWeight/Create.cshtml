@@ -8,9 +8,9 @@
 <div class="container-fluid h-100">
     <div class="row mb-2">
         <ul id="breadcrumbs">
-            <li><a href="/admin/home">Trang chủ</a></li>
-            <li><a href="/admin/feeweight">Phí vận chuyển</a></li>
-            <li><a>Thêm mới</a></li>
+            <li class="text-uppercase"><a href="/admin/home">Trang chủ</a></li>
+            <li class="text-uppercase"><a href="/admin/feeweight">Phí vận chuyển</a></li>
+            <li class="text-uppercase fw-bold"><a>Thêm mới</a></li>
         </ul>
     </div>
     <div class="row bg-white p-2">
@@ -22,42 +22,42 @@
                 <div class="col-3 form-group">
                     <div>
                         <span class="fw-bold">Tuyến vận chuyển</span>
-                        <span class="text-danger">(*)</span>
+                        <span class="text-nsh1">(*)</span>
                     </div>
                     @Html.DropDownListFor(model => model.Type,null,new { @class="form-control form-control-user border-none rounded" })
                 </div>
                 <div class="col-3 form-group">
                     <div>
                         <span class="fw-bold">Trọng lượng từ</span>
-                        <span class="text-danger">(*)</span>
+                        <span class="text-nsh1">(*)</span>
                     </div>
                     @Html.TextBoxFor(model => model.WeightFrom,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Trọng lượng từ" })
                 </div>
                 <div class="col-3 form-group">
                     <div>
                         <span class="fw-bold">Trọng lượng đến</span>
-                        <span class="text-danger">(*)</span>
+                        <span class="text-nsh1">(*)</span>
                     </div>
                     @Html.TextBoxFor(model => model.WeightTo ,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Trọng lượng đến" })
                 </div>
                 <div class="col-3 form-group">
                     <div>
                         <span class="fw-bold">Hiển thị</span>
-                        <span class="text-danger">(*)</span>
+                        <span class="text-nsh1">(*)</span>
                     </div>
                     @Html.TextBoxFor(model => model.Display ,"",new { @class="form-control form-control-user border-none rounded" , @autofocus="autofocus", @placeholder="Hiện thị đến người dùng" })
                 </div>
                 <div class="col-3 form-group">
                     <div>
                         <span class="fw-bold">Giá tiền</span>
-                        <span class="text-danger">(*)</span>
+                        <span class="text-nsh1">(*)</span>
                     </div>
                     @Html.TextBoxFor(model => model.Amount,"",new { @class="form-control form-control-user border-none rounded", @placeholder="Giá tiền" })
                 </div>
                 
                 <div class="col-12 d-flex justify-content-end">
-                    <a class="btn btn-primary w-100px mr-4" onclick="insert()">Lưu</a>
-                    <a class="btn btn-warning w-100px" href="index">Quay lại</a>
+                    <a class="btn btn-sm bg-nsh2 w-100px mr-4" onclick="insert()">Lưu</a>
+                    <a class="btn btn-sm btn-secondary w-100px" href="index">Quay lại</a>
                 </div>
             </form>
         </div>
