@@ -213,20 +213,28 @@
 <script>
     // approval
     function clickApproval(id) {
-        helper.showAlert("Bạn có muốn thực hiện yêu cầu này?").then((res) => {
+        helper.showAlert("Duyệt yêu cầu này?").then((res) => {
             if (res.isConfirmed) {
                 $.ajax({
                     url: '/Admin/WithDraw/Approval',
                     type: "POST",
                     data: { ID: id },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
                     success: function (reponse) {
+                        stopLoading(true);
                         if (reponse.isError)
                             helper.showErr(reponse.message);
                         else
                             helper.showSuc(reponse.message);
                     },
                     error: function (xhr, status, err) {
-                        helper.showErr("Hệ thống thực thi không thành công. Vui lòng thử lại!");
+                        stopLoading(true);
+                        helper.showErr("Duyệt không thành công. Vui lòng thử lại!");
+                    },
+                    complete: function () {
+                        stopLoading(true);
                     }
                 });
             }
@@ -235,20 +243,27 @@
     }
     //refuse
     function clickRefuse(id) {
-        helper.showAlert("Bạn có muốn từ chối yêu cầu này?").then((res) => {
+        helper.showAlert("Từ chối yêu cầu này?").then((res) => {
             if (res.isConfirmed) {
                 $.ajax({
                     url: '/Admin/WithDraw/Refuse',
                     type: "POST",
                     data: { ID: id },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
                     success: function (reponse) {
+                        stopLoading(true);
                         if (reponse.isError)
                             helper.showErr(reponse.message);
                         else
                             helper.showSuc(reponse.message);
                     },
                     error: function (xhr, status, err) {
-                        helper.showErr('Hệ thống thực thi không thành công.')
+                        helper.showErr('Từ chối không thành công. Vui lòng thử lại!')
+                    },
+                    complete: function () {
+                        stopLoading(true);
                     }
                 });
             }

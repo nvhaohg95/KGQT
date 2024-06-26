@@ -289,7 +289,7 @@ namespace KGQT.Business
                 _log.Error("Lỗi gửi thông báo", ex.Message);
                 result.IsError = true;
                 result.Data = false;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Message = "Gửi thông báo không thành công. Vui lòng thử lại!";
                 return result;
             }
         }

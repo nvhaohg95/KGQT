@@ -7,7 +7,7 @@
 <div class="row mb-2 w-100">
     <ul class="ps-2" id="breadcrumbs">
         <li class="text-uppercase"><a href="/Admin">Trang chủ</a></li>
-        <li class="text-uppercase"><a href="/Admin/Question/Index">Danh sách</a></li>
+        <li class="text-uppercase"><a href="/Admin/Question/Index">Câu hỏi</a></li>
         <li class="text-uppercase fw-bold"><a class="active">Chi tiết</a></li>
     </ul>
 </div>
@@ -34,7 +34,7 @@
                 <label>Trạng thái</label>
                 <select class="form-control" name="Status">
                     <option value="0" @(Model.Status == 0 ? "selected" : "")>Mới tạo</option>
-                    <option value="1" @(Model.Status == 1 ? "selected" : "")>Đang sử dụng</option>
+                    <option value="1" @(Model.Status == 1 ? "selected" : "")>Đang hiển thị</option>
                 </select>
             </div>
 
@@ -48,7 +48,7 @@
     function clickUpdate() {
         var data = helper.form2Object($('#frmQuestion').serializeArray());
         if (!data) {
-            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            helper.showErr('Cập nhật không thành công. Vui lòng thử lại!');
             return
         }
         if (!data.Question) {
@@ -70,10 +70,10 @@
                     if (reponse.isError)
                         helper.showErr(reponse.message)
                     else
-                        helper.showSuc('Cập nhật thành công!')
+                        helper.showSuc(reponse.message)
                 },
                 error: function (xhr, status, err) {
-                    helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
+                    helper.showErr('Cập nhật không thành công! Vui lòng thử lại')
                 }
             });
         });

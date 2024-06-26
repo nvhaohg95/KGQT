@@ -12,7 +12,7 @@
 <div class="row mb-2 w-100">
     <ul class="ps-2" id="breadcrumbs">
         <li class="text-uppercase"><a href="/admin">Trang chủ</a></li>
-        <li class="text-uppercase fw-bold"><a class="active">Danh sách câu hỏi</a></li>
+        <li class="text-uppercase fw-bold"><a class="active">Câu hỏi</a></li>
     </ul>
 </div>
 <div class="row p-2 mb-2 w-100">
@@ -23,7 +23,7 @@
             </div>
             <div class="col-6">
                 <div class="d-flex align-items-end justify-content-end">
-                    <button type="button" class="btn btn-sm btn-success ml-2 w-100px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i>&nbspThêm</button>
+                    <button type="button" class="btn btn-sm bg-nsh2 ml-2 w-100px" data-toggle="modal" data-target="#exampleModal">Thêm</button>
                 </div>
             </div>
         </form>
@@ -179,7 +179,7 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <label class="control-label">
                                 <span class="fw-bold">Câu hỏi</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </label>
                             <input type="text" name="Question" class="form-control" autocomplete="off" autofocus/>
                         </div>
@@ -188,11 +188,9 @@
                         <div class="col-md-12 col-sm-12 form-group">
                             <label class="control-label">
                                 <span class="fw-bold">Câu trả lời</span>
-                                <span class="text-danger">(*)</span>
+                                <span class="text-nsh1">(*)</span>
                             </label>
-                            <textarea rows="4" name="Answer" class="form-control" autocomplete="off">
-
-                            </textarea>
+                            <textarea rows="6" name="Answer" class="form-control" autocomplete="off"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -200,7 +198,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="Status" value="1" id="flexCheckDefault">
                                 <label class="form-check-label" for="flexCheckDefault">
-                                    Kích hoạt ngay
+                                    Hiển thị câu hỏi
                                 </label>
                             </div>
                         </div>
@@ -209,25 +207,23 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary w-100px" onclick="insert()">Lưu</button>
+                <button type="button" class="btn btn-sm btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-sm bg-nsh2 w-100px" onclick="insert()">Lưu</button>
             </div>
         </div>
     </div>
 </div>
 <script>
     function insert() {
-        debugger
         var data = helper.form2Object($('#formAddQuestion').serializeArray());
         if (!data) {
-            helper.showWarn('Hệ thống thực thi không thành công. Vui lòng thử lại!');
+            helper.showErr('Thêm câu hỏi không thành công. Vui lòng thử lại!');
             return
         }
         if (!data.Question) {
             helper.showWarn('Vui lòng nhập câu hỏi!');
             return
         }
-
         if (!data.Answer) {
             helper.showWarn('Vui lòng nhập câu trả lời!');
             return
@@ -241,15 +237,15 @@
                 if (reponse.isError)
                     helper.showErr(reponse.message)
                 else
-                    helper.showSuc('Thêm thành công!')
+                    helper.showSuc(reponse.message)
             },
             error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
+                helper.showErr('Thêm câu hỏi không thành công! Vui lòng thử lại')
             }
         });
     }
     function clickDelete(id) {
-        helper.showAlert("Bạn có muốn thực hiện thao tác xóa?").then((res) => {
+        helper.showAlert("Bạn có muốn xóa câu hỏi?").then((res) => {
             if (res.isConfirmed) {
                 $.ajax({
                     url: "/Admin/Question/Delete",
@@ -259,10 +255,10 @@
                         if (reponse.isError)
                             helper.showErr(reponse.message)
                         else
-                            helper.showSuc('Xóa thành công!')
+                            helper.showSuc(reponse.message)
                     },
                     error: function (xhr, status, err) {
-                        helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
+                        helper.showErr('Xóa không thành công! Vui lòng thử lại')
                     }
                 });
             }

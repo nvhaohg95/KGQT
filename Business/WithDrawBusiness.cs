@@ -6,6 +6,7 @@ using KGQT.Models.temp;
 using System;
 using Serilog;
 using ILogger = Serilog.ILogger;
+using Newtonsoft.Json;
 
 namespace KGQT.Business
 {
@@ -120,7 +121,7 @@ namespace KGQT.Business
                                     user.ModifiedDate = DateTime.Now;
                                     db.Update(user);
                                     db.SaveChanges();
-                                    notiMessage = string.Format("Tài khoản của Quý khách đã được <span class=\"text-success\">+{0}</span>", strHTML);
+                                    notiMessage = string.Format("Tài khoản của Quý khách đã được <span class=\"text-nsh2\">+{0}</span>", strHTML);
                                     notiMessage2 = string.Format("Tài khoản của Quý khách đã được +{0}", strHTML);
                                     HistoryPayWallet.Insert(user.ID, user.Username, data.ID, data.Note, data.Amount, 2, 3,moneyPrevious, moneyLef, createdBy);
                                     NotificationBusiness.Insert(admin.ID, admin.FullName, user.ID, user.FullName, data.ID, "", notiMessage, notiMessage2, 2, "", admin.Username);
@@ -147,7 +148,7 @@ namespace KGQT.Business
                             {
                                 string url = "/Admin/Withdraw/Index?ID=" + data.ID;
                                 string money = Converted.Double2Money(Converted.ToDouble(data.Amount));
-                                notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-success\">{1}</span> vào tài khoản.", string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName, money);
+                                notiMessage = string.Format("Khách hàng <span class=\"fw-bold\">{0}</span> yêu cầu nạp <span class=\"text-nsh2\">{1}</span> vào tài khoản.", string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName, money);
                                 notiMessage2 = string.Format("Khách hàng {0} yêu cầu nạp {1} vào tài khoản.", string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName, money);
                                 NotificationBusiness.Insert(user.ID, user.FullName, 0, "Admin", data.ID, "", notiMessage, notiMessage2, 2, url, user.Username, true);
                                 result.IsError = false;
@@ -175,7 +176,7 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi tạo lệnh nạp tiền",ex.Message);
+                _log.Error("Lỗi tạo lệnh nạp tiền: ", JsonConvert.SerializeObject(ex));
                 result.IsError = true;
                 result.Data = false;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
@@ -286,7 +287,7 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi tạo lệnh rút tiền", ex.Message);
+                _log.Error("Lỗi tạo lệnh rút tiền: ", JsonConvert.SerializeObject(ex));
                 result.IsError = true;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
                 result.Data = false;
@@ -327,7 +328,7 @@ namespace KGQT.Business
                                 string moneyPrevious = user.Wallet;
                                 string moneyLef = Converted.Double2Money(Converted.ToDouble(user.Wallet) + Converted.ToDouble(widthDraw.Amount));
                                 user.Wallet = moneyLef;
-                                message = string.Format("Tài khoản của Quý khách đã được <span class=\"text-success\">+{0}</span>", money);
+                                message = string.Format("Tài khoản của Quý khách đã được <span class=\"text-nsh2\">+{0}</span>", money);
                                 message2 = string.Format("Tài khoản của Quý khách đã được +{0}", money);
                                 HistoryPayWallet.Insert(user.ID, user.Username, widthDraw.ID, widthDraw.Note, widthDraw.Amount, 2, 3, moneyPrevious, moneyLef, admin.Username);
                                 NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, message2, 2, "", admin.Username);
@@ -385,7 +386,7 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi duyệt lệnh nạp/rút tiền", ex.Message);
+                _log.Error("Lỗi duyệt lệnh nạp/rút tiền: ", JsonConvert.SerializeObject(ex));
                 result.IsError = true;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
                 return result;
@@ -443,7 +444,7 @@ namespace KGQT.Business
                                 string message2 = "";
                                 if (widthDraw.Type == 1)
                                 {
-                                    message = string.Format("Yêu cầu nạp <span class=\"text-success\">{0}</span> của Quý khách đã bị từ chối.", money);
+                                    message = string.Format("Yêu cầu nạp <span class=\"text-nsh2\">{0}</span> của Quý khách đã bị từ chối.", money);
                                     message2 = string.Format("Yêu cầu nạp {0} của Quý khách đã bị từ chối.", money);
                                     NotificationBusiness.Insert(admin.ID, admin.Username, user.ID, user.Username, widthDraw.ID, "", message, message2, 2, "", admin.Username);
                                 }
@@ -484,7 +485,7 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi từ chối nạp/rút tiền", ex.Message);
+                _log.Error("Lỗi từ chối nạp/rút tiền: ", JsonConvert.SerializeObject(ex));
                 result.IsError = true;
                 result.Data = false;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
@@ -600,7 +601,7 @@ namespace KGQT.Business
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi đổi lượt tìm kiếm baidu.", ex);
+                _log.Error("Lỗi đổi lượt tìm kiếm baidu: ", JsonConvert.SerializeObject(ex));
                 result.IsError = true;
                 result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại sau!";
                 return result;

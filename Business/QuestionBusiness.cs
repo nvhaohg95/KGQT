@@ -9,14 +9,14 @@ namespace KGQT.Business
     public static class QuestionBusiness
     {
         private static readonly ILogger _log = Log.ForContext(typeof(AccountBusiness));
-        public static object[] GetList(int page, int pageSize)
+        public static object[] GetList(int status, int page, int pageSize)
         {
             using (var db = new nhanshiphangContext())
             {
                 List<tbl_Questions> lstData = new();
                 int total = 0;
                 int totalPage = 0;
-                var query = db.tbl_Questions.Where(x => x.Status != 2);
+                var query = db.tbl_Questions.Where(x => x.Status == status);
                 total = query.Count();
                 if(total > 0)
                 {
@@ -64,20 +64,20 @@ namespace KGQT.Business
                         {
                             result.IsError = false;
                             result.Data = true;
-                            result.Message = "Thêm thành công!";
+                            result.Message = "Thêm câu hỏi thành công!";
                             return result;
                         }
                     }
                     result.IsError = true;
-                    result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                    result.Message = "Thêm không thành công. Vui lòng thử lại!";
                     return result;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi tạo câu hỏi", ex.Message);
+                _log.Error("Lỗi tạo câu hỏi: ", ex.Message);
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Message = "Thêm không thành công. Vui lòng thử lại!";
                 return result;
             }
         }
@@ -127,15 +127,15 @@ namespace KGQT.Business
                         }
                     }
                     result.IsError = true;
-                    result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                    result.Message = "Cập nhật không thành công. Vui lòng thử lại!";
                     return result;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi cập nhật câu hỏi", ex.Message);
+                _log.Error("Lỗi cập nhật câu hỏi: ", ex.Message);
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Message = "Cập nhật không thành công. Vui lòng thử lại!";
                 return result;
             }
         }
@@ -150,7 +150,7 @@ namespace KGQT.Business
                     if (data == null)
                     {
                         result.IsError = true;
-                        result.Message = "Không tìm thấy thông tin câu hỏi. Vui lòng thử lại!";
+                        result.Message = "Không tìm thấy câu hỏi. Vui lòng thử lại!";
                     }
                     var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == createdBy.ToLower());
                     if (admin != null)
@@ -164,20 +164,20 @@ namespace KGQT.Business
                         {
                             result.IsError = false;
                             result.Data = true;
-                            result.Message = "Xóa thành công!";
+                            result.Message = "Xóa câu hỏi thành công!";
                             return result;
                         }
                     }
                     result.IsError = true;
-                    result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                    result.Message = "Xóa không thành công. Vui lòng thử lại!";
                     return result;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error("Lỗi xóa câu hỏi", ex.Message);
+                _log.Error("Lỗi xóa câu hỏi: ", ex.Message);
                 result.IsError = true;
-                result.Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!";
+                result.Message = "Xóa không thành công. Vui lòng thử lại!";
                 return result;
             }
         }

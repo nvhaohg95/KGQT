@@ -1,0 +1,112 @@
+﻿@using KGQT.Commons;
+@{
+    ViewData["Title"] = "Đổi điểm tra cứu";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    string userName = ViewBag.userName;
+    double wallet = ViewBag.wallet;
+}
+
+<ul id="breadcrumbs">
+    <li class="text-uppercase"><a href="/Home/Dashboard">Trang chủ</a></li>
+    <li class="text-uppercase fw-bold"><a class="active">Đổi điểm tra cứu</a></li>
+</ul>
+
+<div class="row align-items-center justify-content-center p-5">
+    <div class="col-6">
+        <div calss="row mb-2">
+            <h5 class="fw-bold text-nsh1 text-uppercase">Đổi điểm tra cứu</h5>
+        </div>
+        <form id="frmPoint" class="row" action="" method="">
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="Username" class="form-label">Tài khoản<span class="text-nsh1">(*)</span></label>
+                    <input name="Username" id="Username" type="text" value="@userName" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="Points" class="form-label">Số điểm<span class="text-nsh1">(*)</span></label>
+                    <input name="Points" id="Points" type="number" min="0" max="9999" class="form-control" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="Amount" class="form-label">Thành tiền<span class="text-nsh1">(*)</span></label>
+                    <input name="Amount" id="Amount" type="text" class="form-control" value="0" readonly />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="alert alert-warning d-flex" role="alert">
+                    <i class="fas fa-exclamation-triangle icon-16 mr-2"></i>
+                    <div>
+                        <p class="mb-0"><b>Lưu ý:</b></p>
+                        <p class="mb-0">Điểm này dùng để tra cứu quá trình vận chuyển của kiện hàng ở nội địa Trung Quốc, dữ liệu theo nguồn của hệ thống Baidu. Mức phí: 500vnd / 1 điểm.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-sm bg-nsh2 w-100px" onclick="clickSubmit()">Đổi điểm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    const inputPoint = document.getElementById("Points");
+    const inputAmount = document.getElementById("Amount");
+
+    inputPoint.addEventListener("change", function (e) {
+        let amount = 0;
+        if (e.target.value)
+        {
+            amount = e.target.value * 500;
+            if(amount > @wallet) return;
+            inputAmount.value = amount;
+        }
+    });
+
+    function clickSubmit() {
+        var data = helper.form2Object($('#frmPoint').serializeArray());
+        if (!data) {
+            helper.showErr('Đổi điểm không thành công. Vui lòng thử lại!')
+            return;
+        }
+        if (!data.Username) {
+            helper.showWarn('Mật khẩu không được bỏ trống!')
+            return;
+        }
+        if (!data.Points) {
+            helper.showWarn('Vui lòng nhập số điểm!')
+            return;
+        }
+        helper.showAlert("Xác nhận đổi điểm?")
+        .then((res) => {
+            if (res.isConfirmed) 
+            {
+                $.ajax({
+                    url: '/Points/Create',
+                    type: "POST",
+                    data: {username: data.Username, point: data.Points},
+                    beforeSend: function () {
+                        stopLoading();
+                    },
+                    success: function (respone) {
+                        stopLoading(true);
+                        if (respone.isError)
+                            helper.showErr(respone.message)
+                        else
+                            helper.showSuc(respone.message);
+                    },
+                    error: function () {
+                        stopLoading(true);
+                        helper.showErr('Đổi điểm không thành công. Vui lòng thử lại!')
+                    },
+                    complete: function () {
+                        stopLoading(true);
+                    }
+                });
+            }
+        });
+    }
+</script>

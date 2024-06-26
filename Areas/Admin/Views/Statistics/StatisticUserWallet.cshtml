@@ -70,7 +70,7 @@
                                 <i class="fas fa-arrow-up mr-2 @(sort == 0 ? "text-primary" : "")" onclick="sortChange(0)"></i>
                                 <i class="fas fa-arrow-down  @(sort == 1 ? "text-primary" : "")" onclick="sortChange(1)"></i>
                             </th>
-                            <th class="text-center"></th>
+                            <th class="text-right"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,7 +83,7 @@
                                 <td class="text-center align-middle">
                                     @Html.DisplayFor(modelItem => item.FullName)
                                 </td>
-                                <td class="text-center align-middle">
+                                <td class="text-right align-middle">
                                     @Converted.String2Money(item.Wallet)
                                 </td>
                                 <td class="text-center align-middle">

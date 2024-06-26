@@ -31,7 +31,7 @@
                         <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
                     </a>
                     <button type="submit" class="btn btn-sm btn-primary ml-2 w-100px"><i class="fas fa-search fa-xs mr-2"></i>Tìm kiếm</button>
-                    <button type="button" class="btn btn-sm btn-tracking-blue ml-2 w-100px" data-toggle="modal" data-target="#exampleModal">Thêm</button>
+                    <button type="button" class="btn btn-sm bg-nsh2 ml-2 w-100px" data-toggle="modal" data-target="#exampleModal">Thêm</button>
                 </div>
             </div>
         </form>
@@ -342,8 +342,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-secondary w-100px" data-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary w-100px" onclick="clickBaidu()">Đổi</button>
+                    <button type="submit" class="btn btn-sm btn-secondary w-100px" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-sm btn-nsh2 w-100px" onclick="clickBaidu()">Đổi</button>
                 </div>
             </form>
         </div>
@@ -353,22 +353,22 @@
     function insert() {
         var data = helper.form2Object($('#formAddUser').serializeArray());
         if (!data.FullName) {
-            helper.showWarn('Họ tên người dùng không được bỏ trống!');
+            helper.showWarn('Vui lòng nhập Họ tên người dùng!');
             return
         }
 
         if (!data.Phone) {
-            helper.showWarn('Số điện thoại không được bỏ trống!');
+            helper.showWarn('Vui lòng nhập Số điện thoại người dùng!');
             return
         }
 
         if (!data.Address) {
-            helper.showWarn('Địa chỉ không được bỏ trống!');
+            helper.showWarn('Vui lòng nhập Địa chỉ người dùng!');
             return
         }
 
         if (!data.UserName) {
-            helper.showWarn('Tên tài khoản không được bỏ trống!');
+            helper.showWarn('Vui lòng nhập Tài khoản người dùng!');
             return;
         }
 
@@ -385,31 +385,49 @@
             url: "/Admin/Account/Create",
             type: 'POST',
             data: data,
+            beforeSend: function () {
+                stopLoading();
+            },
             success: function (reponse) {
+                stopLoading(true);
                 if (reponse.isError)
                     helper.showErr(reponse.message)
                 else
-                    helper.showSuc('Thêm mới thành công!')
+                    helper.showSuc('Thêm người dùng thành công!')
             },
             error: function (xhr, status, err) {
-                    helper.showErr('Hệ thống thực thi không thành công! Vui lòng thử lại')
+                    helper.showErr('Thêm không thành công! Vui lòng thử lại')
+            },
+            complete: function () {
+                stopLoading(true);
             }
         });
     }
 
     function clickDelete(id) {
-        helper.showAlert("Bạn có muốn thực hiện thao tác xóa?").then((res) => {
+        helper.showAlert("Bạn muốn xóa người dùng?").then((res) => {
             if (res.isConfirmed) 
             {
                 $.ajax({
                     url: "/Admin/Account/Delete",
                     type: 'POST',
                     data: { id: id },
+                    beforeSend: function () {
+                        stopLoading();
+                    },
                     success: function (reponse) {
+                        stopLoading(true);
                         if (reponse.isError)
                             helper.showErr("Xóa không thành công!")
                         else
                             helper.showSuc('Xóa thành công!')
+                    },
+                    error: function (xhr, status, err) {
+                        stopLoading(true);
+                        helper.showErr('Xóa không thành công! Vui lòng thử lại')
+                    },
+                    complete: function () {
+                        stopLoading(true);
                     }
                 });
             }
@@ -424,37 +442,45 @@
     function clickBaidu(){
         var data = helper.form2Object($('#formBaidu').serializeArray());
         if (!data) {
-            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+            helper.showErr('Đổi điểm không thành công. Vui lòng thử lại sau!');
             return;
         }
         if (!data.UserName) {
-            helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+            helper.showErr('Không tìm thấy thông tin người dùng!');
             return;
         }
         if (!data.Amount) {
-            helper.showWarn('Vui lòng nhập số lượt quy đổi!');
+            helper.showWarn('Vui lòng nhập số điểm quy đổi!');
             return;
         }
         if (data.Amount > 9999) {
-            helper.showWarn('Số lượt quy đổi không quá 10000 lượt!');
+            helper.showWarn('Số điểm quy đổi không quá 10000 lượt!');
             return;
         }
 
-        helper.showAlert("Xác nhận cộng điểm cho khách hàng?").then((res) => {
+        helper.showAlert("Xác nhận đổi điểm cho khách hàng?").then((res) => {
             if (res.isConfirmed) 
             {
                 $.ajax({
                     url: '/Admin/WithDraw/BuySearches',
                     type: 'POST',
+                    beforeSend: function () {
+                        stopLoading();
+                    },
                     data: { userName: data.UserName, amount: data.Amount, free : data.UsedWallet },
                     success: function (respone) {
+                        stopLoading(true);
                         if (respone.isError)
                             helper.showErr(respone.message)
                         else
                             helper.showSuc(respone.message);
                     },
                     error: function (xhr, status, err) {
-                        helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                        stopLoading(true);
+                        helper.showErr('Đổi điểm không thành công. Vui lòng thử lại!')
+                    },
+                    complete: function () {
+                        stopLoading(true);
                     }
                 });
             }

@@ -48,13 +48,12 @@ namespace KGQT.Areas.Admin.Controllers
             form.CreatedBy = user.Username;
             switch (form.Type)
             {
-                case 1: // bay nhanh
-                case 2: // bay thường
+                case 1: // nhanh
+                case 2: // thường
                 case 3: // bộ
                     form.MinWeight = 0.3;
                     break;
-                case 4: // tuyến lộ
-                case 5: // biển
+                case 4: // bộ lộ
                     form.MinWeight = 40;
                     break;
             }
@@ -107,12 +106,12 @@ namespace KGQT.Areas.Admin.Controllers
             var item1 = new FeeweightCategory()
             {
                 ID = 1,
-                Name = "Tuyến bay nhanh"
+                Name = "Tuyến nhanh"
             };
             var item2 = new FeeweightCategory()
             {
                 ID = 2,
-                Name = "Tuyến bay thường"
+                Name = "Tuyến thường"
             };
             var item3 = new FeeweightCategory()
             {
@@ -122,7 +121,7 @@ namespace KGQT.Areas.Admin.Controllers
             var item4 = new FeeweightCategory()
             {
                 ID = 4,
-                Name = "Tuyến lô"
+                Name = "Tuyến bộ lô"
             };
             
             lst.Add(item1);

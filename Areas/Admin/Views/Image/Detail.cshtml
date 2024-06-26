@@ -322,6 +322,16 @@
                 {
                     image_view.src = respone.data.imageSrc;
                     image = respone.data;
+                    if (respone.data.status == 1)
+                    {
+                        $("#Status").prop('checked', true);
+                        $("#ViewIndex").val(respone.data.viewIndex);
+                    }
+                    else
+                    {
+                        $("#Status").prop('checked',false);
+                        $("#ViewIndex").val("");
+                    }
                     popupEdit.show();
                 }
             },
