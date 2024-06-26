@@ -306,6 +306,11 @@
                                         <span>LỊCH SỬ</span>
                                     </p>
                                 </a>
+                                <a class="nav-link" asp-action="Create" asp-controller="Points">
+                                    <p class="mb-0 text-uppercase">
+                                        <span>Đổi điểm tra cứu</span>
+                                    </p>
+                                </a>
                                 <a class="nav-link" asp-action="Index" asp-controller="Points">
                                     <p class="mb-0 text-uppercase">
                                         <span>Lịch sử điểm tra cứu</span>
@@ -323,7 +328,6 @@
                                 <a class="nav-link" asp-action="Index" asp-controller="FeeWeight">PHÍ VẬN CHUYÊN</a>
                                 <a class="nav-link" asp-action="Index" asp-controller="Notification">THÔNG BÁO</a>
                                 <a class="nav-link" asp-action="Create" asp-controller="Complain">KHIẾU NẠI</a>
-                                <a class="nav-link" asp-action="Index" asp-controller="Question">CÂU HỎI THƯỜNG GẶP</a>
                             </nav>
                         </div>
                         <a class="nav-link align-items-start" asp-action="Index" asp-controller="Question">
@@ -871,17 +875,17 @@
         function clickChangeBaidu(){
             var data = helper.form2Object($('#formBaidu').serializeArray());
             if (!data) {
-                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại sau!');
+                helper.showErr('Đổi điểm không thành công. Vui lòng thử lại sau!');
                 return;
             }
 
             if (!data.Amount) {
-                helper.showWarn('Vui lòng nhập số lượt quy đổi!');
+                helper.showWarn('Vui lòng nhập số điểm quy đổi!');
                 return;
             }
 
             if (data.Amount > 9999) {
-                helper.showWarn('Số lượt quy đổi không quá 10000 lượt!');
+                helper.showWarn('Số điểm quy đổi không quá 10000 lượt!');
                 return;
             }
             $.ajax({
@@ -895,7 +899,7 @@
                         helper.showSuc(respone.message);
                 },
                 error: function (xhr, status, err) {
-                    helper.showErr('Đổi điểm tra cứu Baidu không thành công. Vui lòng thử lại!')
+                    helper.showErr('Đổi điểm tra không thành công. Vui lòng thử lại!')
                 }
             });
         }

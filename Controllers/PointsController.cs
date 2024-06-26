@@ -28,5 +28,32 @@ namespace KGQT.Controllers
             ViewBag.numberRecord = numberRecord;
             return View(lstData);
         }
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var cookieService = new CookieService(HttpContext);
+            var tkck = cookieService.Get("tkck");
+            var userModel = JsonConvert.DeserializeObject<UserModel>(tkck);
+            string userLogin = userModel != null ? userModel.UserName : "";
+            var user = AccountBusiness.GetInfo(-1, userModel.UserName);
+            ViewBag.userName = user.Username;
+            ViewBag.wallet = Converted.ToDouble(user.Wallet);
+            return View();
+        }
+        [HttpPost]
+        public DataReturnModel<bool> Create(string username,int point)
+        {
+            DataReturnModel<bool> result = new();
+            if(!string.IsNullOrEmpty(username) && point > 0)
+            {
+                result = WithDrawBusiness.BuySearches(username, point, false);
+            }
+            else
+            {
+                result.IsError = true;
+                result.Message = "Đổi điểm không thành công. Vui lòng thử lại!";
+            }
+            return result;
+        }
     }
 }
