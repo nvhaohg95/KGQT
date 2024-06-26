@@ -41,15 +41,6 @@ namespace KGQT.Apis
             return Redirect(url);
         }
 
-
-        [HttpGet]
-        [Route("info")]
-        public async Task<IActionResult> Test(string uid)
-        {
-            string data = await ZaloCommon.GetInfoFlowerAsync(uid);
-            return Ok(data);
-        }
-
         [HttpGet]
         [Route("request")]
         public async Task<IActionResult> Test2(string uid)
@@ -71,6 +62,22 @@ namespace KGQT.Apis
         public async Task<IActionResult> SendAll(string message)
         {
             ZaloCommon.SendMessageToAllV2(message);
+            return Ok(200);
+        }
+
+        [HttpGet]
+        [Route("getlist")]
+        public async Task<IActionResult> GetList()
+        {
+            await ZaloCommon.GetListFollowerV2();
+            return Ok(200);
+        }
+        
+        [HttpGet]
+        [Route("getinfo")]
+        public async Task<IActionResult> GetInfo(string uid)
+        {
+            await ZaloCommon.GetInfoFlowerAsync(uid);
             return Ok(200);
         }
     }

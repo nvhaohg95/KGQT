@@ -16,7 +16,7 @@ namespace KGQT.Models.temp
     public class DataFollow
     {
         public int total { get; set; }
-        public List<Follower> followers { get; set; }
+        public List<Follower> users { get; set; }
     }
 
     public class Follower

@@ -74,7 +74,7 @@ namespace KGQT.WebHook
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(data.info.name))
+                    if (!string.IsNullOrEmpty(data.info.name))
                         data.info.name = f.display_name;
                     f.phone = phone;
                     f.address = data.info.address;
@@ -91,7 +91,7 @@ namespace KGQT.WebHook
                 }
                 if (db.SaveChanges() > 0)
                 {
-                    await ZaloCommon.UpdateInfoFollower(data.sender.id, data.info);
+                    await ZaloCommon.UpdateInfoFollower(data.sender.id, data.info,user.Username);
                     Log.Information($"Cập nhật thông tin người dùng zalo {f.user_id} - {f.display_name} thành công");
 
                     if (user != null)

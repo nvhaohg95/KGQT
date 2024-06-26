@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Google.Api.Gax;
-using KGQT.Business.Base;
+﻿using KGQT.Business.Base;
 using KGQT.Models;
 using KGQT.Models.temp;
 using Newtonsoft.Json;
@@ -8,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Serilog;
 using System.ComponentModel;
 using System.Net.Http.Headers;
+using System.Text;
 using ZaloDotNetSDK;
 namespace KGQT.Base
 {
@@ -198,55 +197,76 @@ namespace KGQT.Base
             return null;
         }
 
-        public static async void GetListFollower(object obj)
-        {
-            await GetListFollower();
-        }
-
-        public static async Task GetListFollower(int page = 1, int pageSize = 20)
+        public static async Task GetListFollowerV2(int page = 1, int pageSize = 50)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
             {
                 if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
                     token = await RefreshToken();
-                ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.getListFollower((page - 1) * pageSize, pageSize);
-                var oData = JsonConvert.DeserializeObject<Followers>(result.ToString());
-                if (oData.message.ToLower() == "success")
+                using (HttpClient client = new HttpClient())
                 {
-                    int totalPage = oData.data.total / pageSize;
+                    client.DefaultRequestHeaders.Add("access_token", token.access_token);
 
-                    if (totalPage * pageSize < oData.data.total)
-                        totalPage = totalPage + 1;
-
-                    SaveListFollower(oData.data.followers, client);
-
-                    if (page < totalPage)
+                    string url = "https://openapi.zalo.me/v3.0/oa/user/getlist";
+                    var data = new
                     {
-                        page++;
-                        await GetListFollower(page, pageSize);
+                        offset = (page - 1) * pageSize,
+                        count = pageSize,
+                        is_follower = true
+                    };
+
+                    var json = JsonConvert.SerializeObject(data);
+                    var sData = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync(url, sData);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string content = await response.Content.ReadAsStringAsync();
+                        var lstData = JsonConvert.DeserializeObject<Followers>(content);
+                        if (lstData.message.ToLower() == "success")
+                        {
+                            int totalPage = lstData.data.total / pageSize;
+
+                            if (totalPage * pageSize < lstData.data.total)
+                                totalPage = totalPage + 1;
+
+                            SaveListFollower(lstData.data.users);
+
+                            if (page < totalPage)
+                            {
+                                page++;
+                                await GetListFollowerV2(page, pageSize);
+                                await Task.Delay(5000);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        private static void SaveListFollower(List<Follower> data, ZaloClient client)
+        private static void SaveListFollower(List<Follower> data, ZaloClient client = null)
         {
             BackgroundWorker bw = new BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.DoWork += new DoWorkEventHandler(
-            delegate (object o, DoWorkEventArgs args)
+            async delegate (object o, DoWorkEventArgs args)
             {
                 BackgroundWorker b = o as BackgroundWorker;
 
                 // do some simple processing for 10 seconds
                 using (var db = new nhanshiphangContext())
                 {
+                    if (client == null)
+                    {
+                        var token = db.tbl_Zalos.FirstOrDefault();
+                        client = new ZaloClient(token.access_token);
+                    }
                     data = data.Distinct().ToList();
                     foreach (var item in data)
                     {
-                        if (!db.tbl_ZaloFollewers.Any(x => x.user_id == item.user_id))
+                        var oa = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == item.user_id);
+                        if (oa == null)
                         {
                             var f = new tbl_ZaloFollewer();
                             f.RecID = Guid.NewGuid();
@@ -254,11 +274,17 @@ namespace KGQT.Base
                             f.Status = 0;
                             f.SendRequest = false;
                             f.SendRequestTimes = 0;
-                            JObject oDetail = client.getProfileOfFollower(item.user_id);
-                            var info = JsonConvert.DeserializeObject<RootUserInfo>(oDetail.ToString());
-                            if (info.error == 0 || info.message.ToLower() == "success")
-                                f.display_name = info.data.display_name;
+                            var info = await GetInfoFlowerAsync(item.user_id);
+                            if (info != null)
+                                f.display_name = info.display_name;
                             db.Add(f);
+                        }
+                        else if (oa != null && string.IsNullOrEmpty(oa.display_name))
+                        {
+                            var info = await GetInfoFlowerAsync(item.user_id);
+                            if (info != null)
+                                oa.display_name = info.display_name;
+                            db.Update(oa);
                         }
                     }
 
@@ -302,73 +328,6 @@ namespace KGQT.Base
             return false;
         }
 
-        public static async Task SendMessageToAll(string message, int page = 1, int pageSize = 50)
-        {
-            var token = BusinessBase.GetFirst<tbl_Zalo>();
-            if (token != null)
-            {
-                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
-                    token = await RefreshToken();
-                ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.getListFollower((page - 1) * pageSize, pageSize);
-                var oData = JsonConvert.DeserializeObject<Followers>(result.ToString());
-                if (oData != null && oData?.message.ToLower() == "success")
-                {
-                    int totalPage = oData.data.total / pageSize;
-
-                    if (totalPage * pageSize < oData.data.total)
-                        totalPage = totalPage + 1;
-
-                    SendMessageToUID(message, oData.data.followers, client);
-
-                    if (page < totalPage)
-                    {
-                        page++;
-                        await GetListFollower(page, pageSize);
-                    }
-                }
-            }
-        }
-
-        public static void SendMessageToUID(string message, List<Follower> followers, ZaloClient client)
-        {
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.WorkerSupportsCancellation = true;
-            bw.DoWork += new DoWorkEventHandler(
-            delegate (object o, DoWorkEventArgs args)
-            {
-                BackgroundWorker b = o as BackgroundWorker;
-
-                foreach (var item in followers)
-                {
-                    JObject result = client.sendTextMessageToUserIdV3(item.user_id, message);
-                    var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
-                    if (oData.error != 0)
-                    {
-                        var log = new tbl_ZaloLog();
-                        log.RecID = Guid.NewGuid();
-                        log.action = 1;
-                        log.error = oData.error;
-                        log.message = oData.message;
-                        log.user_id = item.user_id;
-                        log.context = message;
-                        log.CreatedDate = DateTime.Now;
-                        var info = BusinessBase.GetOne<tbl_ZaloFollewer>(x => x.user_id == item.user_id);
-                        if (info != null)
-                            log.user_name = info.display_name;
-                        BusinessBase.Add(log);
-                    }
-                }
-
-            });
-            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
-               delegate (object o, RunWorkerCompletedEventArgs args)
-               {
-                   bw.CancelAsync();
-               });
-            bw.RunWorkerAsync();
-        }
-
         public static async Task SendMessageToAllV2(string message)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
@@ -380,7 +339,7 @@ namespace KGQT.Base
                 using (var db = new nhanshiphangContext())
                 {
                     var lstData = db.tbl_ZaloFollewers.ToList();
-                    if(lstData != null && lstData.Count > 0)
+                    if (lstData != null && lstData.Count > 0)
                     {
                         BackgroundWorker bw = new BackgroundWorker();
                         bw.WorkerSupportsCancellation = true;
@@ -441,48 +400,94 @@ namespace KGQT.Base
             return -1;
         }
 
-        public static async Task<string> GetInfoFlowerAsync(string uid)
+        public static async Task<UserInfo> GetInfoFlowerAsync(string uid)
         {
-            var token = BusinessBase.GetFirst<tbl_Zalo>();
-            if (token != null)
+            using (var db = new nhanshiphangContext())
             {
-                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
-                    token = await RefreshToken();
-
-                using (HttpClient client = new HttpClient())
+                var token = db.tbl_Zalos.FirstOrDefault();
+                if (token != null)
                 {
-                    try
+                    if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
+                        token = await RefreshToken();
+
+                    using (HttpClient client = new HttpClient())
                     {
-                        client.DefaultRequestHeaders.Add("access_token", token.access_token);
-                        var response = await client.GetAsync("https://openapi.zalo.me/v3.0/oa/user/detail?data={\"user_id\":" + uid + "}");
-                        if (response.IsSuccessStatusCode)
+                        try
                         {
-                            string content = await response.Content.ReadAsStringAsync();
-                            return content;
+                            client.DefaultRequestHeaders.Add("access_token", token.access_token);
+                            var response = await client.GetAsync("https://openapi.zalo.me/v3.0/oa/user/detail?data={\"user_id\":" + uid + "}");
+                            if (response.IsSuccessStatusCode)
+                            {
+                                string content = await response.Content.ReadAsStringAsync();
+                                var user = JsonConvert.DeserializeObject<RootUserInfo>(content);
+                                if (user.message.ToLower() == "success")
+                                    return user.data;
+                                return null;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($"GetInfoFlower {JsonConvert.SerializeObject(e)}");
                         }
                     }
-                    catch (Exception e)
-                    {
-                        Log.Error($"GetInfoFlower {JsonConvert.SerializeObject(e)}");
-                    }
                 }
-            }
-            return "";
+
+            };
+            return null;
         }
 
-        public static async Task<string> UpdateInfoFollower(string uid, Info info)
+
+        public static async Task<bool> UpdateInfoFollower(string uid, Info info, string alias)
         {
-            var token = BusinessBase.GetFirst<tbl_Zalo>();
-            if (token != null)
+            using (var db = new nhanshiphangContext())
             {
-                if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
-                    token = await RefreshToken();
-                ZaloClient client = new ZaloClient(token.access_token);
-                JObject result = client.updateFollowerInfo(uid, info.name, info.phone, info.address, 0, 0);
-                Log.Information("Update Info Follower: " + result.ToString());
-                return result.ToString();
-            }
-            return "";
+                var token = db.tbl_Zalos.FirstOrDefault();
+                if (token != null)
+                {
+                    if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
+                        token = await RefreshToken();
+
+                    using (HttpClient client = new HttpClient())
+                    {
+                        try
+                        {
+                            client.DefaultRequestHeaders.Add("access_token", token.access_token);
+
+                            var data = new
+                            {
+                                user_id = uid,
+                                shared_info = new
+                                {
+                                    name = info.name,
+                                    phone = info.phone,
+                                    address = info.address,
+                                    city_id = info.district,
+                                    district_id = info.ward,
+                                },
+                                user_alias = alias
+                            };
+
+                            var json = JsonConvert.SerializeObject(data);
+                            var sData = new StringContent(json, Encoding.UTF8, "application/json");
+                            var response = await client.PostAsync("https://openapi.zalo.me/v3.0/oa/user/update", sData);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                string content = await response.Content.ReadAsStringAsync();
+                                var user = JsonConvert.DeserializeObject<SendMessageResponse>(content);
+                                if (user.message.ToLower() == "success")
+                                    return true;
+                                return false;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($"GetInfoFlower {JsonConvert.SerializeObject(e)}");
+                        }
+                    }
+                }
+
+            };
+            return false;
         }
         #region Common
         public static void SendRequestAuto()
@@ -501,6 +506,108 @@ namespace KGQT.Base
                 db.SaveChanges();
             }
         }
+        #endregion
+
+        #region Cũ
+        //public static async Task SendMessageToAll(string message, int page = 1, int pageSize = 50)
+        //{
+        //    var token = BusinessBase.GetFirst<tbl_Zalo>();
+        //    if (token != null)
+        //    {
+        //        if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
+        //            token = await RefreshToken();
+        //        ZaloClient client = new ZaloClient(token.access_token);
+        //        JObject result = client.getListFollower((page - 1) * pageSize, pageSize);
+        //        var oData = JsonConvert.DeserializeObject<Followers>(result.ToString());
+        //        if (oData != null && oData?.message.ToLower() == "success")
+        //        {
+        //            int totalPage = oData.data.total / pageSize;
+
+        //            if (totalPage * pageSize < oData.data.total)
+        //                totalPage = totalPage + 1;
+
+        //            SendMessageToUID(message, oData.data.users, client);
+
+        //            if (page < totalPage)
+        //            {
+        //                page++;
+        //                await GetListFollower(page, pageSize);
+        //            }
+        //        }
+        //    }
+        //}
+
+        //public static void SendMessageToUID(string message, List<Follower> followers, ZaloClient client)
+        //{
+        //    BackgroundWorker bw = new BackgroundWorker();
+        //    bw.WorkerSupportsCancellation = true;
+        //    bw.DoWork += new DoWorkEventHandler(
+        //    delegate (object o, DoWorkEventArgs args)
+        //    {
+        //        BackgroundWorker b = o as BackgroundWorker;
+
+        //        foreach (var item in followers)
+        //        {
+        //            JObject result = client.sendTextMessageToUserIdV3(item.user_id, message);
+        //            var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
+        //            if (oData.error != 0)
+        //            {
+        //                var log = new tbl_ZaloLog();
+        //                log.RecID = Guid.NewGuid();
+        //                log.action = 1;
+        //                log.error = oData.error;
+        //                log.message = oData.message;
+        //                log.user_id = item.user_id;
+        //                log.context = message;
+        //                log.CreatedDate = DateTime.Now;
+        //                var info = BusinessBase.GetOne<tbl_ZaloFollewer>(x => x.user_id == item.user_id);
+        //                if (info != null)
+        //                    log.user_name = info.display_name;
+        //                BusinessBase.Add(log);
+        //            }
+        //        }
+
+        //    });
+        //    bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+        //       delegate (object o, RunWorkerCompletedEventArgs args)
+        //       {
+        //           bw.CancelAsync();
+        //       });
+        //    bw.RunWorkerAsync();
+        //}
+
+        //public static async void GetListFollower(object obj)
+        //{
+        //    await GetListFollower();
+        //}
+
+        //public static async Task GetListFollower(int page = 1, int pageSize = 20)
+        //{
+        //    var token = BusinessBase.GetFirst<tbl_Zalo>();
+        //    if (token != null)
+        //    {
+        //        if (token.accesstoken_expire < DateTime.Now.AddHours(-2))
+        //            token = await RefreshToken();
+        //        ZaloClient client = new ZaloClient(token.access_token);
+        //        JObject result = client.getListFollower((page - 1) * pageSize, pageSize);
+        //        var oData = JsonConvert.DeserializeObject<Followers>(result.ToString());
+        //        if (oData.message.ToLower() == "success")
+        //        {
+        //            int totalPage = oData.data.total / pageSize;
+
+        //            if (totalPage * pageSize < oData.data.total)
+        //                totalPage = totalPage + 1;
+
+        //            SaveListFollower(oData.data.users, client);
+
+        //            if (page < totalPage)
+        //            {
+        //                page++;
+        //                await GetListFollower(page, pageSize);
+        //            }
+        //        }
+        //    }
+        //}
         #endregion
     }
 }
