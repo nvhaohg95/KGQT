@@ -6,6 +6,7 @@ namespace KGQT.Models
     public partial class tbl_Package
     {
         public int ID { get; set; }
+        public Guid RecID { get; set; }
         public string PackageCode { get; set; } = null!;
         public int? BigPackage { get; set; }
         public string? TransID { get; set; }

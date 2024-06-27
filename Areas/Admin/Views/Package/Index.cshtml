@@ -79,7 +79,7 @@
             </div>
             @foreach (var item in Model)
             {
-                <div class="card shadow-0 border mb-1 base-hover pack-item" data-id="@item.PackageCode">
+                <div class="card shadow-0 border mb-1 base-hover pack-item" data-id="@item.ID">
                     <div class="card-body p-0">
                         <input type="text" hidden value="@item.PackageCode" class="package-code">
                         <div class="row mx-0 py-2 border-bottom bg-nsh2 text-white">
@@ -489,9 +489,6 @@
         });
     }
 
-
-
-
     //<!--------------Start: Nhập kho---------------->
     function instock(id, code) {
         $('#package-code').text(code);
@@ -715,6 +712,13 @@
         $('.inputNode').off().on('keypress', function () {
             if ($(this).val().length >= 40)
                 helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
+        })
+
+        $('.pack-item').off('click').on('click', function () {
+
+            if ($(event.target).is(".btn-copy, .fa-copy, .inputNode,.btn"))
+                return;
+            location.href = '/admin/package/details?id=' + $(this).data('id');
         })
     })
 </script>

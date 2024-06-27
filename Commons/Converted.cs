@@ -47,7 +47,7 @@ namespace KGQT.Commons
         public static double Double(this string s)
         {
             if (string.IsNullOrEmpty(s)) return 0;
-                s = FormatStringDouble(s);
+            s = FormatStringDouble(s);
             double num = Convert.ToDouble(s);
             return Math.Round(num, 1, MidpointRounding.AwayFromZero);
         }
@@ -170,7 +170,7 @@ namespace KGQT.Commons
         {
             if (value == null) return "0";
             string s = value.ToString();
-           
+
             double num = Convert.ToDouble(s);
             if (value.ToString().IndexOf(".") > 0)
                 return string.Format("{0:N0}", Math.Round(num, 1, MidpointRounding.AwayFromZero)).Replace(".", ",");
@@ -213,7 +213,7 @@ namespace KGQT.Commons
                         int year = DateTime.Now.Year;
                         return new DateTime(year, split[1].ToInt(), split[0].ToInt());
                     }
-                    
+
                 }
                 catch (Exception ex2)
                 {
@@ -221,6 +221,15 @@ namespace KGQT.Commons
                 }
             }
             return DateTime.MinValue;
+        }
+
+        public static string ToBase64(object o)
+        {
+            if (o == null) return "";
+            string s = o.ToString();
+            byte[] bytesToEncode = System.Text.Encoding.UTF8.GetBytes(s);
+            string encodedString = Convert.ToBase64String(bytesToEncode);
+            return encodedString;
         }
 
         private static string[] sInclude = new string[] {
@@ -238,8 +247,9 @@ namespace KGQT.Commons
             if (exist != null)
                 s = s.Replace(exist, "");
             string[] spt = s.Split(".", StringSplitOptions.RemoveEmptyEntries);
-            if(spt.Length > 1 && spt[1].Length > 3) {
-                s = spt[0] + "." + spt[1].Substring(0,2);
+            if (spt.Length > 1 && spt[1].Length > 3)
+            {
+                s = spt[0] + "." + spt[1].Substring(0, 2);
             }
             return s;
         }

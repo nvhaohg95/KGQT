@@ -474,6 +474,7 @@ namespace KGQT.Business
                     db.tbl_ShippingOrders.Update(oOrder);
                     if (db.SaveChanges() > 0)
                     {
+                        HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Nạp tiền tại kho", oOrder.TotalPrice, 2, 3, oUser.Wallet, Converted.StringCeiling(oUser.Wallet.Double() + totalPrice), accessor);
                         HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Thanh toán cho đơn {oOrder.ShippingOrderCode}", oOrder.TotalPrice, 1, 1, oUser.Wallet, oUser.Wallet, accessor);
                         var packs = db.tbl_Packages.Where(x => x.TransID == oOrder.ShippingOrderCode).ToList();
                         foreach (var pack in packs)

@@ -100,7 +100,7 @@
         </div>
         @foreach (var item in Model)
         {
-            <div class="card border mb-1 base-hover">
+            <div class="card border mb-1 base-hover pack-item" data-id="@item.ID">
                 <div class="card-body p-0">
                     <input type="text" hidden value="@item.PackageCode" class="package-code">
                     <div class="row mx-0 py-2 border-bottom bg-nsh2 text-white">
@@ -129,9 +129,8 @@
                         <div class="col-lg-3 col-md-3 col-sm-12 my-auto">
                             <div class="row @(string.IsNullOrEmpty(item.Note) ?"d-none" : "")" id="divNote@(item.ID)">
                                 <label class="mb-0 col-md-12 col-sm-12">Mô tả</label>
-                                <div class="col-md-12 col-sm-12 h-28px" id="divTextarea@(item.ID)">
-                                    @*<input class="form-control p-0 bg-transparent text-white h-28px border-0" id="note@(item.ID)" readonly="readonly" value="@item.Note" />*@
-                                    <textarea class="form-control inputNode p-0 bg-transparent text-white border-0" id="note@(item.ID)">@item.Note</textarea>
+                                <div class="col-md-12 col-sm-12" id="divTextarea@(item.ID)">
+                                    <textarea class="form-control p-0 bg-transparent text-white h-28px border-0 inputNode" id="note@(item.ID)">@item.Note</textarea>
                                 </div>
                                 <div class="col-md-2 col-sm-12 d-none" id="divBtnSave@(item.ID)">
                                     <button type="button" class="btn bg-nsh1 py-0 px-2" id="btnNote@(item.ID)" onclick="saveNote(@item.ID)">Lưu</button>
@@ -364,6 +363,13 @@
         $('.inputNode').off().on('keypress', function () {
             if ($(this).val().length >= 40)
                 helper.showErr("Mô tả quá dài vui lòng nhập không vượt quá 40 ký tự");
+        })
+
+        $('.pack-item').off('click').on('click', function () {
+
+            if ($(event.target).is(".btn-copy, .fa-copy, .inputNode,.btn"))
+                return;
+            location.href = '/admin/package/details?id=' + $(this).data('id');
         })
     })
 
