@@ -82,7 +82,7 @@ namespace KGQT.Base
              () =>
              {
                  //here write the code that you want to schedule
-                 ZaloCommon.GetListFollower();
+                 ZaloCommon.GetListFollowerV2();
              });
             #endregion
 

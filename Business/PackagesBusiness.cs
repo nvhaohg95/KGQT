@@ -480,9 +480,11 @@ namespace KGQT.Business
 
                     int oldStt = p.Status;
                     int oldVc = p.MovingMethod;
-
                     if (!string.IsNullOrEmpty(form.Username))
                     {
+                        if (!string.IsNullOrEmpty(p.Username) && p.Username.ToLower() != form.Username.ToLower())
+                            p.IsImport = false;
+
                         var user = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == form.Username.ToLower());
                         if (user != null)
                         {
@@ -777,7 +779,7 @@ namespace KGQT.Business
                     db.Update(pack);
                     if (db.SaveChanges() > 0)
                     {
-                        if (user != null && isImport)
+                        if (user != null && !isImport)
                         {
                             if (user.AvailableSearch == null)
                                 user.AvailableSearch = 0;

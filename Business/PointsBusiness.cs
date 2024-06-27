@@ -37,6 +37,7 @@ namespace KGQT.Business
                     .SelectMany(x => x.pack.DefaultIfEmpty(), (x, y) => new tempPoints
                     {
                         CreatedDate = x.point.CreatedDate,
+                        Username = x.point.Username,
                         HContent = x.point.HContent,
                         Point = x.point.Point,
                         Type = x.point.Type,
