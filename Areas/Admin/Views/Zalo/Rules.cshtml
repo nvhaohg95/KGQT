@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Rules";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<ul id="breadcrumbs">
+    <li><a href="/admin/package">Trang chủ</a></li>
+    <li><a class="active">Quy tắc OA</a></li>
+</ul>
+<div class="row p-2">
+    <div class="col-lg-12 mt-4">
+        <h2 class="fw-bold text-primary text-uppercase">Quy tắc gửi nhận thông báo của OA</h2>
+    </div>
+</div>
+<div class="row px-4">
+    <div class="col-lg-12 mt-4">
+        <span>Để có thể gửi tin nhắn/thông báo đến khách hàng sử dụng zalo. Phải thực hiện các quy tắc sau:</span>
+        <ul>
+            <li>Khách hàng sử dụng app zalo bấm vào nút quan tâm OA <span class="txt-nsh2">Nhận Ship Hàng - nhanshiphang.vn</span>.</li>
+            <li>
+                Để nhận được thông báo đơn hàng nhân viên nhanshiphang phải yêu cầu khách hàng cung cấp thông tin: sdt, họ tên, địa chỉ,...
+                <p class="mb-1">Lưu ý: </p>
+                <p class="mb-1"> - Bắt buộc sdt cung cấp phải khớp với sdt khi tạo tài khoản ở <a href="/">tracking.nhanshiphang.vn</a>.</p>
+                <p class="mb-1"> - Khi đã khớp thông tin thì tại trang danh sách <a href="/Admin/Zalo/Index?page=1">DANH SÁCH NGƯỜI DÙNG QUAN TÂM ZALO OFFICIAL</a> sẽ có trạng thái <span class="btn-sm btn btn-success" style="font-size:12px">Liên kết thành công</span>.</p>
+                <p class="mb-1">Trường hợp khách hàng đã chưa cung cấp thông tin khi đã quan tâm OA, hoặc cung cấp thông tin nhưng sdt không khớp thì có thế bấm nút <span class="btn btn-sm bg-nsh1">Gửi yêu cầu</span> để yêu cầu khách hàng cung cấp lại thông tin.</p>
+            </li>
+            <li>
+                <p>Để không bị bỏ lỡ thông báo khách hàng phải có tương tác với OA trong vòng 7 ngày.</p>
+                <h5 class="text-nsh2">Định nghĩa Tương tác</h5>
+                <p class="mb-1">
+                    OA chỉ có thể gửi Tin nhắn và Gọi tới người dùng sau khi người dùng chủ động tương tác với OA.
+                    Tương tác của người dùng với OA có thể gồm một trong các hành động:
+                </p>
+                <ul>
+                    <li> Quan tâm OA.</li>
+                    <li> Gửi tin nhắn đến OA.</li>
+                    <li> Chấp nhận cuộc gọi từ OA.</li>
+                    <li> Nhấn nút Nhắn tin tại trang OA profile.</li>
+                    <li> Nhấn biểu tượng hoặc nút Gọi OA.</li>
+                    <li> Nhấn menu Tương tác nhanh hoặc Menu Dịch vụ chứa giá trị oa.query.</li>
+                </ul>
+            </li>
+        </ul>
+
+
+    </div>
+</div>

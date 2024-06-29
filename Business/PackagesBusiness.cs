@@ -296,6 +296,7 @@ namespace KGQT.Business
                     continue;
                 }
                 var pack = new tbl_Package();
+                pack.RecID = Guid.NewGuid();
                 if (user != null)
                 {
                     pack.UID = user.ID;
@@ -411,6 +412,7 @@ namespace KGQT.Business
                 else
                 {
                     var pack = new tbl_Package();
+                    pack.RecID = Guid.NewGuid();
                     pack.PackageCode = item;
                     pack.WareHouse = form.WareHouse;
                     pack.MovingMethod = form.MovingMethod;
@@ -1137,6 +1139,7 @@ namespace KGQT.Business
 
 
                                     var p = new tbl_Package();
+                                    p.RecID = Guid.NewGuid();
                                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == customer.ToLower());
                                     if (user != null)
                                     {

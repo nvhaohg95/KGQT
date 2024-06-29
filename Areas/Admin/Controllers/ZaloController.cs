@@ -18,7 +18,12 @@ namespace KGQT.Areas.Admin.Controllers
             return View(lstData);
         }
 
-        public IActionResult Logs(string search, int page = 1)
+        public IActionResult Rules()
+        { 
+            return View();
+        }
+
+            public IActionResult Logs(string search, int page = 1)
         {
             var oData = ZaloBusiness.GetLogs(search, page, 10);
             var lstData = oData[0] as List<tbl_ZaloLog>;
