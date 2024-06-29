@@ -13,7 +13,7 @@ namespace KGQT.Areas.Controllers
     public class NotificationController : Controller
     {
         #region Index
-        public ActionResult Index(int status , DateTime? fromDate, DateTime? toDate, int page = 1)
+        public ActionResult Index(int? status, DateTime? fromDate, DateTime? toDate, int page = 1)
         {
             var oData = NotificationBusiness.GetPage(0, status, fromDate, toDate, page, 10, true);
             var lstData = oData[0] as List<tbl_Notification>;

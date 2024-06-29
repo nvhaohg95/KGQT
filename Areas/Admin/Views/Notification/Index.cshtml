@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var fromDate = ViewData["fromDate"];
     var toDate = ViewData["toDate"];
-    int status = (int)ViewData["status"];
+    int? status = (int?)ViewData["status"];
     int page = (int)ViewData["page"];
     int totalRecord = (int)ViewData["totalRecord"];
     int totalPage = (int)ViewData["totalPage"];
@@ -42,7 +42,7 @@
         <div class="form-group">
             <label class="fw-bold mb-0">Trạng thái:</label>
             <select name="Status" id="Status" class="form-control">
-                <option value="-1" selected="@(status == -1)">Tất cả</option>
+                <option value="-1" selected="@(status == null)">Tất cả</option>
                 <option value="0" selected="@(status == 0)">Chưa xem</option>
                 <option value="1" selected="@(status == 1)">Đã xem</option>
             </select>
