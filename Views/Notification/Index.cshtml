@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Thông báo";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
-    int status = ViewBag.status;
+    int? status = ViewBag.status;
     DateTime? fromDate = ViewBag.fromDate;
     DateTime? toDate = ViewBag.toDate;
     int pageCurrent = ViewBag.pageCurrent;
@@ -32,7 +32,7 @@
         <div class="form-group">
             <label class="fw-bold mb-0">Trạng thái:</label>
             <select name="Status" id="Status" class="form-control">
-                <option value="-1" selected="@(status == -1)">Tất cả</option>
+                <option value="-1" selected="@(status == null)">Tất cả</option>
                 <option value="0" selected="@(status == 0)">Chưa xem</option>
                 <option value="1" selected="@(status == 1)">Đã xem</option>
             </select>

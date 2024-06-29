@@ -62,6 +62,7 @@
 
 .w-100px {
     width: 100px !important;
+    min-width: 100px !important;
 }
 
 .h-100px {
