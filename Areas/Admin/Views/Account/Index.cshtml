@@ -20,13 +20,13 @@
 </div>
 <div class="row p-2 mb-2 w-100">
     <div class="col-12 mb-2">
-        <form method="get" class="row align-items-center">
-            <div class="col-6">
+        <form method="get" class="d-flex align-items-center justify-content-between">
+            <div>
                 <h5 class="fw-bold text-uppercase text-nsh1 mb-0">NGƯỜI DÙNG</h5>
             </div>
-            <div class="col-6">
+            <div>
                 <div class="d-flex align-items-end justify-content-end">
-                    @Html.TextBoxFor(model => searchText,"",new {@type="search", @placeholder="Tìm kiếm", @class="input w-300px", @name="searchText"})
+                    @Html.TextBoxFor(model => searchText,"",new {@type="search", @placeholder="Tìm kiếm người dùng", @class="input w-300px", @name="searchText"})
                     <a href="/Admin/Account/Index?page=1" class="btn btn-sm btn-info ml-2 w-100px">
                         <i class="fas fa-sync fa-xs mr-2"></i>Xóa lọc
                     </a>
@@ -40,7 +40,7 @@
         <table class="table table-hover">
             <thead class="thead-light">
                 <tr class="fw-bold text-uppercase">
-                    <th class="text-left">Khách hàng</th>
+                    <th class="text-left">Họ tên</th>
                     <th class="text-left">SĐT</th>
                     <th class="text-left">Tài khoản</th>
                     <th class="text-left">Mật khẩu</th>
@@ -71,19 +71,19 @@
                             <span title="@Converted.String2Money(item.Wallet)đ" class="text-nsh1">@Converted.String2Money(item.Wallet)đ</span>
                         </td>
                         <td class="align-middle text-right">
-                            <a class="btn btn-sm btn-primary" href="/Admin/Withdraw/Create?user=@item.Username&type=1" title="Nạp tiền">
+                            <a class="btn btn-sm bg-nsh2" href="/Admin/Withdraw/Create?user=@item.Username&type=1" title="Nạp tiền">
                                 <span>Nạp tiền</span>
                             </a>
-                            <a class="btn btn-sm btn-warning" href="/Admin/Withdraw/Create?user=@item.Username&type=2" title="Rút tiền">
+                            <a class="btn btn-sm bg-nsh1" href="/Admin/Withdraw/Create?user=@item.Username&type=2" title="Rút tiền">
                                 <span>Rút tiền</span>
                             </a>
-                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#baiduModal" onclick="openPopup('@item.Username','@item.Wallet')">
+                            <button type="button" class="btn btn-sm bg-nsh2" data-toggle="modal" data-target="#baiduModal" onclick="openPopup('@item.Username','@item.Wallet')">
                                 <span>Cộng điểm</span>
                             </button>
-                            <a class="btn btn-sm btn-secondary" href="/Admin/Account/Detail?id=@item.ID" title="Xem">
+                            <a class="btn btn-sm btn-dark text-white" href="/Admin/Account/Detail?id=@item.ID" title="Xem">
                                 <span>Chi tiết</span>
                             </a>
-                            <span class="btn btn-sm btn-secondary" onclick="clickDelete(@item.ID)" title="Xóa">
+                            <span class="btn btn-sm btn-dark text-white" onclick="clickDelete(@item.ID)" title="Xóa">
                                 <span>Xóa</span>
                             </span>
                         </td>

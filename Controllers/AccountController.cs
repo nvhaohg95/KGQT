@@ -28,7 +28,7 @@ namespace KGQT.Controllers
         {
             if (data == null)
             {
-                return new DataReturnModel<object>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
+                return new DataReturnModel<object>() { IsError = true, Message = "Cập nhật không thành công. Vui lòng thử lại!" };
             }
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
@@ -40,7 +40,7 @@ namespace KGQT.Controllers
             }
             else 
             { 
-                return new DataReturnModel<object>() { IsError = true, Message = "Hệ thống thực thi không thành công. Vui lòng thử lại!" };
+                return new DataReturnModel<object>() { IsError = true, Message = "Cập nhật không thành công. Vui lòng thử lại!" };
             }
         }
 

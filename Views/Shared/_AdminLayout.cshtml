@@ -207,7 +207,7 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @if (user != null)
                     {
-                        <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold text-uppercase">
                             @(string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName)
                         </span>
                         <img class="img-profile rounded-circle" src="@(!string.IsNullOrEmpty(user.IMG) ? user.IMG : "/img/undraw_profile.svg") ">
