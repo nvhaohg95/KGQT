@@ -186,7 +186,7 @@ namespace KGQT.WebHook
             }
         }
 
-        public void AutoCreatePackage(WebHookReceive data)
+        public async void AutoCreatePackage(WebHookReceive data)
         {
             string message = data.message.text;
             if (string.IsNullOrEmpty(message) || !message.ToLower().Contains("taokien")) return;
@@ -233,7 +233,8 @@ namespace KGQT.WebHook
                     db.Add(p);
                     if (db.SaveChanges() > 0)
                     {
-                        string sendText = $"Quý khách đã tạo thành công kiện hàng {p.PackageCode}. \r\nTruy cập website:https://tracking.nhanshiphang.vn/package/details?id={p.ID} để xem chi tiết kiện hàng";
+                        string sendText = $"Quý khách đã tạo thành công kiện hàng {p.PackageCode}. \r\nTruy cập website:https://tracking.nhanshiphang.vn/package/details?id={p.ID} để xem chi tiết kiện hàng.";
+                      await  ZaloCommon.SendMessage(sender.id, sendText);
                     }
                 }
             }
