@@ -189,15 +189,23 @@ namespace KGQT.WebHook
         public async void AutoCreatePackage(WebHookReceive data)
         {
             string message = data.message.text;
-            if (string.IsNullOrEmpty(message) || !message.ToLower().Contains("taokien")) return;
+            if (string.IsNullOrEmpty(message) || !message.ToLower().Contains("taokien"))
+                return;
 
             var sender = data.sender;
             using (var db = new nhanshiphangContext())
             {
                 var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == sender.id);
-                if (f == null | string.IsNullOrEmpty(f.Username)) return;
+                if (f == null | string.IsNullOrEmpty(f?.Username)) {
+                    string sendText = $"Quý khách cần phải quan tâm OA và cung cấp thông tin cho tracking.nhanshiphang.vn mới có thể sử dụng tính năng này";
+                    await ZaloCommon.SendMessage(sender.id, sendText);
+                }
                 var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == f.Username);
-                if (user == null) return;
+                if (user == null)
+                {
+                    string sendText = $"Quý khách chưa có tài khoản tại hệ thống tracking.nhanshiphang.vn";
+                    await ZaloCommon.SendMessage(sender.id, sendText);
+                }
 
                 string[] arrString = message.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (arrString.Length > 1)
@@ -234,7 +242,7 @@ namespace KGQT.WebHook
                     if (db.SaveChanges() > 0)
                     {
                         string sendText = $"Quý khách đã tạo thành công kiện hàng {p.PackageCode}. \r\nTruy cập website:https://tracking.nhanshiphang.vn/package/details?id={p.ID} để xem chi tiết kiện hàng.";
-                      await  ZaloCommon.SendMessage(sender.id, sendText);
+                        await ZaloCommon.SendMessage(sender.id, sendText);
                     }
                 }
             }
