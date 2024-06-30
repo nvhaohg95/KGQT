@@ -4,7 +4,7 @@
 @using KGQT.Models.temp;
 @using Newtonsoft.Json;
 @{
-    ViewData["Title"] = "Danh sách ký gửi";
+    ViewData["Title"] = "Danh sách kiện hàng";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     var cookieService = new CookieService(Context);
     var tkck = cookieService.Get("tkck");
@@ -25,7 +25,7 @@
 
 <ul id="breadcrumbs" class="mb-2">
     <li class="text-uppercase"><a href="/Home/Dashboard">Trang chủ</a></li>
-    <li class="text-uppercase fw-bold"><a class="active">Danh sách đơn hàng</a></li>
+    <li class="text-uppercase fw-bold"><a class="active">Danh sách kiện hàng</a></li>
 </ul>
 <div class="row bg-white px-2 py-2">
     <div class="col-lg-12 col-md-12 col-sm-12">
@@ -92,7 +92,7 @@
         <!--Start::Thông tin kiện-->
         <div class="row">
             <div class="col-md-6 col-sm-12 mb-2">
-                <h3 class="lead fw-bold mb-0 text-primary text-uppercase">Danh sách đơn hàng</h3>
+                <h3 class="lead fw-bold mb-0 text-nsh1 text-uppercase">Danh sách kiện hàng</h3>
             </div>
             <div class="col-md-6 col-sm-12 mb-2 text-md-right text-center">
                 <a href="/package/create" class="btn bg-nsh1 btn-sm pointer-event">Thêm Mã Vận Đơn</a>

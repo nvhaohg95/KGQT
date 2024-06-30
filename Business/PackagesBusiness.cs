@@ -407,8 +407,11 @@ namespace KGQT.Business
                     data.Data = exist.ID;
                     data.Message = "Tạo Mã vận đơn thành công!";
                     if (equalVC)
+                    {
                         data.Message = $"Mã vận đơn {item} đã được nhân viên khai báo phương thức vận chuyển." +
                             $" Để thay đổi phương thức vận chuyển vui lòng liên hệ nhân viên Nhanshiphang để được giúp đỡ <hr>";
+                        data.TypeRequest = "exist";
+                    }
                     continue;
                 }
                 else

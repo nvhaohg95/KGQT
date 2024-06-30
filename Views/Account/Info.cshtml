@@ -105,7 +105,10 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="AvailableSearch"><a href="/Points/Index">Điểm tra cứu</a> <i class="fa fa-question-circle cursor-pointer" aria-hidden="true" onclick="toggleInfo()"></i></label>
+                                <div class="d-flex justify-content-between w-100">
+                                    <label for="AvailableSearch">Điểm tra cứu<i class="fa fa-question-circle cursor-pointer ml-1" aria-hidden="true" onclick="toggleInfo()"></i></label>
+                                    <label for="AvailableSearch"><a href="/Points/Index">Lịch sử tra cứu</a></label>
+                                </div>
                                 <input name="AvailableSearch" id="AvailableSearch" value="@Model.AvailableSearch" type="text" class="form-control text-nsh1" placeholder="Điểm tra cứu" readonly />
                             </div>
                         </div>

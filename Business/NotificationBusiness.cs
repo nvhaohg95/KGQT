@@ -18,7 +18,7 @@ namespace KGQT.Business
     {
         private static readonly ILogger _log = Log.ForContext(typeof(NotificationBusiness));
 
-        public static object[] GetPage(int receivedID, int status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, bool isAdmin = false)
+        public static object[] GetPage(int receivedID, int? status, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20, bool isAdmin = false)
         {
             using (var db = new nhanshiphangContext())
             {

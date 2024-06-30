@@ -68,7 +68,7 @@ namespace KGQT.Commons
         }
 
 
-        public static byte[] ResizeAndCompressImage(IFormFile image, int width = 300, int height = 300, long quality = 75L)
+        public static byte[] ResizeAndCompressImage(IFormFile image, int width = 500, int height = 500, long quality = 100L)
         {
             using (var stream = image.OpenReadStream())
             {

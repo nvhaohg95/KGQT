@@ -13,7 +13,7 @@ namespace KGQT.Controllers
     public class NotificationController : Controller
     {
         #region Index
-        public ActionResult Index(int status , DateTime? fromDate, DateTime? toDate, int page = 1)
+        public ActionResult Index(int? status , DateTime? fromDate, DateTime? toDate, int page = 1)
         {
             var cookieService = new CookieService(HttpContext);
             var tkck = cookieService.Get("tkck");
