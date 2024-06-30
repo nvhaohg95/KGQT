@@ -444,7 +444,7 @@ namespace KGQT.Commons
                     sReturn = "<span class=\"text-white btn-sm bg-nsh1\" style=\"padding-left: 0.7rem !important;padding-right: 0.7rem !important;\">Đã thanh toán</span>";
                     break;
                 case 3:
-                    sReturn = "<span class=\"text-white btn-sm bg-danger\">Đã hủy</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-dark\">Đã hủy</span>";
                     break;
                 case 4:
                     sReturn = "<span class=\"text-white btn-sm bg-info\">Khác</span>";
