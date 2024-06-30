@@ -5,6 +5,7 @@ using KGQT.Models.temp;
 using Newtonsoft.Json;
 using Serilog;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace KGQT.WebHook
 {
@@ -26,6 +27,9 @@ namespace KGQT.WebHook
                         break;
                     case "follow":
                         AddFollower(data);
+                        break;
+                    case "user_send_text":
+                        AutoCreatePackage(data);
                         break;
                 }
 
@@ -91,7 +95,7 @@ namespace KGQT.WebHook
                 }
                 if (db.SaveChanges() > 0)
                 {
-                    await ZaloCommon.UpdateInfoFollower(data.sender.id, data.info,user.Username);
+                    await ZaloCommon.UpdateInfoFollower(data.sender.id, data.info, user.Username);
                     Log.Information($"Cập nhật thông tin người dùng zalo {f.user_id} - {f.display_name} thành công");
 
                     if (user != null)
@@ -177,6 +181,59 @@ namespace KGQT.WebHook
                         w.CreatedDate = DateTime.Now;
                         db.Add(w);
                         db.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        public void AutoCreatePackage(WebHookReceive data)
+        {
+            string message = data.message.text;
+            if (string.IsNullOrEmpty(message) || !message.ToLower().Contains("taokien")) return;
+
+            var sender = data.sender;
+            using (var db = new nhanshiphangContext())
+            {
+                var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == sender.id);
+                if (f == null | string.IsNullOrEmpty(f.Username)) return;
+                var user = db.tbl_Accounts.FirstOrDefault(x => x.Username == f.Username);
+                if (user == null) return;
+
+                string[] arrString = message.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (arrString.Length > 1)
+                {
+
+                    var p = new tbl_Package();
+                    p.PackageCode = arrString[1];
+                    if (arrString.Length > 2)
+                        p.Note = arrString[2];
+                    p.UID = user.ID;
+                    p.Username = user.Username;
+                    p.FullName = user.FullName;
+                    p.Address = user.Address;
+                    p.Phone = user.Phone;
+                    p.Email = user.Email;
+                    p.IsBrand = false;
+                    p.IsAirPackage = false;
+                    p.IsWoodPackage = false;
+                    p.IsInsurance = false;
+                    p.MovingMethod = 0;
+                    p.Status = 1;
+                    p.Weight = "0";
+                    p.WeightExchange = "0";
+                    p.Height = "0";
+                    p.Width = "0";
+                    p.Length = "0";
+                    p.WeightReal = "0";
+                    p.SearchBaiduTimes = 0;
+                    p.TrackingShipping = 0;
+                    p.OrderDate = DateTime.Now;
+                    p.CreatedDate = DateTime.Now;
+                    p.CreatedBy = user.Username;
+                    db.Add(p);
+                    if (db.SaveChanges() > 0)
+                    {
+                        string sendText = $"Quý khách đã tạo thành công kiện hàng {p.PackageCode}. \r\nTruy cập website:https://tracking.nhanshiphang.vn/package/details?id={p.ID} để xem chi tiết kiện hàng";
                     }
                 }
             }

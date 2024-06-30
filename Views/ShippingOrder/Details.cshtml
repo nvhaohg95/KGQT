@@ -9,7 +9,7 @@
 }
 <ul id="breadcrumbs" class="mb-2">
     <li class="text-uppercase"><a href="/Home/Dashboard">Trang chủ</a></li>
-    <li class="text-uppercase"><a href="/ShippingOrder/Index">Danh sách ký gửi</a></li>
+    <li class="text-uppercase"><a href="/ShippingOrder/Index">Danh sách đơn hàng</a></li>
     <li class="text-uppercase fw-bold"><a class="active">Chi tiết</a></li>
 </ul>
 @if (Model != null && Model.Order != null)
@@ -18,22 +18,29 @@
         <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
             <div class="card" style="border-radius: 10px;">
                 <div class="card-header">
-                    <div class="card-header">
-                        <h2>Thông tin đơn: <span class="text-uppercase text-nsh1">@Model.Order.ShippingOrderCode</span></h2>
-                        <div class="px-0 pt-2 col-md-12">
-                            <span>Ngày tạo: @Model.Order.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                    <div class="row">
+                        <div class="col-md-8 col-sm-12">
+                            <h2>Mã đơn: <span class="text-uppercase text-nsh1">@Model.Order.ShippingOrderCode</span></h2>
                         </div>
-                        <div class="px-0 pt-2 col-md-12">
-                            <span class="py-2">Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))
+                        <div class="col-md-4 col-sm-12">
+                            <h5 class="text-md-right">
+                                Tổng tiền:   <span class="h2 mb-0 font-weight-bold ms-2 text-nsh1">@Converted.String2Money(Model.Order.TotalPrice)đ</span>
+                            </h5>
                         </div>
-                        <div class="px-0 col-md-12 row d-none d-sm-block mt-2">
-                            @if (Model.Order.Status == 1)
-                            {
-                                <div class="w-100">
-                                    <button type="button" class="btn bg-nsh1 px-5" onclick="payment()">Thanh toán</button>
-                                </div>
-                            }
-                        </div>
+                    </div>
+                    <div class="px-0 pt-2 col-md-12">
+                        <span>Ngày tạo: @Model.Order.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="px-0 pt-2 col-md-12">
+                        <span class="py-2">Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))
+                    </div>
+                    <div class="px-0 col-md-12 row d-none d-sm-block mt-2">
+                        @if (Model.Order.Status == 1)
+                        {
+                            <div class="position-relative" id="btnScroll">
+                                <button type="button" class="btn bg-nsh1 px-5 btn-payment  w-100" style="z-index:999" onclick="payment()">Thanh toán</button>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -66,6 +73,18 @@
                                 </div>
                                 <div class="row p-2 mx-0 my-2 border-bottom">
                                     <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 mb-0">
+                                        @if (item.CNWHExpectation != null)
+                                        {
+                                            <li class="active-tl">
+                                                <span>Dự kiến Xuất kho Trung Quốc <br> @item.CNWHExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <span>Dự kiến Xuất kho Trung Quốc</span>
+                                            </li>
+                                        }
                                         @if (item.ExportedCNWH != null)
                                         {
                                             <li class="active-tl">
@@ -376,24 +395,42 @@
                     }
                     <!--End::Thông tin đơn-->
                 </div>
-                <div class="card-footer border-0 rounded-bottom"
-                     style="background-color: #008cd0;">
-                    <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
-                        Tổng tiền:   <span class="h2 mb-0 ms-2">@Converted.String2Money(Model.Order.TotalPrice)đ</span>
-                    </h5>
-                </div>
             </div>
-
-            @if (Model.Order.Status == 1)
-            {
-                <div class="w-100 py-2">
-                    <button type="button" class="btn bg-nsh1 py-2 w-100" onclick="payment()">Thanh toán</button>
-                </div>
-            }
+            <div class="py-2 invisible">
+                <button type="button" id="btnHdfloat" class="btn bg-nsh1 py-2 w-100">Thanh toán</button>
+            </div>
         </div>
 
     </div>
     <script>
+        $(document).ready(function () {
+            $(document).on('scroll', function (e) {
+                if ($('#btnScroll').length) {
+                    let scrollTop = $(document).scrollTop(), scrollHeight = $(document).height();
+                    let scrollEle = $('#btnScroll').height();
+                    let topBar = $('.topbar').height();
+                    if (scrollTop > (scrollEle)) {
+                        let btn = $('.btn-payment');
+                        let hdbt = $('#btnHdfloat');
+                        if (btn.length) {
+                            let btnWidth = hdbt.width();
+                            btn.removeClass('w-100');
+                            btn.addClass('fixed-bottom');
+                            let pos = $('#btnScroll')[0].getBoundingClientRect();
+                            let l = pos.left;
+                            btn.css({ left: l, width: btnWidth });
+                        }
+                    } else {
+                        let btn = $('.btn-payment');
+                        if (btn.length) {
+                            btn.addClass('w-100');
+                            btn.removeClass('fixed-bottom');
+                        }
+                    }
+                }
+            });
+        })
+
         //Hủy đơn
         function cancel(id) {
             $.ajax({
@@ -427,7 +464,7 @@
                 },
                 error: function (xhr, status, err) {
                     // error handling
-                    console.log(xhr,err)
+                    console.log(xhr, err)
                 }
             });
         }

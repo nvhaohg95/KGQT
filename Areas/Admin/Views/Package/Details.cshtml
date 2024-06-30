@@ -27,11 +27,11 @@
                             }
                             @if (Model.Status < 3)
                             {
-                                <button type="button" onclick="cancel(@Model.ID)" class="btn btn-sm btn-danger float-right">Hủy đơn</button>
+                                <button type="button" onclick="cancel(@Model.ID)" class="btn btn-sm btn-secondary bg-dark float-right">Hủy đơn</button>
                             }
                             @if (Model.Status == 1)
                             {
-                                <button type="button" class="btn-sm btn bg-orange text-white  float-right mx-2">Kiểm tra hàng kho TQ</button>
+                                <button type="button" class="btn-sm btn bg-orange text-white  float-right mx-2" onclick="checkStatus('@Model.PackageCode',@Model.SearchBaiduTimes)">Kiểm tra hàng kho TQ</button>
                             }
                         </div>
                         <div class="row pb-2">
@@ -48,6 +48,18 @@
                     </div>
                     <div class="row border-bottom border-gray mb-4">
                         <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12">
+                            @if (Model.CNWHExpectation != null)
+                            {
+                                <li class="active-tl">
+                                    <span>Dự kiến Xuất kho Trung Quốc <br> @Model.CNWHExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <span>Dự kiến Xuất kho Trung Quốc</span>
+                                </li>
+                            }
                             @if (Model.ExportedCNWH != null)
                             {
                                 <li class="active-tl">
@@ -356,6 +368,67 @@
                     // error handling
                 }
             });
+        }
+
+        function checkStatus(code, times) {
+            $.ajax({
+                url: '/admin/Package/CheckAvailableSearch',
+                method: 'GET',
+                dataType: 'json',
+                data: { code },
+                beforeSend: function () {
+                    stopLoading();
+                },
+                success: function (res) {
+                    if (res.error == 1) {
+                        helper.showErr(res.msg);
+                        return;
+                    }
+                    if (res.error == 2) {
+                        Swal.fire({
+                            title: "Chú ý",
+                            text: res.msg,
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#6e7881",
+                            confirmButtonText: "Đồng ý",
+                            cancelButtonText: "Từ chối"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                            }
+                        });
+                        return;
+                    }
+                    if (res.error == 3) {
+                        if (res.data == 0) {
+                            Swal.fire({
+                                title: "Chú ý",
+                                text: "Khách hàng đã hết lượt tra cứu miễn phí, tiếp tục sẽ tốn phí 500đ?",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#6e7881",
+                                confirmButtonText: "Đồng ý",
+                                cancelButtonText: "Từ chối"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                                }
+                            });
+                        } else
+                            location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                    }
+
+                },
+                error: function (err) {
+                    console.log(err)
+                },
+                complete: function () {
+                    stopLoading(true);
+                },
+            })
         }
 
     </script>

@@ -35,7 +35,7 @@ namespace KGQT.Business
             {
                 try
                 {
-                    var query = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.ShippingMethod == method && x.Username.ToLower() == username.ToLower()
+                    var query = db.tbl_ShippingOrders.Where(x => x.ShippingMethod == method && x.Username.ToLower() == username.ToLower()
                     && (x.CreatedDate >= fromDate && x.CreatedDate < toDate) && (x.ChinaExportDate >= exportStart && x.ChinaExportDate < exportEnd));
 
                     if (!string.IsNullOrEmpty(recID))
@@ -55,7 +55,7 @@ namespace KGQT.Business
             {
                 IQueryable<tbl_ShippingOrder> qry = db.tbl_ShippingOrders;
                 if (!string.IsNullOrEmpty(username))
-                    qry = qry.Where(x => x.Username == username);
+                    qry = qry.Where(x => x.Username.ToLower() == username.ToLower());
 
                 int st1 = qry.Where(x => x.Status == 1).Count();
                 int st2 = qry.Where(x => x.Status == 2).Count();
@@ -70,7 +70,7 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders.Where(x => x.Username == username);
+                IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders.Where(x => x.Username.ToLower() == username.ToLower());
 
                 if (status > 0)
                     query = query.Where(x => x.Status == status);
@@ -99,7 +99,7 @@ namespace KGQT.Business
                 int total = 0;
                 IQueryable<tbl_ShippingOrder> query = db.tbl_ShippingOrders;
                 if (!string.IsNullOrEmpty(userName))
-                    query = query.Where(x => x.Username == userName);
+                    query = query.Where(x => x.Username.ToLower() == userName.ToLower());
 
                 if (status > 0)
                     query = query.Where(x => x.Status == status);
@@ -360,8 +360,8 @@ namespace KGQT.Business
                     return dt;
                 }
 
-                var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == oOrder.Username);
-                var oldUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == oOrder.Username);
+                var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == oOrder.Username.ToLower());
+                var oldUser = oUser;
 
                 if (oUser == null)
                 {
@@ -396,7 +396,7 @@ namespace KGQT.Business
                                 return dt;
                             }
                             HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Thanh toán cho đơn {oOrder.ShippingOrderCode}", oOrder.TotalPrice, 1, 1, moneyPrevious, pay, accessor);
-                            var packs = db.tbl_Packages.Where(x => x.TransID == oOrder.ShippingOrderCode).ToList();
+                            var packs = db.tbl_Packages.Where(x => x.TransID == oOrder.RecID).ToList();
                             foreach (var pack in packs)
                             {
                                 pack.Status = 5;
@@ -455,7 +455,7 @@ namespace KGQT.Business
                     return dt;
                 }
 
-                var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == oOrder.Username);
+                var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == oOrder.Username.ToLower());
 
                 if (oUser == null)
                 {
@@ -476,7 +476,7 @@ namespace KGQT.Business
                     {
                         HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Nạp tiền tại kho", oOrder.TotalPrice, 2, 3, oUser.Wallet, Converted.StringCeiling(oUser.Wallet.Double() + totalPrice), accessor);
                         HistoryPayWallet.Insert(oUser.ID, oUser.Username, oOrder.ID, $"Thanh toán cho đơn {oOrder.ShippingOrderCode}", oOrder.TotalPrice, 1, 1, oUser.Wallet, oUser.Wallet, accessor);
-                        var packs = db.tbl_Packages.Where(x => x.TransID == oOrder.ShippingOrderCode).ToList();
+                        var packs = db.tbl_Packages.Where(x => x.TransID == oOrder.RecID).ToList();
                         foreach (var pack in packs)
                         {
                             pack.Status = 5;
@@ -509,10 +509,10 @@ namespace KGQT.Business
             {
                 var dt = new DataReturnModel<bool>();
                 var lst = data.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                var ships = db.tbl_ShippingOrders.Where(x => lst.Contains(x.RecID) && x.Username == accessor).ToList();
+                var ships = db.tbl_ShippingOrders.Where(x => lst.Contains(x.RecID) && x.Username.ToLower() == accessor.ToLower()).ToList();
 
                 var totalMoney = ships.Sum(x => x.TotalPrice.Double());
-                var userWallet = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                var userWallet = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == accessor.ToLower());
                 if (userWallet == null)
                 {
                     dt.IsError = true;
@@ -533,8 +533,8 @@ namespace KGQT.Business
                     if (item.Status == 2)
                         continue;
 
-                    var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
-                    var oldUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
+                    var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == item.Username.ToLower());
+                    var oldUser =oUser;
 
                     try
                     {
@@ -602,10 +602,10 @@ namespace KGQT.Business
             using (var db = new nhanshiphangContext())
             {
                 var dt = new DataReturnModel<bool>();
-                var ships = db.tbl_ShippingOrders.Where(x => x.Username == accessor && x.Status < 2).ToList();
+                var ships = db.tbl_ShippingOrders.Where(x => x.Username.ToLower() == accessor.ToLower() && x.Status < 2).ToList();
 
                 var totalMoney = ships.Sum(x => x.TotalPrice.Double());
-                var userWallet = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                var userWallet = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == accessor.ToLower());
                 if (userWallet == null)
                 {
                     dt.IsError = true;
@@ -626,8 +626,8 @@ namespace KGQT.Business
                     if (item.Status == 2)
                         continue;
 
-                    var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
-                    var oldUser = db.tbl_Accounts.FirstOrDefault(x => x.Username == item.Username);
+                    var oUser = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == item.Username.ToLower());
+                    var oldUser = oUser;
 
                     try
                     {
@@ -786,11 +786,11 @@ namespace KGQT.Business
         {
             using (var db = new nhanshiphangContext())
             {
-                var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username == accessor);
+                var admin = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == accessor.ToLower());
                 var ships = db.tbl_ShippingOrders.Where(x => x.Status == 1 && x.IsSendNoti == false).ToList();
                 foreach (var ship in ships)
                 {
-                    var customer = db.tbl_Accounts.FirstOrDefault(x => x.Username == ship.Username);
+                    var customer = db.tbl_Accounts.FirstOrDefault(x => x.Username.ToLower() == ship.Username.ToLower());
                     if (customer != null)
                     {
                         var lstpackage = db.tbl_Packages.Where(x => x.TransID == ship.RecID).ToList();

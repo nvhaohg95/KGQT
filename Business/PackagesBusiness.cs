@@ -47,6 +47,7 @@ namespace KGQT.Business
                 return qry.ToList();
             }
         }
+
         public static object[] GetAllStatus(string username)
         {
             using (var db = new nhanshiphangContext())
@@ -131,6 +132,7 @@ namespace KGQT.Business
                         ImportedSGWH = p.pack.ImportedSGWH,
                         DateExpectation = p.pack.DateExpectation,
                         ExportedCNWH = p.pack.ExportedCNWH,
+                        CNWHExpectation = p.pack.ExportedCNWH,
                         IsWoodPackage = p.pack.IsWoodPackage,
                         IsAirPackage = p.pack.IsAirPackage,
                         IsInsurance = p.pack.IsInsurance,
@@ -198,19 +200,19 @@ namespace KGQT.Business
                             {
                                 if (oPack.Status < 2)
                                     oPack.Status = 2;
-                                oPack.ExportedCNWH = Converted.ToDate(exist.time);
-                                if (oPack.ExportedCNWH.Value.Hour > 15)
-                                    oPack.ExportedCNWH = oPack.ExportedCNWH.Value.AddDays(1).Date;
+                                oPack.CNWHExpectation = Converted.ToDate(exist.time);
+                                if (oPack.CNWHExpectation.Value.Hour > 15)
+                                    oPack.CNWHExpectation = oPack.CNWHExpectation.Value.AddDays(1).Date;
                                 if (BusinessBase.Update(oPack))
                                 {
-                                    var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == uslogin);
-                                    BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
-                                    if (oldStt < 2)
-                                    {
-                                        string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
-                                        message = string.Format(message, oPack.PackageCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
-                                        NotificationBusiness.Insert(1, "admin", oPack.UID, oPack.Username, oPack.ID, oPack.PackageCode, message, message, 1, "/Package/Details/" + oPack.ID, "admin");
-                                    }
+                                    //var admin = BusinessBase.GetOne<tbl_Account>(x => x.Username == uslogin);
+                                    //BusinessBase.TrackLog(admin.ID, oPack.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, admin.Username);
+                                    //if (oldStt < 2)
+                                    //{
+                                    //    string message = "Kiện hàng {0}{1} đã nhập kho Trung Quốc";
+                                    //    message = string.Format(message, oPack.PackageCode, !string.IsNullOrEmpty(oPack.Note) ? " - " + oPack.Note : "");
+                                    //    NotificationBusiness.Insert(1, "admin", oPack.UID, oPack.Username, oPack.ID, oPack.PackageCode, message, message, 1, "/Package/Details/" + oPack.ID, "admin");
+                                    //}
                                 }
                             }
                             for (int i = 0; i < data.Data.data.Count; i++)
@@ -665,6 +667,7 @@ namespace KGQT.Business
                 return dt;
             }
         }
+       
         public static DataReturnModel<bool> InStockHCMWareHouse(tmpInStock data, string accessor)
         {
             using (var db = new nhanshiphangContext())
@@ -672,6 +675,7 @@ namespace KGQT.Business
                 var dt = new DataReturnModel<bool>();
                 try
                 {
+                    DateTime currentDate = DateTime.Now;
                     var pack = db.tbl_Packages.FirstOrDefault(x => x.ID == data.Id);
                     bool isImport = pack.IsImport.ToBool();
                     if (pack == null)
@@ -696,16 +700,6 @@ namespace KGQT.Business
 
                     if (data.Height > 0 || data.Width > 0 || data.Length > 0)
                         data.WeightExchange = GetExchangeWeight(pack.MovingMethod, data);
-
-                    //Update tien p
-                    var config = db.tbl_Configurations.FirstOrDefault();
-                    double minPackage = 0.3;
-                    double minOrder = 1;
-                    if (config != null)
-                    {
-                        minPackage = config.MinPackage ?? 0.3;
-                        minOrder = config.MinOrder ?? 1;
-                    }
 
                     data.Weight = Converted.ToDouble(data.Weight);
 
@@ -738,12 +732,12 @@ namespace KGQT.Business
                     pack.MoreCharge = data.MoreCharge.ToString();
                     pack.Status = 4;
                     pack.ModifiedBy = accessor;
-                    pack.ModifiedDate = DateTime.Now;
-                    pack.ImportedSGWH = DateTime.Now;
+                    pack.ModifiedDate = currentDate;
+                    pack.ImportedSGWH = currentDate;
                     pack.IsImport = true;
                     if (!string.IsNullOrEmpty(data.Date))
                     {
-                        DateTime dt2 = DateTime.ParseExact(data.Date, "dd/MM/yyyy", null);
+                        DateTime dt2 = Converted.ConvertDate(data.Date);
                         pack.ImportedSGWH = dt2;//data.Date.AddHours(7);
 
                     }
@@ -765,6 +759,42 @@ namespace KGQT.Business
                             pack.WeightReal = pack.Weight;
                     }
 
+
+                    //Update tien p
+                    var config = db.tbl_Configurations.FirstOrDefault();
+                    double minPackage = 0.3;
+                    double minOrder = 1;
+                    if (config != null)
+                    {
+                        minPackage = config.MinPackage ?? 0.3;
+                        minOrder = config.MinOrder ?? 1;
+                    }
+
+                    tbl_ShippingOrder check = null;
+                    //Ktra xem khach da co don chua.
+                    DateTime cnExportDateFrom = currentDate.Date;
+                    if (pack.ExportedCNWH != null)
+                        cnExportDateFrom = pack.ExportedCNWH.Value.Date;
+                    else
+                        pack.ExportedCNWH = cnExportDateFrom;
+
+                    DateTime cnExportDateEnd = cnExportDateFrom.AddDays(1).AddMinutes(-1);
+                    DateTime startDate = pack.ImportedSGWH.Value.Date;
+                    DateTime endDate = startDate.AddDays(1).AddMinutes(-1);
+
+                    if (!string.IsNullOrEmpty(pack.TransID))
+                        check = ShippingOrder.GetOne(pack.TransID);
+
+                    if (check == null || (check != null && check.Username.ToLower() != pack.Username.ToLower()))
+                        check = ShippingOrder.CheckOrderInStock(pack.Username, pack.MovingMethod, startDate, endDate, cnExportDateFrom, cnExportDateEnd);
+                    if (check != null && check.Status > 1)
+                    {
+                        minOrder = 0;
+                        minPackage = 0;
+                        check = null;
+                    }
+
+
                     if (Converted.ToDouble(pack.Weight) <= minPackage)
                         pack.Weight = minPackage.ToString();
 
@@ -777,6 +807,7 @@ namespace KGQT.Business
                         pack.Declaration = data.Link;
                         pack.DeclarePrice = data.DeclarePrice.ToString();
                     }
+
 
                     db.Update(pack);
                     if (db.SaveChanges() > 0)
@@ -799,23 +830,6 @@ namespace KGQT.Business
                             NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, pack.ID, pack.PackageCode, message, message, 1, "/Package/Details?id=" + pack.ID, accessor);
                         }
 
-                        //Ktra xem khach da co don chua.
-                        DateTime cnExportDateFrom = DateTime.Now.Date;
-                        if (pack.ExportedCNWH != null)
-                            cnExportDateFrom = pack.ExportedCNWH.Value.Date;
-                        else
-                            pack.ExportedCNWH = cnExportDateFrom;
-
-                        DateTime cnExportDateEnd = cnExportDateFrom.AddDays(1).AddMinutes(-1);
-                        DateTime startDate = pack.ImportedSGWH.Value.Date; //One day 
-                        DateTime endDate = startDate.AddDays(1).AddMinutes(-1);
-                        tbl_ShippingOrder check = null;
-
-                        if (!string.IsNullOrEmpty(pack.TransID))
-                            check = ShippingOrder.GetOne(pack.TransID);
-
-                        if (check == null || (check != null && check.Username != pack.Username))
-                            check = ShippingOrder.CheckOrderInStock(pack.Username, pack.MovingMethod, startDate, endDate, cnExportDateFrom, cnExportDateEnd);
 
                         if (check != null)
                         {
@@ -926,7 +940,7 @@ namespace KGQT.Business
                             ship.ShippingOrderCode = pack.PackageCode;
                             ship.PackageCode = pack.PackageCode;
                             ship.RecID = Guid.NewGuid().ToString("N");
-                            ship.Username = pack.Username;
+                            ship.Username = pack.Username.ToLower();
                             ship.FirstName = pack.FullName;
                             ship.LastName = pack.FullName;
                             ship.Email = pack.Email;
@@ -1049,6 +1063,7 @@ namespace KGQT.Business
                             {
                                 try
                                 {
+                                    var sDate = dt.Rows[row][0].ToString();
                                     string customer = dt.Rows[row][1].ToString();
                                     if (customer.IndexOf("-") > 0)
                                     {
@@ -1074,37 +1089,19 @@ namespace KGQT.Business
                                     if (type == 20)
                                         movingMethod = 5;
                                     string note = dt.Rows[row][4].ToString();
-                                    var sDate = dt.Rows[row][0].ToString();
                                     DateTime date = DateTime.Now;
                                     DateTime d = DateTime.Now;
                                     if (!string.IsNullOrEmpty(sDate))
                                     {
-                                        try
-                                        {
-                                            date = DateTime.Parse(sDate);
-                                            d = PJUtils.GetDeliveryDate(date, movingMethod);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            try
-                                            {
-                                                string[] split = sDate.Split("/", StringSplitOptions.RemoveEmptyEntries);
-
-                                                if (split.Length >= 3)
-                                                {
-                                                    int year = DateTime.Now.Year;
-                                                    date = new DateTime(year, split[1].ToInt(), split[0].ToInt());
-                                                    d = PJUtils.GetDeliveryDate(date, movingMethod);
-                                                }
-                                            }
-                                            catch (Exception ex2)
-                                            {
-                                                _log.Error(JsonConvert.SerializeObject(ex));
-                                            }
-                                        }
+                                        date = Converted.ConvertDate(sDate);
+                                        d = PJUtils.GetDeliveryDate(date, movingMethod);
                                     }
 
+                                    //string dateImport = dt.Rows[row][5].ToString();
+                                    //DateTime dateInstock = Converted.ConvertDate(dateImport);
+
                                     var oExist = BusinessBase.GetOne<tbl_Package>(x => x.PackageCode == code);
+                                    #region update kiện
                                     if (oExist != null)
                                     {
                                         if (oExist.Status <= 3)
@@ -1136,8 +1133,8 @@ namespace KGQT.Business
                                         }
                                         continue;
                                     }
-
-
+                                    #endregion
+                                    #region tạo mới kiện
                                     var p = new tbl_Package();
                                     p.RecID = Guid.NewGuid();
                                     var user = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == customer.ToLower());
@@ -1173,6 +1170,11 @@ namespace KGQT.Business
                                     }
                                     else
                                         success++;
+                                    #endregion
+
+                                    #region Xử lý đơn hàng
+
+                                    #endregion
                                 }
                                 catch (Exception ex)
                                 {
@@ -1289,6 +1291,7 @@ namespace KGQT.Business
                 return data;
             }
         }
+  
         public static DataReturnModel<bool> Delete(int id)
         {
             using (var db = new nhanshiphangContext())
@@ -1420,9 +1423,9 @@ namespace KGQT.Business
                                             if (exist != null)
                                             {
                                                 item.Status = 2;
-                                                item.ExportedCNWH = Converted.ToDate(exist.time);
-                                                if (item.ExportedCNWH.Value.Hour > 15)
-                                                    item.ExportedCNWH = item.ExportedCNWH.Value.AddDays(1).Date;
+                                                item.CNWHExpectation = Converted.ToDate(exist.time);
+                                                if (item.CNWHExpectation.Value.Hour > 15)
+                                                    item.CNWHExpectation = item.CNWHExpectation.Value.AddDays(1).Date;
                                                 if (BusinessBase.Update(item))
                                                 {
                                                     BusinessBase.TrackLog(1, item.ID, "{0} cập nhật trạng thái kiện - API kiểm tra hàng TQ", 0, "admin");

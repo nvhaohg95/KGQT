@@ -150,7 +150,7 @@
                             <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@item.PackageCode',@item.Status, '@(PJUtils.PackageStatus(item.Status))')" type="button">Kiểm tra hàng</button>
                             @if (item.Status < 2)
                             {
-                                <button class="btn-sm btn bg-danger text-white mt-2 px-3" onclick="Delete(@item.ID)" type="button">Xóa</button>
+                                <button class="btn-sm btn bg-dark text-white mt-2 px-3" onclick="Delete(@item.ID)" type="button">Xóa</button>
                             }
                         </div>
                     </div>
@@ -250,6 +250,12 @@
                                 {
                                     <li class="ml-4">
                                         <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                    </li>
+                                }
+                                @if (item.CNWHExpectation != null)
+                                {
+                                    <li class="ml-4">
+                                        <span>Xuất kho Trung Quốc - Dự kiến @item.CNWHExpectation.Value.ToString("dd/MM/yyyy")</span>
                                     </li>
                                 }
                             </ul>
@@ -369,7 +375,7 @@
 
             if ($(event.target).is(".btn-copy, .fa-copy, .inputNode,.btn"))
                 return;
-            location.href = '/admin/package/details?id=' + $(this).data('id');
+            location.href = '/package/details?id=' + $(this).data('id');
         })
     })
 
@@ -442,7 +448,7 @@
                         cancelButtonText: "Từ chối"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                            location.href = "/package/QueryOrderStatus?code=" + code;
                         }
                     });
                     return;
@@ -455,12 +461,12 @@
                             icon: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
+                            cancelButtonColor: "#858796",
                             confirmButtonText: "Đồng ý",
                             cancelButtonText: "Từ chối"
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                                location.href = "/package/QueryOrderStatus?code=" + code;
                             }
                         });
                         return;

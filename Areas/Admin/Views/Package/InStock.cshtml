@@ -37,8 +37,8 @@
                     url: '/admin/package/PackagePartial',
                     type: 'GET',
                     data: { code },
-                    success: function (resonse) {
-                        $('#lstPackage').html(resonse);
+                    success: function (response) {
+                        $('#lstPackage').html(response);
                         autocomplete();
                     }, error: function (e) {
                         console.log(e);

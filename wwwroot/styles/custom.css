@@ -187,7 +187,7 @@
     .step li {
         list-style: none;
         float: left;
-        width: 25%;
+        width: 20%;
         position: relative;
         text-align: center;
         text-transform: uppercase;
@@ -230,13 +230,13 @@
         }
 
             .step li.active-tl:before {
-                background: #4caf50;
-                border-color: #4caf50;
+                background: #008cd0;
+                border-color: #008cd0;
                 color: #F1F1F1;
             }
 
             .step li.active-tl + li:after {
-                background: #4caf50;
+                background: #008cd0;
             }
 
         .step li span {
@@ -427,7 +427,7 @@ th
 
 .timeline li::before {
     content: '\2713';
-    color: #16eb06; /* Change the color */
+    color: #008cd0; /* Change the color */
     font-weight: bold; /* If you want it to be bold */
     display: inline-block; /* Needed to add space between the bullet and the text */
     width: 1em; /* Also needed for space (tweak if needed) */

@@ -9,7 +9,7 @@
 }
 <ul id="breadcrumbs" class="mb-2">
     <li class="text-uppercase"><a href="/admin/home">Trang chủ</a></li>
-    <li class="text-uppercase"><a href="/admin/ShippingOrder/Index">Danh sách ký gửi</a></li>
+    <li class="text-uppercase"><a href="/admin/ShippingOrder/Index">Danh sách đơn hàng</a></li>
     <li class="text-uppercase fw-bold"><a>Chi tiết</a></li>
 </ul>
 <div class="row d-flex justify-content-center align-items-center py-2">
@@ -18,46 +18,57 @@
         <div class="col-lg-10 col-xl-10 col-md-10 col-sm-12">
             <div class="card" style="border-radius: 10px;">
                 <div class="card-header">
-                    <div class="card-header">
-                        <h2 class="text-muted mb-0">
-                            Thông tin đơn: <span class="text-uppercase text-nsh1">@Model.Order.ShippingOrderCode</span>
-                        </h2>
-                        <div class="px-0 pt-2 col-md-12">
-                            <span>Ngày tạo: @Model.Order.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                    <div class="row">
+                        <div class="col-md-8 col-sm-12">
+                            <h2>Mã đơn: <span class="text-uppercase text-nsh1">@Model.Order.ShippingOrderCode</span></h2>
                         </div>
-                        <div class="px-0 pt-2 col-md-12"><span>Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))</div>
-                        <div class="px-0 pt-2 col-md-12 row">
-                            <div class="col-md-4">Khách hàng: <strong>@(Model.Order.FirstName ?? Model.Order.Username)</strong></div>
-                            @if (!string.IsNullOrEmpty(Model.Order.Phone))
+                        <div class="col-md-4 col-sm-12">
+                            <h5 class="text-md-right">
+                                Tổng tiền:   <span class="h2 mb-0 font-weight-bold ms-2 text-nsh1">@Converted.String2Money(Model.Order.TotalPrice)đ</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="px-0 pt-2 col-md-12">
+                        <span>Ngày tạo: @Model.Order.CreatedDate.Value.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="px-0 pt-2 col-md-12"><span>Trạng thái đơn: </span>@Html.Raw(PJUtils.ShippingOrderStatusHtml(Model.Order.Status))</div>
+                    <div class="px-0 pt-2 col-md-12 row">
+                        <div class="col-md-4">Khách hàng: <strong>@(Model.Order.FirstName ?? Model.Order.Username)</strong></div>
+                        @if (!string.IsNullOrEmpty(Model.Order.Phone))
+                        {
+                            <div class="col-md-4"><i class="fa fa-phone px-2"></i><strong>@Model.Order.Phone</strong></div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Order.Phone))
+                        {
+                            <div class="col-md-4"><i class="fa fa-mail-bulk px-2"></i><strong>@Model.Order.Email</strong></div>
+                        }
+                    </div>
+                    <div class="px-0 col-md-12 row">
+                        <span>Địa chỉ:</span><span>@Model.Order.Address</span>
+                    </div>
+                    <div class="row">
+                        @if (Model.Order.Status == 1)
+                        {
+                            @if (Model.User == null)
                             {
-                                <div class="col-md-4"><i class="fa fa-phone px-2"></i><strong>@Model.Order.Phone</strong></div>
+                                <div class="position-relative px-0" id="btnScroll">
+                                    <button type="button" class="btn bg-nsh2 w-100 btn-payment" onclick="receiver()">Nhận hàng</button>
+                                </div>
                             }
-                            @if (!string.IsNullOrEmpty(Model.Order.Phone))
+                            else
                             {
-                                <div class="col-md-4"><i class="fa fa-mail-bulk px-2"></i><strong>@Model.Order.Email</strong></div>
-                            }
-                        </div>
-                        <div class="px-0 col-md-12 row">
-                            <span>Địa chỉ:</span><span>@Model.Order.Address</span>
-                        </div>
-                        <div class="px-0 col-md-12 row d-none d-sm-block">
-                            @if (Model.Order.Status == 1)
-                            {
-                                @if (Model.User == null)
-                                {
-                                    <div class="w-100 py-2">
-                                        <button type="button" class="btn bg-nsh2  py-2" onclick="receiver()">Nhận hàng</button>
+                                <div class="position-relative px-0" id="btnScroll">
+                                    <div class="btn-payment d-flex">
+                                    <div class="col-md-6 col-sm-12">
+                                        <button type="button" class="btn bg-nsh1 w-100" onclick="payment()">Thanh toán</button>
                                     </div>
-                                }
-                                else
-                                {
-                                    <div class="w-100 py-2">
-                                        <button type="button" class="btn bg-nsh1  py-2 px-5" onclick="payment()">Thanh toán</button>
-                                        <button type="button" class="btn bg-nsh2  py-2" onclick="paymentDirect()">Thanh toán Tiền mặt</button>
+                                    <div class="col-md-6 col-sm-12">
+                                        <button type="button" class="btn bg-nsh2 w-100" onclick="paymentDirect()">Thanh toán Tiền mặt</button>.
                                     </div>
-                                }
+                                    </div>
+                                </div>
                             }
-                        </div>
+                        }
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -86,6 +97,18 @@
                                 </div>
                                 <div class="row p-2 mx-0 my-2 border-bottom">
                                     <ul class="step col-md-12 col-sm-12 col-lg-12 col-xl-12 col-12 mb-0">
+                                        @if (item.CNWHExpectation != null)
+                                        {
+                                            <li class="active-tl">
+                                                <span>Dự kiến Xuất kho Trung Quốc <br> @item.CNWHExpectation.Value.ToString("dd/MM/yyyy")</span>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <span>Dự kiến Xuất kho Trung Quốc</span>
+                                            </li>
+                                        }
                                         @if (item.ExportedCNWH != null)
                                         {
                                             <li class="active-tl">
@@ -226,6 +249,12 @@
                                             {
                                                 <li class="ml-4">
                                                     <span>Xuất kho Trung Quốc - @item.ExportedCNWH.Value.ToString("dd/MM/yyyy")</span>
+                                                </li>
+                                            }
+                                            @if (item.CNWHExpectation != null)
+                                            {
+                                                <li class="ml-4">
+                                                    <span>Xuất kho Trung Quốc - Dự kiến @item.CNWHExpectation.Value.ToString("dd/MM/yyyy")</span>
                                                 </li>
                                             }
                                         </ul>
@@ -390,31 +419,10 @@
                     }
                     <!--End::Thông tin đơn-->
                 </div>
-                <div class="card-footer border-0 rounded-bottom"
-                     style="background-color: #008cd0;">
-                    <h5 class="d-flex align-items-center justify-content-between text-white text-uppercase mb-0">
-                        Tổng tiền:   <span class="h2 mb-0 ms-2">@Converted.String2Money(Model.Order.TotalPrice)đ</span>
-                    </h5>
-                </div>
             </div>
-            @if (Model.Order.Status == 1)
-            {
-                @if (Model.User == null)
-                {
-                    <div class="w-100 py-2">
-                        <button type="button" class="btn bg-nsh2  py-2 w-100" onclick="receiver()">Nhận hàng</button>
-                    </div>
-                }
-                else
-                {
-                    <div class="w-100 py-2">
-                        <button type="button" class="btn bg-nsh1 py-2 w-100" onclick="payment()">Thanh toán</button>
-                    </div>
-                    <div class="w-100 py-2">
-                        <button type="button" class="btn bg-nsh2 py-2  w-100" onclick="paymentDirect()">Thanh toán Tiền mặt</button>
-                    </div>
-                }
-            }
+            <div class="py-2 invisible">
+                <button type="button" id="btnHdfloat" class="btn bg-nsh1 py-2 w-100">Thanh toán</button>
+            </div>
         </div>
     }
     else
@@ -422,13 +430,40 @@
         <h2>Đơn hàng không tồn tại!</h2>
     }
 </div>
-<script>
+
+<script type="text/javascript">
     $(document).ready(function () {
         $('.btn-copy').off('click').on('click', function () {
             let text = $(this).data('value');
             copyClipboard(text);
         })
-    })
+
+        $(document).on('scroll', function (e) {
+            if ($('#btnScroll').length) {
+                let scrollTop = $(document).scrollTop(), scrollHeight = $(document).height();
+                let scrollEle = $('#btnScroll').height();
+                let topBar = $('.topbar').height();
+                if (scrollTop > (scrollEle)) {
+                    let btn = $('.btn-payment');
+                    let hdbt = $('#btnHdfloat');
+                    if (btn.length) {
+                        let btnWidth = hdbt.width();
+                        btn.removeClass('w-100');
+                        btn.addClass('fixed-bottom');
+                        let pos = $('#btnScroll')[0].getBoundingClientRect();
+                        let l = pos.left;
+                        btn.css({ left: l, width: btnWidth });
+                    }
+                } else {
+                    let btn = $('.btn-payment');
+                    if (btn.length) {
+                        btn.addClass('w-100');
+                        btn.removeClass('fixed-bottom');
+                    }
+                }
+            }
+        });
+    });
 
     //Xác nhận
     function confirm(id) {
@@ -504,7 +539,7 @@
             }
         });
     }
-    
+
     function paymentDirect() {
         $.ajax({
             url: '/admin/shippingOrder/paymentDirect',

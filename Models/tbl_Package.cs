@@ -43,6 +43,7 @@ namespace KGQT.Models
         /// <summary>
         /// Chờ giao
         /// </summary>
+        public DateTime? CNWHExpectation { get; set; }
         public DateTime? ExportedCNWH { get; set; }
         /// <summary>
         /// Đang giao

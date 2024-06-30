@@ -374,10 +374,10 @@ namespace KGQT.Commons
                     name = "<span class=\"btn-sm btn bg-nsh1\" style=\"font-size:12px\">Chưa cung cấp thông tin</span>";
                     break;
                 case 1:
-                    name = "<span class=\"btn-sm btn bg-nsh2\" style=\"font-size:12px\">Chưa khớp thông tin</span>";
+                    name = "<span class=\"btn-sm btn bg-nsh1\" style=\"font-size:12px\">Chưa khớp thông tin</span>";
                     break;
                 case 2:
-                    name = "<span class=\"btn-sm btn btn-success\" style=\"font-size:12px\">Liên kết thành công</span>";
+                    name = "<span class=\"btn-sm btn btn-nsh2\" style=\"font-size:12px\">Liên kết thành công</span>";
                     break;
             }
             return name;
@@ -441,7 +441,7 @@ namespace KGQT.Commons
                     sReturn = "<span class=\"text-white btn-sm bg-nsh2\">Chờ thanh toán</span>";
                     break;
                 case 2:
-                    sReturn = "<span class=\"text-white btn-sm bg-success\" style=\"background-color: #4e73df !important;padding-left: 0.7rem !important;padding-right: 0.7rem !important;\">Đã thanh toán</span>";
+                    sReturn = "<span class=\"text-white btn-sm bg-nsh1\" style=\"padding-left: 0.7rem !important;padding-right: 0.7rem !important;\">Đã thanh toán</span>";
                     break;
                 case 3:
                     sReturn = "<span class=\"text-white btn-sm bg-danger\">Đã hủy</span>";
@@ -766,19 +766,19 @@ namespace KGQT.Commons
             switch (type)
             {
                 case 1: // nhanh từ 3-6 ngày -> lấy 5 ngày
-                    date = isWeeken(date,5);
+                    date = isWeeken(date, 5);
                     break;
-                case 2: // thường từ 5-10 ngày -> lấy 7 ngày + thêm t7&cn
-                    date = isWeeken(date, 7);
+                case 2: // thường từ 5-10 ngày -> lấy 8 ngày
+                    date = isWeeken(date, 8);
 
                     break;
-                case 3: // bộ 11 ngày + 2 ngày t7 & cn
-                    date = isWeeken(date, 11);
+                case 3: // bộ 12 ngày
+                    date = isWeeken(date, 12);
 
 
                     break;
                 case 4: // lô 20 ngày + 8 ngày (4x t7&cn)
-                    date = isWeeken(date,20);
+                    date = isWeeken(date, 20);
                     break;
             }
 

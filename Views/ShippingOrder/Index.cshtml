@@ -17,7 +17,7 @@
     <div class="row mb-2">
         <ul id="breadcrumbs">
             <li class="text-uppercase"><a href="/Home/Dashboard">Trang chủ</a></li>
-            <li class="text-uppercase fw-bold"><a class="active">Danh sách ký gửi</a></li>
+            <li class="text-uppercase fw-bold"><a class="active">Danh sách đơn hàng</a></li>
         </ul>
     </div>
     <form class="row mb-2 py-2">
@@ -111,7 +111,6 @@
                             <th class="text-center">
                                 Ngày tạo
                             </th>
-                            <th class="text-center"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,8 +124,8 @@
                                     }
                                     </td>
                                     <td class="text-left">
-                                        <a href="/ShippingOrder/Details?id=@item.ID">
-                                              <div style="height:100%;width:100%">
+                                    <a href="/ShippingOrder/Details?id=@item.ID" style="height:100%;width:100%">
+                                              <div >
                                             @Html.DisplayFor(modelItem => item.ShippingOrderCode)
                                             </div>
                                         </a>
@@ -171,12 +170,6 @@
                                         </div>
                                            </div>
                                         </a>   
-                                    </td>
-                                    <td class="text-center ">
-                                        <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.ID">
-                                            <i class="far fa-edit"></i>
-                                            <span>Xem</span>
-                                        </a>
                                     </td>
                                 </tr>
                         }

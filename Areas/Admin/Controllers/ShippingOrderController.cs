@@ -61,7 +61,7 @@ namespace KGQT.Areas.Admin.Controllers
             if (model.Order != null)
             {
                 model.Packs = PackagesBusiness.GetByTransId(model.Order.RecID);
-                model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username == model.Order.Username);
+                model.User = BusinessBase.GetOne<tbl_Account>(x => x.Username.ToLower() == model.Order.Username.ToLower());
             }
             return View(model);
         }

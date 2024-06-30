@@ -93,6 +93,7 @@ namespace KGQT.Models.temp
         public Sender sender { get; set; }
         public Recipient recipient { get; set; }
         public WebHook_Follower follower { get; set; }
+        public Message message { get; set; }
         public Info info { get; set; }
     }
 
@@ -104,6 +105,12 @@ namespace KGQT.Models.temp
     public class WebHook_Follower
     {
         public string id { get; set; }
+    }
+
+    public class Message
+    {
+        public string text { get; set; }
+        public string msg_id { get; set; }
     }
 
     #endregion

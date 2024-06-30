@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<KGQT.Models.tbl_Package>
 @using KGQT.Commons
 
-@if (Model != null)
+@if (Model != null && Model.Count() > 0)
 {
     @foreach (var item in Model)
     {

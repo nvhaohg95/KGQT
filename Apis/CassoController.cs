@@ -60,7 +60,6 @@ namespace KGQT.Apis
                                 string desCasso = "";
                                 Match m = Regex.Match(item.description, pattern, options);
                                 desCasso = m.Value;
-                                Log.Information($"Cú pháp nạp {desCasso}");
                                 if (!string.IsNullOrEmpty(desCasso))
                                 {
                                     var checkw = db.tbl_Withdraws.FirstOrDefault(x => x.tid == item.id.ToString());
@@ -98,8 +97,6 @@ namespace KGQT.Apis
                                                     string w = Converted.StringCeiling(wallet + item.amount);
                                                     if (AccountBusiness.UpdateWallet(u.ID, w))
                                                     {
-                                                        Log.Information($"Update ví thành công");
-
                                                         tbl_HistoryPayWallet pay = new tbl_HistoryPayWallet();
                                                         pay.UID = u.ID;
                                                         pay.Username = u.Username;

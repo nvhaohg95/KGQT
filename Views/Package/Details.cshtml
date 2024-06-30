@@ -18,7 +18,7 @@
 
 <ul id="breadcrumbs" class="mb-2">
     <li class="text-uppercase"><a href="/Home/Dashboard">Trang chủ</a></li>
-    <li class="text-uppercase"><a href="/package/Index">Danh sách ký gửi</a></li>
+    <li class="text-uppercase"><a href="/package/Index">Danh sách đơn hàng</a></li>
     <li class="text-uppercase fw-bold"><a class="active">Chi tiết</a></li>
 </ul>
 <div class="container-fluid h-100 gradient-custom">
@@ -45,7 +45,7 @@
                                 <button class="btn-sm btn bg-orange text-white mt-2 checkStatus" onclick="checkStatus('@Model.PackageCode',@Model.Status, '@(PJUtils.PackageStatus(Model.Status))')" type="button">Kiểm tra hàng</button>
                                 @if (Model.Status < 2)
                                 {
-                                    <button class="btn-sm btn bg-danger text-white mt-2 px-3" onclick="Delete(@Model.ID)" type="button">Xóa</button>
+                                    <button class="btn-sm btn bg-dark text-white mt-2 px-3" onclick="Delete(@Model.ID)" type="button">Xóa</button>
                                 }
                             </div>
                             <div class="row pb-2">
@@ -368,12 +368,12 @@
                             icon: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
+                            cancelButtonColor: "#6e7881",
                             confirmButtonText: "Đồng ý",
                             cancelButtonText: "Từ chối"
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                                location.href = "/package/QueryOrderStatus?code=" + code;
                             }
                         });
                         return;
@@ -387,12 +387,12 @@
                                 icon: "warning",
                                 showCancelButton: true,
                                 confirmButtonColor: "#3085d6",
-                                cancelButtonColor: "#d33",
+                                cancelButtonColor: "#6e7881",
                                 confirmButtonText: "Đồng ý",
                                 cancelButtonText: "Từ chối"
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    location.href = "/admin/package/QueryOrderStatus?code=" + code;
+                                    location.href = "/package/QueryOrderStatus?code=" + code;
                                 }
                             });
                             return;
@@ -407,7 +407,7 @@
                                         icon: "warning",
                                         showCancelButton: true,
                                         confirmButtonColor: "#3085d6",
-                                        cancelButtonColor: "#d33",
+                                        cancelButtonColor: "#6e7881",
                                         confirmButtonText: "Đồng ý",
                                         cancelButtonText: "Từ chối"
                                     }).then((result) => {
@@ -422,7 +422,7 @@
                                         icon: "warning",
                                         showCancelButton: true,
                                         confirmButtonColor: "#3085d6",
-                                        cancelButtonColor: "#d33",
+                                        cancelButtonColor: "#6e7881",
                                         confirmButtonText: "Đồng ý",
                                         cancelButtonText: "Từ chối"
                                     }).then((result) => {
@@ -440,7 +440,7 @@
                                     icon: "warning",
                                     showCancelButton: true,
                                     confirmButtonColor: "#3085d6",
-                                    cancelButtonColor: "#d33",
+                                    cancelButtonColor: "#6e7881",
                                     confirmButtonText: "Đồng ý",
                                     cancelButtonText: "Từ chối"
                                 }).then((result) => {
@@ -458,7 +458,7 @@
                                 icon: "warning",
                                 showCancelButton: true,
                                 confirmButtonColor: "#3085d6",
-                                cancelButtonColor: "#d33",
+                                cancelButtonColor: "#6e7881",
                                 confirmButtonText: "Đồng ý",
                                 cancelButtonText: "Từ chối"
                             }).then((result) => {
