@@ -205,7 +205,7 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @if (user != null)
                     {
-                        <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold">
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small fw-bold text-uppercase">
                             @(string.IsNullOrEmpty(user.FullName) ? user.Username : user.FullName)
                         </span>
                         <img class="img-profile rounded-circle" src="@(!string.IsNullOrEmpty(user.IMG) ? user.IMG : "/img/undraw_profile.svg") ">
@@ -255,7 +255,7 @@
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" data-toggle="modal" data-target="#baiduModal" href="#">
                         <i class="fas fa-map-pin fa-sm fa-fw mr-2"></i>
-                        Đổi điểm tra cứu Baidu
+                        Đổi điểm tra cứu
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" data-toggle="modal" data-target="#changePassWordModal" href="#">
@@ -313,7 +313,7 @@
                                 </a>
                                 <a class="nav-link" asp-action="Index" asp-controller="Points">
                                     <p class="mb-0 text-uppercase">
-                                        <span>Lịch sử điểm tra cứu</span>
+                                        <span>Lịch sử tra cứu</span>
                                     </p>
                                 </a>
                             </nav>
@@ -594,7 +594,7 @@
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-primary">
-                        <h5 class="modal-title">ĐỔI ĐIỂM TRA CỨU BAIDU</h5>
+                        <h5 class="modal-title">ĐỔI ĐIỂM TRA CỨU</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

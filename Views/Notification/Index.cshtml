@@ -65,6 +65,8 @@
                         <th class="text-center">
                             Nội dung
                         </th>
+                        <th class="text-right">
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -76,19 +78,22 @@
                             </td>
                             <td class="text-left align-middle">
                                <div class="line-clamp line-clamp-2">
-                                   @if(item.Message.Length < 200)
+                                   @if(item.Message.Length < 300)
                                     {
                                         @Html.Raw(item.Message)
                                     }
                                     else
                                     {
                                         @Html.Raw(item.Message.Substring(0,300))
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#popupNoti" onclick="getNoti(@item.ID)">
-                                            Xem thêm...
-                                        </a>
+                                        
                                     }
                                </div>
                                 
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-dark text-white w-100px" data-bs-toggle="modal" data-bs-target="#popupNoti" onclick="getNoti(@item.ID)">
+                                    Xem thêm...
+                                </button>
                             </td>
                         </tr>
                     }
@@ -196,8 +201,8 @@
 </div>
 
 <script>
+    const element = $("#noti-body");
     function getNoti(id){
-        let element = $("#noti-body");
         if (element) 
         {
             element[0].innerHTML = "";
@@ -210,7 +215,6 @@
             {
                 if (respone.data)
                 {
-                    let element = $("#noti-body");
                     if(element)
                     {
                         element[0].innerHTML = respone.data.message;
@@ -218,7 +222,7 @@
                 }
             },
             error: function (xhr, status, err) {
-                helper.showErr('Hệ thống thực thi không thành công. Vui lòng thử lại!')
+                helper.showErr('Không tìm thấy thông báo!')
             }
         });
     }
