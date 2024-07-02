@@ -49,7 +49,10 @@ namespace KGQT.WebHook
                 string phone = data.info.phone;
 
                 if (phone.StartsWith("84"))
-                    phone = phone.Replace("84", "0");
+                {
+                    phone = phone.Substring(2);
+                    phone = "0" + phone;
+                }
                 var user = db.tbl_Accounts.FirstOrDefault(x => x.Phone == phone);
                 var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == data.sender.id);
                 if (f == null)
@@ -196,7 +199,8 @@ namespace KGQT.WebHook
             using (var db = new nhanshiphangContext())
             {
                 var f = db.tbl_ZaloFollewers.FirstOrDefault(x => x.user_id == sender.id);
-                if (f == null | string.IsNullOrEmpty(f?.Username)) {
+                if (f == null | string.IsNullOrEmpty(f?.Username))
+                {
                     string sendText = $"Quý khách cần phải quan tâm OA và cung cấp thông tin cho tracking.nhanshiphang.vn mới có thể sử dụng tính năng này";
                     await ZaloCommon.SendMessage(sender.id, sendText);
                 }
