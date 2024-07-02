@@ -1,6 +1,7 @@
 ﻿using KGQT.Base;
 using KGQT.Business;
 using KGQT.Models;
+using KGQT.Models.temp;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KGQT.Areas.Admin.Controllers
@@ -34,11 +35,10 @@ namespace KGQT.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<bool> SendRequestAsync(string uid)
+        public async Task<SendMessageResponse> SendRequestAsync(string uid)
         {
-            if (string.IsNullOrEmpty(uid)) return false;
-            int a = await ZaloCommon.RequestMoreInfoAsync(uid);
-            return a == 0;
+            var a = await ZaloCommon.RequestMoreInfoAsync(uid);
+            return a;
         }
     }
 }

@@ -168,10 +168,10 @@ namespace KGQT.Areas.Admin.Controllers
             var s = exclude.FirstOrDefault(x => code.EndsWith(x));
             if (s != null)
             {
-                code = code.Replace(s,"");
-                var packages = BusinessBase.GetList<tbl_Package>(x=>x.PackageCode.Contains(code)).ToList();
+                code = code.Replace(s, "");
+                var packages = BusinessBase.GetList<tbl_Package>(x => x.PackageCode.Contains(code)).ToList();
                 return packages;
-             }
+            }
             return null;
         }
 
@@ -409,11 +409,8 @@ namespace KGQT.Areas.Admin.Controllers
         #endregion
 
         private static string[] exclude = new string[] {
-        "001","0001","00001","002","0002","00002",
-        "003","0003","00003","004","0004","00004",
-        "005","0005","00005","006","0006","00006",
-        "007","0007","00007","008","0008","00008",
-        "009","0009","00009","0010","00010","000010"
+        "001","001001","001001001","002","002002","002002002",
+        "003","003003","003003003","004","004004","004004004"
         };
     }
 }

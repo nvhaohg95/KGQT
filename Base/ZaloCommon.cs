@@ -380,7 +380,7 @@ namespace KGQT.Base
             }
         }
 
-        public static async Task<int> RequestMoreInfoAsync(string uid)
+        public static async Task<SendMessageResponse> RequestMoreInfoAsync(string uid)
         {
             var token = BusinessBase.GetFirst<tbl_Zalo>();
             if (token != null)
@@ -395,9 +395,9 @@ namespace KGQT.Base
                 Log.Information("Send request more info: " + result.ToString());
                 var oData = JsonConvert.DeserializeObject<SendMessageResponse>(result.ToString());
 
-                return oData.error;
+                return oData;
             }
-            return -1;
+            return null;
         }
 
         public static async Task<UserInfo> GetInfoFlowerAsync(string uid)

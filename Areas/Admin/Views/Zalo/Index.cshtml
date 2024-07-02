@@ -173,8 +173,10 @@
             data: { uid },
             // other AJAX options here
             success: function (res) {
-                if(res)
+                if (res && res.error == 0)
                 helper.showSuc("Gửi yêu cầu thành công",false);
+                else if(res && res.error != 0)
+                    helper.showErr(res.message, false)
                 else
                     helper.showErr("Gửi yêu cầu thất bại", false)
             },

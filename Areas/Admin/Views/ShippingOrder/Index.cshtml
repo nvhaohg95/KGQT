@@ -110,6 +110,9 @@
                                         Tổng tiền
                                     </th>
                                     <th class="text-center">
+                                        Thông báo
+                                    </th>
+                                    <th class="text-center">
                                         Ngày tạo
                                     </th>
                                     <th class="text-center"></th>
@@ -140,7 +143,7 @@
                                             @Html.DisplayFor(modelItem => item.ShippingMethodName)
                                         </td>
                                         <td class="text-center">
-                                            <div class="w-200px d-flex">
+                                            <div class="w-200px d-flex justify-content-center">
                                                 @Html.Raw(PJUtils.ShippingOrderStatusHtml(item.Status))
                                             </div>
                                         </td>
@@ -148,7 +151,11 @@
                                             @Converted.String2Money(item.TotalPrice)
                                         </td>
                                         <td class="text-center">
-                                            <div class="w-200px d-flex">
+                                            <div class="w-200px d-flex justify-content-center">
+                                                @Html.Raw(PJUtils.ShippingNotiStatus(item.IsSendNoti.Value))
+                                            </div>
+                                        </td>  <td class="text-center">
+                                            <div class="w-200px d-flex justify-content-center">
                                                 @Html.DisplayFor(modelItem => item.CreatedDate)
                                             </div>
                                         </td>
@@ -256,7 +263,7 @@
             type: 'Post',
             // other AJAX options here
             success: function (res) {
-                helper.showSuc("Gửi thông báo thành công",true);
+                helper.showSuc("Gửi thông báo thành công", true);
             },
             error: function (xhr, status, err) {
                 // error handling

@@ -316,6 +316,15 @@ namespace KGQT.Commons
             return text;
         }
 
+        public static string ShippingNotiStatus(bool status)
+        {
+            string s = "";
+            if (!status)
+                s = "<span class=\"btn-sm btn bg-nsh1 text-white\" style=\"font-size:12px\">Chưa báo hàng về</span>";
+            else
+                s = "<span class=\"btn-sm btn bg-nsh2 text-white\" style=\"font-size:12px\">Đã thông báo</span>";
+            return s;
+        }
         public static string PackageStatusHtml(int status)
         {
             string sReturn = "";

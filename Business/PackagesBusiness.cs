@@ -820,19 +820,17 @@ namespace KGQT.Business
                             if (user.AvailableSearch == null)
                                 user.AvailableSearch = 0;
                             if (AccountBusiness.UpdateSearch(user.ID, user.AvailableSearch.Value + 1))
-                            {
                                 PointsBusiness.Insert(user.ID, user.Username, pack.PackageCode, $"Nhập kho thành công kiện: {pack.PackageCode}", 1, 0, user.AvailableSearch.Value, accessor);
-                            }
+                            
 
-                            string message = "Kiện hàng {0}{1} đã nhập kho HCM. \r\nQuý khách vui lòng chờ đợi cho đến khi ra đơn hàng hãy sắp xếp lấy hàng nhé, các kiện hàng cùng lô/ ngày này còn đang được cập nhật thêm";
-                            if (string.IsNullOrEmpty(pack.Note))
-                                message = string.Format(message, pack.PackageCode, " - " + pack.Note);
-                            else
-                                message = string.Format(message);
+                            //string message = "Kiện hàng {0}{1} đã nhập kho HCM. \r\nQuý khách vui lòng chờ đợi cho đến khi ra đơn hàng hãy sắp xếp lấy hàng nhé, các kiện hàng cùng lô/ ngày này còn đang được cập nhật thêm";
+                            //if (string.IsNullOrEmpty(pack.Note))
+                            //    message = string.Format(message, pack.PackageCode, " - " + pack.Note);
+                            //else
+                            //    message = string.Format(message);
 
-                            NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, pack.ID, pack.PackageCode, message, message, 1, "/Package/Details?id=" + pack.ID, accessor);
+                            //NotificationBusiness.Insert(admin.ID, admin.Username, pack.UID, pack.Username, pack.ID, pack.PackageCode, message, message, 1, "/Package/Details?id=" + pack.ID, accessor);
                         }
-
 
                         if (check != null)
                         {
@@ -889,7 +887,6 @@ namespace KGQT.Business
                                     weight = totalWeight;
                                 }
                             }
-
 
                             weight += weightOver;
 

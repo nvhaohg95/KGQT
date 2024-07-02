@@ -248,14 +248,14 @@
                 stopLoading();
             },
             success: function (res) {
-                if (res) {
+                if (res && res.length) {
                     let html = "";
                     $.each(res, function (i, v) {
                         html += '<div class="form-check">';
                         html += '<input class="form-check-input" type="radio" name="choose" value="' + v.packageCode + '">';
                         html += '<label class="form-check-label">' + v.packageCode;
                         if (v.weightReal && parseFloat(v.weightReal) > 0)
-                            html += ' - ' + v.weightReal;
+                            html += ' - ' + v.weightReal + 'kg';
                         if (v.note)
                             html += ' - ' + v.weightReal;
                         html += '</label>';
@@ -279,6 +279,9 @@
     function select(){
         var data = helper.form2Object($('#frmShip').serializeArray());
         let code = $('input[name="choose"]:checked').val();
+        if(!code)
+            helper.showErr('Vui lòng chọn kiện!');
+        
         data.PackageCode = code;
         $('#choosePack').modal('hide');
         insert(data);
@@ -292,7 +295,7 @@
     }
 
     function insert() {
-        var data = helper.form2Object($('#frmShip').serializeArray());
+       var data = helper.form2Object($('#frmShip').serializeArray());
 
         if (!data.Username) {
             helper.showErr('Vui lòng nhập tài khoản khách hàng!');
